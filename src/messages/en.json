@@ -31,7 +31,9 @@
     "notFoundTitle": "Page not found",
     "notFoundBody": "This address leads nowhere. Go back to the home page to find your car.",
     "goHome": "Back to home",
-    "hello": "Hello!"
+    "hello": "Hello!",
+    "welcome": "Welcome! We're glad to have you as a customer.",
+    "mission": "Our mission: meeting your car rental needs."
   },
   "Nav": {
     "cars": "Cars",

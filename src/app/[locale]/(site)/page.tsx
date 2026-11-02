@@ -2,6 +2,7 @@ import { CheckCircle2, MessageCircle } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { CarArt, DrivingCar } from "@/components/car-art";
+import { Scenery } from "@/components/scenery";
 import { CarCard } from "@/components/car-card";
 import { HeroSearch } from "@/components/hero-search";
 import { listAgencies, listPublicCars } from "@/server/queries/cars";
@@ -26,7 +27,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-ink-2">{t("heroSubtitle")}</p>
           </div>
           <div className="relative z-10 -mb-[4.6%] hidden w-full max-w-[680px] justify-self-end lg:block" aria-hidden>
-            <DrivingCar category="suv" color="#4b3fd8" hello={tc("hello")} className="car-arrive" />
+            <Scenery className="absolute -inset-x-[30%] bottom-[7%] h-[62%] [mask-image:linear-gradient(90deg,transparent,#000_18%,#000_82%,transparent)]" />
+            <DrivingCar category="suv" color="#4b3fd8" messages={[tc("hello"), tc("welcome"), tc("mission")]} className="car-arrive" />
           </div>
         </div>
 

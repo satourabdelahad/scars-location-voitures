@@ -31,7 +31,9 @@
     "notFoundTitle": "页面不存在",
     "notFoundBody": "该地址无效。请返回首页寻找您的车。",
     "goHome": "返回首页",
-    "hello": "你好！"
+    "hello": "你好！",
+    "welcome": "欢迎您成为我们的客户！",
+    "mission": "我们的使命：满足您的租车需求。"
   },
   "Nav": {
     "cars": "车辆",

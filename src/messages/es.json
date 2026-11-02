@@ -31,7 +31,9 @@
     "notFoundTitle": "Página no encontrada",
     "notFoundBody": "Esta dirección no lleva a ninguna parte. Vuelve al inicio para encontrar tu coche.",
     "goHome": "Volver al inicio",
-    "hello": "¡Hola!"
+    "hello": "¡Hola!",
+    "welcome": "¡Bienvenido! Nos alegra tenerte como cliente.",
+    "mission": "Nuestra misión: satisfacer tus necesidades de alquiler de coche."
   },
   "Nav": {
     "cars": "Coches",

@@ -1,5 +1,6 @@
 import type { CarCategory } from "@/db/schema";
 import { cn } from "@/lib/utils";
+import { HelloBubble } from "@/components/hello-bubble";
 
 /**
  * Illustration de profil propre à SCar : une silhouette par catégorie, teintée de la couleur réelle
@@ -158,20 +159,20 @@ function Driver({ x, y, waving }: { x: number; y: number; waving?: boolean }) {
  * Voiture qui roule avec son conducteur et une bulle "Bonjour" dans la langue du site.
  * La bulle est en HTML (hors du SVG) pour ne pas être inversée en arabe/darija.
  */
-export function DrivingCar({ category, color, hello, className, bubbleClassName }: { category: CarCategory; color: string; hello: string; className?: string; bubbleClassName?: string }) {
+export function DrivingCar({ category, color, messages, className, bubbleClassName }: { category: CarCategory; color: string; messages: string[]; className?: string; bubbleClassName?: string }) {
   const [hx, hy] = (SHAPES[category] ?? SHAPES.sedan).head;
   return (
     <div className={cn("relative", className)}>
-      <CarArt category={category} color={color} driver animated className="block w-full" />
-      <div
-        className={cn("hello-bubble absolute", bubbleClassName)}
-        style={{ insetInlineStart: `${(hx / 400) * 100}%`, bottom: `${100 - ((hy - 24) / 160) * 100}%` }}
-      >
-        <span className="relative block -translate-x-1/2 rounded-2xl rounded-ee-md bg-paper px-3.5 py-1.5 text-[15px] font-bold whitespace-nowrap text-ink shadow-[0_10px_30px_-10px_rgba(20,26,46,.45)] ring-1 ring-mist rtl:translate-x-1/2 rtl:rounded-ee-2xl rtl:rounded-es-md">
-          {hello}
-          <span aria-hidden className="absolute -bottom-1.5 start-1/2 size-3 -translate-x-1/2 rotate-45 bg-paper ring-1 ring-mist [clip-path:polygon(100%_0,100%_100%,0_100%)] rtl:translate-x-1/2" />
-        </span>
+      {/* Traits de vitesse derrière la voiture */}
+      <div aria-hidden className="speed-lines absolute inset-y-[38%] -start-[9%] w-[12%]">
+        <span /><span /><span />
       </div>
+      <CarArt category={category} color={color} driver animated className="block w-full" />
+      <HelloBubble
+        messages={messages}
+        className={bubbleClassName}
+        style={{ insetInlineStart: `${(hx / 400) * 100}%`, bottom: `${100 - ((hy - 24) / 160) * 100}%` }}
+      />
     </div>
   );
 }
