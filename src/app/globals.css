@@ -1,0 +1,169 @@
+@import "tailwindcss";
+@import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-400.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-500.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-600.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-700.css";
+@import "@fontsource-variable/noto-sans-jp/index.css";
+@import "@fontsource-variable/noto-sans-sc/index.css";
+@import "@fontsource-variable/noto-sans-kr/index.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * SCar — jetons de design
+ * Majorelle : actions principales · Encre : texte · Craie : fond · Safran : prix uniquement · Palmier : états validés
+ */
+:root {
+  --majorelle: #4b3fd8;
+  --majorelle-deep: #3a2fb8;
+  --majorelle-soft: #ecebfc;
+  --ink: #141a2e;
+  --ink-2: #3d4560;
+  --ink-3: #6b7390;
+  --chalk: #f5f6fa;
+  --paper: #ffffff;
+  --mist: #e3e5ef;
+  --mist-2: #cfd3e3;
+  --saffron: #f2b53a;
+  --saffron-ink: #7a5300;
+  --palm: #1f6f5c;
+  --palm-soft: #e1f2ec;
+  --clay-red: #c4372c;
+  --clay-red-soft: #fbe9e7;
+  --asphalt: #2a3049;
+
+  --font-latin: "Archivo Variable", system-ui, sans-serif;
+  --font-stack: var(--font-latin), "IBM Plex Sans Arabic", "Noto Sans JP Variable", "Noto Sans SC Variable",
+    "Noto Sans KR Variable", sans-serif;
+}
+
+:root[data-theme="dark"] {
+  --majorelle: #8c84ff;
+  --majorelle-deep: #a49dff;
+  --majorelle-soft: #24234a;
+  --ink: #eef0f8;
+  --ink-2: #c3c8dc;
+  --ink-3: #8b92ad;
+  --chalk: #0f1322;
+  --paper: #171c30;
+  --mist: #262c45;
+  --mist-2: #343b58;
+  --saffron: #f5c55e;
+  --saffron-ink: #f5c55e;
+  --palm: #4fc3a1;
+  --palm-soft: #13332b;
+  --clay-red: #ff7a6e;
+  --clay-red-soft: #3a1d1d;
+  --asphalt: #0a0d18;
+}
+
+@theme inline {
+  --color-majorelle: var(--majorelle);
+  --color-majorelle-deep: var(--majorelle-deep);
+  --color-majorelle-soft: var(--majorelle-soft);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-chalk: var(--chalk);
+  --color-paper: var(--paper);
+  --color-mist: var(--mist);
+  --color-mist-2: var(--mist-2);
+  --color-saffron: var(--saffron);
+  --color-saffron-ink: var(--saffron-ink);
+  --color-palm: var(--palm);
+  --color-palm-soft: var(--palm-soft);
+  --color-danger: var(--clay-red);
+  --color-danger-soft: var(--clay-red-soft);
+  --color-asphalt: var(--asphalt);
+  --font-sans: var(--font-stack);
+  --ease-road: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--chalk);
+  color: var(--ink);
+  font-family: var(--font-stack);
+  font-feature-settings: "ss01", "tnum" 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glyphes CJK : on privilégie la police propre à chaque langue */
+:lang(ja) body { font-family: var(--font-latin), "Noto Sans JP Variable", sans-serif; }
+:lang(zh) body { font-family: var(--font-latin), "Noto Sans SC Variable", sans-serif; }
+:lang(ko) body { font-family: var(--font-latin), "Noto Sans KR Variable", sans-serif; }
+:lang(ar) body,
+:lang(ary) body { font-family: "IBM Plex Sans Arabic", var(--font-latin), sans-serif; line-height: 1.7; }
+
+/* Titres façon panneau routier : Archivo en largeur étendue */
+.display {
+  font-stretch: 125%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+.display-md {
+  font-stretch: 118%;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+}
+:lang(ar) .display, :lang(ary) .display, :lang(ar) .display-md, :lang(ary) .display-md,
+:lang(ja) .display, :lang(zh) .display, :lang(ko) .display,
+:lang(ja) .display-md, :lang(zh) .display-md, :lang(ko) .display-md {
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+:focus-visible {
+  outline: 2px solid var(--majorelle);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection { background: var(--majorelle); color: #fff; }
+
+/* Le moment signature : la ligne de route qui se trace au chargement */
+@keyframes lane-draw {
+  from { stroke-dashoffset: 1200; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes car-arrive {
+  from { transform: translateX(-18%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+[dir="rtl"] .car-arrive { animation-name: car-arrive-rtl; }
+@keyframes car-arrive-rtl {
+  from { transform: translateX(18%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.lane-draw { stroke-dasharray: 1200; animation: lane-draw 1.6s var(--ease-road) 0.15s both; }
+.car-arrive { animation: car-arrive 1.1s var(--ease-road) 0.35s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Barres de défilement discrètes dans les tableaux */
+.scroll-thin { scrollbar-width: thin; scrollbar-color: var(--mist-2) transparent; }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dialog-in {
+  from { opacity: 0; scale: 0.97; }
+  to { opacity: 1; scale: 1; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
