@@ -1,13 +1,14 @@
 "use client";
 
 import { Popover } from "radix-ui";
-import { Check, ChevronDown, Globe } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useId, useMemo, useRef, useState, useTransition, type KeyboardEvent } from "react";
 import { locales, localeMeta, type Locale } from "@/i18n/config";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { Flag } from "@/components/flags";
 
 /** Combobox de langue (affichée en haut à droite dans toutes les langues, y compris en arabe). */
 export function LanguageSwitcher({ className, tone = "light" }: { className?: string; tone?: "light" | "dark" }) {
@@ -79,7 +80,7 @@ export function LanguageSwitcher({ className, tone = "light" }: { className?: st
           className,
         )}
       >
-        <Globe className="size-4 opacity-70" aria-hidden />
+        <Flag locale={current} />
         <span dir="auto">{meta.native}</span>
         <ChevronDown className="size-3.5 opacity-60" aria-hidden />
       </Popover.Trigger>
@@ -124,9 +125,7 @@ export function LanguageSwitcher({ className, tone = "light" }: { className?: st
                     i === active ? "bg-majorelle-soft text-ink" : "text-ink-2",
                   )}
                 >
-                  <span className="grid h-6 w-8 place-items-center rounded-md bg-ink text-[10px] font-bold tracking-wide text-chalk">
-                    {m.flag}
-                  </span>
+                  <Flag locale={l} className="h-5 w-7" />
                   <span className="flex-1" dir={m.dir} lang={l === "ary" ? "ar" : l}>
                     {m.native}
                   </span>

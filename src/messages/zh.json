@@ -30,7 +30,8 @@
     "search": "搜索",
     "notFoundTitle": "页面不存在",
     "notFoundBody": "该地址无效。请返回首页寻找您的车。",
-    "goHome": "返回首页"
+    "goHome": "返回首页",
+    "hello": "你好！"
   },
   "Nav": {
     "cars": "车辆",
@@ -436,9 +437,19 @@
     "rejected": "已拒绝"
   },
   "Enums": {
-    "civility": { "male": "先生", "female": "女士" },
-    "marital": { "married": "已婚", "widowed": "丧偶", "single": "未婚" },
-    "contract": { "freelance": "自由职业", "cdi": "无固定期限合同（CDI）" },
+    "civility": {
+      "male": "先生",
+      "female": "女士"
+    },
+    "marital": {
+      "married": "已婚",
+      "widowed": "丧偶",
+      "single": "未婚"
+    },
+    "contract": {
+      "freelance": "自由职业",
+      "cdi": "无固定期限合同（CDI）"
+    },
     "category": {
       "economy": "经济型",
       "compact": "紧凑型",
@@ -449,8 +460,16 @@
       "convertible": "敞篷车",
       "pickup": "皮卡"
     },
-    "transmission": { "manual": "手动挡", "automatic": "自动挡" },
-    "fuel": { "petrol": "汽油", "diesel": "柴油", "hybrid": "混合动力", "electric": "纯电动" },
+    "transmission": {
+      "manual": "手动挡",
+      "automatic": "自动挡"
+    },
+    "fuel": {
+      "petrol": "汽油",
+      "diesel": "柴油",
+      "hybrid": "混合动力",
+      "electric": "纯电动"
+    },
     "carDeactivation": {
       "stolen": "被盗",
       "sold": "已售出",

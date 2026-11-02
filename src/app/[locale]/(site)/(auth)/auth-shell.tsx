@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
-import { CarArt } from "@/components/car-art";
+import { getTranslations } from "next-intl/server";
+import { DrivingCar } from "@/components/car-art";
 
 /** Mise en page commune des écrans de connexion : formulaire à gauche, route et voiture à droite. */
-export function AuthShell({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
+export async function AuthShell({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
+  const tc = await getTranslations("Common");
   return (
     <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_1fr] lg:py-20">
       <div className="mx-auto w-full max-w-md">
@@ -11,10 +13,10 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
         <div className="mt-8">{children}</div>
       </div>
       <div className="relative hidden overflow-hidden rounded-[30px] bg-asphalt lg:block" aria-hidden>
-        <svg className="absolute inset-x-0 top-[62%] h-2 w-full" preserveAspectRatio="none" viewBox="0 0 600 8">
-          <line x1="0" y1="4" x2="600" y2="4" stroke="var(--saffron)" strokeWidth="5" strokeDasharray="40 28" className="lane-draw" />
+        <svg className="absolute inset-x-0 top-[63%] h-2 w-full" preserveAspectRatio="none" viewBox="0 0 600 8">
+          <line x1="0" y1="4" x2="600" y2="4" stroke="var(--saffron)" strokeWidth="5" strokeDasharray="44 30" className="lane-run" />
         </svg>
-        <CarArt category="convertible" color="#f2b53a" className="car-arrive absolute inset-x-[10%] top-[38%] w-[80%]" />
+        <DrivingCar category="convertible" color="#f2b53a" hello={tc("hello")} className="car-arrive absolute inset-x-[4%] top-[30%] w-[92%]" />
       </div>
     </div>
   );

@@ -30,7 +30,8 @@
     "search": "検索",
     "notFoundTitle": "ページが見つかりません",
     "notFoundBody": "このアドレスにはページがありません。ホームに戻って車を探してください。",
-    "goHome": "ホームに戻る"
+    "goHome": "ホームに戻る",
+    "hello": "こんにちは！"
   },
   "Nav": {
     "cars": "車両一覧",
@@ -436,9 +437,19 @@
     "rejected": "お断り"
   },
   "Enums": {
-    "civility": { "male": "男性", "female": "女性" },
-    "marital": { "married": "既婚", "widowed": "死別", "single": "未婚" },
-    "contract": { "freelance": "フリーランス", "cdi": "無期雇用（CDI）" },
+    "civility": {
+      "male": "男性",
+      "female": "女性"
+    },
+    "marital": {
+      "married": "既婚",
+      "widowed": "死別",
+      "single": "未婚"
+    },
+    "contract": {
+      "freelance": "フリーランス",
+      "cdi": "無期雇用（CDI）"
+    },
     "category": {
       "economy": "エコノミー",
       "compact": "コンパクト",
@@ -449,8 +460,16 @@
       "convertible": "オープンカー",
       "pickup": "ピックアップ"
     },
-    "transmission": { "manual": "マニュアル", "automatic": "オートマ" },
-    "fuel": { "petrol": "ガソリン", "diesel": "ディーゼル", "hybrid": "ハイブリッド", "electric": "電気" },
+    "transmission": {
+      "manual": "マニュアル",
+      "automatic": "オートマ"
+    },
+    "fuel": {
+      "petrol": "ガソリン",
+      "diesel": "ディーゼル",
+      "hybrid": "ハイブリッド",
+      "electric": "電気"
+    },
     "carDeactivation": {
       "stolen": "盗難",
       "sold": "売却",

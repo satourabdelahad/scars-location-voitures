@@ -30,7 +30,8 @@
     "search": "Rechercher",
     "notFoundTitle": "Page introuvable",
     "notFoundBody": "Cette adresse ne mène nulle part. Revenez à l'accueil pour trouver votre voiture.",
-    "goHome": "Retour à l'accueil"
+    "goHome": "Retour à l'accueil",
+    "hello": "Bonjour !"
   },
   "Nav": {
     "cars": "Voitures",

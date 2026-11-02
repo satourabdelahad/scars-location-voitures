@@ -30,7 +30,8 @@
     "search": "بحث",
     "notFoundTitle": "الصفحة غير موجودة",
     "notFoundBody": "هذا العنوان لا يؤدي إلى أي مكان. عد إلى الصفحة الرئيسية للعثور على سيارتك.",
-    "goHome": "العودة إلى الرئيسية"
+    "goHome": "العودة إلى الرئيسية",
+    "hello": "مرحبًا!"
   },
   "Nav": {
     "cars": "السيارات",
@@ -436,9 +437,19 @@
     "rejected": "مرفوض"
   },
   "Enums": {
-    "civility": { "male": "السيد", "female": "السيدة" },
-    "marital": { "married": "متزوج(ة)", "widowed": "أرمل(ة)", "single": "أعزب / عزباء" },
-    "contract": { "freelance": "عمل حر", "cdi": "عقد غير محدد المدة" },
+    "civility": {
+      "male": "السيد",
+      "female": "السيدة"
+    },
+    "marital": {
+      "married": "متزوج(ة)",
+      "widowed": "أرمل(ة)",
+      "single": "أعزب / عزباء"
+    },
+    "contract": {
+      "freelance": "عمل حر",
+      "cdi": "عقد غير محدد المدة"
+    },
     "category": {
       "economy": "اقتصادية",
       "compact": "مدمجة",
@@ -449,8 +460,16 @@
       "convertible": "مكشوفة",
       "pickup": "بيك أب"
     },
-    "transmission": { "manual": "يدوي", "automatic": "أوتوماتيكي" },
-    "fuel": { "petrol": "بنزين", "diesel": "ديزل", "hybrid": "هجينة", "electric": "كهربائية" },
+    "transmission": {
+      "manual": "يدوي",
+      "automatic": "أوتوماتيكي"
+    },
+    "fuel": {
+      "petrol": "بنزين",
+      "diesel": "ديزل",
+      "hybrid": "هجينة",
+      "electric": "كهربائية"
+    },
     "carDeactivation": {
       "stolen": "مسروقة",
       "sold": "مباعة",
