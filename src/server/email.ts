@@ -4,7 +4,7 @@ import { createTranslator } from "next-intl";
 import { isLocale, localeMeta, type Locale } from "@/i18n/config";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM = process.env.EMAIL_FROM ?? "SCar Location <onboarding@resend.dev>";
+const FROM = process.env.EMAIL_FROM ?? "Dizy Cars <onboarding@resend.dev>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 async function translator(locale: string) {
@@ -22,7 +22,7 @@ function layout(locale: Locale, title: string, body: string, cta?: { label: stri
   return `<!doctype html><html lang="${locale}" dir="${dir}"><body style="margin:0;background:#f5f6fa;font-family:Arial,'Segoe UI',sans-serif;color:#141a2e">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
   <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden">
-    <tr><td style="background:#141a2e;padding:22px 28px;color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px">SCar<span style="color:#f2b53a">.</span></td></tr>
+    <tr><td style="background:#141a2e;padding:22px 28px;color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px">Dizy <span style="font-weight:500;opacity:.8">Cars</span><span style="color:#f2b53a">.</span></td></tr>
     <tr><td style="height:4px;background:repeating-linear-gradient(90deg,#f2b53a 0 24px,transparent 24px 40px)"></td></tr>
     <tr><td style="padding:28px">
       <h1 style="margin:0 0 14px;font-size:22px;line-height:1.3">${escapeHtml(title)}</h1>

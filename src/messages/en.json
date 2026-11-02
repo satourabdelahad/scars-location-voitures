@@ -1,6 +1,6 @@
 {
   "Meta": {
-    "title": "SCar — Car rental in Morocco",
+    "title": "Dizy Cars — Car rental in Morocco",
     "description": "Rent a car in Marrakech, Casablanca, Agadir, Tangier, Fez or Rabat. Clear prices, airport pickup, booking in two minutes."
   },
   "Common": {
@@ -59,7 +59,7 @@
     "faq": "FAQ",
     "terms": "Rental terms",
     "privacy": "Privacy",
-    "rights": "© {year} SCar Location. All rights reserved."
+    "rights": "© {year} Dizy Cars. All rights reserved."
   },
   "Home": {
     "heroTitle": "Hit the road in Morocco.",
@@ -186,7 +186,7 @@
   },
   "Auth": {
     "loginTitle": "Sign in",
-    "loginSubtitle": "Customers: use your favourite social network or your email. SCar team: email and password.",
+    "loginSubtitle": "Customers: use your favourite social network or your email. Dizy Cars team: email and password.",
     "registerTitle": "Create an account",
     "registerSubtitle": "A few seconds to track your bookings.",
     "email": "Email",
@@ -514,7 +514,7 @@
   },
   "About": {
     "title": "A Moroccan agency with well-kept cars",
-    "body1": "SCar was born in Marrakech from a simple idea: customers should know exactly what they pay and what they drive. Every car is serviced between rentals and photographed as it really is.",
+    "body1": "Dizy Cars was born in Marrakech from a simple idea: customers should know exactly what they pay and what they drive. Every car is serviced between rentals and photographed as it really is.",
     "body2": "Our managers speak Darija, Arabic, French and English, and the website guides you in nine languages.",
     "valuesTitle": "What never changes",
     "value1Title": "Quoted price, paid price",
@@ -533,11 +533,11 @@
     "airport": "Airport counter"
   },
   "Email": {
-    "inviteSubject": "Your access to the SCar manager area",
+    "inviteSubject": "Your access to the Dizy Cars manager area",
     "inviteTitle": "Welcome {name}",
     "inviteBody": "The administrator has just created your manager account. Choose your password to access the management area. This link is valid for 72 hours.",
     "inviteCta": "Choose my password",
-    "resetSubject": "Reset your SCar password",
+    "resetSubject": "Reset your Dizy Cars password",
     "resetTitle": "New password",
     "resetBody": "You asked to reset your password. This link is valid for one hour. If you didn't make this request, ignore this email.",
     "resetCta": "Choose a new password",

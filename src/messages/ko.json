@@ -1,6 +1,6 @@
 {
   "Meta": {
-    "title": "SCar — 모로코 렌터카",
+    "title": "Dizy Cars — 모로코 렌터카",
     "description": "마라케시, 카사블랑카, 아가디르, 탕헤르, 페스, 라바트에서 렌터카를 이용하세요. 투명한 요금, 공항 인수, 2분 예약."
   },
   "Common": {
@@ -59,7 +59,7 @@
     "faq": "자주 묻는 질문",
     "terms": "대여 약관",
     "privacy": "개인정보 처리방침",
-    "rights": "© {year} SCar Location. All rights reserved."
+    "rights": "© {year} Dizy Cars. All rights reserved."
   },
   "Home": {
     "heroTitle": "모로코의 길 위로 떠나세요.",
@@ -186,7 +186,7 @@
   },
   "Auth": {
     "loginTitle": "로그인",
-    "loginSubtitle": "고객은 자주 쓰는 소셜 계정이나 이메일로, SCar 직원은 이메일과 비밀번호로 로그인하세요.",
+    "loginSubtitle": "고객은 자주 쓰는 소셜 계정이나 이메일로, Dizy Cars 직원은 이메일과 비밀번호로 로그인하세요.",
     "registerTitle": "계정 만들기",
     "registerSubtitle": "몇 초면 예약을 관리할 수 있습니다.",
     "email": "이메일",
@@ -514,7 +514,7 @@
   },
   "About": {
     "title": "잘 관리된 차량을 갖춘 모로코 렌터카",
-    "body1": "SCar는 마라케시에서 단순한 생각에서 시작했습니다. 고객은 무엇에 얼마를 내는지, 어떤 차를 타는지 정확히 알아야 한다는 것입니다. 모든 차량은 대여 사이마다 점검하고 실제 모습 그대로 촬영합니다.",
+    "body1": "Dizy Cars는 마라케시에서 단순한 생각에서 시작했습니다. 고객은 무엇에 얼마를 내는지, 어떤 차를 타는지 정확히 알아야 한다는 것입니다. 모든 차량은 대여 사이마다 점검하고 실제 모습 그대로 촬영합니다.",
     "body2": "매니저들은 다리자, 아랍어, 프랑스어, 영어를 구사하며, 사이트는 9개 언어로 안내합니다.",
     "valuesTitle": "변하지 않는 약속",
     "value1Title": "안내 요금이 곧 결제 요금",
@@ -533,11 +533,11 @@
     "airport": "공항 카운터"
   },
   "Email": {
-    "inviteSubject": "SCar 매니저 페이지 접속 안내",
+    "inviteSubject": "Dizy Cars 매니저 페이지 접속 안내",
     "inviteTitle": "{name}님, 환영합니다",
     "inviteBody": "관리자가 매니저 계정을 만들었습니다. 비밀번호를 설정하고 관리 페이지에 접속하세요. 이 링크는 72시간 동안 유효합니다.",
     "inviteCta": "비밀번호 설정하기",
-    "resetSubject": "SCar 비밀번호 재설정",
+    "resetSubject": "Dizy Cars 비밀번호 재설정",
     "resetTitle": "새 비밀번호",
     "resetBody": "비밀번호 재설정을 요청하셨습니다. 이 링크는 1시간 동안 유효합니다. 요청하지 않으셨다면 이 이메일을 무시하세요.",
     "resetCta": "새 비밀번호 설정하기",

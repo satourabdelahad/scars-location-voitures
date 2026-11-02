@@ -1,6 +1,6 @@
 {
   "Meta": {
-    "title": "SCar — Autovermietung in Marokko",
+    "title": "Dizy Cars — Autovermietung in Marokko",
     "description": "Mieten Sie ein Auto in Marrakesch, Casablanca, Agadir, Tanger, Fès oder Rabat. Klare Preise, Übergabe am Flughafen, Buchung in zwei Minuten."
   },
   "Common": {
@@ -59,7 +59,7 @@
     "faq": "Häufige Fragen",
     "terms": "Mietbedingungen",
     "privacy": "Datenschutz",
-    "rights": "© {year} SCar Location. Alle Rechte vorbehalten."
+    "rights": "© {year} Dizy Cars. Alle Rechte vorbehalten."
   },
   "Home": {
     "heroTitle": "Ab auf die Straße in Marokko.",
@@ -186,7 +186,7 @@
   },
   "Auth": {
     "loginTitle": "Anmelden",
-    "loginSubtitle": "Kunden: mit Ihrem bevorzugten sozialen Netzwerk oder Ihrer E-Mail. SCar-Team: E-Mail und Passwort.",
+    "loginSubtitle": "Kunden: mit Ihrem bevorzugten sozialen Netzwerk oder Ihrer E-Mail. Dizy-Cars-Team: E-Mail und Passwort.",
     "registerTitle": "Konto erstellen",
     "registerSubtitle": "Ein paar Sekunden, um Ihre Buchungen zu verfolgen.",
     "email": "E-Mail",
@@ -514,7 +514,7 @@
   },
   "About": {
     "title": "Eine marokkanische Agentur mit gepflegten Autos",
-    "body1": "SCar entstand in Marrakesch aus einer einfachen Idee: Kunden sollen genau wissen, was sie zahlen und was sie fahren. Jedes Auto wird zwischen zwei Mieten gewartet und so fotografiert, wie es ist.",
+    "body1": "Dizy Cars entstand in Marrakesch aus einer einfachen Idee: Kunden sollen genau wissen, was sie zahlen und was sie fahren. Jedes Auto wird zwischen zwei Mieten gewartet und so fotografiert, wie es ist.",
     "body2": "Unsere Disponenten sprechen Darija, Arabisch, Französisch und Englisch, und die Website begleitet Sie in neun Sprachen.",
     "valuesTitle": "Was sich nicht ändert",
     "value1Title": "Angezeigter Preis ist Endpreis",
@@ -533,11 +533,11 @@
     "airport": "Flughafenschalter"
   },
   "Email": {
-    "inviteSubject": "Ihr Zugang zum SCar-Verwaltungsbereich",
+    "inviteSubject": "Ihr Zugang zum Dizy-Cars-Verwaltungsbereich",
     "inviteTitle": "Willkommen, {name}",
     "inviteBody": "Der Administrator hat soeben Ihr Disponentenkonto angelegt. Wählen Sie Ihr Passwort, um auf den Verwaltungsbereich zuzugreifen. Dieser Link ist 72 Stunden gültig.",
     "inviteCta": "Passwort wählen",
-    "resetSubject": "Zurücksetzen Ihres SCar-Passworts",
+    "resetSubject": "Zurücksetzen Ihres Dizy-Cars-Passworts",
     "resetTitle": "Neues Passwort",
     "resetBody": "Sie haben das Zurücksetzen Ihres Passworts angefordert. Dieser Link ist eine Stunde gültig. Wenn Sie das nicht waren, ignorieren Sie diese E-Mail.",
     "resetCta": "Neues Passwort wählen",

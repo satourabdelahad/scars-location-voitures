@@ -11,7 +11,7 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /*
- * SCar — jetons de design
+ * Dizy Cars — jetons de design
  * Majorelle : actions principales · Encre : texte · Craie : fond · Safran : prix uniquement · Palmier : états validés
  */
 :root {

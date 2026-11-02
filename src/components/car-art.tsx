@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { HelloBubble } from "@/components/hello-bubble";
 
 /**
- * Illustration de profil propre à SCar : une silhouette par catégorie, teintée de la couleur réelle
+ * Illustration de profil propre à Dizy Cars : une silhouette par catégorie, teintée de la couleur réelle
  * de la voiture. Sert de visuel tant qu'aucune photo n'a été téléversée.
  */
 const SHAPES: Record<CarCategory, { body: string; glass: string; wheels: [number, number]; pillar?: number; head: [number, number]; open?: boolean }> = {

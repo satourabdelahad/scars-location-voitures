@@ -58,11 +58,11 @@ const CARS: CarSeed[] = [
 ];
 
 const MANAGERS = [
-  { civility: "male" as const, firstName: "Youssef", lastName: "El Amrani", email: "youssef@scar.ma", phone: "+212661234501", city: "Marrakech", birthDate: "1990-04-12", maritalStatus: "married" as const, workStartDate: "2021-03-01", contractType: "cdi" as const },
-  { civility: "female" as const, firstName: "Salma", lastName: "Bennani", email: "salma@scar.ma", phone: "+212661234502", city: "Casablanca", birthDate: "1994-09-30", maritalStatus: "single" as const, workStartDate: "2022-06-15", contractType: "cdi" as const },
-  { civility: "male" as const, firstName: "Hamza", lastName: "Ouazzani", email: "hamza@scar.ma", phone: "+212661234503", city: "Agadir", birthDate: "1988-01-21", maritalStatus: null, workStartDate: "2023-01-09", contractType: "freelance" as const },
-  { civility: "female" as const, firstName: "Imane", lastName: "Tazi", email: "imane@scar.ma", phone: "+212661234504", city: "Rabat", birthDate: "1996-11-05", maritalStatus: "single" as const, workStartDate: "2024-02-19", contractType: "freelance" as const },
-  { civility: "male" as const, firstName: "Karim", lastName: "Alaoui", email: "karim@scar.ma", phone: "+212661234505", city: "Fès", birthDate: "1985-07-17", maritalStatus: "widowed" as const, workStartDate: "2020-09-01", contractType: "cdi" as const },
+  { civility: "male" as const, firstName: "Youssef", lastName: "El Amrani", email: "youssef@dizycars.com", phone: "+212661234501", city: "Marrakech", birthDate: "1990-04-12", maritalStatus: "married" as const, workStartDate: "2021-03-01", contractType: "cdi" as const },
+  { civility: "female" as const, firstName: "Salma", lastName: "Bennani", email: "salma@dizycars.com", phone: "+212661234502", city: "Casablanca", birthDate: "1994-09-30", maritalStatus: "single" as const, workStartDate: "2022-06-15", contractType: "cdi" as const },
+  { civility: "male" as const, firstName: "Hamza", lastName: "Ouazzani", email: "hamza@dizycars.com", phone: "+212661234503", city: "Agadir", birthDate: "1988-01-21", maritalStatus: null, workStartDate: "2023-01-09", contractType: "freelance" as const },
+  { civility: "female" as const, firstName: "Imane", lastName: "Tazi", email: "imane@dizycars.com", phone: "+212661234504", city: "Rabat", birthDate: "1996-11-05", maritalStatus: "single" as const, workStartDate: "2024-02-19", contractType: "freelance" as const },
+  { civility: "male" as const, firstName: "Karim", lastName: "Alaoui", email: "karim@dizycars.com", phone: "+212661234505", city: "Fès", birthDate: "1985-07-17", maritalStatus: "widowed" as const, workStartDate: "2020-09-01", contractType: "cdi" as const },
 ];
 
 const CLIENTS = [
@@ -99,7 +99,7 @@ async function main() {
   await db.insert(agencies).values(AGENCIES).onConflictDoNothing();
   await db.insert(extras).values(EXTRAS).onConflictDoNothing();
 
-  const adminEmail = (process.env.SEED_ADMIN_EMAIL ?? "admin@scar.ma").toLowerCase();
+  const adminEmail = (process.env.SEED_ADMIN_EMAIL ?? "admin@dizycars.com").toLowerCase();
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "ChangezMoi!2026";
   let [admin] = await db.select().from(users).where(eq(users.email, adminEmail));
   if (!admin) {
@@ -155,7 +155,7 @@ async function main() {
   // Un client de démo avec mot de passe, pour tester l'espace réservation.
   const [demoClient] = await db
     .insert(users)
-    .values({ name: "Client Démo", email: "client@scar.ma", role: "client", passwordHash: await bcrypt.hash("Client2026!", 12), emailVerified: new Date() })
+    .values({ name: "Client Démo", email: "client@dizycars.com", role: "client", passwordHash: await bcrypt.hash("Client2026!", 12), emailVerified: new Date() })
     .returning();
   clientIds.push({ id: demoClient.id, locale: "fr", name: "Client Démo" });
 
@@ -236,7 +236,7 @@ async function main() {
   await db.update(users).set({ status: "deactivated" }).where(eq(users.id, lastManager.userId));
   await db.insert(managerEvents).values({ managerId: lastManager.id, event: "deactivated", reason: "Fin de contrat freelance", actorId: admin.id });
 
-  console.log(`✓ Démo : ${MANAGERS.length} gestionnaires (mot de passe Gestion2026!), ${CARS.length} voitures, ${ref} réservations, client@scar.ma / Client2026!`);
+  console.log(`✓ Démo : ${MANAGERS.length} gestionnaires (mot de passe Gestion2026!), ${CARS.length} voitures, ${ref} réservations, client@dizycars.com / Client2026!`);
 }
 
 main()

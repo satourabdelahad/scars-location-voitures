@@ -23,7 +23,7 @@ export async function SiteHeader() {
         {t("skip")}
       </a>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 sm:gap-5 px-4 sm:px-6">
-        <Link href="/" aria-label="SCar" className="shrink-0">
+        <Link href="/" aria-label="Dizy Cars" className="shrink-0">
           <Logo />
         </Link>
         <nav className="hidden items-center gap-1 md:flex" aria-label={t("menu")}>

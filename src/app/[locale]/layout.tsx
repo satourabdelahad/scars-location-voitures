@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   return {
     metadataBase: new URL(base),
-    title: { default: t("title"), template: `%s · SCar` },
+    title: { default: t("title"), template: `%s · Dizy Cars` },
     description: t("description"),
     alternates: {
       languages: Object.fromEntries(routing.locales.map((l) => [l === "ary" ? "ar-MA" : l, `/${l}`])),

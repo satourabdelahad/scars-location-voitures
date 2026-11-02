@@ -47,7 +47,7 @@ export async function verifyUpload(publicId: string, purpose: UploadPurpose, res
     const s = await stat(path.join(LOCAL_DIR, name));
     return { publicId, url: `/api/dev-files/${name}`, format: name.split(".").pop() ?? null, bytes: s.size, width: null, height: null };
   }
-  const expectedFolder = purpose === "identity" ? "scar/identity/" : "scar/cars/";
+  const expectedFolder = purpose === "identity" ? "dizycars/identity/" : "dizycars/cars/";
   if (!publicId.startsWith(expectedFolder)) throw new Error("validation");
   const r = await assertUploaded(publicId, purpose, resourceType);
   return { publicId: r.public_id, url: r.secure_url, format: r.format, bytes: r.bytes, width: r.width ?? null, height: r.height ?? null };

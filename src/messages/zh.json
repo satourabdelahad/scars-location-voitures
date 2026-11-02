@@ -1,6 +1,6 @@
 {
   "Meta": {
-    "title": "SCar — 摩洛哥租车",
+    "title": "Dizy Cars — 摩洛哥租车",
     "description": "在马拉喀什、卡萨布兰卡、阿加迪尔、丹吉尔、非斯或拉巴特租车。价格透明，机场取车，两分钟完成预订。"
   },
   "Common": {
@@ -59,7 +59,7 @@
     "faq": "常见问题",
     "terms": "租车条款",
     "privacy": "隐私政策",
-    "rights": "© {year} SCar Location。保留所有权利。"
+    "rights": "© {year} Dizy Cars。保留所有权利。"
   },
   "Home": {
     "heroTitle": "驾车畅游摩洛哥。",
@@ -186,7 +186,7 @@
   },
   "Auth": {
     "loginTitle": "登录",
-    "loginSubtitle": "客户：使用常用社交账号或邮箱登录。SCar 团队：使用邮箱和密码登录。",
+    "loginSubtitle": "客户：使用常用社交账号或邮箱登录。Dizy Cars 团队：使用邮箱和密码登录。",
     "registerTitle": "创建账户",
     "registerSubtitle": "几秒钟即可跟踪您的预订。",
     "email": "邮箱",
@@ -514,7 +514,7 @@
   },
   "About": {
     "title": "一家车况可靠的摩洛哥租车公司",
-    "body1": "SCar 诞生于马拉喀什，源于一个简单的想法：客户应该清楚地知道自己付了多少钱、开的是什么车。每辆车在两次出租之间都会检修，并按真实车况拍照。",
+    "body1": "Dizy Cars 诞生于马拉喀什，源于一个简单的想法：客户应该清楚地知道自己付了多少钱、开的是什么车。每辆车在两次出租之间都会检修，并按真实车况拍照。",
     "body2": "我们的经理会说达里贾语、阿拉伯语、法语和英语，网站支持九种语言。",
     "valuesTitle": "始终不变的承诺",
     "value1Title": "标价即实付",
@@ -533,11 +533,11 @@
     "airport": "机场柜台"
   },
   "Email": {
-    "inviteSubject": "您的 SCar 经理后台访问权限",
+    "inviteSubject": "您的 Dizy Cars 经理后台访问权限",
     "inviteTitle": "欢迎您，{name}",
     "inviteBody": "管理员已为您创建经理账户。请设置密码以进入管理后台。此链接 72 小时内有效。",
     "inviteCta": "设置密码",
-    "resetSubject": "重置您的 SCar 密码",
+    "resetSubject": "重置您的 Dizy Cars 密码",
     "resetTitle": "新密码",
     "resetBody": "您申请了重置密码。此链接 1 小时内有效。如非本人操作，请忽略此邮件。",
     "resetCta": "设置新密码",

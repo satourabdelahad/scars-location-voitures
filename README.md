@@ -1,4 +1,4 @@
-# SCar — Location de voitures
+# Dizy Cars — Location de voitures
 
 Site de location de voitures au Maroc : pages publiques, espace réservation client, espace gestionnaire et espace administrateur, en 9 langues (Darija, arabe, français, anglais, espagnol, allemand, japonais, chinois, coréen).
 
@@ -40,9 +40,9 @@ Comptes de démonstration (`--demo`) :
 
 | Rôle | Email | Mot de passe |
 | --- | --- | --- |
-| Administrateur | `SEED_ADMIN_EMAIL` (admin@scar.ma) | `SEED_ADMIN_PASSWORD` |
-| Gestionnaire | youssef@scar.ma | Gestion2026! |
-| Client | client@scar.ma | Client2026! |
+| Administrateur | `SEED_ADMIN_EMAIL` (admin@dizycars.com) | `SEED_ADMIN_PASSWORD` |
+| Gestionnaire | youssef@dizycars.com | Gestion2026! |
+| Client | client@dizycars.com | Client2026! |
 
 Sans Cloudinary en développement, les fichiers sont gardés dans `.uploads/` (ignoré par Git). En production, Cloudinary est obligatoire.
 
@@ -59,10 +59,10 @@ Scripts utiles : `npm run typecheck`, `npm run lint`, `npm run i18n:check` (vér
 
 ### 2. Cloudinary
 Copiez `Cloud name`, `API key`, `API secret` dans `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` et `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`.
-Les pièces d'identité sont envoyées en mode `authenticated` (dossier `scar/identity`) : elles ne sont jamais accessibles publiquement, l'administrateur les ouvre via un lien signé valable 10 minutes.
+Les pièces d'identité sont envoyées en mode `authenticated` (dossier `dizycars/identity`) : elles ne sont jamais accessibles publiquement, l'administrateur les ouvre via un lien signé valable 10 minutes.
 
 ### 3. Resend
-Vérifiez votre domaine sur resend.com, puis renseignez `RESEND_API_KEY` et `EMAIL_FROM` (ex. `SCar <reservations@votre-domaine.ma>`).
+Vérifiez votre domaine sur resend.com, puis renseignez `RESEND_API_KEY` et `EMAIL_FROM` (ex. `Dizy Cars <reservations@votre-domaine.ma>`).
 Emails envoyés dans la langue du destinataire : invitation des gestionnaires, réinitialisation de mot de passe, demande reçue, confirmation, refus, annulation.
 
 ### 4. Connexions sociales

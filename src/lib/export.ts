@@ -174,7 +174,7 @@ async function exportDocx(t: ExportTable, base: string) {
       }),
   );
   const doc = new Document({
-    creator: "SCar",
+    creator: "Dizy Cars",
     title: t.title,
     sections: [
       {

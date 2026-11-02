@@ -1,6 +1,6 @@
 {
   "Meta": {
-    "title": "SCar — Alquiler de coches en Marruecos",
+    "title": "Dizy Cars — Alquiler de coches en Marruecos",
     "description": "Alquila un coche en Marrakech, Casablanca, Agadir, Tánger, Fez o Rabat. Precios claros, entrega en el aeropuerto y reserva en dos minutos."
   },
   "Common": {
@@ -59,7 +59,7 @@
     "faq": "Preguntas frecuentes",
     "terms": "Condiciones de alquiler",
     "privacy": "Privacidad",
-    "rights": "© {year} SCar Location. Todos los derechos reservados."
+    "rights": "© {year} Dizy Cars. Todos los derechos reservados."
   },
   "Home": {
     "heroTitle": "Sal a la carretera en Marruecos.",
@@ -186,7 +186,7 @@
   },
   "Auth": {
     "loginTitle": "Iniciar sesión",
-    "loginSubtitle": "Clientes: usa tu red social favorita o tu correo. Equipo SCar: correo y contraseña.",
+    "loginSubtitle": "Clientes: usa tu red social favorita o tu correo. Equipo Dizy Cars: correo y contraseña.",
     "registerTitle": "Crear una cuenta",
     "registerSubtitle": "Unos segundos para seguir tus reservas.",
     "email": "Correo electrónico",
@@ -514,7 +514,7 @@
   },
   "About": {
     "title": "Una agencia marroquí con coches bien cuidados",
-    "body1": "SCar nació en Marrakech de una idea sencilla: el cliente debe saber exactamente lo que paga y lo que conduce. Cada coche se revisa entre dos alquileres y se fotografía tal como es.",
+    "body1": "Dizy Cars nació en Marrakech de una idea sencilla: el cliente debe saber exactamente lo que paga y lo que conduce. Cada coche se revisa entre dos alquileres y se fotografía tal como es.",
     "body2": "Nuestros gestores hablan darija, árabe, francés e inglés, y el sitio te acompaña en nueve idiomas.",
     "valuesTitle": "Lo que no cambia",
     "value1Title": "Precio anunciado, precio pagado",
@@ -533,11 +533,11 @@
     "airport": "Mostrador del aeropuerto"
   },
   "Email": {
-    "inviteSubject": "Tu acceso al área de gestión de SCar",
+    "inviteSubject": "Tu acceso al área de gestión de Dizy Cars",
     "inviteTitle": "Bienvenido/a, {name}",
     "inviteBody": "El administrador acaba de crear tu cuenta de gestor. Elige tu contraseña para acceder al área de gestión. Este enlace es válido durante 72 horas.",
     "inviteCta": "Elegir mi contraseña",
-    "resetSubject": "Restablecimiento de tu contraseña de SCar",
+    "resetSubject": "Restablecimiento de tu contraseña de Dizy Cars",
     "resetTitle": "Nueva contraseña",
     "resetBody": "Has solicitado restablecer tu contraseña. Este enlace es válido durante una hora. Si no lo has solicitado tú, ignora este correo.",
     "resetCta": "Elegir una nueva contraseña",

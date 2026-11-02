@@ -1,6 +1,6 @@
 {
   "Meta": {
-    "title": "SCar — Location de voitures au Maroc",
+    "title": "Dizy Cars — Location de voitures au Maroc",
     "description": "Louez une voiture à Marrakech, Casablanca, Agadir, Tanger, Fès ou Rabat. Prix clairs, livraison à l'aéroport, réservation en deux minutes."
   },
   "Common": {
@@ -59,7 +59,7 @@
     "faq": "Questions fréquentes",
     "terms": "Conditions de location",
     "privacy": "Confidentialité",
-    "rights": "© {year} SCar Location. Tous droits réservés."
+    "rights": "© {year} Dizy Cars. Tous droits réservés."
   },
   "Home": {
     "heroTitle": "Prenez la route au Maroc.",
@@ -186,7 +186,7 @@
   },
   "Auth": {
     "loginTitle": "Connexion",
-    "loginSubtitle": "Clients : utilisez votre réseau social préféré ou votre email. Équipe SCar : email et mot de passe.",
+    "loginSubtitle": "Clients : utilisez votre réseau social préféré ou votre email. Équipe Dizy Cars : email et mot de passe.",
     "registerTitle": "Créer un compte",
     "registerSubtitle": "Quelques secondes pour suivre vos réservations.",
     "email": "Email",
@@ -514,7 +514,7 @@
   },
   "About": {
     "title": "Une agence marocaine, des voitures bien tenues",
-    "body1": "SCar est né à Marrakech d'une idée simple : un client doit savoir exactement ce qu'il paie et ce qu'il conduit. Chaque voiture est révisée entre deux locations et photographiée telle qu'elle est.",
+    "body1": "Dizy Cars est né à Marrakech d'une idée simple : un client doit savoir exactement ce qu'il paie et ce qu'il conduit. Chaque voiture est révisée entre deux locations et photographiée telle qu'elle est.",
     "body2": "Nos gestionnaires parlent darija, arabe, français et anglais, et le site vous accompagne dans neuf langues.",
     "valuesTitle": "Ce qui ne change pas",
     "value1Title": "Prix annoncé, prix payé",
@@ -533,11 +533,11 @@
     "airport": "Comptoir aéroport"
   },
   "Email": {
-    "inviteSubject": "Votre accès à l'espace gestionnaire SCar",
+    "inviteSubject": "Votre accès à l'espace gestionnaire Dizy Cars",
     "inviteTitle": "Bienvenue {name}",
     "inviteBody": "L'administrateur vient de créer votre compte gestionnaire. Choisissez votre mot de passe pour accéder à l'espace de gestion. Ce lien est valable 72 heures.",
     "inviteCta": "Choisir mon mot de passe",
-    "resetSubject": "Réinitialisation de votre mot de passe SCar",
+    "resetSubject": "Réinitialisation de votre mot de passe Dizy Cars",
     "resetTitle": "Nouveau mot de passe",
     "resetBody": "Vous avez demandé à réinitialiser votre mot de passe. Ce lien est valable une heure. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.",
     "resetCta": "Choisir un nouveau mot de passe",
