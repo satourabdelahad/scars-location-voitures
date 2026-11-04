@@ -69,12 +69,12 @@ const DEFAULTS: CarFormValues = {
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
   return (
-    <section className="grid gap-6 border-b border-mist py-8 first:pt-0 last:border-0 lg:grid-cols-[220px_1fr]">
+    <section className="grid gap-6 border-b border-mist py-8 first:pt-0 last:border-0 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]">
       <div>
         <h2 className="text-[15px] font-bold text-ink">{title}</h2>
         {hint && <p className="mt-1 text-sm text-ink-3">{hint}</p>}
       </div>
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{children}</div>
+      <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-3">{children}</div>
     </section>
   );
 }
@@ -245,7 +245,7 @@ export function CarForm({
         <Field label={t("purchasePrice")} required error={err("purchasePrice")}>{(p) => <Input {...p} type="number" min={0} step={1000} value={v.purchasePrice} onChange={num("purchasePrice")} />}</Field>
       </Section>
 
-      <section className="grid gap-6 border-b border-mist py-8 lg:grid-cols-[220px_1fr]">
+      <section className="grid gap-6 border-b border-mist py-8 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]">
         <div>
           <h2 className="text-[15px] font-bold text-ink">{t("assignedManagers")}</h2>
           <p className="mt-1 text-sm text-ink-3">{t("assignedManagersHint")}</p>
@@ -284,7 +284,7 @@ export function CarForm({
         </div>
       </section>
 
-      <section className="grid gap-6 border-b border-mist py-8 lg:grid-cols-[220px_1fr]">
+      <section className="grid gap-6 border-b border-mist py-8 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]">
         <div>
           <h2 className="text-[15px] font-bold text-ink">{t("photos")}</h2>
           <p className="mt-1 text-sm text-ink-3">{t("photosHint")}</p>
@@ -343,7 +343,7 @@ export function CarForm({
         </div>
       </section>
 
-      <section className="grid gap-6 py-8 lg:grid-cols-[220px_1fr]">
+      <section className="grid gap-6 py-8 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]">
         <div>
           <h2 className="text-[15px] font-bold text-ink">{t("descriptions")}</h2>
           <p className="mt-1 text-sm text-ink-3">{t("descriptionsHint")}</p>

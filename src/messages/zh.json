@@ -358,7 +358,8 @@
     "photoRemove": "移除",
     "locked": "已锁定",
     "lockedBanner": "因失败次数过多，登录已锁定至 {date}。",
-    "handledBy": "处理人"
+    "handledBy": "处理人",
+    "adminOnly": "仅管理员可修改"
   },
   "Documents": {
     "cin_front": "身份证（CINE）正面",
@@ -912,5 +913,11 @@
       "lien_reservation": "预订链接",
       "bouton_reservation": "预订按钮"
     }
+  },
+  "Phone": {
+    "country": "国家：{country}",
+    "search": "搜索国家或区号",
+    "countries": "国家",
+    "noResult": "未找到国家"
   }
 }

@@ -1,3 +1,4 @@
+import { isPossiblePhoneNumber } from "libphonenumber-js/min";
 import { z } from "zod";
 import { carCategoryEnum, fuelEnum, transmissionEnum } from "@/db/schema";
 
@@ -6,7 +7,12 @@ export const PHONE_RE = /^\+?[0-9 ().-]{8,20}$/;
 export const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const isoDate = z.string().regex(ISO_DATE_RE, "date");
-const phone = z.string().trim().regex(PHONE_RE, "phone");
+/** Numéro international (+212…) plausible pour le pays de son indicatif. */
+const phone = z
+  .string()
+  .trim()
+  .regex(PHONE_RE, "phone")
+  .refine((v) => isPossiblePhoneNumber(v.startsWith("+") ? v : `+${v}`), "phone");
 const required = (max = 120) => z.string().trim().min(1, "required").max(max);
 
 function yearsBetween(birth: string, ref = new Date()) {

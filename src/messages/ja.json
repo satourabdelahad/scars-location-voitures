@@ -358,7 +358,8 @@
     "photoRemove": "削除",
     "locked": "ブロック中",
     "lockedBanner": "失敗が多すぎたため {date} までログインがブロックされています。",
-    "handledBy": "担当者"
+    "handledBy": "担当者",
+    "adminOnly": "管理者のみ変更できます"
   },
   "Documents": {
     "cin_front": "身分証明書（CINE）表面",
@@ -912,5 +913,11 @@
       "lien_reservation": "予約へのリンク",
       "bouton_reservation": "予約へのボタン"
     }
+  },
+  "Phone": {
+    "country": "国：{country}",
+    "search": "国名または国番号で検索",
+    "countries": "国",
+    "noResult": "該当する国がありません"
   }
 }

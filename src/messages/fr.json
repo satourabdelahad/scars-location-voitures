@@ -358,7 +358,8 @@
     "photoRemove": "Retirer",
     "locked": "Bloqué",
     "lockedBanner": "Connexion bloquée jusqu'au {date} après trop d'échecs.",
-    "handledBy": "Traitée par"
+    "handledBy": "Traitée par",
+    "adminOnly": "Modifiable uniquement par l'administrateur"
   },
   "Documents": {
     "cin_front": "Carte d'identité (CINE) — recto",
@@ -912,5 +913,11 @@
       "lien_reservation": "Lien vers la réservation",
       "bouton_reservation": "Bouton vers la réservation"
     }
+  },
+  "Phone": {
+    "country": "Pays : {country}",
+    "search": "Rechercher un pays ou un indicatif",
+    "countries": "Pays",
+    "noResult": "Aucun pays trouvé"
   }
 }

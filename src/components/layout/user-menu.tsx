@@ -3,6 +3,7 @@
 import { DropdownMenu } from "radix-ui";
 import { CalendarCheck, CalendarClock, LayoutDashboard, LogOut, Trophy, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useTransition } from "react";
 import { Link } from "@/i18n/navigation";
 import { signOutAction } from "@/server/actions/auth";
 import type { Role } from "@/db/schema";
@@ -15,6 +16,7 @@ export function UserMenu({ user, tone = "light" }: { user: { name?: string | nul
   const home = user.role === "admin" ? "/admin" : user.role === "manager" ? "/manager" : "/account";
   const roleLabel = user.role === "admin" ? tb("roleAdmin") : user.role === "manager" ? tb("roleManager") : tb("roleClient");
   const display = user.name || user.email || "—";
+  const [leaving, startLeaving] = useTransition();
   const item = "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-ink-2 outline-none data-[highlighted]:bg-chalk data-[highlighted]:text-ink";
   const staff = user.role !== "client";
   const links = [
@@ -74,13 +76,17 @@ export function UserMenu({ user, tone = "light" }: { user: { name?: string | nul
               {user.role === "admin" ? t("adminSpace") : user.role === "manager" ? t("managerSpace") : t("clientSpace")}
             </Link>
           </DropdownMenu.Item>
-          <DropdownMenu.Item asChild>
-            <form action={signOutAction} onSubmit={() => startProgress()}>
-              <button type="submit" className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-danger outline-none hover:bg-danger-soft">
-                <LogOut className="size-4" />
-                {t("logout")}
-              </button>
-            </form>
+          <DropdownMenu.Item
+            disabled={leaving}
+            onSelect={() => {
+              // Barre de progression, déconnexion, puis retour à l'accueil public.
+              startProgress();
+              startLeaving(() => signOutAction());
+            }}
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-danger outline-none data-[highlighted]:bg-danger-soft"
+          >
+            <LogOut className="size-4" />
+            {t("logout")}
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

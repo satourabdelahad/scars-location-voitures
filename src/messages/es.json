@@ -358,7 +358,8 @@
     "photoRemove": "Quitar",
     "locked": "Bloqueado",
     "lockedBanner": "Acceso bloqueado hasta el {date} tras demasiados fallos.",
-    "handledBy": "Gestionada por"
+    "handledBy": "Gestionada por",
+    "adminOnly": "Solo el administrador puede modificarlo"
   },
   "Documents": {
     "cin_front": "Documento de identidad (CINE), anverso",
@@ -912,5 +913,11 @@
       "lien_reservation": "Enlace a la reserva",
       "bouton_reservation": "Botón a la reserva"
     }
+  },
+  "Phone": {
+    "country": "País: {country}",
+    "search": "Buscar un país o prefijo",
+    "countries": "Países",
+    "noResult": "Ningún país encontrado"
   }
 }

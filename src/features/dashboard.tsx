@@ -53,9 +53,9 @@ export async function Dashboard({ base, user, locale }: { base: "/admin" | "/man
     <>
       <PageHeader title={t("dashboard")} subtitle={`${t("signedInAs")} ${user.name ?? user.email}`} />
       {!sec?.on && (
-        <Link href="/admin/security" className="mb-4 flex items-center gap-3 rounded-2xl border border-saffron/50 bg-saffron/10 px-5 py-4 hover:border-saffron">
+        <Link href="/admin/security" className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-saffron/50 bg-saffron/10 px-5 py-4 hover:border-saffron">
           <ShieldAlert className="size-5 shrink-0 text-saffron-ink" />
-          <span className="min-w-0 flex-1">
+          <span className="min-w-[min(100%,16rem)] flex-1">
             <span className="block text-sm font-semibold text-ink">{tsec("bannerTitle")}</span>
             <span className="text-sm text-ink-2">{tsec("bannerBody")}</span>
           </span>

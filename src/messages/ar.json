@@ -358,7 +358,8 @@
     "photoRemove": "إزالة",
     "locked": "محظور",
     "lockedBanner": "تسجيل الدخول محظور حتى {date} بعد محاولات فاشلة كثيرة.",
-    "handledBy": "عالجها"
+    "handledBy": "عالجها",
+    "adminOnly": "لا يمكن تعديله إلا من طرف المسؤول"
   },
   "Documents": {
     "cin_front": "البطاقة الوطنية (CINE) — الوجه",
@@ -912,5 +913,11 @@
       "lien_reservation": "رابط الحجز",
       "bouton_reservation": "زر الحجز"
     }
+  },
+  "Phone": {
+    "country": "البلد: {country}",
+    "search": "ابحث عن بلد أو رمز اتصال",
+    "countries": "البلدان",
+    "noResult": "لم يُعثر على أي بلد"
   }
 }

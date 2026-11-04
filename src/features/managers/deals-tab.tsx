@@ -8,6 +8,7 @@ import { DataTable, type Column } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Badge, EmptyState, Panel, type Tone } from "@/components/ui/misc";
 import { useRouter } from "@/i18n/navigation";
 import { dealSourceEnum, dealTypeEnum, type DealSource, type DealType } from "@/db/schema";
@@ -242,7 +243,7 @@ function DealDialog({ managerId, deal, options, onClose }: { managerId: string; 
                 {(p) => <Input {...p} autoFocus={!deal} value={v.prospectName} onChange={(x) => set("prospectName", x.target.value)} />}
               </Field>
               <Field label={t("phone")} required error={err("phone")}>
-                {(p) => <Input {...p} type="tel" dir="ltr" placeholder="+212 6 12 34 56 78" value={v.phone} onChange={(x) => set("phone", x.target.value)} />}
+                {(p) => <PhoneInput {...p} value={v.phone} onChange={(x) => set("phone", x)} />}
               </Field>
               <Field label={t("email")} optionalLabel={tc("optional")} error={err("email")}>
                 {(p) => <Input {...p} type="email" dir="ltr" value={v.email} onChange={(x) => set("email", x.target.value)} />}

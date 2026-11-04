@@ -1,7 +1,10 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { auth } from "@/auth";
-import { LOCAL_DIR, localUploadsEnabled } from "@/server/uploads";
+import { and, eq } from "drizzle-orm";
+import { db } from "@/db";
+import { managerDocuments, managers } from "@/db/schema";
+import { LOCAL_DIR, LOCAL_PREFIX, localUploadsEnabled } from "@/server/uploads";
 
 const TYPES: Record<string, string> = { jpg: "image/jpeg", png: "image/png", webp: "image/webp", pdf: "application/pdf" };
 
@@ -12,7 +15,20 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/dev-files/[name
   const safe = path.basename(name);
   if (safe.startsWith("identity-")) {
     const session = await auth();
-    if (session?.user.role !== "admin") return new Response("Forbidden", { status: 403 });
+    const role = session?.user.role;
+    // Administrateur : toutes les pièces. Gestionnaire : seulement les siennes.
+    const own =
+      role === "manager"
+        ? (
+            await db
+              .select({ id: managerDocuments.id })
+              .from(managerDocuments)
+              .innerJoin(managers, eq(managers.id, managerDocuments.managerId))
+              .where(and(eq(managerDocuments.publicId, `${LOCAL_PREFIX}${safe}`), eq(managers.userId, session!.user.id)))
+              .limit(1)
+          ).length > 0
+        : false;
+    if (role !== "admin" && !own) return new Response("Forbidden", { status: 403 });
   }
   try {
     const buf = await readFile(path.join(LOCAL_DIR, safe));

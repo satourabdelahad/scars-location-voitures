@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { CarArt } from "@/components/car-art";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Link } from "@/i18n/navigation";
 import type { CarCategory } from "@/db/schema";
 import { formatDate, formatMoney, rentalDays, todayISO } from "@/lib/utils";
@@ -164,7 +165,7 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
               {(p) => <Input {...p} autoComplete="family-name" value={v.driverLastName} onChange={(e) => set("driverLastName", e.target.value)} />}
             </Field>
             <Field label={t("driverPhone")} required error={err("driverPhone")}>
-              {(p) => <Input {...p} type="tel" autoComplete="tel" dir="ltr" placeholder="+212 6 12 34 56 78" value={v.driverPhone} onChange={(e) => set("driverPhone", e.target.value)} />}
+              {(p) => <PhoneInput {...p} value={v.driverPhone} onChange={(x) => set("driverPhone", x)} />}
             </Field>
             <Field label={t("driverBirthDate")} required error={err("driverBirthDate")}>
               {(p) => <Input {...p} type="date" autoComplete="bday" value={v.driverBirthDate} onChange={(e) => set("driverBirthDate", e.target.value)} />}

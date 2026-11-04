@@ -358,7 +358,8 @@
     "photoRemove": "Entfernen",
     "locked": "Gesperrt",
     "lockedBanner": "Anmeldung bis {date} nach zu vielen Fehlversuchen gesperrt.",
-    "handledBy": "Bearbeitet von"
+    "handledBy": "Bearbeitet von",
+    "adminOnly": "Nur der Administrator kann dies ändern"
   },
   "Documents": {
     "cin_front": "Personalausweis (CINE), Vorderseite",
@@ -912,5 +913,11 @@
       "lien_reservation": "Link zur Buchung",
       "bouton_reservation": "Button zur Buchung"
     }
+  },
+  "Phone": {
+    "country": "Land: {country}",
+    "search": "Land oder Vorwahl suchen",
+    "countries": "Länder",
+    "noResult": "Kein Land gefunden"
   }
 }

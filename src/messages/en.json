@@ -358,7 +358,8 @@
     "photoRemove": "Remove",
     "locked": "Locked",
     "lockedBanner": "Sign-in locked until {date} after too many failures.",
-    "handledBy": "Handled by"
+    "handledBy": "Handled by",
+    "adminOnly": "Only the administrator can change this"
   },
   "Documents": {
     "cin_front": "National ID card (CINE), front",
@@ -912,5 +913,11 @@
       "lien_reservation": "Booking link",
       "bouton_reservation": "Booking button"
     }
+  },
+  "Phone": {
+    "country": "Country: {country}",
+    "search": "Search a country or dialling code",
+    "countries": "Countries",
+    "noResult": "No country found"
   }
 }

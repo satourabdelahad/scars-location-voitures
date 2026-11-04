@@ -6,6 +6,7 @@ import { useRef, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select } from "@/components/ui/field";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { DocumentLink } from "./manager-actions";
 import type { DocumentKind } from "@/db/schema";
@@ -56,7 +57,7 @@ export type ManagerFormMode = "create" | "view" | "edit";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="grid gap-6 border-b border-mist py-8 first:pt-0 last:border-0 lg:grid-cols-[220px_1fr]">
+    <section className="grid gap-6 border-b border-mist py-8 first:pt-0 last:border-0 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]">
       <h2 className="text-[15px] font-bold text-ink">{title}</h2>
       <div className="grid gap-5 sm:grid-cols-2">{children}</div>
     </section>
@@ -73,6 +74,7 @@ export function ManagerForm({
   canEdit = true,
   canOpenDocs = false,
   statusActions,
+  lockedFields = [],
 }: {
   managerId?: string;
   initial?: Partial<ManagerFormValues>;
@@ -87,6 +89,8 @@ export function ManagerForm({
   canOpenDocs?: boolean;
   /** Bouton Activer/Désactiver, affiché à côté de "Modifier" */
   statusActions?: ReactNode;
+  /** Champs toujours en lecture seule (ex. le gestionnaire sur sa fiche : date de début, contrat) */
+  lockedFields?: (keyof ManagerFormValues)[];
 }) {
   const t = useTranslations("Managers");
   const td = useTranslations("Documents");
@@ -109,6 +113,8 @@ export function ManagerForm({
   const [pending, start] = useTransition();
   const inputs = useRef<Partial<Record<DocumentKind, HTMLInputElement | null>>>({});
   const locked = mode === "view";
+  // Incrémenté à l'annulation : les champs téléphone repartent des valeurs enregistrées.
+  const [version, setVersion] = useState(0);
 
   const set = <K extends keyof ManagerFormValues>(k: K, value: ManagerFormValues[K]) =>
     setV((s) => ({ ...s, [k]: value, ...(k === "phone" && sameWa ? { whatsapp: value as string } : {}) }));
@@ -116,6 +122,7 @@ export function ManagerForm({
 
   function cancelEdit() {
     setV(start0);
+    setVersion((n) => n + 1);
     setDocs({});
     setPhoto(undefined);
     setErrors({});
@@ -296,19 +303,22 @@ export function ManagerForm({
 
       <Section title={t("contact")}>
         <Field label={t("email")} required={!locked} error={err("email")} className="sm:col-span-2">{(p) => <Input {...p} disabled={locked} type="email" dir="ltr" autoComplete="email" value={v.email} onChange={(x) => set("email", x.target.value)} />}</Field>
-        <Field label={t("phone")} required={!locked} error={err("phone")}>{(p) => <Input {...p} disabled={locked} type="tel" dir="ltr" placeholder="+212 6 12 34 56 78" value={v.phone} onChange={(x) => set("phone", x.target.value)} />}</Field>
+        <Field label={t("phone")} required={!locked} error={err("phone")}>{(p) => <PhoneInput key={`phone-${version}`} {...p} disabled={locked} value={v.phone} onChange={(x) => set("phone", x)} />}</Field>
         <div className="flex flex-col gap-1.5">
-          <Field label={t("whatsapp")} required={!locked} error={err("whatsapp")}>{(p) => <Input {...p} type="tel" dir="ltr" disabled={locked || sameWa} value={v.whatsapp} onChange={(x) => set("whatsapp", x.target.value)} />}</Field>
+          <Field label={t("whatsapp")} required={!locked} error={err("whatsapp")}>
+            {/* Identique au téléphone : le champ suit le téléphone (remonté à chaque changement) */}
+            {(p) => <PhoneInput key={sameWa ? `wa-same-${v.phone}` : `wa-${version}`} {...p} disabled={locked || sameWa} value={v.whatsapp} onChange={(x) => set("whatsapp", x)} />}
+          </Field>
           {!locked && <Checkbox label={t("sameAsPhone")} checked={sameWa} onChange={(x) => { setSameWa(x.target.checked); if (x.target.checked) setV((s) => ({ ...s, whatsapp: s.phone })); }} />}
         </div>
         <Field label={t("city")} required={!locked} error={err("city")}>{(p) => <Input {...p} disabled={locked} autoComplete="address-level2" value={v.city} onChange={(x) => set("city", x.target.value)} />}</Field>
       </Section>
 
       <Section title={t("employment")}>
-        <Field label={t("workStartDate")} required={!locked} error={err("workStartDate")}>{(p) => <Input {...p} disabled={locked} type="date" value={v.workStartDate} onChange={(x) => set("workStartDate", x.target.value)} />}</Field>
-        <Field label={t("contractType")} required={!locked} error={err("contractType")}>
+        <Field label={t("workStartDate")} required={!locked && !lockedFields.includes("workStartDate")} hint={!locked && lockedFields.includes("workStartDate") ? t("adminOnly") : undefined} error={err("workStartDate")}>{(p) => <Input {...p} disabled={locked || lockedFields.includes("workStartDate")} type="date" value={v.workStartDate} onChange={(x) => set("workStartDate", x.target.value)} />}</Field>
+        <Field label={t("contractType")} required={!locked && !lockedFields.includes("contractType")} hint={!locked && lockedFields.includes("contractType") ? t("adminOnly") : undefined} error={err("contractType")}>
           {(p) => (
-            <Select {...p} disabled={locked} value={v.contractType} onChange={(x) => set("contractType", x.target.value as ManagerFormValues["contractType"])}>
+            <Select {...p} disabled={locked || lockedFields.includes("contractType")} value={v.contractType} onChange={(x) => set("contractType", x.target.value as ManagerFormValues["contractType"])}>
               <option value="">—</option>
               {(["cdi", "freelance"] as const).map((c) => <option key={c} value={c}>{e(`contract.${c}`)}</option>)}
             </Select>

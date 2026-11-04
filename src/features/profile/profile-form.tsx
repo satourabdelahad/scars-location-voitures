@@ -6,6 +6,7 @@ import { useRef, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { useRouter } from "@/i18n/navigation";
 import { ACCEPT_IMAGES, uploadFile } from "@/lib/upload-client";
 import { changeMyPassword, updateMyProfile } from "@/server/actions/profile";
@@ -16,7 +17,7 @@ type Values = { name: string; email: string; phone: string; whatsapp: string; ci
 
 function Card({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
   return (
-    <section className="grid gap-6 border-b border-mist py-8 first:pt-0 last:border-0 lg:grid-cols-[220px_1fr]">
+    <section className="grid gap-6 border-b border-mist py-8 first:pt-0 last:border-0 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]">
       <div>
         <h2 className="text-[15px] font-bold text-ink">{title}</h2>
         {hint && <p className="mt-1 text-sm text-ink-3">{hint}</p>}
@@ -47,17 +48,13 @@ export function ProfileForm({
   const tm = useTranslations("Managers");
   const td = useTranslations("Documents");
   const te = useTranslations("Errors");
-  const ta = useTranslations("Auth");
   const e = useTranslations("Enums");
   const router = useRouter();
   const [v, setV] = useState<Values>({ name: "", email: "", phone: "", whatsapp: "", city: "", maritalStatus: "", ...initial });
   const [photo, setPhoto] = useState<{ publicId: string; url: string } | null | undefined>(undefined);
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
-  const [pwErrors, setPwErrors] = useState<Record<string, string>>({});
   const [pending, start] = useTransition();
-  const [pwPending, startPw] = useTransition();
   const input = useRef<HTMLInputElement | null>(null);
   const photoUrl = photo === undefined ? initialPhoto : (photo?.url ?? null);
   const [first, ...rest] = displayName.split(" ");
@@ -101,21 +98,7 @@ export function ProfileForm({
     });
   }
 
-  function savePassword(ev: React.FormEvent) {
-    ev.preventDefault();
-    setPwErrors({});
-    startPw(async () => {
-      const r = await changeMyPassword(pw);
-      if (r.ok) {
-        toast.success(t("passwordChanged"));
-        setPw({ current: "", next: "", confirm: "" });
-        router.refresh();
-      } else {
-        if (r.fieldErrors) setPwErrors(r.fieldErrors);
-        else toast.error(te(r.error as "unknown"));
-      }
-    });
-  }
+
 
   return (
     <div className="space-y-4">
@@ -152,12 +135,12 @@ export function ProfileForm({
               </Field>
             )}
             <Field label={tm("phone")} required={role === "manager"} error={msg(errors.phone)}>
-              {(p) => <Input {...p} type="tel" dir="ltr" value={v.phone} onChange={(x) => set("phone", x.target.value)} autoComplete="tel" />}
+              {(p) => <PhoneInput {...p} value={v.phone} onChange={(x) => set("phone", x)} />}
             </Field>
             {role === "manager" && (
               <>
                 <Field label={tm("whatsapp")} required error={msg(errors.whatsapp)}>
-                  {(p) => <Input {...p} type="tel" dir="ltr" value={v.whatsapp} onChange={(x) => set("whatsapp", x.target.value)} />}
+                  {(p) => <PhoneInput {...p} value={v.whatsapp} onChange={(x) => set("whatsapp", x)} />}
                 </Field>
                 <Field label={tm("city")} required error={msg(errors.city)}>
                   {(p) => <Input {...p} value={v.city} onChange={(x) => set("city", x.target.value)} />}
@@ -195,7 +178,39 @@ export function ProfileForm({
         )}
       </form>
 
-      <form onSubmit={savePassword} noValidate className="rounded-2xl border border-mist bg-paper p-6 sm:p-8">
+      <PasswordForm hasPassword={hasPassword} />
+    </div>
+  );
+}
+
+/** Changement de mot de passe (Mon profil, pour tous les rôles). */
+export function PasswordForm({ hasPassword }: { hasPassword: boolean }) {
+  const t = useTranslations("Profile");
+  const te = useTranslations("Errors");
+  const ta = useTranslations("Auth");
+  const router = useRouter();
+  const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
+  const [pwErrors, setPwErrors] = useState<Record<string, string>>({});
+  const [pwPending, startPw] = useTransition();
+  const msg = (code?: string) => (code ? (["passwordWrong", "passwordWeak", "passwordMismatch"].includes(code) ? t(code as "passwordWrong") : te(code as "required")) : undefined);
+
+  function savePassword(ev: React.FormEvent) {
+    ev.preventDefault();
+    setPwErrors({});
+    startPw(async () => {
+      const r = await changeMyPassword(pw);
+      if (r.ok) {
+        toast.success(t("passwordChanged"));
+        setPw({ current: "", next: "", confirm: "" });
+        router.refresh();
+      } else {
+        if (r.fieldErrors) setPwErrors(r.fieldErrors);
+        else toast.error(te(r.error as "unknown"));
+      }
+    });
+  }
+  return (
+    <form onSubmit={savePassword} noValidate className="rounded-2xl border border-mist bg-paper p-6 sm:p-8">
         <Card title={t("password")} hint={ta("errors.passwordWeak")}>
           <div className="grid gap-5 sm:grid-cols-3">
             {hasPassword && (
@@ -218,6 +233,5 @@ export function ProfileForm({
           </div>
         </Card>
       </form>
-    </div>
   );
 }

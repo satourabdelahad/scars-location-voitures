@@ -92,16 +92,24 @@ const TRACKED = ["civility", "lastName", "firstName", "phone", "whatsapp", "city
 
 export async function updateManager(id: string, input: { data: unknown; documents: unknown; photo?: PhotoInput }): Promise<ActionResult> {
   try {
-    const admin = await assertRole(["admin"]);
+    // L'administrateur modifie toutes les fiches ; un gestionnaire modifie la sienne (sauf date de début et contrat).
+    const admin = await assertRole(["admin", "manager"]);
+    const isAdmin = admin.role === "admin";
     const locale = await getLocale();
     const parsed = managerSchema.safeParse(input.data);
     const docs = docsSchema.safeParse(input.documents ?? {});
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: issuesToFields(parsed.error.issues) };
     if (!docs.success) return { ok: false, error: "validation" };
-    const d = parsed.data;
 
     const current = await db.query.managers.findFirst({ where: eq(managers.id, id), with: { user: true, documents: true } });
     if (!current) return { ok: false, error: "not_found" };
+    if (!isAdmin && current.userId !== admin.id) return { ok: false, error: "forbidden" };
+    if (!isAdmin && current.status !== "active") return { ok: false, error: "forbidden" };
+    const d = isAdmin ? parsed.data : { ...parsed.data, workStartDate: current.workStartDate, contractType: current.contractType };
+    if (d.email !== current.user.email) {
+      const [taken] = await db.select({ id: users.id }).from(users).where(eq(users.email, d.email)).limit(1);
+      if (taken && taken.id !== current.userId) return { ok: false, error: "unique:users_email_unique", fieldErrors: { email: "unique:users_email_unique" } };
+    }
 
     const changes: Record<string, { from: unknown; to: unknown }> = {};
     for (const k of TRACKED) {
@@ -122,7 +130,7 @@ export async function updateManager(id: string, input: { data: unknown; document
     await db.transaction(async (tx) => {
       await tx
         .update(managers)
-        .set({ ...d, ...(photo ?? {}), maritalStatus: d.maritalStatus ?? null, adminUpdatedAt: new Date(), adminUpdatedBy: admin.id })
+        .set({ ...d, ...(photo ?? {}), maritalStatus: d.maritalStatus ?? null, ...(isAdmin ? { adminUpdatedAt: new Date(), adminUpdatedBy: admin.id } : {}) })
         .where(eq(managers.id, id));
       await tx
         .update(users)
@@ -132,6 +140,7 @@ export async function updateManager(id: string, input: { data: unknown; document
       if (Object.keys(changes).length) await tx.insert(managerEvents).values({ managerId: id, event: "updated", changes, actorId: admin.id });
     });
     revalidatePath(`/${locale}/admin/managers`, "layout");
+    revalidatePath(`/${locale}/manager`, "layout");
     return { ok: true };
   } catch (err) {
     return toActionError(err);
@@ -202,7 +211,12 @@ export async function resendManagerInvite(id: string): Promise<ActionResult> {
 /** Lien temporaire vers une pièce d'identité (jamais d'URL publique permanente). */
 export async function getManagerDocumentUrl(managerId: string, kind: DocumentKind): Promise<ActionResult<{ url: string }>> {
   try {
-    await assertRole(["admin"]);
+    const me = await assertRole(["admin", "manager"]);
+    // Un gestionnaire ne consulte que ses propres pièces.
+    if (me.role === "manager") {
+      const [own] = await db.select({ id: managers.id }).from(managers).where(and(eq(managers.id, managerId), eq(managers.userId, me.id))).limit(1);
+      if (!own) return { ok: false, error: "forbidden" };
+    }
     const [doc] = await db
       .select()
       .from(managerDocuments)

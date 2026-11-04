@@ -9,7 +9,7 @@ import type { SessionUser } from "@/server/guards";
 import { managerRentalCounts, type ManagerDetail } from "@/server/queries/managers";
 import { dealFormOptions, managerActivity, managerDeals, managerRentals } from "@/server/queries/manager-profile";
 import { ManagerForm } from "./manager-form";
-import { ProfileForm } from "@/features/profile/profile-form";
+import { PasswordForm } from "@/features/profile/profile-form";
 import { ManagerActions } from "./manager-actions";
 import { ManagerCardExport } from "./managers-table";
 import { RentalsTab } from "./rentals-tab";
@@ -55,6 +55,24 @@ export async function ManagerProfile({
     { id: "history", label: t("tabHistory"), Icon: History },
   ];
 
+  const formInitial = {
+    civility: m.civility,
+    lastName: m.lastName,
+    firstName: m.firstName,
+    email: m.user.email ?? "",
+    phone: m.phone,
+    whatsapp: m.whatsapp,
+    city: m.city,
+    birthDate: m.birthDate,
+    maritalStatus: m.maritalStatus ?? ("" as const),
+    workStartDate: m.workStartDate,
+    contractType: m.contractType,
+  };
+  const readOnlyInfo = {
+    lastLogin: m.user.lastLoginAt ? formatDateTime(m.user.lastLoginAt, locale) : c("never"),
+    adminUpdatedAt: formatDateTime(m.adminUpdatedAt, locale),
+  };
+
   let body: React.ReactNode;
   if (tab === "rentals") {
     body = <RentalsTab rows={await managerRentals(m.userId)} reservationsBase={reservationsBase} />;
@@ -64,24 +82,23 @@ export async function ManagerProfile({
   } else if (tab === "history") {
     body = <HistoryTab rows={await managerActivity(m.userId, m.id)} />;
   } else if (!isAdmin) {
-    // Le gestionnaire sur sa propre fiche : il modifie ses coordonnées, sa photo et son mot de passe.
+    // Le gestionnaire sur sa propre fiche : même formulaire que l'administrateur (consultation puis « Modifier »),
+    // sauf la date de début et le type de contrat, réservés à l'administrateur.
     body = (
-      <ProfileForm
-        role="manager"
-        displayName={name}
-        photoUrl={m.photoUrl}
-        hasPassword={m.user.hasPassword}
-        initial={{ phone: m.phone, whatsapp: m.whatsapp, city: m.city, maritalStatus: m.maritalStatus ?? "" }}
-        readOnly={[
-          { label: t("civility"), value: e(`civility.${m.civility}`) },
-          { label: t("lastName"), value: m.lastName },
-          { label: t("firstName"), value: m.firstName },
-          { label: t("email"), value: <span dir="ltr">{m.user.email}</span> },
-          { label: t("birthDate"), value: formatDate(m.birthDate, locale) },
-          { label: t("workStartDate"), value: formatDate(m.workStartDate, locale) },
-          { label: t("contractType"), value: e(`contract.${m.contractType}`) },
-        ]}
-      />
+      <div className="space-y-4">
+        <ManagerForm
+          managerId={m.id}
+          initialPhotoUrl={m.photoUrl}
+          initialMode="view"
+          canEdit={m.status === "active"}
+          canOpenDocs
+          lockedFields={["workStartDate", "contractType"]}
+          initial={formInitial}
+          existingDocs={m.documents.map((d) => d.kind)}
+          readOnly={readOnlyInfo}
+        />
+        <PasswordForm hasPassword={m.user.hasPassword} />
+      </div>
     );
   } else {
     body = (
@@ -95,24 +112,9 @@ export async function ManagerProfile({
         statusActions={
           isAdmin ? <ManagerActions id={m.id} name={name} status={m.status} canResendInvite={!m.user.hasPassword && m.status === "active"} /> : undefined
         }
-        initial={{
-          civility: m.civility,
-          lastName: m.lastName,
-          firstName: m.firstName,
-          email: m.user.email ?? "",
-          phone: m.phone,
-          whatsapp: m.whatsapp,
-          city: m.city,
-          birthDate: m.birthDate,
-          maritalStatus: m.maritalStatus ?? "",
-          workStartDate: m.workStartDate,
-          contractType: m.contractType,
-        }}
+        initial={formInitial}
         existingDocs={m.documents.map((d) => d.kind)}
-        readOnly={{
-          lastLogin: m.user.lastLoginAt ? formatDateTime(m.user.lastLoginAt, locale) : c("never"),
-          adminUpdatedAt: formatDateTime(m.adminUpdatedAt, locale),
-        }}
+        readOnly={readOnlyInfo}
       />
     );
   }
@@ -122,8 +124,8 @@ export async function ManagerProfile({
       {isAdmin && <Link href="/admin/managers" className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>}
       <div className="mt-3 mb-6 flex flex-wrap items-center gap-4">
         <ManagerAvatar photoUrl={m.photoUrl} firstName={m.firstName} lastName={m.lastName} size="md" />
-        <div className="min-w-0 flex-1">
-          <h1 className="display-md text-3xl text-ink">{name}</h1>
+        <div className="min-w-[min(100%,14rem)] flex-1">
+          <h1 className="display-md text-2xl text-ink sm:text-3xl">{name}</h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <Badge tone={m.status === "active" ? "success" : "neutral"} dot>{m.status === "active" ? c("active") : c("deactivated")}</Badge>
             <Badge tone="info">{e(`contract.${m.contractType}`)}</Badge>

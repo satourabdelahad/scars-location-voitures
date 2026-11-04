@@ -24,7 +24,7 @@ function layout(locale: Locale, title: string, body: string, cta?: { label: stri
   return `<!doctype html><html lang="${locale}" dir="${dir}"><body style="margin:0;background:#f5f6fa;font-family:Arial,'Segoe UI',sans-serif;color:#141a2e">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
   <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden">
-    <tr><td style="background:#141a2e;padding:22px 28px;color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px">Dizy <span style="font-weight:500;opacity:.8">Cars</span><span style="color:#f2b53a">.</span></td></tr>
+    <tr><td style="background:#141a2e;padding:18px 28px"><img src="${APP_URL}/brand/dizy-cars-logo-dark.png" alt="Dizy Cars" width="160" height="60" style="display:block;border:0;height:60px;width:auto"></td></tr>
     <tr><td style="height:4px;background:repeating-linear-gradient(90deg,#f2b53a 0 24px,transparent 24px 40px)"></td></tr>
     <tr><td style="padding:28px">
       <h1 style="margin:0 0 14px;font-size:22px;line-height:1.3">${escapeHtml(title)}</h1>
@@ -105,7 +105,7 @@ export function brandedEmail(bodyHtml: string, locale: Locale = "fr") {
   return `<!doctype html><html lang="${locale}" dir="${dir}"><body style="margin:0;background:#f5f6fa;font-family:Arial,'Segoe UI',sans-serif;color:#141a2e">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
   <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden">
-    <tr><td style="background:#141a2e;padding:22px 28px;color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px">Dizy <span style="font-weight:500;opacity:.8">Cars</span><span style="color:#f2b53a">.</span></td></tr>
+    <tr><td style="background:#141a2e;padding:18px 28px"><img src="${APP_URL}/brand/dizy-cars-logo-dark.png" alt="Dizy Cars" width="160" height="60" style="display:block;border:0;height:60px;width:auto"></td></tr>
     <tr><td style="height:4px;background:repeating-linear-gradient(90deg,#f2b53a 0 24px,transparent 24px 40px)"></td></tr>
     <tr><td style="padding:28px;font-size:15px;line-height:1.65;color:#3d4560">${bodyHtml}</td></tr>
   </table></td></tr></table></body></html>`;

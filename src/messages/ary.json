@@ -358,7 +358,8 @@
     "photoRemove": "حيّد",
     "locked": "مبلوكي",
     "lockedBanner": "الدخول مبلوكي حتى {date} من بعد بزاف ديال الغلطات.",
-    "handledBy": "تعامل معاها"
+    "handledBy": "تعامل معاها",
+    "adminOnly": "غير المدير اللي يقدر يبدلها"
   },
   "Documents": {
     "cin_front": "لاكارط ناسيونال (CINE) — القدّام",
@@ -912,5 +913,11 @@
       "lien_reservation": "رابط الحجز",
       "bouton_reservation": "بوطونة الحجز"
     }
+  },
+  "Phone": {
+    "country": "البلاد: {country}",
+    "search": "قلّب على بلاد ولا على الرمز",
+    "countries": "البلدان",
+    "noResult": "ما لقينا حتى بلاد"
   }
 }

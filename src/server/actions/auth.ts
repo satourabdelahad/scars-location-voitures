@@ -16,6 +16,7 @@ export type AuthFormState = { error?: string; ok?: boolean } | undefined;
 
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d).{10,200}$/;
 
+/** Déconnexion : retour à la page d'accueil publique, dans la langue en cours. */
 export async function signOutAction() {
   const locale = await getLocale();
   await signOut({ redirectTo: `/${locale}` });
