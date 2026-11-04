@@ -1,5 +1,6 @@
 "use client";
 
+import { usePendingProgress } from "@/lib/use-pending-progress";
 import { ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
@@ -13,6 +14,7 @@ const KNOWN = ["invalid", "disabled", "staff", "OAuthAccountNotLinked", "server"
 export function LoginForm({ callbackUrl, initialError }: { callbackUrl?: string; initialError?: string }) {
   const t = useTranslations("Auth");
   const [state, action, pending] = useActionState(loginAction, initialError ? { error: initialError } : undefined);
+  usePendingProgress(pending);
   // Champs contrôlés : ils restent remplis quand on demande ensuite le code de double authentification.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

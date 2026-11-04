@@ -10,7 +10,7 @@ import { localeMeta, type Locale } from "@/i18n/config";
 import { CarArt } from "@/components/car-art";
 import { Button } from "@/components/ui/button";
 import { Badge, DefinitionList, PageHeader, Panel } from "@/components/ui/misc";
-import { allAgencies, getFleetCar, listFleet } from "@/server/queries/fleet";
+import { allAgencies, getFleetCar, listFleet, managerOptions } from "@/server/queries/fleet";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import { FleetTable } from "./fleet-table";
 import { CarForm } from "./car-form";
@@ -56,7 +56,7 @@ export async function NewCarPage({ base }: { base: Base }) {
     <>
       <Link href={`${base}/fleet`} className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>
       <PageHeader title={t("createTitle")} />
-      <CarForm base={base} agencies={await allAgencies()} />
+      <CarForm base={base} agencies={await allAgencies()} managers={await managerOptions()} />
     </>
   );
 }
@@ -80,6 +80,8 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
           base={base}
           carId={car.id}
           agencies={await allAgencies()}
+          managers={await managerOptions()}
+          initialManagerIds={car.managers.map((x) => x.manager.id)}
           initial={{
             agencyId: car.agencyId,
             brand: car.brand,
@@ -152,6 +154,7 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
               { label: t("purchaseDate"), value: car.purchaseDate ? formatDate(car.purchaseDate, locale) : "—" },
               { label: t("purchasePrice"), value: car.purchasePrice != null ? formatMoney(car.purchasePrice, locale) : "—" },
               { label: t("agency"), value: `${car.agency.city}, ${car.agency.name}` },
+              { label: t("assignedManagers"), value: car.managers.length ? car.managers.map((x) => `${x.manager.firstName} ${x.manager.lastName}`).join(", ") : t("allManagers") },
               { label: t("statusDeactivated"), value: formatDate(car.deactivatedAt, locale) },
             ]}
           />

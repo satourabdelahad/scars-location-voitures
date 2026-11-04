@@ -19,7 +19,8 @@ export async function managerIdForUser(userId: string) {
 
 /* ───────────────────────────── Réalisations ───────────────────────────── */
 
-export async function managerRentals(userId: string) {
+/** Locations réalisées par un gestionnaire, ou par toute l'équipe quand userId est null (administrateur). */
+export async function managerRentals(userId: string | null) {
   const res = await db.execute<{
     id: string;
     reference: string;
@@ -43,17 +44,19 @@ export async function managerRentals(userId: string) {
     promo_value: string | null;
     client: string;
     city: string;
+    handler: string | null;
   }>(sql`
     SELECT r.id, r.reference, r.status, r.start_date::text, r.end_date::text, r.days,
            r.daily_price, r.extras_total, r.discount_amount, r.total_price, r.confirmed_at,
            c.brand, c.model, c.year, c.category, c.color_hex, c.plate_number,
            p.code AS promo_code, p.kind AS promo_kind, p.value AS promo_value,
-           r.driver_first_name || ' ' || r.driver_last_name AS client, a.city
+           r.driver_first_name || ' ' || r.driver_last_name AS client, a.city, h.name AS handler
     FROM reservations r
+    LEFT JOIN users h ON h.id = r.handled_by
     JOIN cars c ON c.id = r.car_id
     JOIN agencies a ON a.id = r.pickup_agency_id
     LEFT JOIN promotions p ON p.id = r.promotion_id
-    WHERE r.handled_by = ${userId} AND r.status IN ('confirmed', 'ongoing', 'completed')
+    WHERE ${userId ? sql`r.handled_by = ${userId} AND` : sql``} r.status IN ('confirmed', 'ongoing', 'completed')
     ORDER BY r.start_date DESC
     LIMIT 1000
   `);
@@ -77,6 +80,7 @@ export async function managerRentals(userId: string) {
     promotion: r.promo_code ? { code: r.promo_code, kind: r.promo_kind!, value: Number(r.promo_value) } : null,
     client: r.client,
     city: r.city,
+    handler: r.handler,
   }));
 }
 export type RentalRow = Awaited<ReturnType<typeof managerRentals>>[number];
@@ -211,3 +215,68 @@ export async function managerActivity(userId: string, managerId: string) {
   });
 }
 export type ActivityRow = Awaited<ReturnType<typeof managerActivity>>[number];
+
+export type AppointmentRow = Awaited<ReturnType<typeof myAppointments>>[number];
+
+/**
+ * "Mes rendez-vous" : départs et retours à venir (60 jours). Un gestionnaire voit les voitures qui lui sont
+ * associées, celles sans gestionnaire associé (= tous) et les réservations qu'il a traitées ; l'administrateur voit tout.
+ */
+export async function myAppointments(viewer: { id: string; role: string }) {
+  const managerId = viewer.role === "manager" ? await managerIdForUser(viewer.id) : null;
+  const scope =
+    viewer.role === "admin"
+      ? sql`TRUE`
+      : sql`(r.handled_by = ${viewer.id}
+             OR NOT EXISTS (SELECT 1 FROM car_managers cm WHERE cm.car_id = r.car_id)
+             OR EXISTS (SELECT 1 FROM car_managers cm WHERE cm.car_id = r.car_id AND cm.manager_id = ${managerId}))`;
+  const res = await db.execute<{
+    id: string;
+    reference: string;
+    status: "pending" | "confirmed" | "ongoing";
+    kind: "pickup" | "return";
+    at: string;
+    car: string;
+    plate: string;
+    category: string;
+    color_hex: string;
+    driver: string;
+    phone: string;
+    agency: string;
+    city: string;
+    flight: string | null;
+  }>(sql`
+    WITH ev AS (
+      SELECT r.*, 'pickup' AS kind, r.start_date AS at, r.pickup_agency_id AS agency_id FROM reservations r
+        WHERE r.status IN ('pending', 'confirmed') AND r.start_date BETWEEN current_date AND current_date + 60
+      UNION ALL
+      SELECT r.*, 'return' AS kind, r.end_date AS at, r.return_agency_id AS agency_id FROM reservations r
+        WHERE r.status IN ('confirmed', 'ongoing') AND r.end_date BETWEEN current_date AND current_date + 60
+    )
+    SELECT r.id, r.reference, r.status, r.kind, r.at::text, c.brand || ' ' || c.model AS car, c.plate_number AS plate,
+           c.category, c.color_hex, r.driver_first_name || ' ' || r.driver_last_name AS driver, r.driver_phone AS phone,
+           a.name AS agency, a.city, r.flight_number AS flight
+    FROM ev r
+    JOIN cars c ON c.id = r.car_id
+    JOIN agencies a ON a.id = r.agency_id
+    WHERE ${scope}
+    ORDER BY r.at, r.kind DESC
+    LIMIT 500
+  `);
+  return res.rows.map((r) => ({
+    id: `${r.id}:${r.kind}`,
+    reservationId: r.id,
+    reference: r.reference,
+    status: r.status,
+    kind: r.kind,
+    at: r.at,
+    car: r.car,
+    plate: r.plate,
+    category: r.category,
+    colorHex: r.color_hex,
+    driver: r.driver,
+    phone: r.phone,
+    agency: `${r.city}, ${r.agency}`,
+    flight: r.flight,
+  }));
+}

@@ -91,11 +91,23 @@ Les comptes de l'équipe (administrateur, gestionnaires) se connectent uniquemen
 
 ## Sécurité des connexions
 
-- **Blocage des essais** : 5 mots de passe erronés en 15 minutes bloquent l'email, 20 bloquent l'adresse IP. Les contrôles sont faits dans Auth.js, donc aussi pour un appel direct à l'URL de connexion.
-- **Session de l'équipe** : administrateur et gestionnaires sont déconnectés au bout de 12 heures ; les clients restent connectés 14 jours.
+- **Règles réglables** dans Administration → Sécurité : essais avant blocage d'un compte (5 par défaut), durée du blocage (15 min), essais par adresse IP (20), durée de session de l'équipe (12 h) et des clients (14 jours, 90 au maximum).
+- **Comptes bloqués** : colonne `users.login_locked_until` (vide = non bloqué). L'administrateur les débloque depuis Sécurité ou depuis la fiche du gestionnaire.
 - **Double authentification de l'administrateur** : Administration → Sécurité. Code à 6 chiffres (Google Authenticator, Microsoft Authenticator…) et 8 codes de secours à usage unique.
-- **Téléphone et codes de secours perdus** : depuis le poste qui a accès à la base, `npm run db:seed -- --reset-2fa` désactive la double authentification de `SEED_ADMIN_EMAIL` et lève son blocage.
-- Les secrets de double authentification sont chiffrés avec une clé dérivée d'`AUTH_SECRET`. **Changer `AUTH_SECRET` les rend illisibles** : il faut alors lancer `--reset-2fa` puis réactiver la protection.
+- **Téléphone et codes de secours perdus** : `npm run db:seed -- --reset-2fa` désactive la double authentification de `SEED_ADMIN_EMAIL` et lève son blocage.
+- Les secrets de double authentification sont chiffrés avec une clé dérivée d'`AUTH_SECRET`. **Changer `AUTH_SECRET` les rend illisibles** : lancer alors `--reset-2fa` puis réactiver la protection.
+
+## Emails automatiques
+
+Modifiables dans **Administration** (éditeur HTML, variables `{{prenom}}`, `{{marque}}`…, aperçu, email de test) :
+
+| Modèle | Quand | Destinataires |
+|---|---|---|
+| Invitation gestionnaire | création d'un gestionnaire, renvoi d'invitation | le gestionnaire |
+| Ajout d'une voiture | ajout au parc | administrateur(s) et tous les gestionnaires actifs |
+| Réservation d'une voiture | nouvelle réservation | client, administrateur(s), gestionnaires associés à la voiture (tous si aucun) |
+
+Sans `RESEND_API_KEY`, rien n'est envoyé : le terminal affiche chaque destinataire.
 
 ## Structure
 

@@ -46,6 +46,7 @@ export async function getFleetCar(id: string) {
       agency: true,
       images: { orderBy: [asc(carImages.position)] },
       translations: { orderBy: [asc(carTranslations.locale)] },
+      managers: { with: { manager: { columns: { id: true, firstName: true, lastName: true } } } },
     },
   });
   if (!car) return null;
@@ -58,4 +59,14 @@ export type FleetCar = NonNullable<Awaited<ReturnType<typeof getFleetCar>>>;
 
 export async function allAgencies() {
   return db.select({ id: agencies.id, city: agencies.city, name: agencies.name }).from(agencies).orderBy(asc(agencies.city), desc(agencies.isAirport));
+}
+
+/** Gestionnaires actifs, pour l'association aux voitures. */
+export async function managerOptions() {
+  const rows = await db.query.managers.findMany({
+    where: (m, { eq: q }) => q(m.status, "active"),
+    columns: { id: true, firstName: true, lastName: true, city: true },
+    orderBy: (m, { asc: a }) => [a(m.lastName), a(m.firstName)],
+  });
+  return rows.map((m) => ({ id: m.id, name: `${m.firstName} ${m.lastName}`, city: m.city }));
 }

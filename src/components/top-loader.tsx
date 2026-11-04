@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
-import { PROGRESS_EVENT } from "@/lib/progress";
+import { doneProgress, PROGRESS_DONE_EVENT, PROGRESS_EVENT } from "@/lib/progress";
 
 /**
  * Fine barre de progression en haut de l'écran pendant chaque changement de page.
@@ -78,19 +78,19 @@ function Loader() {
     document.addEventListener("click", onClick, true);
     window.addEventListener(PROGRESS_EVENT, start);
     window.addEventListener("popstate", start);
-    window.addEventListener("dizy:progress-done", onDone);
+    window.addEventListener(PROGRESS_DONE_EVENT, onDone);
     return () => {
       document.removeEventListener("click", onClick, true);
       window.removeEventListener(PROGRESS_EVENT, start);
       window.removeEventListener("popstate", start);
-      window.removeEventListener("dizy:progress-done", onDone);
+      window.removeEventListener(PROGRESS_DONE_EVENT, onDone);
       stopTimer();
     };
   }, []);
 
   // L'URL a changé : la nouvelle page est affichée, on termine la barre.
   useEffect(() => {
-    window.dispatchEvent(new Event("dizy:progress-done"));
+    doneProgress();
   }, [pathname, search]);
 
   return (

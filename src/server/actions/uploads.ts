@@ -8,8 +8,8 @@ export type UploadTicket =
   | { mode: "cloudinary"; params: ReturnType<typeof signUpload> }
   | { mode: "local" };
 
-/** Pièces d'identité et photos de profil : administrateur uniquement. Photos de voitures : administrateur et gestionnaires. */
-const ROLES: Record<UploadPurpose, ("admin" | "manager")[]> = { identity: ["admin"], car: ["admin", "manager"], avatar: ["admin"] };
+/** Pièces d'identité : administrateur. Photos de voitures : équipe. Photo de profil : tout utilisateur connecté (la sienne). */
+const ROLES: Record<UploadPurpose, ("admin" | "manager" | "client")[]> = { identity: ["admin"], car: ["admin", "manager"], avatar: ["admin", "manager", "client"] };
 
 export async function requestUpload(purpose: UploadPurpose): Promise<ActionResult<UploadTicket>> {
   try {

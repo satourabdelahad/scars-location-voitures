@@ -16,7 +16,7 @@ import type { CarCategory } from "@/db/schema";
 import type { RentalRow } from "@/server/queries/manager-profile";
 
 /** Onglet "Réalisations" : les locations confirmées par le gestionnaire, en tableau ou en frise. */
-export function RentalsTab({ rows, reservationsBase }: { rows: RentalRow[]; reservationsBase: string }) {
+export function RentalsTab({ rows, reservationsBase, showHandler = false }: { rows: RentalRow[]; reservationsBase: string; showHandler?: boolean }) {
   const t = useTranslations("Managers");
   const tf = useTranslations("Fleet");
   const tr = useTranslations("Reservations");
@@ -71,6 +71,7 @@ export function RentalsTab({ rows, reservationsBase }: { rows: RentalRow[]; rese
       { id: "model", header: tf("model"), text: (r) => `${r.car} ${r.year}`, defaultHidden: true },
       { id: "plate", header: tf("plateNumber"), text: (r) => r.plate, filter: { type: "text" }, cell: (r) => <span dir="ltr" className="font-mono text-xs">{r.plate}</span> },
       { id: "client", header: tr("client"), text: (r) => r.client, filter: { type: "text" } },
+      ...(showHandler ? [{ id: "handler", header: t("handledBy"), text: (r: RentalRow) => r.handler ?? "", filter: { type: "text" as const } }] : []),
       { id: "period", header: tr("period"), text: (r) => `${formatDate(r.startDate, locale)} – ${formatDate(r.endDate, locale)}`, sortValue: (r) => r.startDate },
       { id: "days", header: t("duration"), text: (r) => c("days", { count: r.days }), sortValue: (r) => r.days, align: "end" },
       { id: "dailyPrice", header: tf("dailyPrice"), text: (r) => formatMoney(r.dailyPrice, locale), sortValue: (r) => r.dailyPrice, align: "end" },
@@ -98,7 +99,7 @@ export function RentalsTab({ rows, reservationsBase }: { rows: RentalRow[]; rese
         cell: (r) => <Badge tone={reservationTone[r.status]} dot>{ts(r.status)}</Badge>,
       },
     ],
-    [t, tf, tr, ts, e, c, locale, reservationsBase],
+    [t, tf, tr, ts, e, c, locale, reservationsBase, showHandler],
   );
 
   const month = new Intl.DateTimeFormat(intlLocale(locale), { month: "long", year: "numeric" });
@@ -117,7 +118,7 @@ export function RentalsTab({ rows, reservationsBase }: { rows: RentalRow[]; rese
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-majorelle-soft text-majorelle"><Icon className="size-4" /></span>
             <span className="min-w-0">
               <span className="block text-xs font-medium text-ink-3">{label}</span>
-              <span className="mt-1 block truncate text-2xl font-extrabold text-ink tabular" style={{ fontStretch: "112%" }}>{value}</span>
+              <span className="mt-1 block text-[clamp(1.2rem,1.7vw,1.5rem)] leading-tight font-extrabold break-words text-ink tabular" style={{ fontStretch: "112%" }}>{value}</span>
             </span>
           </Panel>
         ))}

@@ -4,7 +4,8 @@ import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
-import { auditLogs, carImages, carTranslations, cars, reservations } from "@/db/schema";
+import { auditLogs, carImages, carManagers, carTranslations, cars, reservations } from "@/db/schema";
+import { notifyCarCreated } from "@/server/notifications";
 import { carDeactivationSchema, carSchema, LOCALE_CODES } from "@/lib/validation";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { verifyUpload } from "@/server/uploads";
@@ -50,12 +51,21 @@ async function writeChildren(tx: Tx, carId: string, descriptions: Record<string,
   }
 }
 
-export async function createCar(input: { data: unknown; images: unknown }): Promise<ActionResult<{ id: string }>> {
+const managerIdsSchema = z.array(z.string().uuid()).max(100).default([]);
+
+/** Gestionnaires associés : on remplace la liste (vide = tous les gestionnaires). */
+async function writeManagers(tx: Parameters<Parameters<typeof db.transaction>[0]>[0], carId: string, ids: string[]) {
+  await tx.delete(carManagers).where(eq(carManagers.carId, carId));
+  if (ids.length) await tx.insert(carManagers).values([...new Set(ids)].map((managerId) => ({ carId, managerId })));
+}
+
+export async function createCar(input: { data: unknown; images: unknown; managerIds?: unknown }): Promise<ActionResult<{ id: string }>> {
   try {
     const staff = await assertRole(["admin", "manager"]);
     const parsed = carSchema.safeParse(input.data);
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };
     const images = imagesSchema.parse(input.images ?? []);
+    const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
     const { descriptions, ...data } = parsed.data;
     const id = await db.transaction(async (tx) => {
       const [row] = await tx
@@ -63,9 +73,11 @@ export async function createCar(input: { data: unknown; images: unknown }): Prom
         .values({ ...data, vin: data.vin || null, createdBy: staff.id, updatedBy: staff.id })
         .returning({ id: cars.id });
       await writeChildren(tx, row.id, descriptions, images);
-      await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: row.id, action: "create", changes: data });
+      await writeManagers(tx, row.id, managerIds);
+      await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: row.id, action: "create", changes: { ...data, managerIds } });
       return row.id;
     });
+    await notifyCarCreated(id, staff.name ?? staff.email ?? "—").catch((e) => console.error("[email] nouvelle voiture", e));
     revalidatePath("/", "layout");
     return { ok: true, data: { id } };
   } catch (err) {
@@ -73,12 +85,13 @@ export async function createCar(input: { data: unknown; images: unknown }): Prom
   }
 }
 
-export async function updateCar(id: string, input: { data: unknown; images: unknown }): Promise<ActionResult> {
+export async function updateCar(id: string, input: { data: unknown; images: unknown; managerIds?: unknown }): Promise<ActionResult> {
   try {
     const staff = await assertRole(["admin", "manager"]);
     const parsed = carSchema.safeParse(input.data);
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };
     const images = imagesSchema.parse(input.images ?? []);
+    const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
     const { descriptions, ...data } = parsed.data;
     const [current] = await db.select({ status: cars.status }).from(cars).where(eq(cars.id, id)).limit(1);
     if (!current) return { ok: false, error: "not_found" };
@@ -87,7 +100,8 @@ export async function updateCar(id: string, input: { data: unknown; images: unkn
     await db.transaction(async (tx) => {
       await tx.update(cars).set({ ...data, vin: data.vin || null, updatedBy: staff.id }).where(eq(cars.id, id));
       await writeChildren(tx, id, descriptions, images);
-      await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "update", changes: data });
+      await writeManagers(tx, id, managerIds);
+      await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "update", changes: { ...data, managerIds } });
     });
     revalidatePath("/", "layout");
     return { ok: true };

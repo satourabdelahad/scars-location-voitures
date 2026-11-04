@@ -1,5 +1,6 @@
 "use client";
 
+import { usePendingProgress } from "@/lib/use-pending-progress";
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { registerAction } from "@/server/actions/auth";
 export function RegisterForm({ callbackUrl }: { callbackUrl?: string }) {
   const t = useTranslations("Auth");
   const [state, action, pending] = useActionState(registerAction, undefined);
+  usePendingProgress(pending);
   return (
     <form action={action} className="space-y-4">
       <input type="hidden" name="callbackUrl" value={callbackUrl ?? ""} />

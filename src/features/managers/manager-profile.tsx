@@ -4,10 +4,12 @@ import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
 import { formatDate, formatDateTime, cn } from "@/lib/utils";
 import { ManagerAvatar } from "./manager-avatar";
+import { UnlockButton } from "@/features/security/unlock-button";
 import type { SessionUser } from "@/server/guards";
 import { managerRentalCounts, type ManagerDetail } from "@/server/queries/managers";
 import { dealFormOptions, managerActivity, managerDeals, managerRentals } from "@/server/queries/manager-profile";
 import { ManagerForm } from "./manager-form";
+import { ProfileForm } from "@/features/profile/profile-form";
 import { ManagerActions } from "./manager-actions";
 import { ManagerCardExport } from "./managers-table";
 import { RentalsTab } from "./rentals-tab";
@@ -43,6 +45,7 @@ export async function ManagerProfile({
   const isAdmin = viewer.role === "admin";
   const [t, c, e] = await Promise.all([getTranslations("Managers"), getTranslations("Common"), getTranslations("Enums")]);
   const name = `${m.firstName} ${m.lastName}`;
+  const locked = m.user.loginLockedUntil && m.user.loginLockedUntil > new Date() ? m.user.loginLockedUntil : null;
   const reservationsBase = isAdmin ? "/admin/reservations" : "/manager/reservations";
 
   const tabs: { id: ProfileTab; label: string; Icon: typeof IdCard }[] = [
@@ -60,6 +63,26 @@ export async function ManagerProfile({
     body = <DealsTab managerId={m.id} deals={deals} options={options} />;
   } else if (tab === "history") {
     body = <HistoryTab rows={await managerActivity(m.userId, m.id)} />;
+  } else if (!isAdmin) {
+    // Le gestionnaire sur sa propre fiche : il modifie ses coordonnées, sa photo et son mot de passe.
+    body = (
+      <ProfileForm
+        role="manager"
+        displayName={name}
+        photoUrl={m.photoUrl}
+        hasPassword={m.user.hasPassword}
+        initial={{ phone: m.phone, whatsapp: m.whatsapp, city: m.city, maritalStatus: m.maritalStatus ?? "" }}
+        readOnly={[
+          { label: t("civility"), value: e(`civility.${m.civility}`) },
+          { label: t("lastName"), value: m.lastName },
+          { label: t("firstName"), value: m.firstName },
+          { label: t("email"), value: <span dir="ltr">{m.user.email}</span> },
+          { label: t("birthDate"), value: formatDate(m.birthDate, locale) },
+          { label: t("workStartDate"), value: formatDate(m.workStartDate, locale) },
+          { label: t("contractType"), value: e(`contract.${m.contractType}`) },
+        ]}
+      />
+    );
   } else {
     body = (
       <ManagerForm
@@ -104,12 +127,19 @@ export async function ManagerProfile({
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <Badge tone={m.status === "active" ? "success" : "neutral"} dot>{m.status === "active" ? c("active") : c("deactivated")}</Badge>
             <Badge tone="info">{e(`contract.${m.contractType}`)}</Badge>
+            {locked && <Badge tone="danger" dot>{t("locked")}</Badge>}
             <span className="text-sm text-ink-3">{m.city}</span>
           </div>
         </div>
         {isAdmin && <ManagerCardExport manager={await exportRow(m)} size="md" />}
       </div>
 
+      {locked && (
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-danger/30 bg-danger-soft px-5 py-4">
+          <p className="min-w-0 flex-1 text-sm font-semibold text-danger">{t("lockedBanner", { date: formatDateTime(locked, locale) })}</p>
+          {isAdmin && <UnlockButton userId={m.userId} />}
+        </div>
+      )}
       {m.status === "deactivated" && (
         <div className="mb-6 rounded-2xl border border-mist-2 bg-mist/50 px-5 py-4">
           <p className="font-semibold text-ink">{t("deactivatedOn", { date: formatDate(m.deactivatedAt, locale) })}</p>
@@ -147,6 +177,7 @@ async function exportRow(m: ManagerDetail) {
     lastName: m.lastName,
     firstName: m.firstName,
     photoUrl: m.photoUrl,
+    lockedUntil: m.user.loginLockedUntil?.toISOString() ?? null,
     email: m.user.email ?? "",
     phone: m.phone,
     whatsapp: m.whatsapp,

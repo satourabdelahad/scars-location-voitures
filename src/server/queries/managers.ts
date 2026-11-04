@@ -27,6 +27,7 @@ export async function listManagersWithStats() {
     work_start_date: string;
     contract_type: "freelance" | "cdi";
     photo_url: string | null;
+    locked_until: string | null;
     status: "active" | "deactivated";
     deactivation_reason: string | null;
     deactivated_at: string | null;
@@ -48,6 +49,7 @@ export async function listManagersWithStats() {
       m.id, m.user_id, m.civility, m.last_name, m.first_name, u.email, m.phone, m.whatsapp, m.city,
       m.birth_date::text, m.marital_status, m.work_start_date::text, m.contract_type, m.photo_url, m.status,
       m.deactivation_reason, m.deactivated_at, u.last_login_at, m.admin_updated_at,
+      CASE WHEN u.login_locked_until > now() THEN u.login_locked_until END AS locked_until,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.d)::int AS rentals_day,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.w)::int AS rentals_week,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.m)::int AS rentals_month,
@@ -66,6 +68,7 @@ export async function listManagersWithStats() {
     lastName: r.last_name,
     firstName: r.first_name,
     photoUrl: r.photo_url,
+    lockedUntil: r.locked_until ? new Date(r.locked_until).toISOString() : null,
     email: r.email,
     phone: r.phone,
     whatsapp: r.whatsapp,
@@ -110,7 +113,7 @@ export async function getManager(id: string) {
   const m = await db.query.managers.findFirst({
     where: eq(managers.id, id),
     with: {
-      user: { columns: { email: true, lastLoginAt: true, passwordHash: true, status: true } },
+      user: { columns: { email: true, lastLoginAt: true, passwordHash: true, status: true, loginLockedUntil: true } },
       documents: { orderBy: [asc(managerDocuments.kind)] },
       events: { orderBy: [desc(managerEvents.createdAt)], with: { actor: { columns: { name: true, email: true } } } },
     },

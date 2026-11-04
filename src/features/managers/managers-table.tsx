@@ -140,6 +140,7 @@ export function ManagersTable({ rows, prefs }: { rows: ManagerRow[]; prefs: { vi
         cell: (m) => (
           <span title={m.deactivationReason ?? undefined}>
             <Badge tone={m.status === "active" ? "success" : "neutral"} dot>{m.status === "active" ? c("active") : c("deactivated")}</Badge>
+            {m.lockedUntil && <Badge tone="danger" className="ms-1.5">{t("locked")}</Badge>}
           </span>
         ),
       },

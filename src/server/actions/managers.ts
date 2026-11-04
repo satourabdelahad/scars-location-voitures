@@ -8,9 +8,10 @@ import { db } from "@/db";
 import { managerDocuments, managerEvents, managers, tablePreferences, users, type DocumentKind } from "@/db/schema";
 import { managerSchema } from "@/lib/validation";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
-import { sendManagerInvite } from "@/server/email";
+import { notifyManagerInvite } from "@/server/notifications";
 import { issuePasswordToken } from "@/server/tokens";
 import { documentViewUrl, verifyUpload } from "@/server/uploads";
+import { resolvePhoto, type PhotoInput } from "@/server/photo";
 
 const docSchema = z.object({ publicId: z.string().min(3).max(300), resourceType: z.enum(["image", "raw"]).default("image") });
 const docsSchema = z.object({
@@ -49,16 +50,6 @@ async function attachDocuments(
   }
 }
 
-/** Photo de profil : undefined = inchangée, null = retirée, { publicId } = nouvelle (vérifiée auprès du stockage). */
-type PhotoInput = { publicId: string } | null | undefined;
-async function resolvePhoto(photo: unknown): Promise<{ photoUrl: string | null; photoPublicId: string | null } | undefined> {
-  if (photo === undefined) return undefined;
-  if (photo === null) return { photoUrl: null, photoPublicId: null };
-  const p = z.object({ publicId: z.string().min(1).max(300) }).parse(photo);
-  const v = await verifyUpload(p.publicId, "avatar");
-  return { photoUrl: v.url, photoPublicId: v.publicId };
-}
-
 export async function createManager(input: { data: unknown; documents: unknown; photo?: PhotoInput }): Promise<ActionResult<{ id: string }>> {
   try {
     const admin = await assertRole(["admin"]);
@@ -89,7 +80,7 @@ export async function createManager(input: { data: unknown; documents: unknown; 
     });
 
     const token = await issuePasswordToken(id.userId, "invite");
-    await sendManagerInvite({ to: d.email, firstName: d.firstName, token, locale });
+    await notifyManagerInvite(id.managerId, token, locale);
     revalidatePath(`/${locale}/admin/managers`);
     return { ok: true, data: { id: id.managerId } };
   } catch (err) {
@@ -201,7 +192,7 @@ export async function resendManagerInvite(id: string): Promise<ActionResult> {
     const m = await db.query.managers.findFirst({ where: eq(managers.id, id), with: { user: true } });
     if (!m || m.status !== "active" || !m.user.email) return { ok: false, error: "not_found" };
     const token = await issuePasswordToken(m.userId, "invite");
-    await sendManagerInvite({ to: m.user.email, firstName: m.firstName, token, locale });
+    await notifyManagerInvite(m.id, token, locale);
     return { ok: true };
   } catch (err) {
     return toActionError(err);

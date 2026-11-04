@@ -111,6 +111,8 @@ export const users = pgTable(
     totpLastStep: integer("totp_last_step"),
     /** Codes de secours (empreintes SHA-256), chacun utilisable une seule fois. */
     totpRecoveryCodes: jsonb("totp_recovery_codes").$type<string[]>(),
+    /** Connexion bloquée jusqu'à cette date après trop d'échecs (null = non bloqué). L'administrateur peut le lever. */
+    loginLockedUntil: timestamp("login_locked_until", { withTimezone: true, mode: "date" }),
     ...timestamps,
   },
   (t) => [index("users_role_idx").on(t.role)],
@@ -122,6 +124,8 @@ export const loginFailures = pgTable(
   {
     id: serial("id").primaryKey(),
     key: varchar("key", { length: 300 }).notNull(),
+    /** Email tenté : permet de lever aussi le blocage par IP lors d'un déblocage manuel */
+    email: varchar("email", { length: 255 }),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },
   (t) => [index("login_failures_key_idx").on(t.key, t.createdAt)],
@@ -553,6 +557,7 @@ export const managersRelations = relations(managers, ({ one, many }) => ({
   documents: many(managerDocuments),
   events: many(managerEvents),
   deals: many(deals),
+  cars: many(carManagers),
 }));
 
 export const managerDocumentsRelations = relations(managerDocuments, ({ one }) => ({
@@ -572,7 +577,45 @@ export const carsRelations = relations(cars, ({ one, many }) => ({
   agency: one(agencies, { fields: [cars.agencyId], references: [agencies.id] }),
   images: many(carImages),
   translations: many(carTranslations),
+  managers: many(carManagers),
   reservations: many(reservations),
+}));
+
+/** Gestionnaires associés à une voiture. Aucune ligne = tous les gestionnaires. */
+export const carManagers = pgTable(
+  "car_managers",
+  {
+    carId: uuid("car_id")
+      .notNull()
+      .references(() => cars.id, { onDelete: "restrict" }),
+    managerId: uuid("manager_id")
+      .notNull()
+      .references(() => managers.id, { onDelete: "restrict" }),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.carId, t.managerId] }), index("car_managers_manager_idx").on(t.managerId)],
+);
+
+/** Réglages modifiables par l'administrateur (sécurité…), une ligne par réglage. */
+export const appSettings = pgTable("app_settings", {
+  key: varchar("key", { length: 64 }).primaryKey(),
+  value: jsonb("value").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  updatedBy: uuid("updated_by").references(() => users.id),
+});
+
+/** Modèles d'email modifiables depuis Administration (éditeur HTML). */
+export const emailTemplates = pgTable("email_templates", {
+  key: varchar("key", { length: 64 }).primaryKey(),
+  subject: text("subject").notNull(),
+  html: text("html").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  updatedBy: uuid("updated_by").references(() => users.id),
+});
+
+export const carManagersRelations = relations(carManagers, ({ one }) => ({
+  car: one(cars, { fields: [carManagers.carId], references: [cars.id] }),
+  manager: one(managers, { fields: [carManagers.managerId], references: [managers.id] }),
 }));
 
 export const carImagesRelations = relations(carImages, ({ one }) => ({

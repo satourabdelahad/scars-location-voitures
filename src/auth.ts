@@ -22,6 +22,7 @@ import {
   openSecret,
   recordLoginFailure,
 } from "@/server/security";
+import { getSecuritySettings, MAX_CLIENT_SESSION_DAYS } from "@/server/settings";
 
 declare module "next-auth" {
   interface Session {
@@ -45,8 +46,6 @@ class TotpInvalid extends CredentialsSignin {
   code = "totp_invalid";
 }
 
-/** Durée maximale d'une session de l'équipe (administrateur, gestionnaires). Les clients gardent 14 jours. */
-export const STAFF_SESSION_HOURS = 12;
 
 /**
  * Instagram : l'ancienne "Basic Display API" a été fermée par Meta fin 2024.
@@ -153,7 +152,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verificationTokensTable: verificationTokens,
   }),
   // JWT obligatoire avec le fournisseur "credentials" ; le rôle et le statut sont relus en base à chaque requête.
-  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 14 },
+  // Durée maximale du cookie ; la durée réelle (équipe / clients) est réglée dans Administration → Sécurité.
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * MAX_CLIENT_SESSION_DAYS },
   pages: { signIn: "/fr/login", error: "/fr/login" },
   trustHost: true,
   providers,
@@ -183,8 +183,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         .limit(1);
       // Un compte désactivé est déconnecté immédiatement.
       if (!row || row.status !== "active") return null;
-      // L'équipe doit se reconnecter au bout de 12 heures.
-      if (row.role !== "client" && Date.now() - (token.authAt as number) > STAFF_SESSION_HOURS * 3_600_000) return null;
+      // Durée de session : en heures pour l'équipe, en jours pour les clients.
+      const sec = await getSecuritySettings();
+      const limit = row.role === "client" ? sec.clientSessionDays * 86_400_000 : sec.staffSessionHours * 3_600_000;
+      if (Date.now() - (token.authAt as number) > limit) return null;
       token.sub = id;
       token.role = row.role;
       token.name = row.name;

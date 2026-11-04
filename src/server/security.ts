@@ -1,41 +1,64 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
-import { and, eq, gt, inArray, lt, sql } from "drizzle-orm";
+import { and, eq, gt, lt, sql } from "drizzle-orm";
 import { Secret, TOTP } from "otpauth";
 import { db } from "@/db";
-import { loginFailures } from "@/db/schema";
+import { loginFailures, users } from "@/db/schema";
+import { getSecuritySettings } from "@/server/settings";
 
 /* ───────────── Blocage des essais de connexion ───────────── */
 
-export const LOCK_WINDOW_MIN = 15;
-const MAX_PER_EMAIL = 5;
-/** Plus large par adresse IP : une agence entière peut partager la même connexion. */
-const MAX_PER_IP = 20;
-
 export function loginKeys(email: string, ip: string | null) {
-  return { email: `email:${email.toLowerCase()}`, ip: ip ? `ip:${ip}` : null };
+  const e = email.toLowerCase();
+  return { emailValue: e, email: `email:${e}`, ip: ip ? `ip:${ip}` : null };
 }
+type Keys = ReturnType<typeof loginKeys>;
 
-/** Vrai si l'email ou l'IP a dépassé le nombre d'échecs autorisés sur les 15 dernières minutes. */
-export async function isLoginLocked(keys: { email: string; ip: string | null }) {
-  const since = new Date(Date.now() - LOCK_WINDOW_MIN * 60_000);
-  const wanted = [keys.email, ...(keys.ip ? [keys.ip] : [])];
-  const rows = await db
-    .select({ key: loginFailures.key, n: sql<number>`count(*)::int` })
+/**
+ * Vrai si le compte est bloqué (colonne users.login_locked_until) ou si l'adresse IP
+ * a dépassé le nombre d'échecs autorisés sur la durée de blocage.
+ */
+export async function isLoginLocked(keys: Keys) {
+  const s = await getSecuritySettings();
+  const [u] = await db.select({ until: users.loginLockedUntil }).from(users).where(eq(users.email, keys.emailValue)).limit(1);
+  if (u?.until && u.until > new Date()) return true;
+  if (!keys.ip) return false;
+  const since = new Date(Date.now() - s.lockMinutes * 60_000);
+  const [r] = await db
+    .select({ n: sql<number>`count(*)::int` })
     .from(loginFailures)
-    .where(and(inArray(loginFailures.key, wanted), gt(loginFailures.createdAt, since)))
-    .groupBy(loginFailures.key);
-  return rows.some((r) => (r.key === keys.email ? r.n >= MAX_PER_EMAIL : r.n >= MAX_PER_IP));
+    .where(and(eq(loginFailures.key, keys.ip), gt(loginFailures.createdAt, since)));
+  return (r?.n ?? 0) >= s.maxIpFailures;
 }
 
-export async function recordLoginFailure(keys: { email: string; ip: string | null }) {
-  await db.insert(loginFailures).values([{ key: keys.email }, ...(keys.ip ? [{ key: keys.ip }] : [])]);
+/** Enregistre l'échec ; au-delà du seuil, le compte est marqué "bloqué" pour la durée réglée. */
+export async function recordLoginFailure(keys: Keys) {
+  const s = await getSecuritySettings();
+  await db.insert(loginFailures).values([
+    { key: keys.email, email: keys.emailValue },
+    ...(keys.ip ? [{ key: keys.ip, email: keys.emailValue }] : []),
+  ]);
+  const since = new Date(Date.now() - s.lockMinutes * 60_000);
+  const [r] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(loginFailures)
+    .where(and(eq(loginFailures.key, keys.email), gt(loginFailures.createdAt, since)));
+  if ((r?.n ?? 0) >= s.maxEmailFailures) {
+    await db.update(users).set({ loginLockedUntil: new Date(Date.now() + s.lockMinutes * 60_000) }).where(eq(users.email, keys.emailValue));
+  }
   // Ménage : on ne garde qu'une journée d'historique.
   if (Math.random() < 0.05) await db.delete(loginFailures).where(lt(loginFailures.createdAt, new Date(Date.now() - 86_400_000)));
 }
 
 /** Connexion réussie : le compteur de l'email repart à zéro (celui de l'IP reste, il protège les autres comptes). */
-export async function clearLoginFailures(keys: { email: string }) {
+export async function clearLoginFailures(keys: Keys) {
   await db.delete(loginFailures).where(eq(loginFailures.key, keys.email));
+}
+
+/** Déblocage manuel par l'administrateur : compte, compteur de l'email et échecs d'IP liés à cet email. */
+export async function unlockAccount(email: string) {
+  const e = email.toLowerCase();
+  await db.update(users).set({ loginLockedUntil: null }).where(eq(users.email, e));
+  await db.delete(loginFailures).where(eq(loginFailures.email, e));
 }
 
 /** Adresse IP du visiteur (Netlify, puis proxys standards). */

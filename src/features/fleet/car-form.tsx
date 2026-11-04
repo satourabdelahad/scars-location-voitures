@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { ArrowLeftToLine, ImagePlus, Trash2 } from "lucide-react";
+import { Check, ImagePlus, Star, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
@@ -85,12 +85,17 @@ export function CarForm({
   agencies,
   initial,
   initialImages = [],
+  managers = [],
+  initialManagerIds = [],
 }: {
   base: string;
   carId?: string;
   agencies: { id: number; city: string; name: string }[];
   initial?: Partial<CarFormValues>;
   initialImages?: Img[];
+  /** Gestionnaires actifs proposés à l'association */
+  managers?: { id: string; name: string; city: string }[];
+  initialManagerIds?: string[];
 }) {
   const t = useTranslations("Fleet");
   const te = useTranslations("Errors");
@@ -100,6 +105,7 @@ export function CarForm({
   const router = useRouter();
   const [v, setV] = useState<CarFormValues>({ ...DEFAULTS, ...initial });
   const [images, setImages] = useState<Img[]>(initialImages);
+  const [managerIds, setManagerIds] = useState<string[]>(initialManagerIds);
   const [lang, setLang] = useState<Locale>("fr");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(0);
@@ -144,7 +150,7 @@ export function CarForm({
     ev.preventDefault();
     setErrors({});
     start(async () => {
-      const payload = { data: v, images };
+      const payload = { data: v, images, managerIds };
       const res = carId ? await updateCar(carId, payload) : await createCar(payload);
       if (res.ok) {
         toast.success(carId ? t("updated") : t("created"));
@@ -241,6 +247,45 @@ export function CarForm({
 
       <section className="grid gap-6 border-b border-mist py-8 lg:grid-cols-[220px_1fr]">
         <div>
+          <h2 className="text-[15px] font-bold text-ink">{t("assignedManagers")}</h2>
+          <p className="mt-1 text-sm text-ink-3">{t("assignedManagersHint")}</p>
+        </div>
+        <div>
+          {managers.length === 0 ? (
+            <p className="text-sm text-ink-3">{t("noManagers")}</p>
+          ) : (
+            <div className="flex flex-wrap gap-2" role="group" aria-label={t("assignedManagers")}>
+              {managers.map((m) => {
+                const on = managerIds.includes(m.id);
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => setManagerIds((ids) => (on ? ids.filter((x) => x !== m.id) : [...ids, m.id]))}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
+                      on ? "border-majorelle bg-majorelle-soft text-majorelle" : "border-mist-2 bg-paper text-ink-2 hover:border-ink-3",
+                    )}
+                  >
+                    <span className={cn("grid size-4 place-items-center rounded-full border", on ? "border-majorelle bg-majorelle text-white" : "border-mist-2")}>
+                      {on && <Check className="size-3" />}
+                    </span>
+                    {m.name}
+                    <span className="text-xs text-ink-3">{m.city}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          <p className="mt-3 text-sm font-medium text-ink-2">
+            {managerIds.length === 0 ? t("allManagers") : t("someManagers", { count: managerIds.length })}
+          </p>
+        </div>
+      </section>
+
+      <section className="grid gap-6 border-b border-mist py-8 lg:grid-cols-[220px_1fr]">
+        <div>
           <h2 className="text-[15px] font-bold text-ink">{t("photos")}</h2>
           <p className="mt-1 text-sm text-ink-3">{t("photosHint")}</p>
         </div>
@@ -253,13 +298,23 @@ export function CarForm({
                 onDragStart={() => (dragFrom.current = i)}
                 onDragOver={(x) => x.preventDefault()}
                 onDrop={() => { if (dragFrom.current !== null && dragFrom.current !== i) move(dragFrom.current, i); dragFrom.current = null; }}
-                className={cn("group relative aspect-[4/3] cursor-grab overflow-hidden rounded-xl border bg-chalk active:cursor-grabbing", i === 0 ? "border-majorelle ring-2 ring-majorelle/25" : "border-mist")}
+                className={cn(
+                  "group relative cursor-grab overflow-hidden rounded-xl border bg-chalk active:cursor-grabbing",
+                  i === 0 ? "col-span-2 row-span-2 border-majorelle ring-2 ring-majorelle/25" : "aspect-[4/3] border-mist",
+                )}
               >
                 <img src={img.url} alt="" className="size-full object-cover" />
+                {i === 0 && (
+                  <span className="absolute start-2 top-2 inline-flex items-center gap-1 rounded-full bg-majorelle px-2.5 py-1 text-xs font-bold text-white shadow">
+                    <Star className="size-3.5 fill-current" />
+                    {t("mainPhoto")}
+                  </span>
+                )}
                 <div className="absolute inset-x-1.5 bottom-1.5 flex justify-end gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
                   {i > 0 && (
-                    <button type="button" onClick={() => move(i, 0)} title={t("makeCover")} aria-label={t("makeCover")} className="grid size-8 place-items-center rounded-lg bg-paper/95 text-ink shadow">
-                      <ArrowLeftToLine className="size-4 rtl:rotate-180" />
+                    <button type="button" onClick={() => move(i, 0)} title={t("makeCover")} aria-label={t("makeCover")} className="inline-flex h-8 items-center gap-1 rounded-lg bg-paper/95 px-2 text-xs font-semibold text-ink shadow">
+                      <Star className="size-4" />
+                      <span className="hidden xl:inline">{t("makeCoverShort")}</span>
                     </button>
                   )}
                   <button type="button" onClick={() => setImages((imgs) => imgs.filter((x) => x.publicId !== img.publicId))} title={t("removePhoto")} aria-label={t("removePhoto")} className="grid size-8 place-items-center rounded-lg bg-paper/95 text-danger shadow">

@@ -10,6 +10,7 @@ import { reservationSchema } from "@/lib/validation";
 import { formatDate, formatMoney, rentalDays, todayISO } from "@/lib/utils";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { sendReservationEmail } from "@/server/email";
+import { notifyReservationCreated } from "@/server/notifications";
 import { isLocale } from "@/i18n/config";
 import { computeDiscount, findApplicablePromotion, promotionLabel } from "@/server/promotions";
 
@@ -111,7 +112,8 @@ export async function createReservation(input: unknown): Promise<ActionResult<{ 
       return row;
     });
 
-    await notify(created.id, "received");
+    // Modèle "Réservation" (Administration) : client, administrateur et gestionnaires de la voiture.
+    await notifyReservationCreated(created.id).catch((e) => console.error("[email] réservation", e));
     revalidatePath(`/${locale}/account`);
     return { ok: true, data: { reference: created.reference } };
   } catch (err) {

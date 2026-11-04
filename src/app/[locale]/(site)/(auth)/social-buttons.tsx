@@ -1,5 +1,6 @@
 "use client";
 
+import { usePendingProgress } from "@/lib/use-pending-progress";
 import { useTranslations } from "next-intl";
 import { useTransition, type ComponentType } from "react";
 import { FacebookIcon, GoogleIcon, InstagramIcon, TikTokIcon, XIcon } from "@/components/brand-icons";
@@ -17,6 +18,7 @@ const PROVIDERS: { id: "google" | "facebook" | "twitter" | "tiktok" | "instagram
 export function SocialButtons({ enabled, callbackUrl }: { enabled: Record<string, boolean>; callbackUrl?: string }) {
   const t = useTranslations("Auth");
   const [pending, start] = useTransition();
+  usePendingProgress(pending);
   return (
     <div className="grid gap-2 sm:grid-cols-2">
       {PROVIDERS.map(({ id, name, Icon }, i) => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePendingProgress } from "@/lib/use-pending-progress";
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { forgotPasswordAction } from "@/server/actions/auth";
 export default function ForgotPasswordPage() {
   const t = useTranslations("Auth");
   const [state, action, pending] = useActionState(forgotPasswordAction, undefined);
+  usePendingProgress(pending);
   return (
     <div className="mx-auto max-w-md px-4 py-16 sm:px-6">
       <h1 className="display-md text-3xl text-ink">{t("forgotTitle")}</h1>
