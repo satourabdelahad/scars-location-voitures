@@ -1,15 +1,15 @@
 import "server-only";
 import { and, asc, desc, eq, gte, inArray, lte, sql, type SQL } from "drizzle-orm";
 import { db } from "@/db";
-import { agencies, carImages, carTranslations, cars, reservations, type CarCategory } from "@/db/schema";
+import { agencies, carImages, carTranslations, cars, reservations, type CarCategory, fuelEnum, transmissionEnum } from "@/db/schema";
 
 export type PublicCarFilters = {
   city?: string;
   start?: string;
   end?: string;
   category?: CarCategory;
-  transmission?: "manual" | "automatic";
-  fuel?: "petrol" | "diesel" | "hybrid" | "electric";
+  transmission?: (typeof transmissionEnum.enumValues)[number];
+  fuel?: (typeof fuelEnum.enumValues)[number];
   seats?: number;
   maxPrice?: number;
   sort?: "price_asc" | "price_desc" | "newest";

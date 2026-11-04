@@ -91,9 +91,9 @@
     "title": "車両一覧",
     "subtitle": "{count, plural, =0 {条件に合う車はありません} other {#台が予約可能}}",
     "filters": "絞り込み",
-    "category": "クラス",
+    "category": "ボディタイプ",
     "transmission": "トランスミッション",
-    "fuel": "燃料",
+    "fuel": "パワートレイン",
     "seats": "最低座席数",
     "maxPrice": "1日の上限料金",
     "city": "都市",
@@ -335,7 +335,14 @@
     "rentalsRevenue": "売上",
     "rentalsAvgDays": "平均期間",
     "rentalsPromo": "プロモーション適用",
-    "rentalsEmpty": "完了したレンタルはまだありません。"
+    "rentalsEmpty": "完了したレンタルはまだありません。",
+    "photo": "写真",
+    "photoHint": "JPG・PNG・WebP、最大10MB。正方形の写真がおすすめです。",
+    "photoSet": "プロフィール写真を登録済みです。",
+    "photoNone": "プロフィール写真はありません。",
+    "photoChange": "写真を変更",
+    "photoAdd": "写真を追加",
+    "photoRemove": "削除"
   },
   "Documents": {
     "cin_front": "身分証明書（CINE）表面",
@@ -389,9 +396,9 @@
     "brand": "メーカー",
     "model": "車種",
     "year": "年式",
-    "category": "クラス",
+    "category": "ボディタイプ",
     "transmission": "トランスミッション",
-    "fuel": "燃料",
+    "fuel": "パワートレイン",
     "seats": "座席数",
     "doors": "ドア数",
     "luggage": "スーツケース数",
@@ -425,7 +432,12 @@
     "showDeactivated": "無効な車両を含める",
     "reservationsCount": "予約数",
     "nextBooking": "次の貸出",
-    "free": "空き"
+    "free": "空き",
+    "purchase": "購入",
+    "purchaseHint": "スタッフのみ閲覧可能。公開サイトには表示されません。",
+    "purchaseCity": "購入した都市",
+    "purchaseDate": "購入日",
+    "purchasePrice": "購入総額（MAD）"
   },
   "Reservations": {
     "title": "予約",
@@ -478,24 +490,32 @@
       "cdi": "無期雇用（CDI）"
     },
     "category": {
-      "economy": "エコノミー",
+      "city_car": "シティカー",
+      "micro_car": "マイクロカー",
       "compact": "コンパクト",
       "sedan": "セダン",
-      "suv": "SUV・4WD",
-      "luxury": "プレミアム",
-      "van": "ミニバン",
-      "convertible": "オープンカー",
-      "pickup": "ピックアップ"
+      "estate": "ステーションワゴン",
+      "coupe": "クーペ",
+      "cabriolet": "カブリオレ",
+      "cc": "クーペカブリオレ",
+      "suv_4x4": "SUV・4WD",
+      "crossover": "クロスオーバー",
+      "mpv": "ミニバン（乗用）",
+      "pickup": "ピックアップ",
+      "minivan": "商用（ミニバン）",
+      "van": "商用（バン）"
     },
     "transmission": {
       "manual": "マニュアル",
-      "automatic": "オートマ"
+      "automatic": "オートマ",
+      "semi_automatic": "セミオートマ"
     },
     "fuel": {
       "petrol": "ガソリン",
       "diesel": "ディーゼル",
+      "electric": "電気",
       "hybrid": "ハイブリッド",
-      "electric": "電気"
+      "plug_in_hybrid": "プラグインハイブリッド"
     },
     "carDeactivation": {
       "stolen": "盗難",
@@ -536,7 +556,8 @@
     "bad_type": "対応形式：JPG、PNG、WEBP、PDF。",
     "too_big": "ファイルが大きすぎます（最大10MB）。",
     "upload_failed": "アップロードに失敗しました。もう一度お試しください。",
-    "promo_invalid": "このプロモコードはこのレンタルには使えません。"
+    "promo_invalid": "このプロモコードはこのレンタルには使えません。",
+    "futureDate": "未来の日付は指定できません"
   },
   "About": {
     "title": "整備の行き届いた車を、モロッコから",

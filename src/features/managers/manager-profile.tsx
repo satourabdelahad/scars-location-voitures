@@ -2,7 +2,8 @@ import { CalendarClock, Handshake, History, IdCard } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
-import { formatDate, formatDateTime, initials, cn } from "@/lib/utils";
+import { formatDate, formatDateTime, cn } from "@/lib/utils";
+import { ManagerAvatar } from "./manager-avatar";
 import type { SessionUser } from "@/server/guards";
 import { managerRentalCounts, type ManagerDetail } from "@/server/queries/managers";
 import { dealFormOptions, managerActivity, managerDeals, managerRentals } from "@/server/queries/manager-profile";
@@ -64,6 +65,7 @@ export async function ManagerProfile({
       <ManagerForm
         key={edit ? "edit" : "view"}
         managerId={m.id}
+        initialPhotoUrl={m.photoUrl}
         initialMode={edit && isAdmin && m.status === "active" ? "edit" : "view"}
         canEdit={isAdmin && m.status === "active"}
         canOpenDocs={isAdmin}
@@ -96,9 +98,7 @@ export async function ManagerProfile({
     <>
       {isAdmin && <Link href="/admin/managers" className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>}
       <div className="mt-3 mb-6 flex flex-wrap items-center gap-4">
-        <span className="grid size-14 place-items-center rounded-2xl bg-ink text-lg font-bold text-chalk" style={{ fontStretch: "120%" }}>
-          {initials(m.firstName, m.lastName)}
-        </span>
+        <ManagerAvatar photoUrl={m.photoUrl} firstName={m.firstName} lastName={m.lastName} size="md" />
         <div className="min-w-0 flex-1">
           <h1 className="display-md text-3xl text-ink">{name}</h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -146,6 +146,7 @@ async function exportRow(m: ManagerDetail) {
     civility: m.civility,
     lastName: m.lastName,
     firstName: m.firstName,
+    photoUrl: m.photoUrl,
     email: m.user.email ?? "",
     phone: m.phone,
     whatsapp: m.whatsapp,

@@ -28,7 +28,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </div>
           <div className="relative z-10 -mb-[4.6%] hidden w-full max-w-[680px] justify-self-end lg:block" aria-hidden>
             <Scenery className="absolute -inset-x-[30%] bottom-[7%] h-[62%] [mask-image:linear-gradient(90deg,transparent,#000_18%,#000_82%,transparent)]" />
-            <DrivingCar category="suv" color="#4b3fd8" messages={[tc("hello"), tc("welcome"), tc("mission")]} className="car-arrive" />
+            <DrivingCar category="suv_4x4" color="#4b3fd8" messages={[tc("hello"), tc("welcome"), tc("mission")]} className="car-arrive" />
           </div>
         </div>
 

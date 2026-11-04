@@ -6,7 +6,27 @@ import { HelloBubble } from "@/components/hello-bubble";
  * Illustration de profil propre à Dizy Cars : une silhouette par catégorie, teintée de la couleur réelle
  * de la voiture. Sert de visuel tant qu'aucune photo n'a été téléversée.
  */
-const SHAPES: Record<CarCategory, { body: string; glass: string; wheels: [number, number]; pillar?: number; head: [number, number]; open?: boolean }> = {
+type ArtShape = "economy" | "compact" | "sedan" | "luxury" | "suv" | "van" | "convertible" | "pickup";
+
+/** Chaque carrosserie réutilise la silhouette la plus proche. */
+const ART: Record<CarCategory, ArtShape> = {
+  city_car: "economy",
+  micro_car: "economy",
+  compact: "compact",
+  sedan: "sedan",
+  estate: "luxury",
+  coupe: "luxury",
+  cabriolet: "convertible",
+  cc: "convertible",
+  suv_4x4: "suv",
+  crossover: "suv",
+  mpv: "van",
+  pickup: "pickup",
+  minivan: "van",
+  van: "van",
+};
+
+const SHAPES: Record<ArtShape, { body: string; glass: string; wheels: [number, number]; pillar?: number; head: [number, number]; open?: boolean }> = {
   economy: {
     body: "M28 120 Q26 100 36 92 L62 84 Q96 80 120 76 L156 50 Q166 44 182 44 L262 44 Q282 44 296 56 L318 76 L350 82 Q368 86 372 100 L374 120 Z",
     glass: "M132 76 L162 53 Q168 50 180 50 L258 50 Q273 50 285 60 L303 76 Z",
@@ -72,7 +92,7 @@ export function CarArt({
   /** Roues qui tournent et légère suspension : la voiture roule */
   animated?: boolean;
 }) {
-  const s = SHAPES[category] ?? SHAPES.sedan;
+  const s = SHAPES[ART[category] ?? "compact"] ?? SHAPES.sedan;
   const id = `g-${category}-${color.replace("#", "")}`;
   return (
     <svg viewBox="0 0 400 160" className={cn("rtl:-scale-x-100", className)} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
@@ -160,7 +180,7 @@ function Driver({ x, y, waving }: { x: number; y: number; waving?: boolean }) {
  * La bulle est en HTML (hors du SVG) pour ne pas être inversée en arabe/darija.
  */
 export function DrivingCar({ category, color, messages, className, bubbleClassName }: { category: CarCategory; color: string; messages: string[]; className?: string; bubbleClassName?: string }) {
-  const [hx, hy] = (SHAPES[category] ?? SHAPES.sedan).head;
+  const [hx, hy] = (SHAPES[ART[category] ?? "compact"] ?? SHAPES.sedan).head;
   return (
     <div className={cn("relative", className)}>
       {/* Traits de vitesse derrière la voiture */}

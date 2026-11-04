@@ -91,9 +91,9 @@
     "title": "차량 목록",
     "subtitle": "{count, plural, =0 {조건에 맞는 차량이 없습니다} other {예약 가능 차량 #대}}",
     "filters": "필터",
-    "category": "차종",
+    "category": "차체 유형",
     "transmission": "변속기",
-    "fuel": "연료",
+    "fuel": "동력 방식",
     "seats": "최소 좌석 수",
     "maxPrice": "1일 최대 요금",
     "city": "도시",
@@ -335,7 +335,14 @@
     "rentalsRevenue": "매출",
     "rentalsAvgDays": "평균 기간",
     "rentalsPromo": "프로모션 적용",
-    "rentalsEmpty": "아직 완료된 렌터카가 없습니다."
+    "rentalsEmpty": "아직 완료된 렌터카가 없습니다.",
+    "photo": "사진",
+    "photoHint": "JPG, PNG 또는 WebP, 최대 10MB. 정사각형 사진이 가장 좋습니다.",
+    "photoSet": "프로필 사진이 등록되어 있습니다.",
+    "photoNone": "프로필 사진이 없습니다.",
+    "photoChange": "사진 변경",
+    "photoAdd": "사진 추가",
+    "photoRemove": "삭제"
   },
   "Documents": {
     "cin_front": "신분증(CINE) 앞면",
@@ -389,9 +396,9 @@
     "brand": "제조사",
     "model": "모델",
     "year": "연식",
-    "category": "차종",
+    "category": "차체 유형",
     "transmission": "변속기",
-    "fuel": "연료",
+    "fuel": "동력 방식",
     "seats": "좌석",
     "doors": "도어",
     "luggage": "캐리어",
@@ -425,7 +432,12 @@
     "showDeactivated": "비활성 차량 포함",
     "reservationsCount": "예약 수",
     "nextBooking": "다음 대여",
-    "free": "대여 가능"
+    "free": "대여 가능",
+    "purchase": "구매",
+    "purchaseHint": "팀만 볼 수 있으며 공개 사이트에는 표시되지 않습니다.",
+    "purchaseCity": "구매 도시",
+    "purchaseDate": "구매일",
+    "purchasePrice": "총 구매 가격(MAD)"
   },
   "Reservations": {
     "title": "예약",
@@ -478,24 +490,32 @@
       "cdi": "정규직(CDI)"
     },
     "category": {
-      "economy": "경차",
-      "compact": "소형",
+      "city_car": "시티카",
+      "micro_car": "경차",
+      "compact": "컴팩트",
       "sedan": "세단",
-      "suv": "SUV / 4륜구동",
-      "luxury": "프리미엄",
-      "van": "승합차",
-      "convertible": "컨버터블",
-      "pickup": "픽업트럭"
+      "estate": "왜건",
+      "coupe": "쿠페",
+      "cabriolet": "컨버터블",
+      "cc": "쿠페 컨버터블",
+      "suv_4x4": "SUV·4WD",
+      "crossover": "크로스오버",
+      "mpv": "미니밴",
+      "pickup": "픽업",
+      "minivan": "상용(미니밴)",
+      "van": "상용(밴)"
     },
     "transmission": {
       "manual": "수동",
-      "automatic": "자동"
+      "automatic": "자동",
+      "semi_automatic": "반자동"
     },
     "fuel": {
       "petrol": "휘발유",
       "diesel": "디젤",
+      "electric": "전기",
       "hybrid": "하이브리드",
-      "electric": "전기"
+      "plug_in_hybrid": "플러그인 하이브리드"
     },
     "carDeactivation": {
       "stolen": "도난",
@@ -536,7 +556,8 @@
     "bad_type": "지원 형식: JPG, PNG, WEBP, PDF.",
     "too_big": "파일이 너무 큽니다(최대 10MB).",
     "upload_failed": "업로드에 실패했습니다. 다시 시도하세요.",
-    "promo_invalid": "이 프로모션 코드는 이 렌터카에 사용할 수 없습니다."
+    "promo_invalid": "이 프로모션 코드는 이 렌터카에 사용할 수 없습니다.",
+    "futureDate": "미래 날짜는 입력할 수 없습니다"
   },
   "About": {
     "title": "잘 관리된 차량을 갖춘 모로코 렌터카",

@@ -91,9 +91,9 @@
     "title": "سياراتنا",
     "subtitle": "{count, plural, =0 {لا توجد سيارة مطابقة} one {سيارة واحدة متوفرة} two {سيارتان متوفرتان} few {# سيارات متوفرة} many {# سيارة متوفرة} other {# سيارة متوفرة}}",
     "filters": "عوامل التصفية",
-    "category": "الفئة",
+    "category": "الهيكل",
     "transmission": "ناقل الحركة",
-    "fuel": "الوقود",
+    "fuel": "المحرك",
     "seats": "الحد الأدنى للمقاعد",
     "maxPrice": "أقصى سعر / يوم",
     "city": "المدينة",
@@ -335,7 +335,14 @@
     "rentalsRevenue": "رقم المعاملات",
     "rentalsAvgDays": "متوسط المدة",
     "rentalsPromo": "مع عرض ترويجي",
-    "rentalsEmpty": "لا توجد إيجارات منجزة حتى الآن."
+    "rentalsEmpty": "لا توجد إيجارات منجزة حتى الآن.",
+    "photo": "الصورة",
+    "photoHint": "JPG أو PNG أو WebP، بحد أقصى 10 ميغابايت. الصورة المربعة أفضل.",
+    "photoSet": "تم حفظ صورة الملف الشخصي.",
+    "photoNone": "لا توجد صورة للملف الشخصي.",
+    "photoChange": "تغيير الصورة",
+    "photoAdd": "إضافة صورة",
+    "photoRemove": "إزالة"
   },
   "Documents": {
     "cin_front": "البطاقة الوطنية (CINE) — الوجه",
@@ -389,9 +396,9 @@
     "brand": "العلامة",
     "model": "الطراز",
     "year": "السنة",
-    "category": "الفئة",
+    "category": "الهيكل",
     "transmission": "ناقل الحركة",
-    "fuel": "الوقود",
+    "fuel": "المحرك",
     "seats": "المقاعد",
     "doors": "الأبواب",
     "luggage": "الحقائب",
@@ -425,7 +432,12 @@
     "showDeactivated": "إظهار السيارات المعطّلة",
     "reservationsCount": "الحجوزات",
     "nextBooking": "الكراء القادم",
-    "free": "متاحة"
+    "free": "متاحة",
+    "purchase": "الشراء",
+    "purchaseHint": "مرئي لفريق العمل فقط، ولا يظهر أبدًا على الموقع العام.",
+    "purchaseCity": "مدينة الشراء",
+    "purchaseDate": "تاريخ الشراء",
+    "purchasePrice": "ثمن الشراء الإجمالي (درهم)"
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -478,24 +490,32 @@
       "cdi": "عقد غير محدد المدة"
     },
     "category": {
-      "economy": "اقتصادية",
+      "city_car": "سيارة مدينة",
+      "micro_car": "سيارة مدينة صغيرة",
       "compact": "مدمجة",
       "sedan": "سيدان",
-      "suv": "رباعية الدفع",
-      "luxury": "فاخرة",
-      "van": "عائلية متعددة المقاعد",
-      "convertible": "مكشوفة",
-      "pickup": "بيك أب"
+      "estate": "ستيشن",
+      "coupe": "كوبيه",
+      "cabriolet": "مكشوفة",
+      "cc": "كوبيه مكشوفة",
+      "suv_4x4": "رباعية الدفع",
+      "crossover": "كروس أوفر",
+      "mpv": "عائلية",
+      "pickup": "بيك أب",
+      "minivan": "نفعية (ميني فان)",
+      "van": "نفعية (فان)"
     },
     "transmission": {
       "manual": "يدوي",
-      "automatic": "أوتوماتيكي"
+      "automatic": "أوتوماتيكي",
+      "semi_automatic": "نصف أوتوماتيكي"
     },
     "fuel": {
       "petrol": "بنزين",
       "diesel": "ديزل",
+      "electric": "كهربائية",
       "hybrid": "هجينة",
-      "electric": "كهربائية"
+      "plug_in_hybrid": "هجين قابل للشحن"
     },
     "carDeactivation": {
       "stolen": "مسروقة",
@@ -536,7 +556,8 @@
     "bad_type": "الصيغ المقبولة: JPG أو PNG أو WEBP أو PDF.",
     "too_big": "الملف كبير جدًا (10 ميغابايت كحد أقصى).",
     "upload_failed": "فشل رفع الملف. حاول مرة أخرى.",
-    "promo_invalid": "هذا الرمز الترويجي غير صالح لهذا الإيجار."
+    "promo_invalid": "هذا الرمز الترويجي غير صالح لهذا الإيجار.",
+    "futureDate": "لا يمكن أن يكون التاريخ في المستقبل"
   },
   "About": {
     "title": "وكالة مغربية بسيارات في حالة جيدة",

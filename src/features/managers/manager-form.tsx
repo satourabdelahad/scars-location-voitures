@@ -1,6 +1,6 @@
 "use client";
 
-import { FileCheck2, FileUp, Pencil, RefreshCw, Save } from "lucide-react";
+import { Camera, FileCheck2, FileUp, Pencil, RefreshCw, Save, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
@@ -9,9 +9,10 @@ import { Checkbox, Field, Input, Select } from "@/components/ui/field";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { DocumentLink } from "./manager-actions";
 import type { DocumentKind } from "@/db/schema";
-import { ACCEPT_DOCS, uploadFile } from "@/lib/upload-client";
+import { ACCEPT_DOCS, ACCEPT_IMAGES, uploadFile } from "@/lib/upload-client";
 import { createManager, updateManager } from "@/server/actions/managers";
 import { cn } from "@/lib/utils";
+import { ManagerAvatar } from "./manager-avatar";
 
 export type ManagerFormValues = {
   civility: "" | "male" | "female";
@@ -65,6 +66,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 export function ManagerForm({
   managerId,
   initial,
+  initialPhotoUrl = null,
   existingDocs = [],
   readOnly,
   initialMode,
@@ -74,6 +76,8 @@ export function ManagerForm({
 }: {
   managerId?: string;
   initial?: Partial<ManagerFormValues>;
+  /** Photo de profil actuelle */
+  initialPhotoUrl?: string | null;
   existingDocs?: DocumentKind[];
   readOnly?: { lastLogin: string; adminUpdatedAt: string };
   initialMode?: ManagerFormMode;
@@ -96,7 +100,11 @@ export function ManagerForm({
   const [v, setV] = useState<ManagerFormValues>(start0);
   const [sameWa, setSameWa] = useState(Boolean(initial?.phone && initial.phone === initial.whatsapp));
   const [docs, setDocs] = useState<Partial<Record<DocumentKind, UploadedDoc>>>({});
-  const [uploading, setUploading] = useState<DocumentKind | null>(null);
+  const [uploading, setUploading] = useState<DocumentKind | "photo" | null>(null);
+  // undefined = photo inchangée, null = retirée, objet = nouvelle photo téléversée
+  const [photo, setPhoto] = useState<{ publicId: string; url: string } | null | undefined>(undefined);
+  const photoInput = useRef<HTMLInputElement | null>(null);
+  const photoUrl = photo === undefined ? initialPhotoUrl : (photo?.url ?? null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, start] = useTransition();
   const inputs = useRef<Partial<Record<DocumentKind, HTMLInputElement | null>>>({});
@@ -109,10 +117,26 @@ export function ManagerForm({
   function cancelEdit() {
     setV(start0);
     setDocs({});
+    setPhoto(undefined);
     setErrors({});
     setSameWa(Boolean(initial?.phone && initial.phone === initial.whatsapp));
     setMode("view");
     router.replace(pathname, { scroll: false });
+  }
+
+  async function onPhoto(file: File | undefined) {
+    if (!file) return;
+    setUploading("photo");
+    try {
+      const up = await uploadFile(file, "avatar");
+      setPhoto({ publicId: up.publicId, url: up.url });
+    } catch (x) {
+      const code = (x as Error).message;
+      toast.error(code === "too_big" ? td("tooBig") : code === "bad_type" ? td("badType") : code === "cloudinary_not_configured" ? td("notConfigured") : te("unknown"));
+    } finally {
+      setUploading(null);
+      if (photoInput.current) photoInput.current.value = "";
+    }
   }
 
   async function onFile(kind: DocumentKind, file: File | undefined) {
@@ -139,12 +163,14 @@ export function ManagerForm({
     const data = { ...v, maritalStatus: v.maritalStatus || null };
     const documents = Object.fromEntries(Object.entries(docs).map(([k, d]) => [k, { publicId: d!.publicId, resourceType: d!.resourceType }]));
     start(async () => {
-      const res = managerId ? await updateManager(managerId, { data, documents }) : await createManager({ data, documents });
+      const photoArg = photo === undefined ? undefined : photo && { publicId: photo.publicId };
+      const res = managerId ? await updateManager(managerId, { data, documents, photo: photoArg }) : await createManager({ data, documents, photo: photoArg });
       if (res.ok) {
         toast.success(managerId ? t("updated") : t("created"));
         if (managerId) {
           // Enregistré : retour en mode consultation, avec les données relues depuis la base.
           setDocs({});
+          setPhoto(undefined);
           setMode("view");
           router.replace(pathname, { scroll: false });
           router.refresh();
@@ -203,6 +229,32 @@ export function ManagerForm({
     <form onSubmit={submit} noValidate className={cn("rounded-2xl border bg-paper p-6 transition-colors sm:p-8", mode === "edit" ? "border-majorelle/40 ring-4 ring-majorelle/10" : "border-mist")}>
       {toolbar}
       <Section title={t("identity")}>
+        <div className="flex items-center gap-5 sm:col-span-2">
+          <ManagerAvatar photoUrl={photoUrl} firstName={v.firstName || "?"} lastName={v.lastName} size="lg" />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-ink">{t("photo")}</p>
+            {locked ? (
+              <p className="mt-0.5 text-sm text-ink-3">{photoUrl ? t("photoSet") : t("photoNone")}</p>
+            ) : (
+              <>
+                <p className="mt-0.5 text-sm text-ink-3">{t("photoHint")}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <input ref={photoInput} type="file" accept={ACCEPT_IMAGES} className="sr-only" tabIndex={-1} onChange={(x) => onPhoto(x.target.files?.[0])} />
+                  <Button type="button" size="sm" variant="outline" loading={uploading === "photo"} onClick={() => photoInput.current?.click()}>
+                    <Camera />
+                    {photoUrl ? t("photoChange") : t("photoAdd")}
+                  </Button>
+                  {photoUrl && (
+                    <Button type="button" size="sm" variant="ghost" onClick={() => setPhoto(null)}>
+                      <X />
+                      {t("photoRemove")}
+                    </Button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
         <Field label={t("civility")} required={!locked} error={err("civility")}>
           {(p) => (
             <div role="radiogroup" aria-labelledby={p.id} aria-disabled={locked || undefined} className="flex gap-2" {...(p["aria-invalid"] ? { "aria-invalid": true } : {})}>

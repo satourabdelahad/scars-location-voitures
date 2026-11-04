@@ -91,9 +91,9 @@
     "title": "Nuestros coches",
     "subtitle": "{count, plural, =0 {Ningún coche coincide} one {# coche disponible} other {# coches disponibles}}",
     "filters": "Filtros",
-    "category": "Categoría",
-    "transmission": "Cambio",
-    "fuel": "Combustible",
+    "category": "Carrocería",
+    "transmission": "Transmisión",
+    "fuel": "Motorización",
     "seats": "Plazas mínimas",
     "maxPrice": "Precio máx. / día",
     "city": "Ciudad",
@@ -335,7 +335,14 @@
     "rentalsRevenue": "Facturación",
     "rentalsAvgDays": "Duración media",
     "rentalsPromo": "Con promoción",
-    "rentalsEmpty": "Todavía no hay alquileres realizados."
+    "rentalsEmpty": "Todavía no hay alquileres realizados.",
+    "photo": "Foto",
+    "photoHint": "JPG, PNG o WebP, 10 MB como máximo. Un retrato cuadrado queda mejor.",
+    "photoSet": "Foto de perfil guardada.",
+    "photoNone": "Sin foto de perfil.",
+    "photoChange": "Cambiar la foto",
+    "photoAdd": "Añadir una foto",
+    "photoRemove": "Quitar"
   },
   "Documents": {
     "cin_front": "Documento de identidad (CINE), anverso",
@@ -389,9 +396,9 @@
     "brand": "Marca",
     "model": "Modelo",
     "year": "Año",
-    "category": "Categoría",
-    "transmission": "Cambio",
-    "fuel": "Combustible",
+    "category": "Carrocería",
+    "transmission": "Transmisión",
+    "fuel": "Motorización",
     "seats": "Plazas",
     "doors": "Puertas",
     "luggage": "Maletas",
@@ -425,7 +432,12 @@
     "showDeactivated": "Incluir coches desactivados",
     "reservationsCount": "Reservas",
     "nextBooking": "Próximo alquiler",
-    "free": "Libre"
+    "free": "Libre",
+    "purchase": "Compra",
+    "purchaseHint": "Visible solo para el equipo, nunca en el sitio público.",
+    "purchaseCity": "Ciudad de compra",
+    "purchaseDate": "Fecha de compra",
+    "purchasePrice": "Precio total de compra (MAD)"
   },
   "Reservations": {
     "title": "Reservas",
@@ -478,24 +490,32 @@
       "cdi": "Indefinido (CDI)"
     },
     "category": {
-      "economy": "Económico",
+      "city_car": "Urbano",
+      "micro_car": "Microurbano",
       "compact": "Compacto",
       "sedan": "Berlina",
-      "suv": "SUV / 4x4",
-      "luxury": "Premium",
-      "van": "Monovolumen",
-      "convertible": "Descapotable",
-      "pickup": "Pick-up"
+      "estate": "Familiar",
+      "coupe": "Coupé",
+      "cabriolet": "Descapotable",
+      "cc": "Coupé-cabrio",
+      "suv_4x4": "SUV y 4x4",
+      "crossover": "Crossover",
+      "mpv": "Monovolumen",
+      "pickup": "Pick-up",
+      "minivan": "Utilitario (minivan)",
+      "van": "Utilitario (furgoneta)"
     },
     "transmission": {
       "manual": "Manual",
-      "automatic": "Automático"
+      "automatic": "Automático",
+      "semi_automatic": "Semiautomática"
     },
     "fuel": {
       "petrol": "Gasolina",
       "diesel": "Diésel",
+      "electric": "Eléctrico",
       "hybrid": "Híbrido",
-      "electric": "Eléctrico"
+      "plug_in_hybrid": "Híbrido enchufable"
     },
     "carDeactivation": {
       "stolen": "Robado",
@@ -536,7 +556,8 @@
     "bad_type": "Formatos admitidos: JPG, PNG, WEBP o PDF.",
     "too_big": "Archivo demasiado grande (10 MB como máximo).",
     "upload_failed": "No se pudo subir el archivo. Inténtalo de nuevo.",
-    "promo_invalid": "Este código promocional no es válido para este alquiler."
+    "promo_invalid": "Este código promocional no es válido para este alquiler.",
+    "futureDate": "La fecha no puede ser futura"
   },
   "About": {
     "title": "Una agencia marroquí con coches bien cuidados",

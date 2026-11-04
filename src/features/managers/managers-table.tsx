@@ -7,6 +7,7 @@ import { DataTable, type Column } from "@/components/data-table/data-table";
 import { ManagerActions } from "./manager-actions";
 import { ExportMenu } from "@/components/data-table/export-menu";
 import { Badge } from "@/components/ui/misc";
+import { ManagerAvatar } from "./manager-avatar";
 import { Link, useRouter } from "@/i18n/navigation";
 import { localeMeta, type Locale } from "@/i18n/config";
 import { exportRecord } from "@/lib/export";
@@ -83,6 +84,17 @@ export function ManagersTable({ rows, prefs }: { rows: ManagerRow[]; prefs: { vi
       filter: { type: "text" },
     });
     return [
+      {
+        id: "photo",
+        header: t("photo"),
+        text: () => "",
+        isAction: true,
+        cell: (m) => (
+          <Link href={`/admin/managers/${m.id}`} aria-label={`${m.firstName} ${m.lastName}`} className="block w-fit">
+            <ManagerAvatar photoUrl={m.photoUrl} firstName={m.firstName} lastName={m.lastName} />
+          </Link>
+        ),
+      },
       {
         id: "civility",
         header: t("civility"),

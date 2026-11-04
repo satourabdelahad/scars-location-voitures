@@ -120,7 +120,7 @@ export default async function CarsPage({ params, searchParams }: PageProps<"/[lo
             </div>
           ) : (
             <div className="flex flex-col items-center rounded-[22px] border border-dashed border-mist-2 px-6 py-16 text-center">
-              <CarArt category="economy" color="#cfd3e3" className="w-48" />
+              <CarArt category="city_car" color="#cfd3e3" className="w-48" />
               <p className="mt-4 text-lg font-bold text-ink">{t("emptyTitle")}</p>
               <p className="mt-1 text-ink-3">{t("emptyBody")}</p>
             </div>

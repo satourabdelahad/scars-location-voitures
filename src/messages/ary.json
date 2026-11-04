@@ -91,9 +91,9 @@
     "title": "الطوموبيلات ديالنا",
     "subtitle": "{count, plural, =0 {حتى طوموبيل ما مناسبة} one {طوموبيل وحدة كاينة} two {جوج طوموبيلات كاينين} other {# طوموبيلات كاينين}}",
     "filters": "الفرز",
-    "category": "النوع",
+    "category": "الكاروسري",
     "transmission": "الفيتيس",
-    "fuel": "المازوط ولا ليصانص",
+    "fuel": "الموطور",
     "seats": "أقل عدد دالبلايص",
     "maxPrice": "أكبر ثمن / نهار",
     "city": "المدينة",
@@ -335,7 +335,14 @@
     "rentalsRevenue": "المداخيل",
     "rentalsAvgDays": "المدة المتوسطة",
     "rentalsPromo": "بالبروموسيون",
-    "rentalsEmpty": "مازال ما كاين حتى كرية."
+    "rentalsEmpty": "مازال ما كاين حتى كرية.",
+    "photo": "التصويرة",
+    "photoHint": "JPG ولا PNG ولا WebP، ماشي كثر من 10 ميغا. التصويرة المربعة حسن.",
+    "photoSet": "التصويرة تسجلات.",
+    "photoNone": "ما كايناش التصويرة.",
+    "photoChange": "بدّل التصويرة",
+    "photoAdd": "زيد تصويرة",
+    "photoRemove": "حيّد"
   },
   "Documents": {
     "cin_front": "لاكارط ناسيونال (CINE) — القدّام",
@@ -389,9 +396,9 @@
     "brand": "الماركة",
     "model": "الموديل",
     "year": "العام",
-    "category": "النوع",
+    "category": "الكاروسري",
     "transmission": "الفيتيس",
-    "fuel": "المازوط ولا ليصانص",
+    "fuel": "الموطور",
     "seats": "البلايص",
     "doors": "البيبان",
     "luggage": "الباليزات",
@@ -425,7 +432,12 @@
     "showDeactivated": "بيّن الطوموبيلات الموقّفين",
     "reservationsCount": "الحجوزات",
     "nextBooking": "الكرا الجاي",
-    "free": "خاوية"
+    "free": "خاوية",
+    "purchase": "الشرا",
+    "purchaseHint": "كيبان غير للفريق، عمرو ما كيبان فالسيت.",
+    "purchaseCity": "المدينة فين تشرات",
+    "purchaseDate": "تاريخ الشرا",
+    "purchasePrice": "الثمن الكامل ديال الشرا (درهم)"
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -478,24 +490,32 @@
       "cdi": "CDI"
     },
     "category": {
-      "economy": "اقتصادية",
-      "compact": "صغيرة",
+      "city_car": "طوموبيل ديال المدينة",
+      "micro_car": "طوموبيل صغيرة",
+      "compact": "كومباكت",
       "sedan": "بيرلين",
-      "suv": "كاط كاط / SUV",
-      "luxury": "فخمة",
-      "van": "عائلية كبيرة",
-      "convertible": "كابريولي",
-      "pickup": "بيكوب"
+      "estate": "بريك",
+      "coupe": "كوبي",
+      "cabriolet": "كابريولي",
+      "cc": "سي سي",
+      "suv_4x4": "SUV و 4x4",
+      "crossover": "كروس أوفر",
+      "mpv": "مونوسباس",
+      "pickup": "بيك أب",
+      "minivan": "أوتيليتير (ميني فان)",
+      "van": "أوتيليتير (فان)"
     },
     "transmission": {
       "manual": "يدوي",
-      "automatic": "أوطوماتيك"
+      "automatic": "أوطوماتيك",
+      "semi_automatic": "نص أوتوماتيك"
     },
     "fuel": {
       "petrol": "ليصانص",
       "diesel": "المازوط",
+      "electric": "كهربائية",
       "hybrid": "هيبريد",
-      "electric": "كهربائية"
+      "plug_in_hybrid": "هيبريد كيتشارجا"
     },
     "carDeactivation": {
       "stolen": "تسرقات",
@@ -536,7 +556,8 @@
     "bad_type": "الصيغ المقبولة: JPG، PNG، WEBP ولا PDF.",
     "too_big": "الفيشي كبير بزاف (10 ميغا على الأكثر).",
     "upload_failed": "الفيشي ما طلعش. عاود جرّب.",
-    "promo_invalid": "هاد كود البروموسيون ما صالحش لهاد الكرية."
+    "promo_invalid": "هاد كود البروموسيون ما صالحش لهاد الكرية.",
+    "futureDate": "التاريخ ما يمكنش يكون فالمستقبل"
   },
   "About": {
     "title": "وكالة مغربية، وطوموبيلات مقادّين",

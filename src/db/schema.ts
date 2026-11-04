@@ -34,18 +34,26 @@ export const documentKindEnum = pgEnum("document_kind", [
   "license_front",
   "license_back",
 ]);
+/** Carrosserie (cahier des charges : 14 types) */
 export const carCategoryEnum = pgEnum("car_category", [
-  "economy",
+  "city_car",
+  "micro_car",
   "compact",
   "sedan",
-  "suv",
-  "luxury",
-  "van",
-  "convertible",
+  "estate",
+  "coupe",
+  "cabriolet",
+  "cc",
+  "suv_4x4",
+  "crossover",
+  "mpv",
   "pickup",
+  "minivan",
+  "van",
 ]);
-export const transmissionEnum = pgEnum("transmission", ["manual", "automatic"]);
-export const fuelEnum = pgEnum("fuel", ["petrol", "diesel", "hybrid", "electric"]);
+export const transmissionEnum = pgEnum("transmission", ["manual", "automatic", "semi_automatic"]);
+/** Motorisation */
+export const fuelEnum = pgEnum("fuel", ["petrol", "diesel", "electric", "hybrid", "plug_in_hybrid"]);
 export const carStatusEnum = pgEnum("car_status", ["active", "deactivated"]);
 export const carDeactivationReasonEnum = pgEnum("car_deactivation_reason", [
   "stolen",
@@ -189,6 +197,9 @@ export const managers = pgTable(
     maritalStatus: maritalStatusEnum("marital_status"),
     workStartDate: date("work_start_date", { mode: "string" }).notNull(),
     contractType: contractTypeEnum("contract_type").notNull(),
+    /** Photo de profil (Cloudinary, image publique) */
+    photoUrl: text("photo_url"),
+    photoPublicId: text("photo_public_id"),
     status: accountStatusEnum("status").notNull().default("active"),
     deactivationReason: text("deactivation_reason"),
     deactivatedAt: timestamp("deactivated_at", { withTimezone: true, mode: "date" }),
@@ -268,6 +279,10 @@ export const cars = pgTable(
     dailyPrice: numeric("daily_price", { precision: 10, scale: 2, mode: "number" }).notNull(),
     deposit: numeric("deposit", { precision: 10, scale: 2, mode: "number" }).notNull().default(0),
     airConditioning: boolean("air_conditioning").notNull().default(true),
+    /** Données d'achat : visibles uniquement par l'équipe, jamais sur le site public */
+    purchaseCity: varchar("purchase_city", { length: 120 }),
+    purchaseDate: date("purchase_date", { mode: "string" }),
+    purchasePrice: numeric("purchase_price", { precision: 12, scale: 2, mode: "number" }),
     status: carStatusEnum("status").notNull().default("active"),
     deactivationReason: carDeactivationReasonEnum("deactivation_reason"),
     deactivationNote: text("deactivation_note"),
@@ -284,6 +299,7 @@ export const cars = pgTable(
     check("cars_year_chk", sql`${t.year} BETWEEN 1990 AND 2100`),
     check("cars_price_chk", sql`${t.dailyPrice} > 0`),
     check("cars_seats_chk", sql`${t.seats} BETWEEN 1 AND 20`),
+    check("cars_purchase_price_chk", sql`${t.purchasePrice} IS NULL OR ${t.purchasePrice} >= 0`),
     check(
       "cars_deactivation_chk",
       sql`${t.status} = 'active' OR (${t.deactivationReason} IS NOT NULL AND ${t.deactivatedAt} IS NOT NULL)`,

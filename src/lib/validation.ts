@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { carCategoryEnum, fuelEnum, transmissionEnum } from "@/db/schema";
 
 /** Schémas partagés navigateur/serveur. Les messages sont des clés du namespace "Errors". */
 export const PHONE_RE = /^\+?[0-9 ().-]{8,20}$/;
@@ -38,9 +39,9 @@ export const carSchema = z.object({
   brand: required(80),
   model: required(80),
   year: z.coerce.number().int().min(1990, "number").max(2100, "number"),
-  category: z.enum(["economy", "compact", "sedan", "suv", "luxury", "van", "convertible", "pickup"]),
-  transmission: z.enum(["manual", "automatic"]),
-  fuel: z.enum(["petrol", "diesel", "hybrid", "electric"]),
+  category: z.enum(carCategoryEnum.enumValues, { message: "required" }),
+  transmission: z.enum(transmissionEnum.enumValues, { message: "required" }),
+  fuel: z.enum(fuelEnum.enumValues, { message: "required" }),
   seats: z.coerce.number().int().min(1, "number").max(20, "number"),
   doors: z.coerce.number().int().min(2, "number").max(6, "number"),
   luggage: z.coerce.number().int().min(0, "number").max(10, "number"),
@@ -58,6 +59,9 @@ export const carSchema = z.object({
   dailyPrice: z.coerce.number().positive("number"),
   deposit: z.coerce.number().min(0, "number"),
   airConditioning: z.boolean(),
+  purchaseCity: required(120),
+  purchaseDate: isoDate.refine((d) => d <= new Date().toISOString().slice(0, 10), "futureDate"),
+  purchasePrice: z.coerce.number().positive("number"),
   descriptions: z.record(z.string(), z.string().max(2000)).refine((d) => (d.fr ?? "").trim().length > 0, "required"),
 });
 export type CarInput = z.infer<typeof carSchema>;

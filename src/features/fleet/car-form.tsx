@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import { useRouter } from "@/i18n/navigation";
 import { localeMeta, locales, type Locale } from "@/i18n/config";
-import { carCategoryEnum, type CarCategory } from "@/db/schema";
+import { carCategoryEnum, fuelEnum, transmissionEnum, type CarCategory } from "@/db/schema";
+import { CAR_BRANDS } from "@/lib/car-brands";
 import { ACCEPT_IMAGES, uploadFile } from "@/lib/upload-client";
 import { createCar, updateCar } from "@/server/actions/fleet";
 import { cn } from "@/lib/utils";
@@ -21,8 +22,8 @@ export type CarFormValues = {
   model: string;
   year: number | "";
   category: CarCategory;
-  transmission: "manual" | "automatic";
-  fuel: "petrol" | "diesel" | "hybrid" | "electric";
+  transmission: (typeof transmissionEnum.enumValues)[number];
+  fuel: (typeof fuelEnum.enumValues)[number];
   seats: number | "";
   doors: number | "";
   luggage: number | "";
@@ -34,6 +35,9 @@ export type CarFormValues = {
   dailyPrice: number | "";
   deposit: number | "";
   airConditioning: boolean;
+  purchaseCity: string;
+  purchaseDate: string;
+  purchasePrice: number | "";
   descriptions: Partial<Record<Locale, string>>;
 };
 type Img = { publicId: string; url: string; width?: number | null; height?: number | null };
@@ -43,7 +47,7 @@ const DEFAULTS: CarFormValues = {
   brand: "",
   model: "",
   year: new Date().getFullYear(),
-  category: "economy",
+  category: "city_car",
   transmission: "manual",
   fuel: "diesel",
   seats: 5,
@@ -57,6 +61,9 @@ const DEFAULTS: CarFormValues = {
   dailyPrice: "",
   deposit: 5000,
   airConditioning: true,
+  purchaseCity: "",
+  purchaseDate: "",
+  purchasePrice: "",
   descriptions: {},
 };
 
@@ -157,7 +164,16 @@ export function CarForm({
   return (
     <form onSubmit={submit} noValidate className="rounded-2xl border border-mist bg-paper p-6 sm:p-8">
       <Section title={t("general")}>
-        <Field label={t("brand")} required error={err("brand")}>{(p) => <Input {...p} value={v.brand} onChange={(x) => set("brand", x.target.value)} />}</Field>
+        <Field label={t("brand")} required error={err("brand")}>
+          {(p) => (
+            <Select {...p} value={v.brand} onChange={(x) => set("brand", x.target.value)}>
+              <option value="">—</option>
+              {/* Une marque saisie avant la liste officielle reste sélectionnable */}
+              {v.brand && !(CAR_BRANDS as readonly string[]).includes(v.brand) && <option value={v.brand}>{v.brand}</option>}
+              {CAR_BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
+            </Select>
+          )}
+        </Field>
         <Field label={t("model")} required error={err("model")}>{(p) => <Input {...p} value={v.model} onChange={(x) => set("model", x.target.value)} />}</Field>
         <Field label={t("year")} required error={err("year")}>{(p) => <Input {...p} type="number" min={1990} max={2100} value={v.year} onChange={num("year")} />}</Field>
         <Field label={t("plateNumber")} required error={err("plateNumber")}>{(p) => <Input {...p} dir="ltr" className="font-mono uppercase" placeholder="12345-A-40" value={v.plateNumber} onChange={(x) => set("plateNumber", x.target.value)} />}</Field>
@@ -183,14 +199,14 @@ export function CarForm({
         <Field label={t("transmission")} required>
           {(p) => (
             <Select {...p} value={v.transmission} onChange={(x) => set("transmission", x.target.value as CarFormValues["transmission"])}>
-              {(["manual", "automatic"] as const).map((c) => <option key={c} value={c}>{e(`transmission.${c}`)}</option>)}
+              {transmissionEnum.enumValues.map((c) => <option key={c} value={c}>{e(`transmission.${c}`)}</option>)}
             </Select>
           )}
         </Field>
         <Field label={t("fuel")} required>
           {(p) => (
             <Select {...p} value={v.fuel} onChange={(x) => set("fuel", x.target.value as CarFormValues["fuel"])}>
-              {(["petrol", "diesel", "hybrid", "electric"] as const).map((c) => <option key={c} value={c}>{e(`fuel.${c}`)}</option>)}
+              {fuelEnum.enumValues.map((c) => <option key={c} value={c}>{e(`fuel.${c}`)}</option>)}
             </Select>
           )}
         </Field>
@@ -215,6 +231,12 @@ export function CarForm({
       <Section title={t("pricing")}>
         <Field label={t("dailyPrice")} required error={err("dailyPrice")}>{(p) => <Input {...p} type="number" min={1} step={10} value={v.dailyPrice} onChange={num("dailyPrice")} />}</Field>
         <Field label={t("deposit")} required error={err("deposit")}>{(p) => <Input {...p} type="number" min={0} step={500} value={v.deposit} onChange={num("deposit")} />}</Field>
+      </Section>
+
+      <Section title={t("purchase")} hint={t("purchaseHint")}>
+        <Field label={t("purchaseCity")} required error={err("purchaseCity")}>{(p) => <Input {...p} value={v.purchaseCity} onChange={(x) => set("purchaseCity", x.target.value)} />}</Field>
+        <Field label={t("purchaseDate")} required error={err("purchaseDate")}>{(p) => <Input {...p} type="date" max={new Date().toISOString().slice(0, 10)} value={v.purchaseDate} onChange={(x) => set("purchaseDate", x.target.value)} />}</Field>
+        <Field label={t("purchasePrice")} required error={err("purchasePrice")}>{(p) => <Input {...p} type="number" min={0} step={1000} value={v.purchasePrice} onChange={num("purchasePrice")} />}</Field>
       </Section>
 
       <section className="grid gap-6 border-b border-mist py-8 lg:grid-cols-[220px_1fr]">

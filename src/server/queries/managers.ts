@@ -26,6 +26,7 @@ export async function listManagersWithStats() {
     marital_status: "married" | "widowed" | "single" | null;
     work_start_date: string;
     contract_type: "freelance" | "cdi";
+    photo_url: string | null;
     status: "active" | "deactivated";
     deactivation_reason: string | null;
     deactivated_at: string | null;
@@ -45,7 +46,7 @@ export async function listManagersWithStats() {
     )
     SELECT
       m.id, m.user_id, m.civility, m.last_name, m.first_name, u.email, m.phone, m.whatsapp, m.city,
-      m.birth_date::text, m.marital_status, m.work_start_date::text, m.contract_type, m.status,
+      m.birth_date::text, m.marital_status, m.work_start_date::text, m.contract_type, m.photo_url, m.status,
       m.deactivation_reason, m.deactivated_at, u.last_login_at, m.admin_updated_at,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.d)::int AS rentals_day,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.w)::int AS rentals_week,
@@ -64,6 +65,7 @@ export async function listManagersWithStats() {
     civility: r.civility,
     lastName: r.last_name,
     firstName: r.first_name,
+    photoUrl: r.photo_url,
     email: r.email,
     phone: r.phone,
     whatsapp: r.whatsapp,

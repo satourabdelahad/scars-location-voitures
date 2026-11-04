@@ -91,9 +91,9 @@
     "title": "Unsere Autos",
     "subtitle": "{count, plural, =0 {Kein passendes Auto} one {# Auto verfügbar} other {# Autos verfügbar}}",
     "filters": "Filter",
-    "category": "Kategorie",
+    "category": "Karosserie",
     "transmission": "Getriebe",
-    "fuel": "Kraftstoff",
+    "fuel": "Antrieb",
     "seats": "Mindestens Sitze",
     "maxPrice": "Max. Preis / Tag",
     "city": "Stadt",
@@ -335,7 +335,14 @@
     "rentalsRevenue": "Umsatz",
     "rentalsAvgDays": "Durchschnittliche Dauer",
     "rentalsPromo": "Mit Aktion",
-    "rentalsEmpty": "Noch keine abgeschlossenen Vermietungen."
+    "rentalsEmpty": "Noch keine abgeschlossenen Vermietungen.",
+    "photo": "Foto",
+    "photoHint": "JPG, PNG oder WebP, max. 10 MB. Ein quadratisches Porträt wirkt am besten.",
+    "photoSet": "Profilfoto gespeichert.",
+    "photoNone": "Kein Profilfoto.",
+    "photoChange": "Foto ändern",
+    "photoAdd": "Foto hinzufügen",
+    "photoRemove": "Entfernen"
   },
   "Documents": {
     "cin_front": "Personalausweis (CINE), Vorderseite",
@@ -389,9 +396,9 @@
     "brand": "Marke",
     "model": "Modell",
     "year": "Baujahr",
-    "category": "Kategorie",
+    "category": "Karosserie",
     "transmission": "Getriebe",
-    "fuel": "Kraftstoff",
+    "fuel": "Antrieb",
     "seats": "Sitze",
     "doors": "Türen",
     "luggage": "Koffer",
@@ -425,7 +432,12 @@
     "showDeactivated": "Deaktivierte Autos einbeziehen",
     "reservationsCount": "Buchungen",
     "nextBooking": "Nächste Miete",
-    "free": "Frei"
+    "free": "Frei",
+    "purchase": "Kauf",
+    "purchaseHint": "Nur für das Team sichtbar, nie auf der öffentlichen Website.",
+    "purchaseCity": "Kaufort",
+    "purchaseDate": "Kaufdatum",
+    "purchasePrice": "Gesamtkaufpreis (MAD)"
   },
   "Reservations": {
     "title": "Buchungen",
@@ -478,24 +490,32 @@
       "cdi": "Unbefristet (CDI)"
     },
     "category": {
-      "economy": "Kleinwagen",
+      "city_car": "Kleinwagen",
+      "micro_car": "Kleinstwagen",
       "compact": "Kompaktklasse",
       "sedan": "Limousine",
-      "suv": "SUV / Geländewagen",
-      "luxury": "Premium",
-      "van": "Van",
-      "convertible": "Cabrio",
-      "pickup": "Pick-up"
+      "estate": "Kombi",
+      "coupe": "Coupé",
+      "cabriolet": "Cabrio",
+      "cc": "Coupé-Cabrio",
+      "suv_4x4": "SUV & Geländewagen",
+      "crossover": "Crossover",
+      "mpv": "Van",
+      "pickup": "Pick-up",
+      "minivan": "Nutzfahrzeug (Minivan)",
+      "van": "Nutzfahrzeug (Transporter)"
     },
     "transmission": {
       "manual": "Schaltgetriebe",
-      "automatic": "Automatik"
+      "automatic": "Automatik",
+      "semi_automatic": "Halbautomatik"
     },
     "fuel": {
       "petrol": "Benzin",
       "diesel": "Diesel",
+      "electric": "Elektro",
       "hybrid": "Hybrid",
-      "electric": "Elektro"
+      "plug_in_hybrid": "Plug-in-Hybrid"
     },
     "carDeactivation": {
       "stolen": "Gestohlen",
@@ -536,7 +556,8 @@
     "bad_type": "Erlaubte Formate: JPG, PNG, WEBP oder PDF.",
     "too_big": "Datei zu groß (maximal 10 MB).",
     "upload_failed": "Das Hochladen ist fehlgeschlagen. Versuchen Sie es erneut.",
-    "promo_invalid": "Dieser Gutscheincode gilt nicht für diese Miete."
+    "promo_invalid": "Dieser Gutscheincode gilt nicht für diese Miete.",
+    "futureDate": "Das Datum darf nicht in der Zukunft liegen"
   },
   "About": {
     "title": "Eine marokkanische Agentur mit gepflegten Autos",

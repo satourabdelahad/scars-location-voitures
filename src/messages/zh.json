@@ -91,9 +91,9 @@
     "title": "我们的车辆",
     "subtitle": "{count, plural, =0 {没有符合条件的车辆} other {共 # 辆可租}}",
     "filters": "筛选",
-    "category": "车型",
+    "category": "车身类型",
     "transmission": "变速箱",
-    "fuel": "燃料",
+    "fuel": "动力类型",
     "seats": "最少座位数",
     "maxPrice": "每日最高价",
     "city": "城市",
@@ -335,7 +335,14 @@
     "rentalsRevenue": "营业额",
     "rentalsAvgDays": "平均时长",
     "rentalsPromo": "使用促销",
-    "rentalsEmpty": "暂无已完成的租赁。"
+    "rentalsEmpty": "暂无已完成的租赁。",
+    "photo": "照片",
+    "photoHint": "JPG、PNG 或 WebP，最大 10 MB。正方形头像效果最佳。",
+    "photoSet": "已保存头像。",
+    "photoNone": "暂无头像。",
+    "photoChange": "更换照片",
+    "photoAdd": "添加照片",
+    "photoRemove": "移除"
   },
   "Documents": {
     "cin_front": "身份证（CINE）正面",
@@ -389,9 +396,9 @@
     "brand": "品牌",
     "model": "型号",
     "year": "年份",
-    "category": "车型",
+    "category": "车身类型",
     "transmission": "变速箱",
-    "fuel": "燃料",
+    "fuel": "动力类型",
     "seats": "座位",
     "doors": "车门",
     "luggage": "行李箱",
@@ -425,7 +432,12 @@
     "showDeactivated": "包含已停用车辆",
     "reservationsCount": "预订数",
     "nextBooking": "下次出租",
-    "free": "空闲"
+    "free": "空闲",
+    "purchase": "购置",
+    "purchaseHint": "仅团队可见，绝不会显示在公开网站上。",
+    "purchaseCity": "购置城市",
+    "purchaseDate": "购置日期",
+    "purchasePrice": "购置总价（MAD）"
   },
   "Reservations": {
     "title": "预订",
@@ -478,24 +490,32 @@
       "cdi": "无固定期限合同（CDI）"
     },
     "category": {
-      "economy": "经济型",
+      "city_car": "城市车",
+      "micro_car": "微型车",
       "compact": "紧凑型",
-      "sedan": "轿车",
-      "suv": "SUV / 四驱",
-      "luxury": "豪华型",
-      "van": "多功能车",
-      "convertible": "敞篷车",
-      "pickup": "皮卡"
+      "sedan": "三厢轿车",
+      "estate": "旅行车",
+      "coupe": "轿跑",
+      "cabriolet": "敞篷车",
+      "cc": "硬顶敞篷",
+      "suv_4x4": "SUV/越野",
+      "crossover": "跨界车",
+      "mpv": "MPV",
+      "pickup": "皮卡",
+      "minivan": "商用车（小型面包车）",
+      "van": "商用车（厢式货车）"
     },
     "transmission": {
       "manual": "手动挡",
-      "automatic": "自动挡"
+      "automatic": "自动挡",
+      "semi_automatic": "半自动"
     },
     "fuel": {
       "petrol": "汽油",
       "diesel": "柴油",
+      "electric": "纯电动",
       "hybrid": "混合动力",
-      "electric": "纯电动"
+      "plug_in_hybrid": "插电式混动"
     },
     "carDeactivation": {
       "stolen": "被盗",
@@ -536,7 +556,8 @@
     "bad_type": "支持的格式：JPG、PNG、WEBP 或 PDF。",
     "too_big": "文件过大（最大 10 MB）。",
     "upload_failed": "上传失败，请重试。",
-    "promo_invalid": "此优惠码不适用于本次租赁。"
+    "promo_invalid": "此优惠码不适用于本次租赁。",
+    "futureDate": "日期不能晚于今天"
   },
   "About": {
     "title": "一家车况可靠的摩洛哥租车公司",

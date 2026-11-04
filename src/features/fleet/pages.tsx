@@ -99,6 +99,9 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
             dailyPrice: car.dailyPrice,
             deposit: car.deposit,
             airConditioning: car.airConditioning,
+            purchaseCity: car.purchaseCity ?? "",
+            purchaseDate: car.purchaseDate ?? "",
+            purchasePrice: car.purchasePrice ?? "",
             descriptions: Object.fromEntries(car.translations.map((tr) => [tr.locale, tr.description])),
           }}
           initialImages={car.images.map((i) => ({ publicId: i.publicId, url: i.url, width: i.width, height: i.height }))}
@@ -145,6 +148,9 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
               { label: t("vin"), value: car.vin ?? "—" },
               { label: t("dailyPrice"), value: formatMoney(car.dailyPrice, locale) },
               { label: t("deposit"), value: formatMoney(car.deposit, locale) },
+              { label: t("purchaseCity"), value: car.purchaseCity ?? "—" },
+              { label: t("purchaseDate"), value: car.purchaseDate ? formatDate(car.purchaseDate, locale) : "—" },
+              { label: t("purchasePrice"), value: car.purchasePrice != null ? formatMoney(car.purchasePrice, locale) : "—" },
               { label: t("agency"), value: `${car.agency.city}, ${car.agency.name}` },
               { label: t("statusDeactivated"), value: formatDate(car.deactivatedAt, locale) },
             ]}

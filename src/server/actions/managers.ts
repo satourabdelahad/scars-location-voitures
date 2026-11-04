@@ -49,7 +49,17 @@ async function attachDocuments(
   }
 }
 
-export async function createManager(input: { data: unknown; documents: unknown }): Promise<ActionResult<{ id: string }>> {
+/** Photo de profil : undefined = inchangée, null = retirée, { publicId } = nouvelle (vérifiée auprès du stockage). */
+type PhotoInput = { publicId: string } | null | undefined;
+async function resolvePhoto(photo: unknown): Promise<{ photoUrl: string | null; photoPublicId: string | null } | undefined> {
+  if (photo === undefined) return undefined;
+  if (photo === null) return { photoUrl: null, photoPublicId: null };
+  const p = z.object({ publicId: z.string().min(1).max(300) }).parse(photo);
+  const v = await verifyUpload(p.publicId, "avatar");
+  return { photoUrl: v.url, photoPublicId: v.publicId };
+}
+
+export async function createManager(input: { data: unknown; documents: unknown; photo?: PhotoInput }): Promise<ActionResult<{ id: string }>> {
   try {
     const admin = await assertRole(["admin"]);
     const locale = await getLocale();
@@ -63,14 +73,15 @@ export async function createManager(input: { data: unknown; documents: unknown }
     const [exists] = await db.select({ id: users.id }).from(users).where(eq(users.email, d.email)).limit(1);
     if (exists) return { ok: false, error: "unique:users_email_unique", fieldErrors: { email: "unique:users_email_unique" } };
 
+    const photo = (await resolvePhoto(input.photo)) ?? { photoUrl: null, photoPublicId: null };
     const id = await db.transaction(async (tx) => {
       const [u] = await tx
         .insert(users)
-        .values({ name: `${d.firstName} ${d.lastName}`, email: d.email, role: "manager", phone: d.phone })
+        .values({ name: `${d.firstName} ${d.lastName}`, email: d.email, role: "manager", phone: d.phone, image: photo.photoUrl })
         .returning({ id: users.id });
       const [m] = await tx
         .insert(managers)
-        .values({ ...d, maritalStatus: d.maritalStatus ?? null, userId: u.id, createdBy: admin.id, adminUpdatedAt: new Date(), adminUpdatedBy: admin.id })
+        .values({ ...d, ...photo, maritalStatus: d.maritalStatus ?? null, userId: u.id, createdBy: admin.id, adminUpdatedAt: new Date(), adminUpdatedBy: admin.id })
         .returning({ id: managers.id });
       await attachDocuments(tx, m.id, docs.data, admin.id);
       await tx.insert(managerEvents).values({ managerId: m.id, event: "created", actorId: admin.id });
@@ -88,7 +99,7 @@ export async function createManager(input: { data: unknown; documents: unknown }
 
 const TRACKED = ["civility", "lastName", "firstName", "phone", "whatsapp", "city", "birthDate", "maritalStatus", "workStartDate", "contractType"] as const;
 
-export async function updateManager(id: string, input: { data: unknown; documents: unknown }): Promise<ActionResult> {
+export async function updateManager(id: string, input: { data: unknown; documents: unknown; photo?: PhotoInput }): Promise<ActionResult> {
   try {
     const admin = await assertRole(["admin"]);
     const locale = await getLocale();
@@ -114,12 +125,18 @@ export async function updateManager(id: string, input: { data: unknown; document
     const missing = REQUIRED_DOCS.filter((k) => !docs.data[k] && !current.documents.some((x) => x.kind === k));
     if (missing.length) return { ok: false, error: "validation", fieldErrors: Object.fromEntries(missing.map((k) => [k, "missingDocument"])) };
 
+    const photo = await resolvePhoto(input.photo);
+    if (photo && photo.photoPublicId !== current.photoPublicId) changes.photo = { from: current.photoPublicId ? "…" : null, to: photo.photoPublicId ? "new" : null };
+
     await db.transaction(async (tx) => {
       await tx
         .update(managers)
-        .set({ ...d, maritalStatus: d.maritalStatus ?? null, adminUpdatedAt: new Date(), adminUpdatedBy: admin.id })
+        .set({ ...d, ...(photo ?? {}), maritalStatus: d.maritalStatus ?? null, adminUpdatedAt: new Date(), adminUpdatedBy: admin.id })
         .where(eq(managers.id, id));
-      await tx.update(users).set({ email: d.email, name: `${d.firstName} ${d.lastName}`, phone: d.phone }).where(eq(users.id, current.userId));
+      await tx
+        .update(users)
+        .set({ email: d.email, name: `${d.firstName} ${d.lastName}`, phone: d.phone, ...(photo ? { image: photo.photoUrl } : {}) })
+        .where(eq(users.id, current.userId));
       await attachDocuments(tx, id, docs.data, admin.id);
       if (Object.keys(changes).length) await tx.insert(managerEvents).values({ managerId: id, event: "updated", changes, actorId: admin.id });
     });

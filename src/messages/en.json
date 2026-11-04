@@ -91,9 +91,9 @@
     "title": "Our cars",
     "subtitle": "{count, plural, =0 {No car matches} one {# car available} other {# cars available}}",
     "filters": "Filters",
-    "category": "Category",
-    "transmission": "Gearbox",
-    "fuel": "Fuel",
+    "category": "Body type",
+    "transmission": "Transmission",
+    "fuel": "Powertrain",
     "seats": "Minimum seats",
     "maxPrice": "Max price / day",
     "city": "City",
@@ -335,7 +335,14 @@
     "rentalsRevenue": "Revenue",
     "rentalsAvgDays": "Average duration",
     "rentalsPromo": "With promotion",
-    "rentalsEmpty": "No completed rentals yet."
+    "rentalsEmpty": "No completed rentals yet.",
+    "photo": "Photo",
+    "photoHint": "JPG, PNG or WebP, 10 MB max. A square portrait looks best.",
+    "photoSet": "Profile photo saved.",
+    "photoNone": "No profile photo.",
+    "photoChange": "Change photo",
+    "photoAdd": "Add a photo",
+    "photoRemove": "Remove"
   },
   "Documents": {
     "cin_front": "National ID card (CINE), front",
@@ -389,9 +396,9 @@
     "brand": "Make",
     "model": "Model",
     "year": "Year",
-    "category": "Category",
-    "transmission": "Gearbox",
-    "fuel": "Fuel",
+    "category": "Body type",
+    "transmission": "Transmission",
+    "fuel": "Powertrain",
     "seats": "Seats",
     "doors": "Doors",
     "luggage": "Suitcases",
@@ -425,7 +432,12 @@
     "showDeactivated": "Include deactivated cars",
     "reservationsCount": "Bookings",
     "nextBooking": "Next rental",
-    "free": "Free"
+    "free": "Free",
+    "purchase": "Purchase",
+    "purchaseHint": "Visible to the team only, never on the public site.",
+    "purchaseCity": "Purchase city",
+    "purchaseDate": "Purchase date",
+    "purchasePrice": "Total purchase price (MAD)"
   },
   "Reservations": {
     "title": "Bookings",
@@ -478,24 +490,32 @@
       "cdi": "Permanent (CDI)"
     },
     "category": {
-      "economy": "Economy",
+      "city_car": "City car",
+      "micro_car": "Micro car",
       "compact": "Compact",
-      "sedan": "Saloon",
-      "suv": "SUV / 4x4",
-      "luxury": "Premium",
-      "van": "People carrier",
-      "convertible": "Convertible",
-      "pickup": "Pick-up"
+      "sedan": "Sedan",
+      "estate": "Estate",
+      "coupe": "Coupé",
+      "cabriolet": "Convertible",
+      "cc": "Coupé-convertible",
+      "suv_4x4": "SUV & 4x4",
+      "crossover": "Crossover",
+      "mpv": "MPV",
+      "pickup": "Pickup",
+      "minivan": "Utility (minivan)",
+      "van": "Utility (van)"
     },
     "transmission": {
       "manual": "Manual",
-      "automatic": "Automatic"
+      "automatic": "Automatic",
+      "semi_automatic": "Semi-automatic"
     },
     "fuel": {
       "petrol": "Petrol",
       "diesel": "Diesel",
+      "electric": "Electric",
       "hybrid": "Hybrid",
-      "electric": "Electric"
+      "plug_in_hybrid": "Plug-in hybrid"
     },
     "carDeactivation": {
       "stolen": "Stolen",
@@ -536,7 +556,8 @@
     "bad_type": "Accepted formats: JPG, PNG, WEBP or PDF.",
     "too_big": "File too large (10 MB maximum).",
     "upload_failed": "The upload failed. Try again.",
-    "promo_invalid": "This promo code isn't valid for this rental."
+    "promo_invalid": "This promo code isn't valid for this rental.",
+    "futureDate": "The date can't be in the future"
   },
   "About": {
     "title": "A Moroccan agency with well-kept cars",
