@@ -7,7 +7,7 @@ import { Field, Input } from "@/components/ui/field";
 import { Link } from "@/i18n/navigation";
 import { loginAction } from "@/server/actions/auth";
 
-const KNOWN = ["invalid", "disabled", "staff", "OAuthAccountNotLinked"];
+const KNOWN = ["invalid", "disabled", "staff", "OAuthAccountNotLinked", "server"];
 
 export function LoginForm({ callbackUrl, initialError }: { callbackUrl?: string; initialError?: string }) {
   const t = useTranslations("Auth");

@@ -151,7 +151,12 @@
     "successBody": "您的预订编号为 {ref}。经理确认后，我们会发送邮件通知您。",
     "goToReservations": "查看我的预订",
     "loginToBook": "登录后预订",
-    "minAge": "驾驶人须年满 21 岁。"
+    "minAge": "驾驶人须年满 21 岁。",
+    "promoCode": "优惠码",
+    "promoApply": "使用",
+    "promoInvalid": "此优惠码不适用于本次租赁。",
+    "discount": "折扣",
+    "promoRemove": "移除优惠码"
   },
   "Extras": {
     "child_seat": "儿童座椅",
@@ -222,7 +227,8 @@
       "passwordMismatch": "两次输入的密码不一致。",
       "passwordWeak": "至少 10 个字符，包含字母和数字。",
       "emailTaken": "该邮箱已注册。",
-      "generic": "登录失败，请重试。"
+      "generic": "登录失败，请重试。",
+      "server": "服务器无法验证登录（数据库或配置问题）。请重试或联系管理员。"
     }
   },
   "Back": {
@@ -245,7 +251,8 @@
     "openAll": "查看全部",
     "todayDepartures": "今日取车",
     "todayReturns": "今日还车",
-    "nothingToday": "今天没有安排。"
+    "nothingToday": "今天没有安排。",
+    "profile": "我的档案"
   },
   "Managers": {
     "title": "经理",
@@ -310,7 +317,25 @@
       "updated": "修改",
       "deactivated": "停用",
       "reactivated": "重新启用"
-    }
+    },
+    "tabInfo": "信息",
+    "tabRentals": "已完成租赁",
+    "tabDeals": "商机 / 潜在客户",
+    "tabHistory": "历史",
+    "viewHint": "查看模式：字段为只读。点击“编辑”进行修改。",
+    "viewHintReadOnly": "查看模式：仅管理员可编辑此档案。",
+    "editHint": "正在编辑：请记得保存。",
+    "saveChanges": "保存",
+    "viewTable": "表格",
+    "viewTimeline": "时间线",
+    "duration": "时长",
+    "promotion": "促销",
+    "discount": "折扣",
+    "rentalsCount": "已完成租赁",
+    "rentalsRevenue": "营业额",
+    "rentalsAvgDays": "平均时长",
+    "rentalsPromo": "使用促销",
+    "rentalsEmpty": "暂无已完成的租赁。"
   },
   "Documents": {
     "cin_front": "身份证（CINE）正面",
@@ -510,7 +535,8 @@
     "minAge21": "驾驶人须年满 21 岁。",
     "bad_type": "支持的格式：JPG、PNG、WEBP 或 PDF。",
     "too_big": "文件过大（最大 10 MB）。",
-    "upload_failed": "上传失败，请重试。"
+    "upload_failed": "上传失败，请重试。",
+    "promo_invalid": "此优惠码不适用于本次租赁。"
   },
   "About": {
     "title": "一家车况可靠的摩洛哥租车公司",
@@ -560,5 +586,86 @@
     "labelTotal": "合计",
     "labelReason": "原因：",
     "viewReservation": "查看我的预订"
+  },
+  "Activity": {
+    "session_login": "登录",
+    "session_logout": "退出",
+    "car_create": "添加车辆：{car}",
+    "car_update": "修改车辆：{car}",
+    "car_deactivate": "停用车辆：{car}",
+    "reservation_confirm": "接受预订 {ref}",
+    "reservation_reject": "拒绝预订 {ref}",
+    "reservation_pickup": "预订 {ref} 已取车",
+    "reservation_return": "预订 {ref} 已还车",
+    "reservation_cancel": "取消预订 {ref}",
+    "deal_create": "新商机：{name}",
+    "deal_update": "更新商机：{name}",
+    "deal_note": "添加备注：{name}",
+    "profile_created": "创建档案",
+    "profile_updated": "修改档案",
+    "profile_deactivated": "停用账户",
+    "profile_reactivated": "重新启用账户",
+    "via": "通过 {provider}",
+    "password": "密码",
+    "date": "日期",
+    "type": "类型",
+    "event": "事件",
+    "details": "详情",
+    "all": "全部",
+    "empty": "暂无活动记录。",
+    "group": {
+      "session": "会话",
+      "fleet": "车队",
+      "reservations": "预订",
+      "deals": "商机",
+      "profile": "档案"
+    }
+  },
+  "Deals": {
+    "title": "商机 / 潜在客户",
+    "subtitle": "跟进潜在客户与协议",
+    "new": "新商机",
+    "createTitle": "新潜在客户",
+    "editTitle": "商机：{name}",
+    "prospectName": "潜在客户姓名",
+    "phone": "电话",
+    "email": "邮箱",
+    "city": "城市",
+    "source": "来源",
+    "type": "协议类型",
+    "car": "车辆",
+    "promotion": "促销",
+    "amount": "预计金额",
+    "expectedDate": "预计日期",
+    "nextFollowUp": "下次跟进",
+    "notes": "备注",
+    "addNote": "添加备注",
+    "notePlaceholder": "电话、消息、会面…",
+    "noteAdded": "备注已添加",
+    "created": "商机已创建",
+    "updated": "商机已更新",
+    "empty": "添加第一个潜在客户，开始跟进您的谈判。",
+    "emptyTitle": "暂无商机",
+    "timeline": "跟进记录",
+    "all": "全部",
+    "lastUpdate": "最后更新",
+    "followUpLate": "跟进已逾期",
+    "noteLabel": "备注",
+    "types": {
+      "prospect": "潜在客户",
+      "negotiation": "谈判",
+      "rental": "租赁",
+      "cancellation": "取消",
+      "promotion": "促销"
+    },
+    "sources": {
+      "website": "网站",
+      "phone": "电话",
+      "whatsapp": "WhatsApp",
+      "walk_in": "到店",
+      "social": "社交媒体",
+      "referral": "推荐",
+      "other": "其他"
+    }
   }
 }

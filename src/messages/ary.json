@@ -151,7 +151,12 @@
     "successBody": "المرجع ديالك هو {ref}. غادي توصلك إيميل ملي يأكّدو المسيّر.",
     "goToReservations": "شوف الحجوزات ديالي",
     "loginToBook": "دخل باش تحجز",
-    "minAge": "خاص السائق يكون عندو على الأقل 21 عام."
+    "minAge": "خاص السائق يكون عندو على الأقل 21 عام.",
+    "promoCode": "كود البروموسيون",
+    "promoApply": "طبّق",
+    "promoInvalid": "هاد الكود ما صالحش لهاد الكرية.",
+    "discount": "التخفيض",
+    "promoRemove": "حيّد الكود"
   },
   "Extras": {
     "child_seat": "كرسي ديال الدراري الصغار",
@@ -222,7 +227,8 @@
       "passwordMismatch": "جوج المودباسات ما متشابهينش.",
       "passwordWeak": "على الأقل 10 دالحروف، فيهم حرف ورقم.",
       "emailTaken": "كاين حساب بهاد الإيميل.",
-      "generic": "الدخول ما نجحش. عاود جرّب."
+      "generic": "الدخول ما نجحش. عاود جرّب.",
+      "server": "السيرفور ما قدرش يتأكد من الدخول (قاعدة البيانات ولا الإعدادات). عاود جرب ولا تاصل بالمسؤول."
     }
   },
   "Back": {
@@ -245,7 +251,8 @@
     "openAll": "شوف كلشي",
     "todayDepartures": "اللي خارجين اليوم",
     "todayReturns": "اللي راجعين اليوم",
-    "nothingToday": "والو مبرمج اليوم."
+    "nothingToday": "والو مبرمج اليوم.",
+    "profile": "الفيشة ديالي"
   },
   "Managers": {
     "title": "المسيّرين",
@@ -310,7 +317,25 @@
       "updated": "تبديل",
       "deactivated": "توقيف",
       "reactivated": "رجوع للخدمة"
-    }
+    },
+    "tabInfo": "المعلومات",
+    "tabRentals": "الكريات اللي تدارو",
+    "tabDeals": "الصفقات / الزبناء المحتملين",
+    "tabHistory": "التاريخ",
+    "viewHint": "غير للقراءة: الخانات ما تقدرش تبدلها. ضغط على «بدّل» باش تبدلها.",
+    "viewHintReadOnly": "غير للقراءة: غير الإدارة اللي تقدر تبدل هاد الفيشة.",
+    "editHint": "كتبدّل دابا: ما تنساش تسجّل.",
+    "saveChanges": "سجّل",
+    "viewTable": "جدول",
+    "viewTimeline": "خط زمني",
+    "duration": "المدة",
+    "promotion": "البروموسيون",
+    "discount": "التخفيض",
+    "rentalsCount": "الكريات اللي تدارو",
+    "rentalsRevenue": "المداخيل",
+    "rentalsAvgDays": "المدة المتوسطة",
+    "rentalsPromo": "بالبروموسيون",
+    "rentalsEmpty": "مازال ما كاين حتى كرية."
   },
   "Documents": {
     "cin_front": "لاكارط ناسيونال (CINE) — القدّام",
@@ -510,7 +535,8 @@
     "minAge21": "خاص السائق يكون عندو على الأقل 21 عام.",
     "bad_type": "الصيغ المقبولة: JPG، PNG، WEBP ولا PDF.",
     "too_big": "الفيشي كبير بزاف (10 ميغا على الأكثر).",
-    "upload_failed": "الفيشي ما طلعش. عاود جرّب."
+    "upload_failed": "الفيشي ما طلعش. عاود جرّب.",
+    "promo_invalid": "هاد كود البروموسيون ما صالحش لهاد الكرية."
   },
   "About": {
     "title": "وكالة مغربية، وطوموبيلات مقادّين",
@@ -560,5 +586,86 @@
     "labelTotal": "المجموع",
     "labelReason": "السبب:",
     "viewReservation": "شوف الحجوزات ديالي"
+  },
+  "Activity": {
+    "session_login": "دخول",
+    "session_logout": "خروج",
+    "car_create": "تزادت طوموبيل: {car}",
+    "car_update": "تبدلات طوموبيل: {car}",
+    "car_deactivate": "توقفات طوموبيل: {car}",
+    "reservation_confirm": "تقبل الحجز {ref}",
+    "reservation_reject": "ترفض الحجز {ref}",
+    "reservation_pickup": "خروج الحجز {ref}",
+    "reservation_return": "رجوع الحجز {ref}",
+    "reservation_cancel": "تلغى الحجز {ref}",
+    "deal_create": "صفقة جديدة: {name}",
+    "deal_update": "تبدلات الصفقة: {name}",
+    "deal_note": "تزادت ملاحظة: {name}",
+    "profile_created": "تصاوبات الفيشة",
+    "profile_updated": "تبدلات الفيشة",
+    "profile_deactivated": "الحساب توقف",
+    "profile_reactivated": "الحساب رجع خدام",
+    "via": "بـ {provider}",
+    "password": "كلمة السر",
+    "date": "التاريخ",
+    "type": "النوع",
+    "event": "الحدث",
+    "details": "التفاصيل",
+    "all": "كلشي",
+    "empty": "ما كاين حتى نشاط.",
+    "group": {
+      "session": "الدخول",
+      "fleet": "الطوموبيلات",
+      "reservations": "الحجوزات",
+      "deals": "الصفقات",
+      "profile": "الفيشة"
+    }
+  },
+  "Deals": {
+    "title": "الصفقات / الزبناء المحتملين",
+    "subtitle": "تتبع الزبناء المحتملين والاتفاقات",
+    "new": "صفقة جديدة",
+    "createTitle": "زبون محتمل جديد",
+    "editTitle": "صفقة: {name}",
+    "prospectName": "سمية الزبون",
+    "phone": "التيليفون",
+    "email": "الإيميل",
+    "city": "المدينة",
+    "source": "المصدر",
+    "type": "نوع الاتفاق",
+    "car": "الطوموبيل",
+    "promotion": "البروموسيون",
+    "amount": "المبلغ التقريبي",
+    "expectedDate": "التاريخ المتوقع",
+    "nextFollowUp": "التبعة الجاية",
+    "notes": "ملاحظات",
+    "addNote": "زيد ملاحظة",
+    "notePlaceholder": "تيليفون، ميساج، موعد…",
+    "noteAdded": "تزادت الملاحظة",
+    "created": "تصاوبات الصفقة",
+    "updated": "تبدلات الصفقة",
+    "empty": "زيد أول زبون محتمل باش تتبع المفاوضات ديالك.",
+    "emptyTitle": "مازال ما كاينة حتى صفقة",
+    "timeline": "التتبع",
+    "all": "كلشي",
+    "lastUpdate": "آخر تبديل",
+    "followUpLate": "التبعة تعطلات",
+    "noteLabel": "ملاحظة",
+    "types": {
+      "prospect": "زبون محتمل",
+      "negotiation": "مفاوضة",
+      "rental": "كرية",
+      "cancellation": "إلغاء",
+      "promotion": "بروموسيون"
+    },
+    "sources": {
+      "website": "السيت",
+      "phone": "التيليفون",
+      "whatsapp": "واتساب",
+      "walk_in": "فالوكالة",
+      "social": "الريزو سوسيو",
+      "referral": "توصية",
+      "other": "آخر"
+    }
   }
 }

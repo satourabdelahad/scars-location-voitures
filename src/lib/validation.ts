@@ -82,6 +82,7 @@ export const reservationSchema = z
     driverBirthDate: isoDate.refine((d) => yearsBetween(d) >= 21, "minAge21"),
     flightNumber: z.string().trim().max(16).optional(),
     clientNote: z.string().trim().max(1000).optional(),
+    promoCode: z.string().trim().max(32).optional(),
   })
   .refine((r) => r.endDate > r.startDate, { path: ["endDate"], message: "dateOrder" });
 export type ReservationInput = z.infer<typeof reservationSchema>;

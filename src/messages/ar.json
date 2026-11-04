@@ -151,7 +151,12 @@
     "successBody": "مرجعك هو {ref}. ستتوصل برسالة إلكترونية فور تأكيده من طرف المسيّر.",
     "goToReservations": "عرض حجوزاتي",
     "loginToBook": "سجّل الدخول للحجز",
-    "minAge": "يجب ألا يقل عمر السائق عن 21 سنة."
+    "minAge": "يجب ألا يقل عمر السائق عن 21 سنة.",
+    "promoCode": "رمز ترويجي",
+    "promoApply": "تطبيق",
+    "promoInvalid": "هذا الرمز غير صالح لهذا الإيجار.",
+    "discount": "الخصم",
+    "promoRemove": "إزالة الرمز"
   },
   "Extras": {
     "child_seat": "مقعد أطفال",
@@ -222,7 +227,8 @@
       "passwordMismatch": "كلمتا المرور غير متطابقتين.",
       "passwordWeak": "10 أحرف على الأقل، تتضمن حرفًا ورقمًا.",
       "emailTaken": "يوجد حساب بهذا البريد الإلكتروني.",
-      "generic": "تعذّر تسجيل الدخول. حاول مرة أخرى."
+      "generic": "تعذّر تسجيل الدخول. حاول مرة أخرى.",
+      "server": "تعذّر على الخادم التحقق من تسجيل الدخول (قاعدة البيانات أو الإعدادات). حاول مرة أخرى أو اتصل بالمسؤول."
     }
   },
   "Back": {
@@ -245,7 +251,8 @@
     "openAll": "عرض الكل",
     "todayDepartures": "عمليات الاستلام اليوم",
     "todayReturns": "عمليات الإرجاع اليوم",
-    "nothingToday": "لا شيء مبرمج اليوم."
+    "nothingToday": "لا شيء مبرمج اليوم.",
+    "profile": "ملفي الشخصي"
   },
   "Managers": {
     "title": "المسيّرون",
@@ -310,7 +317,25 @@
       "updated": "تعديل",
       "deactivated": "تعطيل",
       "reactivated": "إعادة التفعيل"
-    }
+    },
+    "tabInfo": "المعلومات",
+    "tabRentals": "الإيجارات المنجزة",
+    "tabDeals": "الصفقات / العملاء المحتملون",
+    "tabHistory": "السجل",
+    "viewHint": "وضع العرض: الحقول للقراءة فقط. انقر على «تعديل» لتغييرها.",
+    "viewHintReadOnly": "وضع العرض: الإدارة وحدها يمكنها تعديل هذا الملف.",
+    "editHint": "جارٍ التعديل: لا تنسَ الحفظ.",
+    "saveChanges": "حفظ",
+    "viewTable": "جدول",
+    "viewTimeline": "خط زمني",
+    "duration": "المدة",
+    "promotion": "العرض الترويجي",
+    "discount": "الخصم",
+    "rentalsCount": "الإيجارات المنجزة",
+    "rentalsRevenue": "رقم المعاملات",
+    "rentalsAvgDays": "متوسط المدة",
+    "rentalsPromo": "مع عرض ترويجي",
+    "rentalsEmpty": "لا توجد إيجارات منجزة حتى الآن."
   },
   "Documents": {
     "cin_front": "البطاقة الوطنية (CINE) — الوجه",
@@ -510,7 +535,8 @@
     "minAge21": "يجب ألا يقل عمر السائق عن 21 سنة.",
     "bad_type": "الصيغ المقبولة: JPG أو PNG أو WEBP أو PDF.",
     "too_big": "الملف كبير جدًا (10 ميغابايت كحد أقصى).",
-    "upload_failed": "فشل رفع الملف. حاول مرة أخرى."
+    "upload_failed": "فشل رفع الملف. حاول مرة أخرى.",
+    "promo_invalid": "هذا الرمز الترويجي غير صالح لهذا الإيجار."
   },
   "About": {
     "title": "وكالة مغربية بسيارات في حالة جيدة",
@@ -560,5 +586,86 @@
     "labelTotal": "المجموع",
     "labelReason": "السبب:",
     "viewReservation": "عرض حجوزاتي"
+  },
+  "Activity": {
+    "session_login": "تسجيل الدخول",
+    "session_logout": "تسجيل الخروج",
+    "car_create": "إضافة سيارة: {car}",
+    "car_update": "تعديل سيارة: {car}",
+    "car_deactivate": "تعطيل سيارة: {car}",
+    "reservation_confirm": "قبول الحجز {ref}",
+    "reservation_reject": "رفض الحجز {ref}",
+    "reservation_pickup": "تسليم الحجز {ref}",
+    "reservation_return": "إرجاع الحجز {ref}",
+    "reservation_cancel": "إلغاء الحجز {ref}",
+    "deal_create": "صفقة جديدة: {name}",
+    "deal_update": "تحديث صفقة: {name}",
+    "deal_note": "إضافة ملاحظة: {name}",
+    "profile_created": "إنشاء الملف",
+    "profile_updated": "تعديل الملف",
+    "profile_deactivated": "تعطيل الحساب",
+    "profile_reactivated": "إعادة تفعيل الحساب",
+    "via": "عبر {provider}",
+    "password": "كلمة المرور",
+    "date": "التاريخ",
+    "type": "النوع",
+    "event": "الحدث",
+    "details": "التفاصيل",
+    "all": "الكل",
+    "empty": "لا يوجد نشاط مسجَّل.",
+    "group": {
+      "session": "الجلسات",
+      "fleet": "الأسطول",
+      "reservations": "الحجوزات",
+      "deals": "الصفقات",
+      "profile": "الملف"
+    }
+  },
+  "Deals": {
+    "title": "الصفقات / العملاء المحتملون",
+    "subtitle": "متابعة العملاء المحتملين والاتفاقات",
+    "new": "صفقة جديدة",
+    "createTitle": "عميل محتمل جديد",
+    "editTitle": "صفقة: {name}",
+    "prospectName": "اسم العميل المحتمل",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "city": "المدينة",
+    "source": "المصدر",
+    "type": "نوع الاتفاق",
+    "car": "السيارة",
+    "promotion": "العرض الترويجي",
+    "amount": "المبلغ التقديري",
+    "expectedDate": "التاريخ المتوقع",
+    "nextFollowUp": "المتابعة القادمة",
+    "notes": "ملاحظات",
+    "addNote": "إضافة ملاحظة",
+    "notePlaceholder": "مكالمة، رسالة، موعد…",
+    "noteAdded": "تمت إضافة الملاحظة",
+    "created": "تم إنشاء الصفقة",
+    "updated": "تم تحديث الصفقة",
+    "empty": "أضف أول عميل محتمل لمتابعة مفاوضاتك.",
+    "emptyTitle": "لا توجد صفقات حتى الآن",
+    "timeline": "المتابعة",
+    "all": "الكل",
+    "lastUpdate": "آخر تحديث",
+    "followUpLate": "متابعة متأخرة",
+    "noteLabel": "ملاحظة",
+    "types": {
+      "prospect": "عميل محتمل",
+      "negotiation": "تفاوض",
+      "rental": "إيجار",
+      "cancellation": "إلغاء",
+      "promotion": "عرض ترويجي"
+    },
+    "sources": {
+      "website": "الموقع",
+      "phone": "الهاتف",
+      "whatsapp": "واتساب",
+      "walk_in": "في الوكالة",
+      "social": "شبكات التواصل",
+      "referral": "توصية",
+      "other": "أخرى"
+    }
   }
 }

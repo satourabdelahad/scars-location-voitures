@@ -64,6 +64,9 @@ export const reservationStatusEnum = pgEnum("reservation_status", [
   "rejected",
 ]);
 export const tokenPurposeEnum = pgEnum("token_purpose", ["invite", "reset"]);
+export const promotionKindEnum = pgEnum("promotion_kind", ["percent", "amount"]);
+export const dealTypeEnum = pgEnum("deal_type", ["prospect", "negotiation", "rental", "cancellation", "promotion"]);
+export const dealSourceEnum = pgEnum("deal_source", ["website", "phone", "whatsapp", "walk_in", "social", "referral", "other"]);
 
 export const LOCALES = ["fr", "ary", "ar", "en", "es", "de", "ja", "zh", "ko"] as const;
 export const localeEnum = pgEnum("locale", LOCALES);
@@ -326,6 +329,27 @@ export const extras = pgTable("extras", {
   isActive: boolean("is_active").notNull().default(true),
 });
 
+/** Codes promo : pourcentage ou montant fixe, sur une période, avec une durée minimale de location. */
+export const promotions = pgTable(
+  "promotions",
+  {
+    id: serial("id").primaryKey(),
+    code: varchar("code", { length: 32 }).notNull().unique(),
+    label: varchar("label", { length: 160 }).notNull(),
+    kind: promotionKindEnum("kind").notNull(),
+    value: numeric("value", { precision: 10, scale: 2, mode: "number" }).notNull(),
+    minDays: smallint("min_days").notNull().default(1),
+    startsOn: date("starts_on", { mode: "string" }),
+    endsOn: date("ends_on", { mode: "string" }),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [
+    check("promotions_value_chk", sql`${t.value} > 0 AND (${t.kind} = 'amount' OR ${t.value} <= 100)`),
+    check("promotions_dates_chk", sql`${t.startsOn} IS NULL OR ${t.endsOn} IS NULL OR ${t.endsOn} >= ${t.startsOn}`),
+  ],
+);
+
 export const reservations = pgTable(
   "reservations",
   {
@@ -348,6 +372,8 @@ export const reservations = pgTable(
     days: smallint("days").notNull(),
     dailyPrice: numeric("daily_price", { precision: 10, scale: 2, mode: "number" }).notNull(),
     extrasTotal: numeric("extras_total", { precision: 10, scale: 2, mode: "number" }).notNull().default(0),
+    promotionId: integer("promotion_id").references(() => promotions.id),
+    discountAmount: numeric("discount_amount", { precision: 10, scale: 2, mode: "number" }).notNull().default(0),
     totalPrice: numeric("total_price", { precision: 10, scale: 2, mode: "number" }).notNull(),
     deposit: numeric("deposit", { precision: 10, scale: 2, mode: "number" }).notNull().default(0),
     status: reservationStatusEnum("status").notNull().default("pending"),
@@ -375,6 +401,7 @@ export const reservations = pgTable(
     index("reservations_status_idx").on(t.status),
     check("reservations_dates_chk", sql`${t.endDate} > ${t.startDate}`),
     check("reservations_total_chk", sql`${t.totalPrice} >= 0`),
+    check("reservations_discount_chk", sql`${t.discountAmount} >= 0`),
   ],
 );
 
@@ -424,7 +451,58 @@ export const auditLogs = pgTable(
     changes: jsonb("changes"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },
-  (t) => [index("audit_logs_entity_idx").on(t.entity, t.entityId)],
+  (t) => [index("audit_logs_entity_idx").on(t.entity, t.entityId), index("audit_logs_actor_idx").on(t.actorId, t.createdAt)],
+);
+
+/* ─────────────────────────── CRM : deals / prospects ─────────────────────────── */
+
+/** Un prospect suivi par un gestionnaire, et le type d'accord où il en est. */
+export const deals = pgTable(
+  "deals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    managerId: uuid("manager_id")
+      .notNull()
+      .references(() => managers.id, { onDelete: "restrict" }),
+    type: dealTypeEnum("type").notNull().default("prospect"),
+    prospectName: varchar("prospect_name", { length: 160 }).notNull(),
+    phone: varchar("phone", { length: 32 }).notNull(),
+    email: varchar("email", { length: 255 }),
+    city: varchar("city", { length: 120 }),
+    source: dealSourceEnum("source").notNull().default("other"),
+    carId: uuid("car_id").references(() => cars.id),
+    promotionId: integer("promotion_id").references(() => promotions.id),
+    reservationId: uuid("reservation_id").references(() => reservations.id),
+    amount: numeric("amount", { precision: 10, scale: 2, mode: "number" }),
+    expectedDate: date("expected_date", { mode: "string" }),
+    nextFollowUp: date("next_follow_up", { mode: "string" }),
+    notes: text("notes"),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    ...timestamps,
+  },
+  (t) => [
+    index("deals_manager_idx").on(t.managerId, t.updatedAt),
+    index("deals_type_idx").on(t.type),
+    check("deals_amount_chk", sql`${t.amount} IS NULL OR ${t.amount} >= 0`),
+  ],
+);
+
+/** Suivi d'un deal : création, changement de type d'accord, notes. */
+export const dealEvents = pgTable(
+  "deal_events",
+  {
+    id: serial("id").primaryKey(),
+    dealId: uuid("deal_id")
+      .notNull()
+      .references(() => deals.id, { onDelete: "restrict" }),
+    fromType: dealTypeEnum("from_type"),
+    toType: dealTypeEnum("to_type"),
+    note: text("note"),
+    actorId: uuid("actor_id").references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [index("deal_events_deal_idx").on(t.dealId, t.createdAt), index("deal_events_actor_idx").on(t.actorId, t.createdAt)],
 );
 
 /* ─────────────────────────────── Relations ─────────────────────────────── */
@@ -439,6 +517,7 @@ export const managersRelations = relations(managers, ({ one, many }) => ({
   user: one(users, { fields: [managers.userId], references: [users.id] }),
   documents: many(managerDocuments),
   events: many(managerEvents),
+  deals: many(deals),
 }));
 
 export const managerDocumentsRelations = relations(managerDocuments, ({ one }) => ({
@@ -469,7 +548,25 @@ export const carTranslationsRelations = relations(carTranslations, ({ one }) => 
   car: one(cars, { fields: [carTranslations.carId], references: [cars.id] }),
 }));
 
+export const promotionsRelations = relations(promotions, ({ many }) => ({
+  reservations: many(reservations),
+}));
+
+export const dealsRelations = relations(deals, ({ one, many }) => ({
+  manager: one(managers, { fields: [deals.managerId], references: [managers.id] }),
+  car: one(cars, { fields: [deals.carId], references: [cars.id] }),
+  promotion: one(promotions, { fields: [deals.promotionId], references: [promotions.id] }),
+  reservation: one(reservations, { fields: [deals.reservationId], references: [reservations.id] }),
+  events: many(dealEvents),
+}));
+
+export const dealEventsRelations = relations(dealEvents, ({ one }) => ({
+  deal: one(deals, { fields: [dealEvents.dealId], references: [deals.id] }),
+  actor: one(users, { fields: [dealEvents.actorId], references: [users.id] }),
+}));
+
 export const reservationsRelations = relations(reservations, ({ one, many }) => ({
+  promotion: one(promotions, { fields: [reservations.promotionId], references: [promotions.id] }),
   car: one(cars, { fields: [reservations.carId], references: [cars.id] }),
   client: one(users, { fields: [reservations.clientId], references: [users.id], relationName: "client" }),
   handler: one(users, { fields: [reservations.handledBy], references: [users.id] }),
@@ -495,3 +592,6 @@ export type Role = (typeof roleEnum.enumValues)[number];
 export type ReservationStatus = (typeof reservationStatusEnum.enumValues)[number];
 export type CarCategory = (typeof carCategoryEnum.enumValues)[number];
 export type DocumentKind = (typeof documentKindEnum.enumValues)[number];
+export type DealType = (typeof dealTypeEnum.enumValues)[number];
+export type DealSource = (typeof dealSourceEnum.enumValues)[number];
+export type Promotion = typeof promotions.$inferSelect;

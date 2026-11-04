@@ -32,8 +32,14 @@ export async function loginAction(_: AuthFormState, form: FormData): Promise<Aut
     });
   } catch (err) {
     if (err instanceof AuthError) {
-      const code = (err as AuthError & { code?: string }).code;
-      return { error: code === "disabled" ? "disabled" : "invalid" };
+      // Seule une vraie erreur d'identifiants s'affiche "email ou mot de passe incorrect".
+      if (err.type === "CredentialsSignin") {
+        const code = (err as AuthError & { code?: string }).code;
+        return { error: code === "disabled" ? "disabled" : "invalid" };
+      }
+      // Base inaccessible, AUTH_SECRET manquant… : on le dit clairement et on détaille dans le terminal.
+      console.error("[auth] Échec de connexion côté serveur :", err.type, err.cause ?? err.message);
+      return { error: "server" };
     }
     throw err; // redirection Next.js
   }

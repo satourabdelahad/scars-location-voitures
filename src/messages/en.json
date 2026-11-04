@@ -151,7 +151,12 @@
     "successBody": "Your reference is {ref}. You'll get an email as soon as a manager confirms it.",
     "goToReservations": "See my bookings",
     "loginToBook": "Sign in to book",
-    "minAge": "The driver must be at least 21 years old."
+    "minAge": "The driver must be at least 21 years old.",
+    "promoCode": "Promo code",
+    "promoApply": "Apply",
+    "promoInvalid": "This code isn't valid for this rental.",
+    "discount": "Discount",
+    "promoRemove": "Remove code"
   },
   "Extras": {
     "child_seat": "Child seat",
@@ -222,7 +227,8 @@
       "passwordMismatch": "The two passwords don't match.",
       "passwordWeak": "At least 10 characters, with a letter and a number.",
       "emailTaken": "An account already exists with this email.",
-      "generic": "Sign-in failed. Try again."
+      "generic": "Sign-in failed. Try again.",
+      "server": "The server couldn't verify the sign-in (database or configuration). Try again or contact the administrator."
     }
   },
   "Back": {
@@ -245,7 +251,8 @@
     "openAll": "Show all",
     "todayDepartures": "Today's pickups",
     "todayReturns": "Today's returns",
-    "nothingToday": "Nothing scheduled today."
+    "nothingToday": "Nothing scheduled today.",
+    "profile": "My profile"
   },
   "Managers": {
     "title": "Managers",
@@ -310,7 +317,25 @@
       "updated": "Edited",
       "deactivated": "Deactivated",
       "reactivated": "Reactivated"
-    }
+    },
+    "tabInfo": "Information",
+    "tabRentals": "Completed rentals",
+    "tabDeals": "Deals / prospects",
+    "tabHistory": "History",
+    "viewHint": "View mode: fields are read-only. Click “Edit” to change them.",
+    "viewHintReadOnly": "View mode: only the administration can edit this profile.",
+    "editHint": "Editing: remember to save.",
+    "saveChanges": "Save",
+    "viewTable": "Table",
+    "viewTimeline": "Timeline",
+    "duration": "Duration",
+    "promotion": "Promotion",
+    "discount": "Discount",
+    "rentalsCount": "Completed rentals",
+    "rentalsRevenue": "Revenue",
+    "rentalsAvgDays": "Average duration",
+    "rentalsPromo": "With promotion",
+    "rentalsEmpty": "No completed rentals yet."
   },
   "Documents": {
     "cin_front": "National ID card (CINE), front",
@@ -510,7 +535,8 @@
     "minAge21": "The driver must be at least 21 years old.",
     "bad_type": "Accepted formats: JPG, PNG, WEBP or PDF.",
     "too_big": "File too large (10 MB maximum).",
-    "upload_failed": "The upload failed. Try again."
+    "upload_failed": "The upload failed. Try again.",
+    "promo_invalid": "This promo code isn't valid for this rental."
   },
   "About": {
     "title": "A Moroccan agency with well-kept cars",
@@ -560,5 +586,86 @@
     "labelTotal": "Total",
     "labelReason": "Reason:",
     "viewReservation": "See my bookings"
+  },
+  "Activity": {
+    "session_login": "Signed in",
+    "session_logout": "Signed out",
+    "car_create": "Car added: {car}",
+    "car_update": "Car updated: {car}",
+    "car_deactivate": "Car deactivated: {car}",
+    "reservation_confirm": "Booking {ref} accepted",
+    "reservation_reject": "Booking {ref} declined",
+    "reservation_pickup": "Booking {ref} picked up",
+    "reservation_return": "Booking {ref} returned",
+    "reservation_cancel": "Booking {ref} cancelled",
+    "deal_create": "New deal: {name}",
+    "deal_update": "Deal updated: {name}",
+    "deal_note": "Note added: {name}",
+    "profile_created": "Profile created",
+    "profile_updated": "Profile updated",
+    "profile_deactivated": "Account deactivated",
+    "profile_reactivated": "Account reactivated",
+    "via": "via {provider}",
+    "password": "password",
+    "date": "Date",
+    "type": "Type",
+    "event": "Event",
+    "details": "Details",
+    "all": "All",
+    "empty": "No activity recorded.",
+    "group": {
+      "session": "Sessions",
+      "fleet": "Fleet",
+      "reservations": "Bookings",
+      "deals": "Deals",
+      "profile": "Profile"
+    }
+  },
+  "Deals": {
+    "title": "Deals / prospects",
+    "subtitle": "Track prospects and agreements",
+    "new": "New deal",
+    "createTitle": "New prospect",
+    "editTitle": "Deal: {name}",
+    "prospectName": "Prospect name",
+    "phone": "Phone",
+    "email": "Email",
+    "city": "City",
+    "source": "Source",
+    "type": "Deal type",
+    "car": "Car",
+    "promotion": "Promotion",
+    "amount": "Estimated amount",
+    "expectedDate": "Expected date",
+    "nextFollowUp": "Next follow-up",
+    "notes": "Notes",
+    "addNote": "Add a note",
+    "notePlaceholder": "Call, message, meeting…",
+    "noteAdded": "Note added",
+    "created": "Deal created",
+    "updated": "Deal updated",
+    "empty": "Add your first prospect to track your negotiations.",
+    "emptyTitle": "No deals yet",
+    "timeline": "Follow-up",
+    "all": "All",
+    "lastUpdate": "Last update",
+    "followUpLate": "Follow-up overdue",
+    "noteLabel": "Note",
+    "types": {
+      "prospect": "Prospect",
+      "negotiation": "Negotiation",
+      "rental": "Rental",
+      "cancellation": "Cancellation",
+      "promotion": "Promotion"
+    },
+    "sources": {
+      "website": "Website",
+      "phone": "Phone",
+      "whatsapp": "WhatsApp",
+      "walk_in": "Walk-in",
+      "social": "Social media",
+      "referral": "Referral",
+      "other": "Other"
+    }
   }
 }

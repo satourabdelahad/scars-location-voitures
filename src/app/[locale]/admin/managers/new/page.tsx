@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/ui/misc";
 import { requireRole } from "@/server/guards";
-import { ManagerForm } from "../manager-form";
+import { ManagerForm } from "@/features/managers/manager-form";
 
 export default async function NewManagerPage({ params }: PageProps<"/[locale]/admin/managers/new">) {
   const { locale } = await params;

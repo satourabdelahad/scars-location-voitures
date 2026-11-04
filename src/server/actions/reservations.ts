@@ -11,6 +11,7 @@ import { formatDate, formatMoney, rentalDays, todayISO } from "@/lib/utils";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { sendReservationEmail } from "@/server/email";
 import { isLocale } from "@/i18n/config";
+import { computeDiscount, findApplicablePromotion, promotionLabel } from "@/server/promotions";
 
 function fieldErrors(issues: z.core.$ZodIssue[]) {
   const out: Record<string, string> = {};
@@ -66,7 +67,11 @@ export async function createReservation(input: unknown): Promise<ActionResult<{ 
       ? await db.select().from(extras).where(and(inArray(extras.id, r.extras), eq(extras.isActive, true)))
       : [];
     const extrasTotal = chosen.reduce((s, x) => s + x.pricePerDay * days, 0);
-    const total = car.dailyPrice * days + extrasTotal;
+    const subtotal = car.dailyPrice * days + extrasTotal;
+    const promo = r.promoCode ? await findApplicablePromotion(r.promoCode, r.startDate, days) : null;
+    if (r.promoCode && !promo) return { ok: false, error: "promo_invalid", fieldErrors: { promoCode: "promo_invalid" } };
+    const discount = promo ? computeDiscount(promo, subtotal) : 0;
+    const total = subtotal - discount;
 
     const created = await db.transaction(async (tx) => {
       const [{ seq }] = (
@@ -86,6 +91,8 @@ export async function createReservation(input: unknown): Promise<ActionResult<{ 
           days,
           dailyPrice: car.dailyPrice,
           extrasTotal,
+          promotionId: promo?.id ?? null,
+          discountAmount: discount,
           totalPrice: total,
           deposit: car.deposit,
           driverFirstName: r.driverFirstName,
@@ -185,4 +192,18 @@ export async function saveInternalNote(id: string, note: string): Promise<Action
   } catch (err) {
     return toActionError(err);
   }
+}
+
+/** Vérifie un code promo pour l'aperçu du prix (le montant final est toujours recalculé à la réservation). */
+export async function checkPromoCode(input: { code: string; carId: string; startDate: string; endDate: string; extras: number[] }) {
+  const days = rentalDays(input.startDate, input.endDate);
+  if (!input.code.trim() || days < 1) return { ok: false as const };
+  const [car] = await db.select({ dailyPrice: cars.dailyPrice }).from(cars).where(and(eq(cars.id, input.carId), eq(cars.status, "active"))).limit(1);
+  if (!car) return { ok: false as const };
+  const promo = await findApplicablePromotion(input.code, input.startDate, days);
+  if (!promo) return { ok: false as const };
+  const ids = input.extras.filter((n) => Number.isInteger(n)).slice(0, 10);
+  const chosen = ids.length ? await db.select().from(extras).where(and(inArray(extras.id, ids), eq(extras.isActive, true))) : [];
+  const subtotal = car.dailyPrice * days + chosen.reduce((s, x) => s + x.pricePerDay * days, 0);
+  return { ok: true as const, code: promo.code, label: promotionLabel(promo), discount: computeDiscount(promo, subtotal) };
 }

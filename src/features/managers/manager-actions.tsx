@@ -11,7 +11,20 @@ import { useRouter } from "@/i18n/navigation";
 import type { DocumentKind } from "@/db/schema";
 import { deactivateManager, getManagerDocumentUrl, reactivateManager, resendManagerInvite } from "@/server/actions/managers";
 
-export function ManagerActions({ id, name, status, canResendInvite }: { id: string; name: string; status: "active" | "deactivated"; canResendInvite: boolean }) {
+export function ManagerActions({
+  id,
+  name,
+  status,
+  canResendInvite = false,
+  compact = false,
+}: {
+  id: string;
+  name: string;
+  status: "active" | "deactivated";
+  canResendInvite?: boolean;
+  /** Bouton icône, pour la colonne d'actions du tableau */
+  compact?: boolean;
+}) {
   const t = useTranslations("Managers");
   const tc = useTranslations("Common");
   const te = useTranslations("Errors");
@@ -50,7 +63,20 @@ export function ManagerActions({ id, name, status, canResendInvite }: { id: stri
       )}
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); setError(undefined); }}>
         <DialogTrigger asChild>
-          {status === "active" ? (
+          {compact ? (
+            <button
+              type="button"
+              aria-label={status === "active" ? t("deactivate") : t("reactivate")}
+              title={status === "active" ? t("deactivate") : t("reactivate")}
+              className={
+                status === "active"
+                  ? "grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-danger-soft hover:text-danger"
+                  : "grid size-8 place-items-center rounded-lg text-palm hover:bg-palm-soft"
+              }
+            >
+              {status === "active" ? <PowerOff className="size-4" /> : <Power className="size-4" />}
+            </button>
+          ) : status === "active" ? (
             <Button variant="dangerOutline"><PowerOff />{t("deactivate")}</Button>
           ) : (
             <Button variant="success"><Power />{t("reactivate")}</Button>

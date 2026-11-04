@@ -4,6 +4,7 @@ import { Eye, Pencil } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { DataTable, type Column } from "@/components/data-table/data-table";
+import { ManagerActions } from "./manager-actions";
 import { ExportMenu } from "@/components/data-table/export-menu";
 import { Badge } from "@/components/ui/misc";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -94,10 +95,18 @@ export function ManagersTable({ rows, prefs }: { rows: ManagerRow[]; prefs: { vi
         text: (m) => m.lastName,
         filter: { type: "text" },
         cell: (m) => (
-          <Link href={`/admin/managers/${m.id}`} className="font-semibold text-ink hover:text-majorelle">{m.lastName}</Link>
+          <Link href={`/admin/managers/${m.id}`} className="font-semibold text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.lastName}</Link>
         ),
       },
-      { id: "firstName", header: t("firstName"), text: (m) => m.firstName, filter: { type: "text" } },
+      {
+        id: "firstName",
+        header: t("firstName"),
+        text: (m) => m.firstName,
+        filter: { type: "text" },
+        cell: (m) => (
+          <Link href={`/admin/managers/${m.id}`} className="font-medium text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.firstName}</Link>
+        ),
+      },
       { id: "email", header: t("email"), text: (m) => m.email, filter: { type: "text" }, cell: (m) => <a href={`mailto:${m.email}`} className="hover:text-majorelle" dir="ltr">{m.email}</a> },
       { id: "phone", header: t("phone"), text: (m) => m.phone, filter: { type: "text" }, cell: (m) => <a href={`tel:${m.phone}`} dir="ltr" className="tabular hover:text-majorelle">{m.phone}</a> },
       { id: "whatsapp", header: t("whatsapp"), text: (m) => m.whatsapp, filter: { type: "text" }, cell: (m) => <a href={`https://wa.me/${m.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener" dir="ltr" className="tabular text-palm hover:underline">{m.whatsapp}</a> },
@@ -139,9 +148,10 @@ export function ManagersTable({ rows, prefs }: { rows: ManagerRow[]; prefs: { vi
             <Link href={`/admin/managers/${m.id}`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("view")} title={c("view")}>
               <Eye className="size-4" />
             </Link>
-            <Link href={`/admin/managers/${m.id}/edit`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("edit")} title={c("edit")}>
+            <Link href={`/admin/managers/${m.id}?edit=1`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("edit")} title={c("edit")}>
               <Pencil className="size-4" />
             </Link>
+            <ManagerActions id={m.id} name={`${m.firstName} ${m.lastName}`} status={m.status} compact />
           </div>
         ),
       },

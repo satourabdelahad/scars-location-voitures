@@ -10,7 +10,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { accounts, sessions, users, verificationTokens, type Role } from "@/db/schema";
+import { accounts, auditLogs, sessions, users, verificationTokens, type Role } from "@/db/schema";
 
 declare module "next-auth" {
   interface Session {
@@ -143,8 +143,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   events: {
-    async signIn({ user }) {
-      if (user.id) await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
+    // Connexions et déconnexions alimentent l'onglet "Historique" de la fiche gestionnaire.
+    async signIn({ user, account }) {
+      if (!user.id) return;
+      await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
+      await db
+        .insert(auditLogs)
+        .values({ actorId: user.id, entity: "session", entityId: user.id, action: "login", changes: { provider: account?.provider ?? "credentials" } })
+        .catch((e) => console.error("[auth] journal de connexion", e));
+    },
+    async signOut(message) {
+      const userId = "token" in message ? message.token?.sub : "session" in message ? message.session?.userId : undefined;
+      if (!userId) return;
+      await db
+        .insert(auditLogs)
+        .values({ actorId: userId, entity: "session", entityId: userId, action: "logout" })
+        .catch((e) => console.error("[auth] journal de déconnexion", e));
     },
   },
 });

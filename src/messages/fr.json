@@ -151,7 +151,12 @@
     "successBody": "Votre référence est {ref}. Vous recevrez un email dès qu'un gestionnaire l'aura confirmée.",
     "goToReservations": "Voir mes réservations",
     "loginToBook": "Connectez-vous pour réserver",
-    "minAge": "Le conducteur doit avoir au moins 21 ans."
+    "minAge": "Le conducteur doit avoir au moins 21 ans.",
+    "promoCode": "Code promo",
+    "promoApply": "Appliquer",
+    "promoInvalid": "Ce code n'est pas valable pour cette location.",
+    "discount": "Remise",
+    "promoRemove": "Retirer le code"
   },
   "Extras": {
     "child_seat": "Siège enfant",
@@ -222,7 +227,8 @@
       "passwordMismatch": "Les deux mots de passe ne correspondent pas.",
       "passwordWeak": "Au moins 10 caractères, avec une lettre et un chiffre.",
       "emailTaken": "Un compte existe déjà avec cet email.",
-      "generic": "La connexion a échoué. Réessayez."
+      "generic": "La connexion a échoué. Réessayez.",
+      "server": "Le serveur n'a pas pu vérifier la connexion (base de données ou configuration). Réessayez ou contactez l'administrateur."
     }
   },
   "Back": {
@@ -245,7 +251,8 @@
     "openAll": "Tout afficher",
     "todayDepartures": "Départs du jour",
     "todayReturns": "Retours du jour",
-    "nothingToday": "Rien de prévu aujourd'hui."
+    "nothingToday": "Rien de prévu aujourd'hui.",
+    "profile": "Mon profil"
   },
   "Managers": {
     "title": "Gestionnaires",
@@ -310,7 +317,25 @@
       "deactivated": "Désactivation",
       "reactivated": "Réactivation"
     },
-    "trendSubtitle": "Total des locations confirmées depuis 30 jours, jour après jour."
+    "trendSubtitle": "Total des locations confirmées depuis 30 jours, jour après jour.",
+    "tabInfo": "Informations",
+    "tabRentals": "Réalisations",
+    "tabDeals": "Deals / prospects",
+    "tabHistory": "Historique",
+    "viewHint": "Consultation : les champs sont en lecture seule. Cliquez sur « Modifier » pour les changer.",
+    "viewHintReadOnly": "Consultation : seule l'administration peut modifier cette fiche.",
+    "editHint": "Modification en cours : pensez à sauvegarder.",
+    "saveChanges": "Sauvegarder",
+    "viewTable": "Tableau",
+    "viewTimeline": "Timeline",
+    "duration": "Durée",
+    "promotion": "Promotion",
+    "discount": "Remise",
+    "rentalsCount": "Locations réalisées",
+    "rentalsRevenue": "Chiffre d'affaires",
+    "rentalsAvgDays": "Durée moyenne",
+    "rentalsPromo": "Avec promotion",
+    "rentalsEmpty": "Aucune location réalisée pour le moment."
   },
   "Documents": {
     "cin_front": "Carte d'identité (CINE) — recto",
@@ -510,7 +535,8 @@
     "minAge21": "Le conducteur doit avoir au moins 21 ans.",
     "bad_type": "Formats acceptés : JPG, PNG, WEBP ou PDF.",
     "too_big": "Fichier trop lourd (10 Mo maximum).",
-    "upload_failed": "L'envoi du fichier a échoué. Réessayez."
+    "upload_failed": "L'envoi du fichier a échoué. Réessayez.",
+    "promo_invalid": "Ce code promo n'est pas valable pour cette location."
   },
   "About": {
     "title": "Une agence marocaine, des voitures bien tenues",
@@ -560,5 +586,86 @@
     "labelTotal": "Total",
     "labelReason": "Motif :",
     "viewReservation": "Voir mes réservations"
+  },
+  "Activity": {
+    "session_login": "Connexion",
+    "session_logout": "Déconnexion",
+    "car_create": "Voiture ajoutée : {car}",
+    "car_update": "Voiture modifiée : {car}",
+    "car_deactivate": "Voiture désactivée : {car}",
+    "reservation_confirm": "Réservation {ref} acceptée",
+    "reservation_reject": "Réservation {ref} refusée",
+    "reservation_pickup": "Départ de la réservation {ref}",
+    "reservation_return": "Retour de la réservation {ref}",
+    "reservation_cancel": "Réservation {ref} annulée",
+    "deal_create": "Nouveau deal : {name}",
+    "deal_update": "Deal mis à jour : {name}",
+    "deal_note": "Note ajoutée : {name}",
+    "profile_created": "Fiche créée",
+    "profile_updated": "Fiche modifiée",
+    "profile_deactivated": "Compte désactivé",
+    "profile_reactivated": "Compte réactivé",
+    "via": "via {provider}",
+    "password": "mot de passe",
+    "date": "Date",
+    "type": "Type",
+    "event": "Événement",
+    "details": "Détails",
+    "all": "Tout",
+    "empty": "Aucune activité enregistrée.",
+    "group": {
+      "session": "Connexions",
+      "fleet": "Parc",
+      "reservations": "Réservations",
+      "deals": "Deals",
+      "profile": "Fiche"
+    }
+  },
+  "Deals": {
+    "title": "Deals / prospects",
+    "subtitle": "Suivi des prospects et des accords",
+    "new": "Nouveau deal",
+    "createTitle": "Nouveau prospect",
+    "editTitle": "Deal : {name}",
+    "prospectName": "Nom du prospect",
+    "phone": "Téléphone",
+    "email": "Email",
+    "city": "Ville",
+    "source": "Source",
+    "type": "Type d'accord",
+    "car": "Voiture",
+    "promotion": "Promotion",
+    "amount": "Montant estimé",
+    "expectedDate": "Date prévue",
+    "nextFollowUp": "Prochaine relance",
+    "notes": "Notes",
+    "addNote": "Ajouter une note",
+    "notePlaceholder": "Appel, message, rendez-vous…",
+    "noteAdded": "Note ajoutée",
+    "created": "Deal créé",
+    "updated": "Deal mis à jour",
+    "empty": "Ajoutez votre premier prospect pour suivre vos négociations.",
+    "emptyTitle": "Aucun deal pour le moment",
+    "timeline": "Suivi",
+    "all": "Tous",
+    "lastUpdate": "Dernière mise à jour",
+    "followUpLate": "Relance en retard",
+    "noteLabel": "Note",
+    "types": {
+      "prospect": "Prospect",
+      "negotiation": "Négociation",
+      "rental": "Location",
+      "cancellation": "Annulation",
+      "promotion": "Promotion"
+    },
+    "sources": {
+      "website": "Site web",
+      "phone": "Téléphone",
+      "whatsapp": "WhatsApp",
+      "walk_in": "En agence",
+      "social": "Réseaux sociaux",
+      "referral": "Recommandation",
+      "other": "Autre"
+    }
   }
 }

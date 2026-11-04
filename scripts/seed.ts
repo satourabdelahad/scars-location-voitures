@@ -3,7 +3,7 @@
  *   npm run db:seed            → agences + options + administrateur
  *   npm run db:seed -- --demo  → + gestionnaires, voitures, clients et réservations fictifs
  */
-import "dotenv/config";
+import "./load-env";
 import bcrypt from "bcryptjs";
 import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -98,16 +98,35 @@ async function main() {
 
   await db.insert(agencies).values(AGENCIES).onConflictDoNothing();
   await db.insert(extras).values(EXTRAS).onConflictDoNothing();
+  // Codes promo de départ (le code est unique : relancer le seed ne crée pas de doublon).
+  await db
+    .insert(schema.promotions)
+    .values([
+      { code: "BIENVENUE10", label: "Bienvenue -10 %", kind: "percent" as const, value: 10, isActive: true },
+      { code: "ETE2026", label: "Été 2026 -15 %", kind: "percent" as const, value: 15, startsOn: "2026-06-01", endsOn: "2026-09-30", isActive: true },
+      { code: "LONGUEDUREE", label: "Longue durée -200 MAD", kind: "amount" as const, value: 200, minDays: 7, isActive: true },
+      { code: "RAMADAN", label: "Ramadan -12 %", kind: "percent" as const, value: 12, isActive: false },
+    ])
+    .onConflictDoNothing();
 
   const adminEmail = (process.env.SEED_ADMIN_EMAIL ?? "admin@dizycars.com").toLowerCase();
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "ChangezMoi!2026";
+  const adminHash = await bcrypt.hash(adminPassword, 12);
   let [admin] = await db.select().from(users).where(eq(users.email, adminEmail));
   if (!admin) {
     [admin] = await db
       .insert(users)
-      .values({ name: "Administrateur", email: adminEmail, role: "admin", passwordHash: await bcrypt.hash(adminPassword, 12), emailVerified: new Date() })
+      .values({ name: "Administrateur", email: adminEmail, role: "admin", passwordHash: adminHash, emailVerified: new Date() })
       .returning();
     console.log(`✓ Administrateur créé : ${adminEmail}`);
+  } else {
+    // Relancer le seed remet l'administrateur en accord avec SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD.
+    [admin] = await db
+      .update(users)
+      .set({ role: "admin", status: "active", passwordHash: adminHash })
+      .where(eq(users.id, admin.id))
+      .returning();
+    console.log(`✓ Administrateur ${adminEmail} : mot de passe remis à la valeur de SEED_ADMIN_PASSWORD`);
   }
 
   if (!demo) {

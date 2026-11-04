@@ -7,6 +7,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Toaster } from "sonner";
 import { routing } from "@/i18n/routing";
 import { localeMeta, type Locale } from "@/i18n/config";
+import { TopLoader } from "@/components/top-loader";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -44,6 +45,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
     <html lang={locale === "ary" ? "ar-MA" : locale} dir={meta.dir} data-theme={theme} suppressHydrationWarning>
       <body className="min-h-dvh">
         <NextIntlClientProvider>
+          <TopLoader />
           {children}
           <Toaster position={meta.dir === "rtl" ? "bottom-left" : "bottom-right"} richColors closeButton dir={meta.dir} />
         </NextIntlClientProvider>

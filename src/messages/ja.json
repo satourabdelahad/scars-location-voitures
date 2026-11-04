@@ -151,7 +151,12 @@
     "successBody": "予約番号は {ref} です。マネージャーが確定するとメールでお知らせします。",
     "goToReservations": "予約一覧を見る",
     "loginToBook": "ログインして予約",
-    "minAge": "運転者は21歳以上である必要があります。"
+    "minAge": "運転者は21歳以上である必要があります。",
+    "promoCode": "プロモコード",
+    "promoApply": "適用",
+    "promoInvalid": "このコードはこのレンタルには使えません。",
+    "discount": "割引",
+    "promoRemove": "コードを削除"
   },
   "Extras": {
     "child_seat": "チャイルドシート",
@@ -222,7 +227,8 @@
       "passwordMismatch": "2つのパスワードが一致しません。",
       "passwordWeak": "英字と数字を含む10文字以上にしてください。",
       "emailTaken": "このメールアドレスのアカウントはすでに存在します。",
-      "generic": "ログインできませんでした。もう一度お試しください。"
+      "generic": "ログインできませんでした。もう一度お試しください。",
+      "server": "サーバーがログインを確認できませんでした（データベースまたは設定）。もう一度お試しいただくか、管理者にお問い合わせください。"
     }
   },
   "Back": {
@@ -245,7 +251,8 @@
     "openAll": "すべて表示",
     "todayDepartures": "本日の貸出",
     "todayReturns": "本日の返却",
-    "nothingToday": "本日の予定はありません。"
+    "nothingToday": "本日の予定はありません。",
+    "profile": "マイプロフィール"
   },
   "Managers": {
     "title": "マネージャー",
@@ -310,7 +317,25 @@
       "updated": "編集",
       "deactivated": "無効化",
       "reactivated": "再有効化"
-    }
+    },
+    "tabInfo": "情報",
+    "tabRentals": "完了したレンタル",
+    "tabDeals": "商談 / 見込み客",
+    "tabHistory": "履歴",
+    "viewHint": "閲覧モード：各項目は読み取り専用です。変更するには「編集」をクリックしてください。",
+    "viewHintReadOnly": "閲覧モード：このプロフィールは管理者のみ編集できます。",
+    "editHint": "編集中：保存を忘れずに。",
+    "saveChanges": "保存",
+    "viewTable": "表",
+    "viewTimeline": "タイムライン",
+    "duration": "期間",
+    "promotion": "プロモーション",
+    "discount": "割引",
+    "rentalsCount": "完了したレンタル",
+    "rentalsRevenue": "売上",
+    "rentalsAvgDays": "平均期間",
+    "rentalsPromo": "プロモーション適用",
+    "rentalsEmpty": "完了したレンタルはまだありません。"
   },
   "Documents": {
     "cin_front": "身分証明書（CINE）表面",
@@ -510,7 +535,8 @@
     "minAge21": "運転者は21歳以上である必要があります。",
     "bad_type": "対応形式：JPG、PNG、WEBP、PDF。",
     "too_big": "ファイルが大きすぎます（最大10MB）。",
-    "upload_failed": "アップロードに失敗しました。もう一度お試しください。"
+    "upload_failed": "アップロードに失敗しました。もう一度お試しください。",
+    "promo_invalid": "このプロモコードはこのレンタルには使えません。"
   },
   "About": {
     "title": "整備の行き届いた車を、モロッコから",
@@ -560,5 +586,86 @@
     "labelTotal": "合計",
     "labelReason": "理由：",
     "viewReservation": "予約一覧を見る"
+  },
+  "Activity": {
+    "session_login": "ログイン",
+    "session_logout": "ログアウト",
+    "car_create": "車両を追加：{car}",
+    "car_update": "車両を変更：{car}",
+    "car_deactivate": "車両を無効化：{car}",
+    "reservation_confirm": "予約 {ref} を承認",
+    "reservation_reject": "予約 {ref} を却下",
+    "reservation_pickup": "予約 {ref} の貸出",
+    "reservation_return": "予約 {ref} の返却",
+    "reservation_cancel": "予約 {ref} をキャンセル",
+    "deal_create": "新しい商談：{name}",
+    "deal_update": "商談を更新：{name}",
+    "deal_note": "メモを追加：{name}",
+    "profile_created": "プロフィール作成",
+    "profile_updated": "プロフィール変更",
+    "profile_deactivated": "アカウント無効化",
+    "profile_reactivated": "アカウント再有効化",
+    "via": "{provider} 経由",
+    "password": "パスワード",
+    "date": "日付",
+    "type": "種類",
+    "event": "イベント",
+    "details": "詳細",
+    "all": "すべて",
+    "empty": "記録されたアクティビティはありません。",
+    "group": {
+      "session": "セッション",
+      "fleet": "車両",
+      "reservations": "予約",
+      "deals": "商談",
+      "profile": "プロフィール"
+    }
+  },
+  "Deals": {
+    "title": "商談 / 見込み客",
+    "subtitle": "見込み客と合意の管理",
+    "new": "新しい商談",
+    "createTitle": "新しい見込み客",
+    "editTitle": "商談：{name}",
+    "prospectName": "見込み客の名前",
+    "phone": "電話",
+    "email": "メール",
+    "city": "都市",
+    "source": "経路",
+    "type": "合意の種類",
+    "car": "車両",
+    "promotion": "プロモーション",
+    "amount": "見込み金額",
+    "expectedDate": "予定日",
+    "nextFollowUp": "次回フォロー",
+    "notes": "メモ",
+    "addNote": "メモを追加",
+    "notePlaceholder": "電話、メッセージ、面談…",
+    "noteAdded": "メモを追加しました",
+    "created": "商談を作成しました",
+    "updated": "商談を更新しました",
+    "empty": "最初の見込み客を追加して商談を管理しましょう。",
+    "emptyTitle": "商談はまだありません",
+    "timeline": "経過",
+    "all": "すべて",
+    "lastUpdate": "最終更新",
+    "followUpLate": "フォロー期限切れ",
+    "noteLabel": "メモ",
+    "types": {
+      "prospect": "見込み客",
+      "negotiation": "交渉",
+      "rental": "レンタル",
+      "cancellation": "キャンセル",
+      "promotion": "プロモーション"
+    },
+    "sources": {
+      "website": "ウェブサイト",
+      "phone": "電話",
+      "whatsapp": "WhatsApp",
+      "walk_in": "店頭",
+      "social": "SNS",
+      "referral": "紹介",
+      "other": "その他"
+    }
   }
 }

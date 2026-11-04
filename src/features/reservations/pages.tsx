@@ -8,6 +8,7 @@ import { CarArt } from "@/components/car-art";
 import { Badge, DefinitionList, PageHeader, Panel, reservationTone } from "@/components/ui/misc";
 import { getReservationForStaff, listReservationsForStaff } from "@/server/queries/reservations";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
+import { promotionLabel } from "@/lib/promotion-label";
 import { ReservationsTable } from "./reservations-table";
 import { ReservationActions } from "./reservation-actions";
 
@@ -97,6 +98,9 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
               {r.extras.map((x) => (
                 <div key={x.extraId} className="flex justify-between"><dt className="text-ink-2">{tx(x.extra.code as "gps")}</dt><dd className="font-semibold text-ink">{formatMoney(x.unitPricePerDay * r.days, locale)}</dd></div>
               ))}
+              {r.discountAmount > 0 && (
+                <div className="flex justify-between text-palm"><dt>{tb("discount")}{r.promotion ? <span dir="ltr"> ({promotionLabel(r.promotion)})</span> : null}</dt><dd className="font-semibold">−{formatMoney(r.discountAmount, locale)}</dd></div>
+              )}
               <div className="flex items-baseline justify-between border-t border-mist pt-3">
                 <dt className="font-bold text-ink">{tb("total")}</dt>
                 <dd className="text-2xl font-extrabold text-ink" style={{ fontStretch: "112%" }}>{formatMoney(r.totalPrice, locale)}</dd>

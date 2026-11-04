@@ -151,7 +151,12 @@
     "successBody": "Ihre Referenz lautet {ref}. Sie erhalten eine E-Mail, sobald ein Disponent sie bestätigt hat.",
     "goToReservations": "Meine Buchungen ansehen",
     "loginToBook": "Zum Buchen anmelden",
-    "minAge": "Der Fahrer muss mindestens 21 Jahre alt sein."
+    "minAge": "Der Fahrer muss mindestens 21 Jahre alt sein.",
+    "promoCode": "Gutscheincode",
+    "promoApply": "Anwenden",
+    "promoInvalid": "Dieser Code gilt nicht für diese Miete.",
+    "discount": "Rabatt",
+    "promoRemove": "Code entfernen"
   },
   "Extras": {
     "child_seat": "Kindersitz",
@@ -222,7 +227,8 @@
       "passwordMismatch": "Die beiden Passwörter stimmen nicht überein.",
       "passwordWeak": "Mindestens 10 Zeichen, mit einem Buchstaben und einer Ziffer.",
       "emailTaken": "Mit dieser E-Mail existiert bereits ein Konto.",
-      "generic": "Die Anmeldung ist fehlgeschlagen. Versuchen Sie es erneut."
+      "generic": "Die Anmeldung ist fehlgeschlagen. Versuchen Sie es erneut.",
+      "server": "Der Server konnte die Anmeldung nicht prüfen (Datenbank oder Konfiguration). Versuchen Sie es erneut oder wenden Sie sich an den Administrator."
     }
   },
   "Back": {
@@ -245,7 +251,8 @@
     "openAll": "Alle anzeigen",
     "todayDepartures": "Heutige Abholungen",
     "todayReturns": "Heutige Rückgaben",
-    "nothingToday": "Heute nichts geplant."
+    "nothingToday": "Heute nichts geplant.",
+    "profile": "Mein Profil"
   },
   "Managers": {
     "title": "Disponenten",
@@ -310,7 +317,25 @@
       "updated": "Änderung",
       "deactivated": "Deaktivierung",
       "reactivated": "Reaktivierung"
-    }
+    },
+    "tabInfo": "Informationen",
+    "tabRentals": "Abgeschlossene Vermietungen",
+    "tabDeals": "Deals / Interessenten",
+    "tabHistory": "Verlauf",
+    "viewHint": "Ansicht: Die Felder sind schreibgeschützt. Klicken Sie auf „Bearbeiten“, um sie zu ändern.",
+    "viewHintReadOnly": "Ansicht: Nur die Verwaltung kann dieses Profil bearbeiten.",
+    "editHint": "Bearbeitung: Speichern nicht vergessen.",
+    "saveChanges": "Speichern",
+    "viewTable": "Tabelle",
+    "viewTimeline": "Zeitleiste",
+    "duration": "Dauer",
+    "promotion": "Aktion",
+    "discount": "Rabatt",
+    "rentalsCount": "Abgeschlossene Vermietungen",
+    "rentalsRevenue": "Umsatz",
+    "rentalsAvgDays": "Durchschnittliche Dauer",
+    "rentalsPromo": "Mit Aktion",
+    "rentalsEmpty": "Noch keine abgeschlossenen Vermietungen."
   },
   "Documents": {
     "cin_front": "Personalausweis (CINE), Vorderseite",
@@ -510,7 +535,8 @@
     "minAge21": "Der Fahrer muss mindestens 21 Jahre alt sein.",
     "bad_type": "Erlaubte Formate: JPG, PNG, WEBP oder PDF.",
     "too_big": "Datei zu groß (maximal 10 MB).",
-    "upload_failed": "Das Hochladen ist fehlgeschlagen. Versuchen Sie es erneut."
+    "upload_failed": "Das Hochladen ist fehlgeschlagen. Versuchen Sie es erneut.",
+    "promo_invalid": "Dieser Gutscheincode gilt nicht für diese Miete."
   },
   "About": {
     "title": "Eine marokkanische Agentur mit gepflegten Autos",
@@ -560,5 +586,86 @@
     "labelTotal": "Gesamt",
     "labelReason": "Grund:",
     "viewReservation": "Meine Buchungen ansehen"
+  },
+  "Activity": {
+    "session_login": "Anmeldung",
+    "session_logout": "Abmeldung",
+    "car_create": "Auto hinzugefügt: {car}",
+    "car_update": "Auto geändert: {car}",
+    "car_deactivate": "Auto deaktiviert: {car}",
+    "reservation_confirm": "Buchung {ref} angenommen",
+    "reservation_reject": "Buchung {ref} abgelehnt",
+    "reservation_pickup": "Übergabe der Buchung {ref}",
+    "reservation_return": "Rückgabe der Buchung {ref}",
+    "reservation_cancel": "Buchung {ref} storniert",
+    "deal_create": "Neuer Deal: {name}",
+    "deal_update": "Deal aktualisiert: {name}",
+    "deal_note": "Notiz hinzugefügt: {name}",
+    "profile_created": "Profil erstellt",
+    "profile_updated": "Profil geändert",
+    "profile_deactivated": "Konto deaktiviert",
+    "profile_reactivated": "Konto reaktiviert",
+    "via": "über {provider}",
+    "password": "Passwort",
+    "date": "Datum",
+    "type": "Typ",
+    "event": "Ereignis",
+    "details": "Details",
+    "all": "Alle",
+    "empty": "Keine Aktivität erfasst.",
+    "group": {
+      "session": "Sitzungen",
+      "fleet": "Flotte",
+      "reservations": "Buchungen",
+      "deals": "Deals",
+      "profile": "Profil"
+    }
+  },
+  "Deals": {
+    "title": "Deals / Interessenten",
+    "subtitle": "Interessenten und Vereinbarungen verfolgen",
+    "new": "Neuer Deal",
+    "createTitle": "Neuer Interessent",
+    "editTitle": "Deal: {name}",
+    "prospectName": "Name des Interessenten",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "city": "Stadt",
+    "source": "Quelle",
+    "type": "Art der Vereinbarung",
+    "car": "Auto",
+    "promotion": "Aktion",
+    "amount": "Geschätzter Betrag",
+    "expectedDate": "Geplantes Datum",
+    "nextFollowUp": "Nächste Nachfassung",
+    "notes": "Notizen",
+    "addNote": "Notiz hinzufügen",
+    "notePlaceholder": "Anruf, Nachricht, Termin…",
+    "noteAdded": "Notiz hinzugefügt",
+    "created": "Deal erstellt",
+    "updated": "Deal aktualisiert",
+    "empty": "Fügen Sie Ihren ersten Interessenten hinzu, um Ihre Verhandlungen zu verfolgen.",
+    "emptyTitle": "Noch keine Deals",
+    "timeline": "Verlauf",
+    "all": "Alle",
+    "lastUpdate": "Letzte Änderung",
+    "followUpLate": "Nachfassung überfällig",
+    "noteLabel": "Notiz",
+    "types": {
+      "prospect": "Interessent",
+      "negotiation": "Verhandlung",
+      "rental": "Vermietung",
+      "cancellation": "Stornierung",
+      "promotion": "Aktion"
+    },
+    "sources": {
+      "website": "Website",
+      "phone": "Telefon",
+      "whatsapp": "WhatsApp",
+      "walk_in": "In der Filiale",
+      "social": "Soziale Netzwerke",
+      "referral": "Empfehlung",
+      "other": "Sonstiges"
+    }
   }
 }

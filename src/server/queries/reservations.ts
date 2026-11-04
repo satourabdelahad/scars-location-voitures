@@ -48,6 +48,7 @@ export async function getReservationForStaff(id: string) {
       pickupAgency: true,
       returnAgency: true,
       extras: { with: { extra: true } },
+      promotion: true,
     },
   });
 }

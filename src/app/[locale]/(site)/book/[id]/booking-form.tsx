@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, TicketPercent, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -10,7 +10,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { Link } from "@/i18n/navigation";
 import type { CarCategory } from "@/db/schema";
 import { formatDate, formatMoney, rentalDays, todayISO } from "@/lib/utils";
-import { createReservation } from "@/server/actions/reservations";
+import { checkPromoCode, createReservation } from "@/server/actions/reservations";
 
 type Props = {
   car: { id: string; name: string; category: CarCategory; colorHex: string; dailyPrice: number; deposit: number; agencyId: number; cover: string | null };
@@ -44,11 +44,33 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
     flightNumber: "",
     clientNote: "",
   });
-  const set = <K extends keyof typeof v>(k: K, value: (typeof v)[K]) => setV((s) => ({ ...s, [k]: value }));
 
   const days = Math.max(0, rentalDays(v.startDate, v.endDate));
   const extrasTotal = extras.filter((x) => v.extras.includes(x.id)).reduce((s, x) => s + x.pricePerDay * days, 0);
   const rental = car.dailyPrice * days;
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<{ code: string; label: string; discount: number } | null>(null);
+  const [promoError, setPromoError] = useState(false);
+  const [checkingPromo, startPromo] = useTransition();
+  const discount = promo?.discount ?? 0;
+
+  function applyPromo(code: string, vals: Pick<typeof v, "startDate" | "endDate" | "extras"> = v) {
+    setPromoError(false);
+    startPromo(async () => {
+      const r = await checkPromoCode({ code, carId: car.id, startDate: vals.startDate, endDate: vals.endDate, extras: vals.extras });
+      if (r.ok) setPromo({ code: r.code, label: r.label, discount: r.discount });
+      else {
+        setPromo(null);
+        setPromoError(true);
+      }
+    });
+  }
+  // Dates ou options modifiées : la remise est recalculée (ou retirée si le code ne s'applique plus).
+  const set = <K extends keyof typeof v>(k: K, value: (typeof v)[K]) => {
+    const next = { ...v, [k]: value };
+    setV(next);
+    if (promo && (k === "startDate" || k === "endDate" || k === "extras")) applyPromo(promo.code, next);
+  };
   const conflict = useMemo(() => booked.some((b) => b.start < v.endDate && b.end > v.startDate), [booked, v.startDate, v.endDate]);
 
   function err(k: string) {
@@ -61,7 +83,7 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
     e.preventDefault();
     setErrors({});
     start(async () => {
-      const res = await createReservation({ ...v, carId: car.id });
+      const res = await createReservation({ ...v, carId: car.id, promoCode: promo?.code });
       if (res.ok) {
         setDone(res.data!.reference);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -171,11 +193,34 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
           <dl className="mt-5 space-y-2.5 text-sm tabular">
             <div className="flex justify-between"><dt className="text-ink-2">{t("rental")} ({tc("days", { count: days })})</dt><dd className="font-semibold text-ink">{formatMoney(rental, locale)}</dd></div>
             <div className="flex justify-between"><dt className="text-ink-2">{t("extrasTotal")}</dt><dd className="font-semibold text-ink">{formatMoney(extrasTotal, locale)}</dd></div>
+            {promo && (
+              <div className="flex justify-between text-palm"><dt>{t("discount")} <span dir="ltr">({promo.code})</span></dt><dd className="font-semibold">−{formatMoney(discount, locale)}</dd></div>
+            )}
             <div className="flex items-baseline justify-between border-t border-mist pt-3">
               <dt className="font-bold text-ink">{t("total")}</dt>
-              <dd className="text-2xl font-extrabold text-ink" style={{ fontStretch: "112%" }}>{formatMoney(rental + extrasTotal, locale)}</dd>
+              <dd className="text-2xl font-extrabold text-ink" style={{ fontStretch: "112%" }}>{formatMoney(rental + extrasTotal - discount, locale)}</dd>
             </div>
           </dl>
+          <div className="mt-4">
+            {promo ? (
+              <p className="flex items-center gap-2 rounded-xl bg-palm-soft px-3 py-2 text-sm font-medium text-palm">
+                <TicketPercent className="size-4 shrink-0" />
+                <span className="flex-1" dir="ltr">{promo.label}</span>
+                <button type="button" onClick={() => { setPromo(null); setPromoInput(""); }} aria-label={t("promoRemove")} title={t("promoRemove")} className="rounded p-0.5 hover:bg-palm/10">
+                  <X className="size-4" />
+                </button>
+              </p>
+            ) : (
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-ink-3" htmlFor="promo">{t("promoCode")}</label>
+                <div className="flex gap-2">
+                  <Input id="promo" dir="ltr" className="h-10 uppercase" value={promoInput} onChange={(e) => { setPromoInput(e.target.value); setPromoError(false); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (promoInput.trim()) applyPromo(promoInput); } }} aria-invalid={promoError || undefined} />
+                  <Button type="button" variant="outline" className="h-10" loading={checkingPromo} disabled={!promoInput.trim()} onClick={() => applyPromo(promoInput)}>{t("promoApply")}</Button>
+                </div>
+                {promoError && <p className="mt-1.5 text-xs text-danger" role="alert">{t("promoInvalid")}</p>}
+              </div>
+            )}
+          </div>
           <p className="mt-4 rounded-xl bg-saffron/15 px-3.5 py-3 text-xs leading-relaxed text-saffron-ink">{t("payOnPickup", { deposit: formatMoney(car.deposit, locale) })}</p>
           <Button type="submit" size="lg" className="mt-5 w-full" loading={pending} disabled={conflict || days < 1}>
             {pending ? t("sending") : t("submit")}

@@ -32,7 +32,7 @@ npm install
 cp .env.example .env.local      # puis remplir DATABASE_URL au minimum
 cp .env.local .env              # drizzle-kit et le script de seed lisent .env
 npm run db:migrate              # crée les tables, triggers et contraintes
-npm run db:seed -- --demo       # agences, options, admin + jeu de démonstration
+npm run db:seed -- --demo       # agences, options, codes promo, admin + jeu de démonstration
 npm run dev
 ```
 
@@ -56,6 +56,7 @@ Scripts utiles : `npm run typecheck`, `npm run lint`, `npm run i18n:check` (vér
 1. Créez un projet sur neon.tech (région Europe, proche du Maroc).
 2. Copiez la chaîne **pooled** (hôte contenant `-pooler`) dans `DATABASE_URL` et la chaîne **directe** dans `DATABASE_URL_UNPOOLED`.
 3. Depuis votre poste : `npm run db:migrate` puis `npm run db:seed` (sans `--demo` en production).
+   Le seed lit `.env` **et** `.env.local`. Relancé, il remet le compte `SEED_ADMIN_EMAIL` actif avec le mot de passe `SEED_ADMIN_PASSWORD` : c'est la marche à suivre si la connexion administrateur échoue.
 
 ### 2. Cloudinary
 Copiez `Cloud name`, `API key`, `API secret` dans `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` et `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`.

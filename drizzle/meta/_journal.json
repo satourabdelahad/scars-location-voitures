@@ -15,6 +15,13 @@
       "when": 1793619245239,
       "tag": "0001_integrity_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793788522648,
+      "tag": "0002_crm_promotions_activity",
+      "breakpoints": true
     }
   ]
 }

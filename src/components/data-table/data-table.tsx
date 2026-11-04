@@ -275,7 +275,16 @@ export function DataTable<T extends { id: string }>({
               slice.map((row) => (
                 <tr
                   key={row.id}
-                  onClick={onRowClick ? (e) => { if (!(e.target as HTMLElement).closest("a,button,input,select")) onRowClick(row); } : undefined}
+                  onClick={
+                    onRowClick
+                      ? (e) => {
+                          const target = e.target as HTMLElement;
+                          // Clic dans une boîte de dialogue (rendue dans un portail) ou sur un contrôle : pas de navigation.
+                          if (!e.currentTarget.contains(target) || target.closest("a,button,input,select,textarea,label,[role=dialog]")) return;
+                          onRowClick(row);
+                        }
+                      : undefined
+                  }
                   className={cn("border-b border-mist/70 transition-colors last:border-0 hover:bg-chalk/70", onRowClick && "cursor-pointer", rowClassName?.(row))}
                 >
                   {shown.map((c) => (
