@@ -123,7 +123,7 @@ export async function deactivateCar(id: string, input: unknown): Promise<ActionR
       const [row] = await tx
         .update(cars)
         .set({ status: "deactivated", deactivationReason: parsed.data.reason, deactivationNote: parsed.data.note || null, deactivatedAt: new Date(), deactivatedBy: staff.id, updatedBy: staff.id })
-        .where(and(eq(cars.id, id), eq(cars.status, "active")))
+        .where(and(eq(cars.id, id), inArray(cars.status, ["active", "maintenance"])))
         .returning({ id: cars.id });
       if (!row) throw Object.assign(new Error("car_frozen"), { code: "P0002" });
       const rows = await tx
@@ -149,6 +149,24 @@ export async function deactivateCar(id: string, input: unknown): Promise<ActionR
         total: formatMoney(r.totalPrice, r.locale),
       }).catch((e) => console.error("[email]", e));
     }
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+/** En réparation ↔ en service. Une voiture en réparation n'est plus proposée à la réservation sur le site. */
+export async function setCarMaintenance(id: string, inRepair: boolean): Promise<ActionResult> {
+  try {
+    const staff = await assertRole(["admin", "manager"]);
+    const [row] = await db
+      .update(cars)
+      .set({ status: inRepair ? "maintenance" : "active", updatedBy: staff.id })
+      .where(and(eq(cars.id, id), eq(cars.status, inRepair ? "active" : "maintenance")))
+      .returning({ id: cars.id });
+    if (!row) return { ok: false, error: "invalid_transition" };
+    await db.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: inRepair ? "repair_start" : "repair_end" });
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (err) {

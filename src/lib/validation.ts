@@ -96,3 +96,21 @@ export const reservationSchema = z
   })
   .refine((r) => r.endDate > r.startDate, { path: ["endDate"], message: "dateOrder" });
 export type ReservationInput = z.infer<typeof reservationSchema>;
+
+const emptyToNull = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
+
+/** Fiche client (créée ou modifiée par l'équipe). */
+export const clientSchema = z.object({
+  civility: z.preprocess(emptyToNull, z.enum(["male", "female"]).nullable()),
+  firstName: required(),
+  lastName: required(),
+  email: z.preprocess(emptyToNull, z.string().trim().toLowerCase().email("email").nullable()),
+  phone,
+  whatsapp: z.preprocess(emptyToNull, phone.nullable()),
+  city: z.preprocess(emptyToNull, z.string().trim().max(120).nullable()),
+  birthDate: z.preprocess(emptyToNull, isoDate.refine((d) => yearsBetween(d) >= 18, "minAge18").nullable()),
+  licenseNumber: z.preprocess(emptyToNull, z.string().trim().max(64).nullable()),
+  preferredLocale: z.enum(LOCALE_CODES).default("fr"),
+  notes: z.preprocess(emptyToNull, z.string().trim().max(4000).nullable()),
+});
+export type ClientInput = z.infer<typeof clientSchema>;

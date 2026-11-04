@@ -118,14 +118,16 @@ export { emailButton };
  * Envoie un modèle d'email (Administration → Modèles d'email) à chaque destinataire,
  * avec ses propres valeurs de variables (prénom, lien vers son espace…).
  */
-export async function sendTemplate(key: TemplateKey, recipients: { to: string | null | undefined; vars: Record<string, string> }[]) {
-  const tpl = await getTemplate(key);
+export async function sendTemplate(key: TemplateKey, recipients: { to: string | null | undefined; locale?: string | null; vars: Record<string, string> }[]) {
   const seen = new Set<string>();
   for (const r of recipients) {
     if (!r.to || seen.has(r.to.toLowerCase())) continue;
     seen.add(r.to.toLowerCase());
+    // Chaque destinataire reçoit le modèle de sa langue.
+    const locale: Locale = isLocale(r.locale ?? "") ? (r.locale as Locale) : "fr";
+    const tpl = await getTemplate(key, locale);
     const vars = { site: "Dizy Cars", ...r.vars };
-    await send(r.to, fillTemplate(tpl.subject, vars, { html: false }), brandedEmail(fillTemplate(tpl.html, vars, { html: true }))).catch((e) =>
+    await send(r.to, fillTemplate(tpl.subject, vars, { html: false }), brandedEmail(fillTemplate(tpl.html, vars, { html: true }), locale)).catch((e) =>
       console.error(`[email] modèle ${key} vers ${r.to}`, e),
     );
   }

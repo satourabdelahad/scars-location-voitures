@@ -265,7 +265,8 @@
     "nothingToday": "Nothing scheduled today.",
     "profile": "My profile",
     "security": "Security",
-    "administration": "Administration"
+    "administration": "Administration",
+    "clients": "Customers"
   },
   "Managers": {
     "title": "Managers",
@@ -461,7 +462,18 @@
     "assignedManagersHint": "They receive this car's booking emails. None ticked: every manager.",
     "noManagers": "No active manager.",
     "allManagers": "All managers",
-    "someManagers": "{count, plural, one {# manager assigned} other {# managers assigned}}"
+    "someManagers": "{count, plural, one {# manager assigned} other {# managers assigned}}",
+    "startRepair": "Send to repair",
+    "endRepair": "Back in service",
+    "repairStarted": "Car in repair: no longer offered for booking",
+    "repairEnded": "Car back in service",
+    "inRepairBanner": "In repair: this car is no longer offered for booking on the site.",
+    "state": {
+      "available": "Available",
+      "rented": "Rented",
+      "maintenance": "In repair",
+      "deactivated": "Deactivated"
+    }
   },
   "Reservations": {
     "title": "Bookings",
@@ -631,7 +643,13 @@
     "labelPickup": "Pickup",
     "labelTotal": "Total",
     "labelReason": "Reason:",
-    "viewReservation": "See my bookings"
+    "viewReservation": "See my bookings",
+    "tplAllManagers": "All managers",
+    "tplNone": "none",
+    "tplBtnInvite": "Choose my password",
+    "tplBtnCar": "View the car",
+    "tplBtnBooking": "View my booking",
+    "tplBtnProcess": "Handle the booking"
   },
   "Activity": {
     "session_login": "Signed in",
@@ -664,8 +682,19 @@
       "fleet": "Fleet",
       "reservations": "Bookings",
       "deals": "Deals",
-      "profile": "Profile"
-    }
+      "profile": "Profile",
+      "clients": "Customers"
+    },
+    "car_repair_start": "Sent to repair: {car}",
+    "car_repair_end": "Back in service: {car}",
+    "client_create": "Customer added: {name}",
+    "client_update": "Customer updated: {name}",
+    "client_deactivate": "Customer deactivated: {name}",
+    "client_reactivate": "Customer reactivated: {name}",
+    "appointment_create": "Appointment planned with {name}",
+    "appointment_done": "Appointment done with {name}",
+    "appointment_cancelled": "Appointment cancelled with {name}",
+    "appointment_no_show": "No-show: {name}"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -699,6 +728,7 @@
     "noteLabel": "Note",
     "types": {
       "prospect": "Prospect",
+      "question": "Question",
       "negotiation": "Negotiation",
       "rental": "Rental",
       "cancellation": "Cancellation",
@@ -712,7 +742,10 @@
       "social": "Social media",
       "referral": "Referral",
       "other": "Other"
-    }
+    },
+    "linkedClient": "Linked customer",
+    "followedBy": "Followed by",
+    "administration": "Administration"
   },
   "Security": {
     "title": "Security",
@@ -812,7 +845,8 @@
     "appointmentsManager": "Pick-ups and returns over the next 60 days for your cars and bookings.",
     "achievementsTitle": "My achievements",
     "achievementsAdmin": "Every rental completed by the team.",
-    "achievementsManager": "The rentals you confirmed."
+    "achievementsManager": "The rentals you confirmed.",
+    "movementsTitle": "Pick-ups and returns"
   },
   "Editor": {
     "placeholder": "Write your text…",
@@ -912,12 +946,106 @@
       "numero_vol": "Flight number",
       "lien_reservation": "Booking link",
       "bouton_reservation": "Booking button"
-    }
+    },
+    "language": "Language",
+    "languageHint": "{language} template: each language has its own template. Recipients get the one in their language."
   },
   "Phone": {
     "country": "Country: {country}",
     "search": "Search a country or dialling code",
     "countries": "Countries",
     "noResult": "No country found"
+  },
+  "Clients": {
+    "title": "Customers",
+    "subtitle": "Add, edit and follow your customers. They are never deleted, only deactivated.",
+    "new": "New customer",
+    "createTitle": "New customer",
+    "tabInfo": "Information",
+    "tabRentals": "{count, plural, =0 {Rentals} other {Rentals (#)}}",
+    "tabDeals": "Negotiations and requests",
+    "since": "Customer since {date}",
+    "deactivationReason": "Reason for deactivation",
+    "all": "All",
+    "lastName": "Last name",
+    "firstName": "First name",
+    "segment": "Segment",
+    "phone": "Phone",
+    "email": "Email",
+    "city": "City",
+    "rentals": "Rentals",
+    "totalSpent": "Total spent",
+    "lastRental": "Last rental",
+    "openDeals": "Open deals",
+    "createdAt": "Created on",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "deactivatedToast": "Customer deactivated",
+    "reactivatedToast": "Customer reactivated",
+    "deactivateTitle": "Deactivate {name}?",
+    "reactivateTitle": "Reactivate {name}?",
+    "deactivateBody": "The customer will no longer be able to sign in or book. Their history is kept.",
+    "reactivateBody": "The customer will be able to sign in and book again.",
+    "viewHint": "View mode: fields are read-only. Click “Edit” to change them.",
+    "updated": "Customer updated",
+    "created": "Customer added",
+    "identity": "Identity",
+    "civility": "Title",
+    "birthDate": "Date of birth",
+    "licenseNumber": "Licence number",
+    "contact": "Contact details",
+    "whatsapp": "WhatsApp",
+    "language": "Email language",
+    "languageHint": "Automatic emails are sent to them in this language.",
+    "notes": "Notes",
+    "changeClient": "Change customer",
+    "searchPlaceholder": "Search by name, email or phone…",
+    "noMatch": "No customer found",
+    "createInline": "New customer: add them",
+    "newClient": "New customer",
+    "cancel": "Cancel",
+    "createAndSelect": "Add and select",
+    "seg": {
+      "renting": "Renting now",
+      "negotiating": "Negotiating",
+      "rented": "Rented before",
+      "never": "Never rented"
+    }
+  },
+  "Appointments": {
+    "title": "Planned appointments",
+    "hint": "Branch visits, calls, deliveries and test drives with your customers.",
+    "new": "New appointment",
+    "emptyTitle": "No planned appointment",
+    "empty": "Plan an appointment with an existing or new customer.",
+    "minutes": "{count} min",
+    "with": "with {name}",
+    "markDone": "Mark as done",
+    "markNoShow": "No-show",
+    "markCancelled": "Cancel the appointment",
+    "created": "Appointment added",
+    "client": "Customer",
+    "type": "Appointment type",
+    "duration": "Duration",
+    "date": "Date",
+    "time": "Time",
+    "agency": "Branch",
+    "car": "Car",
+    "assignee": "Assigned to",
+    "notes": "Notes",
+    "create": "Schedule",
+    "kind": {
+      "meeting": "Branch visit",
+      "call": "Call",
+      "delivery": "Delivery",
+      "test_drive": "Test drive",
+      "other": "Other"
+    },
+    "status": {
+      "planned": "Planned",
+      "done": "Done",
+      "cancelled": "Cancelled",
+      "no_show": "No-show"
+    }
   }
 }

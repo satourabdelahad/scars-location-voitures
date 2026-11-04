@@ -10,6 +10,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { carCategoryEnum, fuelEnum, transmissionEnum } from "@/db/schema";
 import { formatDate, formatMoney } from "@/lib/utils";
 import type { FleetRow } from "@/server/queries/fleet";
+import { CAR_STATES, carState, STATE_TONE } from "@/lib/car-state";
 
 export function FleetTable({ rows, base, prefs }: { rows: FleetRow[]; base: string; prefs: { visibleColumns: string[]; pageSize: number } | null }) {
   const t = useTranslations("Fleet");
@@ -65,14 +66,17 @@ export function FleetTable({ rows, base, prefs }: { rows: FleetRow[]; base: stri
       {
         id: "status",
         header: c("status"),
-        text: (r) => (r.status === "active" ? t("statusActive") : t("statusDeactivated")),
-        filter: { type: "select", options: [{ value: "active", label: t("statusActive") }, { value: "deactivated", label: t("statusDeactivated") }] },
-        cell: (r) =>
-          r.status === "active" ? (
-            <Badge tone={r.onRoad ? "dark" : "success"} dot>{t("statusActive")}</Badge>
-          ) : (
-            <Badge tone="neutral" dot>{t("statusDeactivated")} ({e(`carDeactivation.${r.deactivationReason ?? "other"}`)})</Badge>
-          ),
+        text: (r) => t(`state.${carState(r)}`),
+        filter: { type: "select", options: CAR_STATES.map((s) => ({ value: t(`state.${s}`), label: t(`state.${s}`) })) },
+        cell: (r) => {
+          const s = carState(r);
+          return (
+            <Badge tone={STATE_TONE[s]} dot>
+              {t(`state.${s}`)}
+              {s === "deactivated" && ` (${e(`carDeactivation.${r.deactivationReason ?? "other"}`)})`}
+            </Badge>
+          );
+        },
       },
     ],
     [t, e, ts, c, locale, base],

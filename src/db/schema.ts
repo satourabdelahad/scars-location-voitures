@@ -54,7 +54,8 @@ export const carCategoryEnum = pgEnum("car_category", [
 export const transmissionEnum = pgEnum("transmission", ["manual", "automatic", "semi_automatic"]);
 /** Motorisation */
 export const fuelEnum = pgEnum("fuel", ["petrol", "diesel", "electric", "hybrid", "plug_in_hybrid"]);
-export const carStatusEnum = pgEnum("car_status", ["active", "deactivated"]);
+/** active = en service (disponible ou en location selon les réservations), maintenance = en réparation */
+export const carStatusEnum = pgEnum("car_status", ["active", "maintenance", "deactivated"]);
 export const carDeactivationReasonEnum = pgEnum("car_deactivation_reason", [
   "stolen",
   "sold",
@@ -73,7 +74,9 @@ export const reservationStatusEnum = pgEnum("reservation_status", [
 ]);
 export const tokenPurposeEnum = pgEnum("token_purpose", ["invite", "reset"]);
 export const promotionKindEnum = pgEnum("promotion_kind", ["percent", "amount"]);
-export const dealTypeEnum = pgEnum("deal_type", ["prospect", "negotiation", "rental", "cancellation", "promotion"]);
+export const dealTypeEnum = pgEnum("deal_type", ["prospect", "question", "negotiation", "rental", "cancellation", "promotion"]);
+export const appointmentKindEnum = pgEnum("appointment_kind", ["meeting", "call", "delivery", "test_drive", "other"]);
+export const appointmentStatusEnum = pgEnum("appointment_status", ["planned", "done", "cancelled", "no_show"]);
 export const dealSourceEnum = pgEnum("deal_source", ["website", "phone", "whatsapp", "walk_in", "social", "referral", "other"]);
 
 export const LOCALES = ["fr", "ary", "ar", "en", "es", "de", "ja", "zh", "ko"] as const;
@@ -325,7 +328,7 @@ export const cars = pgTable(
     check("cars_purchase_price_chk", sql`${t.purchasePrice} IS NULL OR ${t.purchasePrice} >= 0`),
     check(
       "cars_deactivation_chk",
-      sql`${t.status} = 'active' OR (${t.deactivationReason} IS NOT NULL AND ${t.deactivatedAt} IS NOT NULL)`,
+      sql`${t.status} <> 'deactivated' OR (${t.deactivationReason} IS NOT NULL AND ${t.deactivatedAt} IS NOT NULL)`,
     ),
   ],
 );
@@ -500,9 +503,10 @@ export const deals = pgTable(
   "deals",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    managerId: uuid("manager_id")
-      .notNull()
-      .references(() => managers.id, { onDelete: "restrict" }),
+    /** Gestionnaire qui suit le deal (vide : suivi par l'administration) */
+    managerId: uuid("manager_id").references(() => managers.id, { onDelete: "restrict" }),
+    /** Client lié, s'il a un compte (prospect devenu client, appel d'un client existant…) */
+    clientId: uuid("client_id").references(() => users.id, { onDelete: "restrict" }),
     type: dealTypeEnum("type").notNull().default("prospect"),
     prospectName: varchar("prospect_name", { length: 160 }).notNull(),
     phone: varchar("phone", { length: 32 }).notNull(),
@@ -523,6 +527,7 @@ export const deals = pgTable(
   (t) => [
     index("deals_manager_idx").on(t.managerId, t.updatedAt),
     index("deals_type_idx").on(t.type),
+    index("deals_client_idx").on(t.clientId),
     check("deals_amount_chk", sql`${t.amount} IS NULL OR ${t.amount} >= 0`),
   ],
 );
@@ -546,11 +551,11 @@ export const dealEvents = pgTable(
 
 /* ─────────────────────────────── Relations ─────────────────────────────── */
 
-export const usersRelations = relations(users, ({ one, many }) => ({
-  manager: one(managers, { fields: [users.id], references: [managers.userId] }),
-  accounts: many(accounts),
-  reservations: many(reservations, { relationName: "client" }),
-}));
+
+
+
+
+
 
 export const managersRelations = relations(managers, ({ one, many }) => ({
   user: one(users, { fields: [managers.userId], references: [users.id] }),
@@ -605,13 +610,66 @@ export const appSettings = pgTable("app_settings", {
 });
 
 /** Modèles d'email modifiables depuis Administration (éditeur HTML). */
-export const emailTemplates = pgTable("email_templates", {
-  key: varchar("key", { length: 64 }).primaryKey(),
-  subject: text("subject").notNull(),
-  html: text("html").notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+export const emailTemplates = pgTable(
+  "email_templates",
+  {
+    key: varchar("key", { length: 64 }).notNull(),
+    /** Un modèle par langue : le destinataire reçoit celui de sa langue */
+    locale: localeEnum("locale").notNull().default("fr"),
+    subject: text("subject").notNull(),
+    html: text("html").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedBy: uuid("updated_by").references(() => users.id),
+  },
+  (t) => [primaryKey({ columns: [t.key, t.locale] })],
+);
+
+/** Fiche client gérée par l'équipe (complète le compte users de rôle "client"). */
+export const clientProfiles = pgTable("client_profiles", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "restrict" }),
+  civility: civilityEnum("civility"),
+  firstName: varchar("first_name", { length: 120 }).notNull(),
+  lastName: varchar("last_name", { length: 120 }).notNull(),
+  whatsapp: varchar("whatsapp", { length: 32 }),
+  city: varchar("city", { length: 120 }),
+  birthDate: date("birth_date", { mode: "string" }),
+  licenseNumber: varchar("license_number", { length: 64 }),
+  notes: text("notes"),
+  deactivationReason: text("deactivation_reason"),
+  createdBy: uuid("created_by").references(() => users.id),
   updatedBy: uuid("updated_by").references(() => users.id),
+  ...timestamps,
 });
+
+/** Rendez-vous avec un client (agence, appel, livraison, essai…). */
+export const appointments = pgTable(
+  "appointments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    assignedTo: uuid("assigned_to")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    kind: appointmentKindEnum("kind").notNull().default("meeting"),
+    status: appointmentStatusEnum("status").notNull().default("planned"),
+    startsAt: timestamp("starts_at", { withTimezone: true, mode: "date" }).notNull(),
+    durationMin: smallint("duration_min").notNull().default(30),
+    agencyId: integer("agency_id").references(() => agencies.id),
+    carId: uuid("car_id").references(() => cars.id),
+    notes: text("notes"),
+    createdBy: uuid("created_by").references(() => users.id),
+    ...timestamps,
+  },
+  (t) => [
+    index("appointments_assigned_idx").on(t.assignedTo, t.startsAt),
+    index("appointments_client_idx").on(t.clientId),
+    check("appointments_duration_chk", sql`${t.durationMin} BETWEEN 5 AND 600`),
+  ],
+);
 
 export const carManagersRelations = relations(carManagers, ({ one }) => ({
   car: one(cars, { fields: [carManagers.carId], references: [cars.id] }),
@@ -632,6 +690,7 @@ export const promotionsRelations = relations(promotions, ({ many }) => ({
 
 export const dealsRelations = relations(deals, ({ one, many }) => ({
   manager: one(managers, { fields: [deals.managerId], references: [managers.id] }),
+  client: one(users, { fields: [deals.clientId], references: [users.id] }),
   car: one(cars, { fields: [deals.carId], references: [cars.id] }),
   promotion: one(promotions, { fields: [deals.promotionId], references: [promotions.id] }),
   reservation: one(reservations, { fields: [deals.reservationId], references: [reservations.id] }),
@@ -661,6 +720,24 @@ export const reservationExtrasRelations = relations(reservationExtras, ({ one })
   extra: one(extras, { fields: [reservationExtras.extraId], references: [extras.id] }),
 }));
 
+export const usersRelations = relations(users, ({ one, many }) => ({
+  manager: one(managers, { fields: [users.id], references: [managers.userId] }),
+  accounts: many(accounts),
+  reservations: many(reservations, { relationName: "client" }),
+  clientProfile: one(clientProfiles, { fields: [users.id], references: [clientProfiles.userId] }),
+}));
+
+export const clientProfilesRelations = relations(clientProfiles, ({ one }) => ({
+  user: one(users, { fields: [clientProfiles.userId], references: [users.id] }),
+}));
+
+export const appointmentsRelations = relations(appointments, ({ one }) => ({
+  client: one(users, { fields: [appointments.clientId], references: [users.id], relationName: "appointmentClient" }),
+  assignee: one(users, { fields: [appointments.assignedTo], references: [users.id], relationName: "appointmentAssignee" }),
+  agency: one(agencies, { fields: [appointments.agencyId], references: [agencies.id] }),
+  car: one(cars, { fields: [appointments.carId], references: [cars.id] }),
+}));
+
 export type User = typeof users.$inferSelect;
 export type Manager = typeof managers.$inferSelect;
 export type Car = typeof cars.$inferSelect;
@@ -671,5 +748,8 @@ export type ReservationStatus = (typeof reservationStatusEnum.enumValues)[number
 export type CarCategory = (typeof carCategoryEnum.enumValues)[number];
 export type DocumentKind = (typeof documentKindEnum.enumValues)[number];
 export type DealType = (typeof dealTypeEnum.enumValues)[number];
+export type CarStatus = (typeof carStatusEnum.enumValues)[number];
+export type AppointmentKind = (typeof appointmentKindEnum.enumValues)[number];
+export type AppointmentStatus = (typeof appointmentStatusEnum.enumValues)[number];
 export type DealSource = (typeof dealSourceEnum.enumValues)[number];
 export type Promotion = typeof promotions.$inferSelect;

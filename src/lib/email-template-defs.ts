@@ -68,47 +68,6 @@ export const TEMPLATE_VARIABLES: Record<TemplateKey, { key: string; sample: stri
 /** Variables qui insèrent un bloc HTML (bouton) au lieu d'un texte. */
 export const RAW_VARIABLES = new Set(["bouton_invitation", "bouton_voiture", "bouton_reservation"]);
 
-export const DEFAULT_TEMPLATES: Record<TemplateKey, { subject: string; html: string }> = {
-  manager_invite: {
-    subject: "Bienvenue chez {{site}}, {{prenom}} : activez votre compte",
-    html: `<h2>Bonjour {{civilite}} {{prenom}} {{nom}},</h2>
-<p>Vous rejoignez l'équipe <strong>{{site}}</strong> en tant que gestionnaire à {{ville}} (contrat {{type_contrat}}, à partir du {{date_debut}}).</p>
-<p>Pour accéder à votre espace, choisissez votre mot de passe avec le bouton ci-dessous. Ce lien est valable 7 jours.</p>
-<p>{{bouton_invitation}}</p>
-<p>Votre identifiant de connexion : <strong>{{email}}</strong></p>
-<p>À très vite,<br>L'équipe {{site}}</p>`,
-  },
-  car_created: {
-    subject: "Nouvelle voiture au parc : {{marque}} {{modele}} ({{immatriculation}})",
-    html: `<h2>Une nouvelle voiture rejoint le parc</h2>
-<p><strong>{{marque}} {{modele}}</strong> ({{annee}}), {{carrosserie}}, {{motorisation}}, boîte {{transmission}}.</p>
-<ul>
-<li>Immatriculation : {{immatriculation}}</li>
-<li>Couleur : {{couleur}}</li>
-<li>Prix par jour : {{prix_jour}}</li>
-<li>Agence : {{agence}}</li>
-<li>Gestionnaires : {{gestionnaires}}</li>
-</ul>
-<p>Ajoutée par {{ajoute_par}}.</p>
-<p>{{bouton_voiture}}</p>`,
-  },
-  reservation_created: {
-    subject: "Réservation {{reference}} : {{marque}} {{modele}} du {{date_debut}} au {{date_fin}}",
-    html: `<h2>Bonjour {{destinataire}},</h2>
-<p>Nous avons bien reçu la demande de réservation <strong>{{reference}}</strong>. Elle sera confirmée par notre équipe dans les plus brefs délais.</p>
-<ul>
-<li>Voiture : {{marque}} {{modele}} ({{annee}}), {{carrosserie}}, {{transmission}}</li>
-<li>Dates : du {{date_debut}} au {{date_fin}} ({{jours}} jours)</li>
-<li>Départ : {{agence_depart}} · Retour : {{agence_retour}}</li>
-<li>Prix par jour : {{prix_jour}} · Options : {{options}}</li>
-<li>Remise : {{remise}} {{code_promo}}</li>
-<li><strong>Total : {{total}}</strong> (caution : {{caution}})</li>
-</ul>
-<p>Conducteur : {{client_nom}}, {{client_telephone}}</p>
-<p>{{bouton_reservation}}</p>
-<p>Merci de votre confiance,<br>L'équipe {{site}}</p>`,
-  },
-};
 
 /** Remplace les {{variables}} ; les valeurs texte sont échappées, les boutons sont insérés tels quels. */
 export function fillTemplate(text: string, vars: Record<string, string>, { html }: { html: boolean }) {

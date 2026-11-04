@@ -265,7 +265,8 @@
     "nothingToday": "لا شيء مبرمج اليوم.",
     "profile": "ملفي الشخصي",
     "security": "الأمان",
-    "administration": "الإدارة"
+    "administration": "الإدارة",
+    "clients": "العملاء"
   },
   "Managers": {
     "title": "المسيّرون",
@@ -461,7 +462,18 @@
     "assignedManagersHint": "يتلقون رسائل حجز هذه السيارة. إن لم يُحدَّد أحد: جميع المسيّرين.",
     "noManagers": "لا يوجد مسيّر نشط.",
     "allManagers": "جميع المسيّرين",
-    "someManagers": "{count, plural, one {مسيّر واحد مرتبط} other {# مسيّرين مرتبطين}}"
+    "someManagers": "{count, plural, one {مسيّر واحد مرتبط} other {# مسيّرين مرتبطين}}",
+    "startRepair": "إرسال إلى الإصلاح",
+    "endRepair": "إعادة إلى الخدمة",
+    "repairStarted": "السيارة في الإصلاح: لم تعد متاحة للحجز",
+    "repairEnded": "أُعيدت السيارة إلى الخدمة",
+    "inRepairBanner": "في الإصلاح: لم تعد هذه السيارة متاحة للحجز على الموقع.",
+    "state": {
+      "available": "متاحة",
+      "rented": "مؤجَّرة",
+      "maintenance": "في الإصلاح",
+      "deactivated": "معطَّلة"
+    }
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -631,7 +643,13 @@
     "labelPickup": "الاستلام",
     "labelTotal": "المجموع",
     "labelReason": "السبب:",
-    "viewReservation": "عرض حجوزاتي"
+    "viewReservation": "عرض حجوزاتي",
+    "tplAllManagers": "جميع المسيّرين",
+    "tplNone": "لا شيء",
+    "tplBtnInvite": "اختيار كلمة المرور",
+    "tplBtnCar": "عرض السيارة",
+    "tplBtnBooking": "عرض حجزي",
+    "tplBtnProcess": "معالجة الحجز"
   },
   "Activity": {
     "session_login": "تسجيل الدخول",
@@ -664,8 +682,19 @@
       "fleet": "الأسطول",
       "reservations": "الحجوزات",
       "deals": "الصفقات",
-      "profile": "الملف"
-    }
+      "profile": "الملف",
+      "clients": "العملاء"
+    },
+    "car_repair_start": "إرسال إلى الإصلاح: {car}",
+    "car_repair_end": "إعادة إلى الخدمة: {car}",
+    "client_create": "إضافة عميل: {name}",
+    "client_update": "تعديل عميل: {name}",
+    "client_deactivate": "تعطيل عميل: {name}",
+    "client_reactivate": "إعادة تفعيل عميل: {name}",
+    "appointment_create": "موعد مبرمج مع {name}",
+    "appointment_done": "موعد تم مع {name}",
+    "appointment_cancelled": "موعد ملغى مع {name}",
+    "appointment_no_show": "لم يحضر: {name}"
   },
   "Deals": {
     "title": "الصفقات / العملاء المحتملون",
@@ -699,6 +728,7 @@
     "noteLabel": "ملاحظة",
     "types": {
       "prospect": "عميل محتمل",
+      "question": "استفسار",
       "negotiation": "تفاوض",
       "rental": "إيجار",
       "cancellation": "إلغاء",
@@ -712,7 +742,10 @@
       "social": "شبكات التواصل",
       "referral": "توصية",
       "other": "أخرى"
-    }
+    },
+    "linkedClient": "العميل المرتبط",
+    "followedBy": "يتابعه",
+    "administration": "الإدارة"
   },
   "Security": {
     "title": "الأمان",
@@ -812,7 +845,8 @@
     "appointmentsManager": "التسليم والإرجاع خلال 60 يومًا القادمة لسياراتك وحجوزاتك.",
     "achievementsTitle": "إنجازاتي",
     "achievementsAdmin": "جميع الإيجارات التي أنجزها الفريق.",
-    "achievementsManager": "الإيجارات التي أكدتَها."
+    "achievementsManager": "الإيجارات التي أكدتَها.",
+    "movementsTitle": "التسليم والإرجاع"
   },
   "Editor": {
     "placeholder": "اكتب نصك…",
@@ -912,12 +946,106 @@
       "numero_vol": "رقم الرحلة",
       "lien_reservation": "رابط الحجز",
       "bouton_reservation": "زر الحجز"
-    }
+    },
+    "language": "اللغة",
+    "languageHint": "قالب بـ{language}: لكل لغة قالبها. يتلقى المستلم القالب بلغته."
   },
   "Phone": {
     "country": "البلد: {country}",
     "search": "ابحث عن بلد أو رمز اتصال",
     "countries": "البلدان",
     "noResult": "لم يُعثر على أي بلد"
+  },
+  "Clients": {
+    "title": "العملاء",
+    "subtitle": "أضف عملاءك وعدّلهم وتابعهم. لا يُحذفون أبدًا، بل يُعطَّلون.",
+    "new": "عميل جديد",
+    "createTitle": "عميل جديد",
+    "tabInfo": "المعلومات",
+    "tabRentals": "{count, plural, =0 {الإيجارات} other {الإيجارات (#)}}",
+    "tabDeals": "المفاوضات والطلبات",
+    "since": "عميل منذ {date}",
+    "deactivationReason": "سبب التعطيل",
+    "all": "الكل",
+    "lastName": "النسب",
+    "firstName": "الاسم",
+    "segment": "الفئة",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "city": "المدينة",
+    "rentals": "الإيجارات",
+    "totalSpent": "مجموع المصاريف",
+    "lastRental": "آخر إيجار",
+    "openDeals": "صفقات مفتوحة",
+    "createdAt": "تاريخ الإنشاء",
+    "deactivate": "تعطيل",
+    "reactivate": "إعادة التفعيل",
+    "deactivatedToast": "تم تعطيل العميل",
+    "reactivatedToast": "تمت إعادة تفعيل العميل",
+    "deactivateTitle": "تعطيل {name}؟",
+    "reactivateTitle": "إعادة تفعيل {name}؟",
+    "deactivateBody": "لن يتمكن العميل من تسجيل الدخول أو الحجز. يُحتفظ بسجله.",
+    "reactivateBody": "سيتمكن العميل من تسجيل الدخول والحجز من جديد.",
+    "viewHint": "وضع العرض: الحقول للقراءة فقط. انقر على «تعديل» لتغييرها.",
+    "updated": "تم تحديث العميل",
+    "created": "تمت إضافة العميل",
+    "identity": "الهوية",
+    "civility": "اللقب",
+    "birthDate": "تاريخ الميلاد",
+    "licenseNumber": "رقم رخصة السياقة",
+    "contact": "معلومات الاتصال",
+    "whatsapp": "واتساب",
+    "language": "لغة الرسائل",
+    "languageHint": "تُرسل إليه الرسائل التلقائية بهذه اللغة.",
+    "notes": "ملاحظات",
+    "changeClient": "تغيير العميل",
+    "searchPlaceholder": "ابحث بالاسم أو البريد أو الهاتف…",
+    "noMatch": "لم يُعثر على أي عميل",
+    "createInline": "عميل جديد: أضفه",
+    "newClient": "عميل جديد",
+    "cancel": "إلغاء",
+    "createAndSelect": "إضافة واختيار",
+    "seg": {
+      "renting": "يستأجر حاليًا",
+      "negotiating": "في التفاوض",
+      "rented": "سبق أن استأجر",
+      "never": "لم يستأجر أبدًا"
+    }
+  },
+  "Appointments": {
+    "title": "المواعيد المبرمجة",
+    "hint": "زيارات الوكالة والمكالمات والتسليمات والتجارب مع عملائك.",
+    "new": "موعد جديد",
+    "emptyTitle": "لا توجد مواعيد مبرمجة",
+    "empty": "برمج موعدًا مع عميل حالي أو جديد.",
+    "minutes": "{count} دقيقة",
+    "with": "مع {name}",
+    "markDone": "تم",
+    "markNoShow": "لم يحضر العميل",
+    "markCancelled": "إلغاء الموعد",
+    "created": "تمت إضافة الموعد",
+    "client": "العميل",
+    "type": "نوع الموعد",
+    "duration": "المدة",
+    "date": "التاريخ",
+    "time": "الساعة",
+    "agency": "الوكالة",
+    "car": "السيارة",
+    "assignee": "مُسنَد إلى",
+    "notes": "ملاحظات",
+    "create": "برمجة",
+    "kind": {
+      "meeting": "موعد في الوكالة",
+      "call": "مكالمة",
+      "delivery": "تسليم",
+      "test_drive": "تجربة",
+      "other": "أخرى"
+    },
+    "status": {
+      "planned": "مبرمج",
+      "done": "تم",
+      "cancelled": "ملغى",
+      "no_show": "غائب"
+    }
   }
 }

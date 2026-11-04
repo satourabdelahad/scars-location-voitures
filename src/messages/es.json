@@ -265,7 +265,8 @@
     "nothingToday": "Nada previsto para hoy.",
     "profile": "Mi perfil",
     "security": "Seguridad",
-    "administration": "Administración"
+    "administration": "Administración",
+    "clients": "Clientes"
   },
   "Managers": {
     "title": "Gestores",
@@ -461,7 +462,18 @@
     "assignedManagersHint": "Reciben los emails de reserva de este coche. Ninguno marcado: todos los gestores.",
     "noManagers": "Ningún gestor activo.",
     "allManagers": "Todos los gestores",
-    "someManagers": "{count, plural, one {# gestor asociado} other {# gestores asociados}}"
+    "someManagers": "{count, plural, one {# gestor asociado} other {# gestores asociados}}",
+    "startRepair": "Enviar a reparación",
+    "endRepair": "Volver a poner en servicio",
+    "repairStarted": "Coche en reparación: ya no se ofrece para reservar",
+    "repairEnded": "Coche de nuevo en servicio",
+    "inRepairBanner": "En reparación: este coche ya no se ofrece para reservar en el sitio.",
+    "state": {
+      "available": "Disponible",
+      "rented": "Alquilado",
+      "maintenance": "En reparación",
+      "deactivated": "Desactivado"
+    }
   },
   "Reservations": {
     "title": "Reservas",
@@ -631,7 +643,13 @@
     "labelPickup": "Recogida",
     "labelTotal": "Total",
     "labelReason": "Motivo:",
-    "viewReservation": "Ver mis reservas"
+    "viewReservation": "Ver mis reservas",
+    "tplAllManagers": "Todos los gestores",
+    "tplNone": "ninguna",
+    "tplBtnInvite": "Elegir mi contraseña",
+    "tplBtnCar": "Ver el coche",
+    "tplBtnBooking": "Ver mi reserva",
+    "tplBtnProcess": "Gestionar la reserva"
   },
   "Activity": {
     "session_login": "Inicio de sesión",
@@ -664,8 +682,19 @@
       "fleet": "Flota",
       "reservations": "Reservas",
       "deals": "Deals",
-      "profile": "Ficha"
-    }
+      "profile": "Ficha",
+      "clients": "Clientes"
+    },
+    "car_repair_start": "Enviado a reparación: {car}",
+    "car_repair_end": "De nuevo en servicio: {car}",
+    "client_create": "Cliente añadido: {name}",
+    "client_update": "Cliente modificado: {name}",
+    "client_deactivate": "Cliente desactivado: {name}",
+    "client_reactivate": "Cliente reactivado: {name}",
+    "appointment_create": "Cita planificada con {name}",
+    "appointment_done": "Cita hecha con {name}",
+    "appointment_cancelled": "Cita anulada con {name}",
+    "appointment_no_show": "Cliente ausente: {name}"
   },
   "Deals": {
     "title": "Deals / prospectos",
@@ -699,6 +728,7 @@
     "noteLabel": "Nota",
     "types": {
       "prospect": "Prospecto",
+      "question": "Consulta",
       "negotiation": "Negociación",
       "rental": "Alquiler",
       "cancellation": "Cancelación",
@@ -712,7 +742,10 @@
       "social": "Redes sociales",
       "referral": "Recomendación",
       "other": "Otro"
-    }
+    },
+    "linkedClient": "Cliente vinculado",
+    "followedBy": "Seguido por",
+    "administration": "Administración"
   },
   "Security": {
     "title": "Seguridad",
@@ -812,7 +845,8 @@
     "appointmentsManager": "Entregas y devoluciones de los próximos 60 días de sus coches y reservas.",
     "achievementsTitle": "Mis logros",
     "achievementsAdmin": "Todos los alquileres realizados por el equipo.",
-    "achievementsManager": "Los alquileres que usted confirmó."
+    "achievementsManager": "Los alquileres que usted confirmó.",
+    "movementsTitle": "Entregas y devoluciones"
   },
   "Editor": {
     "placeholder": "Escriba su texto…",
@@ -912,12 +946,106 @@
       "numero_vol": "Número de vuelo",
       "lien_reservation": "Enlace a la reserva",
       "bouton_reservation": "Botón a la reserva"
-    }
+    },
+    "language": "Idioma",
+    "languageHint": "Plantilla en {language}: cada idioma tiene su propia plantilla. El destinatario recibe la de su idioma."
   },
   "Phone": {
     "country": "País: {country}",
     "search": "Buscar un país o prefijo",
     "countries": "Países",
     "noResult": "Ningún país encontrado"
+  },
+  "Clients": {
+    "title": "Clientes",
+    "subtitle": "Añada, modifique y siga a sus clientes. Nunca se eliminan: se desactivan.",
+    "new": "Nuevo cliente",
+    "createTitle": "Nuevo cliente",
+    "tabInfo": "Información",
+    "tabRentals": "{count, plural, =0 {Alquileres} other {Alquileres (#)}}",
+    "tabDeals": "Negociaciones y consultas",
+    "since": "Cliente desde el {date}",
+    "deactivationReason": "Motivo de desactivación",
+    "all": "Todos",
+    "lastName": "Apellido",
+    "firstName": "Nombre",
+    "segment": "Segmento",
+    "phone": "Teléfono",
+    "email": "Email",
+    "city": "Ciudad",
+    "rentals": "Alquileres",
+    "totalSpent": "Total gastado",
+    "lastRental": "Último alquiler",
+    "openDeals": "Deals abiertos",
+    "createdAt": "Creado el",
+    "deactivate": "Desactivar",
+    "reactivate": "Reactivar",
+    "deactivatedToast": "Cliente desactivado",
+    "reactivatedToast": "Cliente reactivado",
+    "deactivateTitle": "¿Desactivar a {name}?",
+    "reactivateTitle": "¿Reactivar a {name}?",
+    "deactivateBody": "El cliente ya no podrá iniciar sesión ni reservar. Su historial se conserva.",
+    "reactivateBody": "El cliente podrá volver a iniciar sesión y reservar.",
+    "viewHint": "Consulta: los campos son de solo lectura. Pulse «Modificar» para cambiarlos.",
+    "updated": "Cliente actualizado",
+    "created": "Cliente añadido",
+    "identity": "Identidad",
+    "civility": "Tratamiento",
+    "birthDate": "Fecha de nacimiento",
+    "licenseNumber": "Número de permiso",
+    "contact": "Datos de contacto",
+    "whatsapp": "WhatsApp",
+    "language": "Idioma de los emails",
+    "languageHint": "Los emails automáticos se le envían en este idioma.",
+    "notes": "Notas",
+    "changeClient": "Cambiar de cliente",
+    "searchPlaceholder": "Buscar por nombre, email o teléfono…",
+    "noMatch": "Ningún cliente encontrado",
+    "createInline": "Nuevo cliente: añadirlo",
+    "newClient": "Nuevo cliente",
+    "cancel": "Cancelar",
+    "createAndSelect": "Añadir y elegir",
+    "seg": {
+      "renting": "Alquilando",
+      "negotiating": "En negociación",
+      "rented": "Ya ha alquilado",
+      "never": "Nunca ha alquilado"
+    }
+  },
+  "Appointments": {
+    "title": "Citas planificadas",
+    "hint": "Visitas a la agencia, llamadas, entregas y pruebas con sus clientes.",
+    "new": "Nueva cita",
+    "emptyTitle": "Ninguna cita planificada",
+    "empty": "Planifique una cita con un cliente existente o nuevo.",
+    "minutes": "{count} min",
+    "with": "con {name}",
+    "markDone": "Marcar como hecha",
+    "markNoShow": "El cliente no vino",
+    "markCancelled": "Anular la cita",
+    "created": "Cita añadida",
+    "client": "Cliente",
+    "type": "Tipo de cita",
+    "duration": "Duración",
+    "date": "Fecha",
+    "time": "Hora",
+    "agency": "Agencia",
+    "car": "Coche",
+    "assignee": "Asignada a",
+    "notes": "Notas",
+    "create": "Planificar",
+    "kind": {
+      "meeting": "Cita en agencia",
+      "call": "Llamada",
+      "delivery": "Entrega",
+      "test_drive": "Prueba",
+      "other": "Otro"
+    },
+    "status": {
+      "planned": "Planificada",
+      "done": "Hecha",
+      "cancelled": "Anulada",
+      "no_show": "Ausente"
+    }
   }
 }

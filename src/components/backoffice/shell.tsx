@@ -14,6 +14,7 @@ export async function BackofficeShell({ user, base, children }: { user: SessionU
   const items: NavItem[] = [
     { href: base, label: t("dashboard"), icon: "dashboard", exact: true },
     ...(base === "/admin" ? [{ href: `${base}/managers`, label: t("managers"), icon: "managers" as const }] : []),
+    { href: `${base}/clients`, label: t("clients"), icon: "clients" },
     { href: `${base}/fleet`, label: t("fleet"), icon: "fleet" },
     { href: `${base}/reservations`, label: t("reservations"), icon: "reservations" },
     ...(base === "/admin" ? [{ href: `${base}/administration`, label: t("administration"), icon: "administration" as const }] : []),

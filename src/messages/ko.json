@@ -265,7 +265,8 @@
     "nothingToday": "오늘 예정된 일정이 없습니다.",
     "profile": "내 프로필",
     "security": "보안",
-    "administration": "관리"
+    "administration": "관리",
+    "clients": "고객"
   },
   "Managers": {
     "title": "매니저",
@@ -461,7 +462,18 @@
     "assignedManagersHint": "이 차량의 예약 이메일을 받습니다. 선택하지 않으면 모든 매니저.",
     "noManagers": "활성 매니저가 없습니다.",
     "allManagers": "모든 매니저",
-    "someManagers": "{count, plural, other {담당 매니저 #명}}"
+    "someManagers": "{count, plural, other {담당 매니저 #명}}",
+    "startRepair": "수리 보내기",
+    "endRepair": "운행 재개",
+    "repairStarted": "수리 중: 예약을 받지 않습니다",
+    "repairEnded": "운행을 재개했습니다",
+    "inRepairBanner": "수리 중: 이 차량은 사이트에서 예약할 수 없습니다.",
+    "state": {
+      "available": "이용 가능",
+      "rented": "렌탈 중",
+      "maintenance": "수리 중",
+      "deactivated": "비활성"
+    }
   },
   "Reservations": {
     "title": "예약",
@@ -631,7 +643,13 @@
     "labelPickup": "인수",
     "labelTotal": "합계",
     "labelReason": "사유:",
-    "viewReservation": "내 예약 보기"
+    "viewReservation": "내 예약 보기",
+    "tplAllManagers": "모든 매니저",
+    "tplNone": "없음",
+    "tplBtnInvite": "비밀번호 설정하기",
+    "tplBtnCar": "차량 보기",
+    "tplBtnBooking": "내 예약 보기",
+    "tplBtnProcess": "예약 처리하기"
   },
   "Activity": {
     "session_login": "로그인",
@@ -664,8 +682,19 @@
       "fleet": "차량",
       "reservations": "예약",
       "deals": "딜",
-      "profile": "프로필"
-    }
+      "profile": "프로필",
+      "clients": "고객"
+    },
+    "car_repair_start": "수리 보냄: {car}",
+    "car_repair_end": "운행 재개: {car}",
+    "client_create": "고객 추가: {name}",
+    "client_update": "고객 수정: {name}",
+    "client_deactivate": "고객 비활성화: {name}",
+    "client_reactivate": "고객 재활성화: {name}",
+    "appointment_create": "{name} 님과 약속 예정",
+    "appointment_done": "{name} 님과 약속 완료",
+    "appointment_cancelled": "{name} 님과 약속 취소",
+    "appointment_no_show": "고객 불참: {name}"
   },
   "Deals": {
     "title": "딜 / 잠재 고객",
@@ -699,6 +728,7 @@
     "noteLabel": "메모",
     "types": {
       "prospect": "잠재 고객",
+      "question": "문의",
       "negotiation": "협상",
       "rental": "렌탈",
       "cancellation": "취소",
@@ -712,7 +742,10 @@
       "social": "소셜 미디어",
       "referral": "추천",
       "other": "기타"
-    }
+    },
+    "linkedClient": "연결된 고객",
+    "followedBy": "담당",
+    "administration": "관리"
   },
   "Security": {
     "title": "보안",
@@ -812,7 +845,8 @@
     "appointmentsManager": "담당 차량과 예약의 앞으로 60일 출고 및 반납.",
     "achievementsTitle": "내 실적",
     "achievementsAdmin": "팀이 완료한 모든 렌터카.",
-    "achievementsManager": "내가 확정한 렌터카."
+    "achievementsManager": "내가 확정한 렌터카.",
+    "movementsTitle": "출고 및 반납"
   },
   "Editor": {
     "placeholder": "내용을 입력하세요…",
@@ -912,12 +946,106 @@
       "numero_vol": "항공편 번호",
       "lien_reservation": "예약 링크",
       "bouton_reservation": "예약 버튼"
-    }
+    },
+    "language": "언어",
+    "languageHint": "{language} 템플릿: 언어마다 템플릿이 따로 있으며, 받는 사람은 자신의 언어로 받습니다."
   },
   "Phone": {
     "country": "국가: {country}",
     "search": "국가 또는 국가 번호 검색",
     "countries": "국가",
     "noResult": "국가를 찾을 수 없습니다"
+  },
+  "Clients": {
+    "title": "고객",
+    "subtitle": "고객을 추가·수정·관리합니다. 삭제하지 않고 비활성화합니다.",
+    "new": "새 고객",
+    "createTitle": "새 고객",
+    "tabInfo": "정보",
+    "tabRentals": "{count, plural, other {렌탈 (#)}}",
+    "tabDeals": "협상 및 문의",
+    "since": "{date}부터 고객",
+    "deactivationReason": "비활성화 사유",
+    "all": "전체",
+    "lastName": "성",
+    "firstName": "이름",
+    "segment": "분류",
+    "phone": "전화",
+    "email": "이메일",
+    "city": "도시",
+    "rentals": "렌탈 수",
+    "totalSpent": "총 이용 금액",
+    "lastRental": "최근 렌탈",
+    "openDeals": "진행 중인 딜",
+    "createdAt": "등록일",
+    "deactivate": "비활성화",
+    "reactivate": "다시 활성화",
+    "deactivatedToast": "고객을 비활성화했습니다",
+    "reactivatedToast": "고객을 다시 활성화했습니다",
+    "deactivateTitle": "{name} 님을 비활성화할까요?",
+    "reactivateTitle": "{name} 님을 다시 활성화할까요?",
+    "deactivateBody": "이 고객은 더 이상 로그인하거나 예약할 수 없습니다. 기록은 보존됩니다.",
+    "reactivateBody": "이 고객은 다시 로그인하고 예약할 수 있습니다.",
+    "viewHint": "보기 모드: 항목은 읽기 전용입니다. 변경하려면 ‘수정’을 클릭하세요.",
+    "updated": "고객 정보를 수정했습니다",
+    "created": "고객을 추가했습니다",
+    "identity": "신원",
+    "civility": "호칭",
+    "birthDate": "생년월일",
+    "licenseNumber": "면허 번호",
+    "contact": "연락처",
+    "whatsapp": "WhatsApp",
+    "language": "이메일 언어",
+    "languageHint": "자동 이메일이 이 언어로 발송됩니다.",
+    "notes": "메모",
+    "changeClient": "고객 변경",
+    "searchPlaceholder": "이름, 이메일 또는 전화로 검색…",
+    "noMatch": "고객을 찾을 수 없습니다",
+    "createInline": "새 고객 추가",
+    "newClient": "새 고객",
+    "cancel": "취소",
+    "createAndSelect": "추가하고 선택",
+    "seg": {
+      "renting": "렌탈 중",
+      "negotiating": "협상 중",
+      "rented": "이용 경험 있음",
+      "never": "이용 경험 없음"
+    }
+  },
+  "Appointments": {
+    "title": "예정된 약속",
+    "hint": "지점 방문, 전화, 차량 배송, 시승 등 고객과의 약속.",
+    "new": "새 약속",
+    "emptyTitle": "예정된 약속이 없습니다",
+    "empty": "기존 고객이나 새 고객과 약속을 잡아 보세요.",
+    "minutes": "{count}분",
+    "with": "담당: {name}",
+    "markDone": "완료로 표시",
+    "markNoShow": "고객 불참",
+    "markCancelled": "약속 취소",
+    "created": "약속을 추가했습니다",
+    "client": "고객",
+    "type": "약속 유형",
+    "duration": "소요 시간",
+    "date": "날짜",
+    "time": "시간",
+    "agency": "지점",
+    "car": "차량",
+    "assignee": "담당자",
+    "notes": "메모",
+    "create": "예약하기",
+    "kind": {
+      "meeting": "지점 방문",
+      "call": "전화",
+      "delivery": "차량 배송",
+      "test_drive": "시승",
+      "other": "기타"
+    },
+    "status": {
+      "planned": "예정",
+      "done": "완료",
+      "cancelled": "취소",
+      "no_show": "불참"
+    }
   }
 }

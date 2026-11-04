@@ -1,14 +1,22 @@
 import "server-only";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import sanitizeHtml from "sanitize-html";
 import { db } from "@/db";
 import { emailTemplates } from "@/db/schema";
-import { DEFAULT_TEMPLATES, type TemplateKey } from "@/lib/email-template-defs";
+import type { TemplateKey } from "@/lib/email-template-defs";
+import { defaultTemplate } from "@/lib/email-template-defaults";
+import type { Locale } from "@/i18n/config";
 
-/** Modèle enregistré par l'administrateur, ou le modèle par défaut. */
-export async function getTemplate(key: TemplateKey) {
-  const [row] = await db.select().from(emailTemplates).where(eq(emailTemplates.key, key)).limit(1);
-  return row ? { subject: row.subject, html: row.html, updatedAt: row.updatedAt, custom: true } : { ...DEFAULT_TEMPLATES[key], updatedAt: null, custom: false };
+/** Modèle de la langue demandée : celui enregistré par l'administrateur, sinon le modèle livré dans cette langue. */
+export async function getTemplate(key: TemplateKey, locale: string = "fr") {
+  const [row] = await db
+    .select()
+    .from(emailTemplates)
+    .where(and(eq(emailTemplates.key, key), eq(emailTemplates.locale, locale as Locale)))
+    .limit(1);
+  return row
+    ? { subject: row.subject, html: row.html, updatedAt: row.updatedAt, custom: true }
+    : { ...defaultTemplate(key, locale), updatedAt: null, custom: false };
 }
 
 /** Le HTML saisi est nettoyé (pas de script, d'iframe ni d'attribut d'événement) avant l'enregistrement. */
@@ -18,7 +26,7 @@ export function cleanTemplateHtml(html: string) {
     allowedAttributes: {
       a: ["href", "target", "rel", "style"],
       img: ["src", "alt", "width", "height", "style"],
-      "*": ["style", "align"],
+      "*": ["style", "align", "dir"],
     },
     allowedSchemes: ["http", "https", "mailto", "tel"],
     // Les variables {{lien_…}} sont acceptées comme adresse de lien

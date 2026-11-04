@@ -265,7 +265,8 @@
     "nothingToday": "والو مبرمج اليوم.",
     "profile": "الفيشة ديالي",
     "security": "الأمان",
-    "administration": "الإدارة"
+    "administration": "الإدارة",
+    "clients": "الكليان"
   },
   "Managers": {
     "title": "المسيّرين",
@@ -461,7 +462,18 @@
     "assignedManagersHint": "كيوصلهم الإيميلات ديال الحجز ديال هاد الطوموبيل. حتى واحد ما مختار: كاع المسيرين.",
     "noManagers": "ما كاين حتى مسير خدام.",
     "allManagers": "كاع المسيرين",
-    "someManagers": "{count, plural, one {مسير واحد مرتبط} other {# مسيرين مرتبطين}}"
+    "someManagers": "{count, plural, one {مسير واحد مرتبط} other {# مسيرين مرتبطين}}",
+    "startRepair": "صيفطها للإصلاح",
+    "endRepair": "رجعها للخدمة",
+    "repairStarted": "الطوموبيل فالإصلاح: ما بقاتش للحجز",
+    "repairEnded": "الطوموبيل رجعات للخدمة",
+    "inRepairBanner": "فالإصلاح: هاد الطوموبيل ما بقاتش للحجز فالسيت.",
+    "state": {
+      "available": "متوفرة",
+      "rented": "مكرية",
+      "maintenance": "فالإصلاح",
+      "deactivated": "موقفة"
+    }
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -631,7 +643,13 @@
     "labelPickup": "الخروج",
     "labelTotal": "المجموع",
     "labelReason": "السبب:",
-    "viewReservation": "شوف الحجوزات ديالي"
+    "viewReservation": "شوف الحجوزات ديالي",
+    "tplAllManagers": "كاع المسيرين",
+    "tplNone": "والو",
+    "tplBtnInvite": "ختار كلمة السر",
+    "tplBtnCar": "شوف الطوموبيل",
+    "tplBtnBooking": "شوف الحجز ديالي",
+    "tplBtnProcess": "عالج الحجز"
   },
   "Activity": {
     "session_login": "دخول",
@@ -664,8 +682,19 @@
       "fleet": "الطوموبيلات",
       "reservations": "الحجوزات",
       "deals": "الصفقات",
-      "profile": "الفيشة"
-    }
+      "profile": "الفيشة",
+      "clients": "الكليان"
+    },
+    "car_repair_start": "مشات للإصلاح: {car}",
+    "car_repair_end": "رجعات للخدمة: {car}",
+    "client_create": "تزاد كليان: {name}",
+    "client_update": "تبدل كليان: {name}",
+    "client_deactivate": "توقف كليان: {name}",
+    "client_reactivate": "رجع كليان يخدم: {name}",
+    "appointment_create": "موعد مبرمج مع {name}",
+    "appointment_done": "موعد تدار مع {name}",
+    "appointment_cancelled": "موعد ملغي مع {name}",
+    "appointment_no_show": "ما جاش: {name}"
   },
   "Deals": {
     "title": "الصفقات / الزبناء المحتملين",
@@ -699,6 +728,7 @@
     "noteLabel": "ملاحظة",
     "types": {
       "prospect": "زبون محتمل",
+      "question": "سؤال",
       "negotiation": "مفاوضة",
       "rental": "كرية",
       "cancellation": "إلغاء",
@@ -712,7 +742,10 @@
       "social": "الريزو سوسيو",
       "referral": "توصية",
       "other": "آخر"
-    }
+    },
+    "linkedClient": "الكليان المرتبط",
+    "followedBy": "كيتبعو",
+    "administration": "الإدارة"
   },
   "Security": {
     "title": "الأمان",
@@ -812,7 +845,8 @@
     "appointmentsManager": "الخروجات والرجوعات ديال 60 يوم الجاية للطوموبيلات والحجوزات ديالك.",
     "achievementsTitle": "الإنجازات ديالي",
     "achievementsAdmin": "كاع الكريات اللي دار الفريق.",
-    "achievementsManager": "الكريات اللي أكدتي."
+    "achievementsManager": "الكريات اللي أكدتي.",
+    "movementsTitle": "الخروجات والرجوعات"
   },
   "Editor": {
     "placeholder": "كتب النص ديالك…",
@@ -912,12 +946,106 @@
       "numero_vol": "رقم الطيارة",
       "lien_reservation": "رابط الحجز",
       "bouton_reservation": "بوطونة الحجز"
-    }
+    },
+    "language": "اللغة",
+    "languageHint": "قالب بـ{language}: كل لغة عندها القالب ديالها. كل واحد كيوصلو القالب بلغتو."
   },
   "Phone": {
     "country": "البلاد: {country}",
     "search": "قلّب على بلاد ولا على الرمز",
     "countries": "البلدان",
     "noResult": "ما لقينا حتى بلاد"
+  },
+  "Clients": {
+    "title": "الكليان",
+    "subtitle": "زيد الكليان ديالك، بدّلهم وتبعهم. عمرهم ما كيتمسحو: كيتوقفو.",
+    "new": "كليان جديد",
+    "createTitle": "كليان جديد",
+    "tabInfo": "المعلومات",
+    "tabRentals": "{count, plural, =0 {الكريات} other {الكريات (#)}}",
+    "tabDeals": "المفاوضات والطلبات",
+    "since": "كليان من {date}",
+    "deactivationReason": "سبب التوقيف",
+    "all": "كلشي",
+    "lastName": "الكنية",
+    "firstName": "السمية",
+    "segment": "الفئة",
+    "phone": "التيليفون",
+    "email": "الإيميل",
+    "city": "المدينة",
+    "rentals": "الكريات",
+    "totalSpent": "المجموع اللي صرف",
+    "lastRental": "آخر كرية",
+    "openDeals": "صفقات محلولة",
+    "createdAt": "تزاد في",
+    "deactivate": "وقّف",
+    "reactivate": "رجّعو يخدم",
+    "deactivatedToast": "الكليان توقف",
+    "reactivatedToast": "الكليان رجع يخدم",
+    "deactivateTitle": "توقف {name}؟",
+    "reactivateTitle": "ترجع {name} يخدم؟",
+    "deactivateBody": "الكليان ما غاديش يقدر يدخل ولا يحجز. التاريخ ديالو كيبقى.",
+    "reactivateBody": "الكليان غادي يقدر يدخل ويحجز عاوتاني.",
+    "viewHint": "غير للقراءة: الخانات ما كتبدلش. ضغط على «بدّل» باش تبدلها.",
+    "updated": "الكليان تبدل",
+    "created": "الكليان تزاد",
+    "identity": "الهوية",
+    "civility": "اللقب",
+    "birthDate": "تاريخ الزيادة",
+    "licenseNumber": "رقم البيرمي",
+    "contact": "معلومات الاتصال",
+    "whatsapp": "واتساب",
+    "language": "لغة الإيميلات",
+    "languageHint": "الإيميلات الأوتوماتيكية كتمشي ليه بهاد اللغة.",
+    "notes": "ملاحظات",
+    "changeClient": "بدّل الكليان",
+    "searchPlaceholder": "قلّب بالسمية ولا الإيميل ولا التيليفون…",
+    "noMatch": "ما لقينا حتى كليان",
+    "createInline": "كليان جديد: زيدو",
+    "newClient": "كليان جديد",
+    "cancel": "إلغاء",
+    "createAndSelect": "زيد وختار",
+    "seg": {
+      "renting": "كيكري دابا",
+      "negotiating": "فالمفاوضة",
+      "rented": "سبق ليه كرا",
+      "never": "عمرو ما كرا"
+    }
+  },
+  "Appointments": {
+    "title": "المواعيد المبرمجة",
+    "hint": "مواعيد فالوكالة، تيليفونات، توصيلات وتجارب مع الكليان.",
+    "new": "موعد جديد",
+    "emptyTitle": "ما كاين حتى موعد",
+    "empty": "برمج موعد مع كليان كاين ولا جديد.",
+    "minutes": "{count} دقيقة",
+    "with": "مع {name}",
+    "markDone": "تدار",
+    "markNoShow": "الكليان ما جاش",
+    "markCancelled": "لغي الموعد",
+    "created": "الموعد تزاد",
+    "client": "الكليان",
+    "type": "نوع الموعد",
+    "duration": "المدة",
+    "date": "التاريخ",
+    "time": "الساعة",
+    "agency": "الوكالة",
+    "car": "الطوموبيل",
+    "assignee": "معطى لـ",
+    "notes": "ملاحظات",
+    "create": "برمج",
+    "kind": {
+      "meeting": "موعد فالوكالة",
+      "call": "تيليفون",
+      "delivery": "توصيل",
+      "test_drive": "تجربة",
+      "other": "آخر"
+    },
+    "status": {
+      "planned": "مبرمج",
+      "done": "تدار",
+      "cancelled": "ملغي",
+      "no_show": "ما جاش"
+    }
   }
 }

@@ -42,6 +42,7 @@ export function HtmlEditor({
   minHeight = 260,
   id,
   invalid,
+  dir = "ltr",
 }: {
   value: string;
   onChange: (html: string) => void;
@@ -50,6 +51,8 @@ export function HtmlEditor({
   minHeight?: number;
   id?: string;
   invalid?: boolean;
+  /** Sens d'écriture du contenu (rtl pour l'arabe et la darija) */
+  dir?: "ltr" | "rtl";
 }) {
   const t = useTranslations("Editor");
   const [source, setSource] = useState(false);
@@ -70,7 +73,7 @@ export function HtmlEditor({
       Placeholder.configure({ placeholder: placeholder ?? t("placeholder") }),
     ],
     content: value,
-    editorProps: { attributes: { class: "html-editor-content outline-none", ...(id ? { id } : {}) } },
+    editorProps: { attributes: { class: "html-editor-content outline-none", dir, ...(id ? { id } : {}) } },
     onUpdate: ({ editor: e }) => onChange(e.getHTML()),
   });
 

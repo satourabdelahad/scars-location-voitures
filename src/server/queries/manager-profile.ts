@@ -87,11 +87,14 @@ export type RentalRow = Awaited<ReturnType<typeof managerRentals>>[number];
 
 /* ──────────────────────────────── Deals ──────────────────────────────── */
 
-export async function managerDeals(managerId: string) {
+/** Deals d'un gestionnaire ou d'un client (fiche client : tous les gestionnaires). */
+export async function listDeals(scope: { managerId?: string; clientId?: string }) {
   const rows = await db.query.deals.findMany({
-    where: eq(deals.managerId, managerId),
+    where: scope.clientId ? eq(deals.clientId, scope.clientId) : eq(deals.managerId, scope.managerId!),
     orderBy: [desc(deals.updatedAt)],
     with: {
+      manager: { columns: { id: true, firstName: true, lastName: true } },
+      client: { columns: { id: true, name: true } },
       car: { columns: { id: true, brand: true, model: true, plateNumber: true } },
       promotion: { columns: { id: true, code: true, kind: true, value: true } },
       events: { orderBy: [desc(dealEvents.createdAt)], with: { actor: { columns: { name: true, email: true } } } },
@@ -100,6 +103,10 @@ export async function managerDeals(managerId: string) {
   return rows.map((d) => ({
     id: d.id,
     type: d.type,
+    managerId: d.managerId,
+    managerName: d.manager ? `${d.manager.firstName} ${d.manager.lastName}` : null,
+    clientId: d.clientId,
+    clientName: d.client?.name ?? null,
     prospectName: d.prospectName,
     phone: d.phone,
     email: d.email,
@@ -125,7 +132,8 @@ export async function managerDeals(managerId: string) {
     })),
   }));
 }
-export type DealRow = Awaited<ReturnType<typeof managerDeals>>[number];
+export type DealRow = Awaited<ReturnType<typeof listDeals>>[number];
+export const managerDeals = (managerId: string) => listDeals({ managerId });
 
 /** Listes pour les menus du formulaire de deal. */
 export async function dealFormOptions() {
@@ -149,7 +157,7 @@ export async function dealFormOptions() {
 
 /* ────────────────────────────── Historique ────────────────────────────── */
 
-export type ActivityGroup = "session" | "fleet" | "reservations" | "deals" | "profile";
+export type ActivityGroup = "session" | "fleet" | "reservations" | "clients" | "deals" | "profile";
 
 /**
  * Journal d'un gestionnaire : connexions, actions sur le parc et les réservations (audit_logs),
@@ -173,12 +181,15 @@ export async function managerActivity(userId: string, managerId: string) {
     SELECT * FROM (
       SELECT 'a' || l.id AS id, l.created_at AS at, 'audit' AS source, l.entity, l.action,
              CASE WHEN c.id IS NOT NULL THEN c.brand || ' ' || c.model || ' (' || c.plate_number || ')' END AS car,
-             r.reference, NULL AS deal_name, NULL AS from_type, NULL AS to_type,
+             r.reference, COALESCE(cu.name, au.name) AS deal_name, NULL AS from_type, NULL AS to_type,
              COALESCE(l.changes->>'reason', l.changes->>'note') AS detail,
              l.changes->>'provider' AS provider
       FROM audit_logs l
       LEFT JOIN cars c ON l.entity = 'car' AND c.id::text = l.entity_id
       LEFT JOIN reservations r ON l.entity = 'reservation' AND r.id::text = l.entity_id
+      LEFT JOIN users cu ON l.entity = 'client' AND cu.id::text = l.entity_id
+      LEFT JOIN appointments ap ON l.entity = 'appointment' AND ap.id::text = l.entity_id
+      LEFT JOIN users au ON au.id = ap.client_id
       WHERE l.actor_id = ${userId}
       UNION ALL
       SELECT 'd' || e.id, e.created_at, 'deal', 'deal',
@@ -197,7 +208,7 @@ export async function managerActivity(userId: string, managerId: string) {
   `);
   return res.rows.map((r) => {
     const group: ActivityGroup =
-      r.source === "deal" ? "deals" : r.source === "profile" ? "profile" : r.entity === "session" ? "session" : r.entity === "car" ? "fleet" : "reservations";
+      r.source === "deal" ? "deals" : r.source === "profile" ? "profile" : r.entity === "session" ? "session" : r.entity === "car" ? "fleet" : r.entity === "client" || r.entity === "appointment" ? "clients" : "reservations";
     const kind = r.source === "audit" ? `${r.entity}_${r.action}` : r.source === "deal" ? `deal_${r.action}` : `profile_${r.action}`;
     return {
       id: r.id,
@@ -279,4 +290,64 @@ export async function myAppointments(viewer: { id: string; role: string }) {
     agency: `${r.city}, ${r.agency}`,
     flight: r.flight,
   }));
+}
+
+/** Rendez-vous planifiés (agence, appel, livraison, essai…) : les siens, ou tous pour l'administrateur. */
+export async function scheduledAppointments(viewer: { id: string; role: string }) {
+  const res = await db.execute<{
+    id: string;
+    kind: "meeting" | "call" | "delivery" | "test_drive" | "other";
+    status: "planned" | "done" | "cancelled" | "no_show";
+    starts_at: string;
+    duration_min: number;
+    notes: string | null;
+    client_id: string;
+    client: string | null;
+    phone: string | null;
+    agency: string | null;
+    car: string | null;
+    assignee: string | null;
+  }>(sql`
+    SELECT a.id, a.kind, a.status, a.starts_at, a.duration_min, a.notes, a.client_id,
+           coalesce(p.first_name || ' ' || p.last_name, cu.name) AS client, cu.phone,
+           CASE WHEN ag.id IS NOT NULL THEN ag.city || ', ' || ag.name END AS agency,
+           CASE WHEN c.id IS NOT NULL THEN c.brand || ' ' || c.model END AS car,
+           su.name AS assignee
+    FROM appointments a
+    JOIN users cu ON cu.id = a.client_id
+    LEFT JOIN client_profiles p ON p.user_id = cu.id
+    LEFT JOIN agencies ag ON ag.id = a.agency_id
+    LEFT JOIN cars c ON c.id = a.car_id
+    LEFT JOIN users su ON su.id = a.assigned_to
+    WHERE a.starts_at >= now() - interval '30 days'
+      ${viewer.role === "admin" ? sql`` : sql`AND a.assigned_to = ${viewer.id}`}
+    ORDER BY a.starts_at
+    LIMIT 500
+  `);
+  return res.rows.map((r) => ({
+    id: r.id,
+    kind: r.kind,
+    status: r.status,
+    startsAt: new Date(r.starts_at).toISOString(),
+    durationMin: r.duration_min,
+    notes: r.notes,
+    clientId: r.client_id,
+    client: r.client ?? "—",
+    phone: r.phone,
+    agency: r.agency,
+    car: r.car,
+    assignee: r.assignee,
+  }));
+}
+export type ScheduledRow = Awaited<ReturnType<typeof scheduledAppointments>>[number];
+
+/** Membres de l'équipe à qui confier un rendez-vous (administrateur). */
+export async function staffOptions() {
+  const rows = await db.execute<{ id: string; name: string | null; role: string }>(sql`
+    SELECT u.id, coalesce(m.first_name || ' ' || m.last_name, u.name, u.email) AS name, u.role
+    FROM users u LEFT JOIN managers m ON m.user_id = u.id
+    WHERE u.role IN ('admin', 'manager') AND u.status = 'active' AND (m.id IS NULL OR m.status = 'active')
+    ORDER BY u.role, name
+  `);
+  return rows.rows.map((r) => ({ id: r.id, name: r.name ?? "—", role: r.role }));
 }

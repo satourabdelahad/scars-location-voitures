@@ -43,6 +43,13 @@
       "when": 1793807531555,
       "tag": "0005_settings_templates_car_managers",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793812861801,
+      "tag": "0006_clients_appointments_repair_locales",
+      "breakpoints": true
     }
   ]
 }

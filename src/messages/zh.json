@@ -265,7 +265,8 @@
     "nothingToday": "今天没有安排。",
     "profile": "我的档案",
     "security": "安全",
-    "administration": "管理"
+    "administration": "管理",
+    "clients": "客户"
   },
   "Managers": {
     "title": "经理",
@@ -461,7 +462,18 @@
     "assignedManagersHint": "他们会收到此车辆的预订邮件。未勾选：全部经理。",
     "noManagers": "没有在职经理。",
     "allManagers": "全部经理",
-    "someManagers": "{count, plural, other {已指定 # 位经理}}"
+    "someManagers": "{count, plural, other {已指定 # 位经理}}",
+    "startRepair": "送修",
+    "endRepair": "恢复使用",
+    "repairStarted": "车辆维修中：暂停预订",
+    "repairEnded": "车辆已恢复使用",
+    "inRepairBanner": "维修中：该车辆在网站上暂停预订。",
+    "state": {
+      "available": "可用",
+      "rented": "出租中",
+      "maintenance": "维修中",
+      "deactivated": "已停用"
+    }
   },
   "Reservations": {
     "title": "预订",
@@ -631,7 +643,13 @@
     "labelPickup": "取车",
     "labelTotal": "合计",
     "labelReason": "原因：",
-    "viewReservation": "查看我的预订"
+    "viewReservation": "查看我的预订",
+    "tplAllManagers": "全部经理",
+    "tplNone": "无",
+    "tplBtnInvite": "设置我的密码",
+    "tplBtnCar": "查看车辆",
+    "tplBtnBooking": "查看我的预订",
+    "tplBtnProcess": "处理预订"
   },
   "Activity": {
     "session_login": "登录",
@@ -664,8 +682,19 @@
       "fleet": "车队",
       "reservations": "预订",
       "deals": "商机",
-      "profile": "档案"
-    }
+      "profile": "档案",
+      "clients": "客户"
+    },
+    "car_repair_start": "送修：{car}",
+    "car_repair_end": "恢复使用：{car}",
+    "client_create": "添加客户：{name}",
+    "client_update": "修改客户：{name}",
+    "client_deactivate": "停用客户：{name}",
+    "client_reactivate": "重新启用客户：{name}",
+    "appointment_create": "与 {name} 安排预约",
+    "appointment_done": "与 {name} 的预约已完成",
+    "appointment_cancelled": "与 {name} 的预约已取消",
+    "appointment_no_show": "客户未到：{name}"
   },
   "Deals": {
     "title": "商机 / 潜在客户",
@@ -699,6 +728,7 @@
     "noteLabel": "备注",
     "types": {
       "prospect": "潜在客户",
+      "question": "咨询",
       "negotiation": "谈判",
       "rental": "租赁",
       "cancellation": "取消",
@@ -712,7 +742,10 @@
       "social": "社交媒体",
       "referral": "推荐",
       "other": "其他"
-    }
+    },
+    "linkedClient": "关联客户",
+    "followedBy": "跟进人",
+    "administration": "管理"
   },
   "Security": {
     "title": "安全",
@@ -812,7 +845,8 @@
     "appointmentsManager": "您负责的车辆和预订未来 60 天的取车和还车。",
     "achievementsTitle": "我的业绩",
     "achievementsAdmin": "团队完成的全部租赁。",
-    "achievementsManager": "您确认的租赁。"
+    "achievementsManager": "您确认的租赁。",
+    "movementsTitle": "取车与还车"
   },
   "Editor": {
     "placeholder": "输入文字…",
@@ -912,12 +946,106 @@
       "numero_vol": "航班号",
       "lien_reservation": "预订链接",
       "bouton_reservation": "预订按钮"
-    }
+    },
+    "language": "语言",
+    "languageHint": "{language}模板：每种语言都有自己的模板，收件人会收到其语言的版本。"
   },
   "Phone": {
     "country": "国家：{country}",
     "search": "搜索国家或区号",
     "countries": "国家",
     "noResult": "未找到国家"
+  },
+  "Clients": {
+    "title": "客户",
+    "subtitle": "添加、编辑并跟进客户。客户不会被删除，只会被停用。",
+    "new": "新客户",
+    "createTitle": "新客户",
+    "tabInfo": "信息",
+    "tabRentals": "{count, plural, other {租赁（#）}}",
+    "tabDeals": "谈判与咨询",
+    "since": "{date} 起成为客户",
+    "deactivationReason": "停用原因",
+    "all": "全部",
+    "lastName": "姓",
+    "firstName": "名",
+    "segment": "分类",
+    "phone": "电话",
+    "email": "邮箱",
+    "city": "城市",
+    "rentals": "租赁次数",
+    "totalSpent": "消费总额",
+    "lastRental": "最近租赁",
+    "openDeals": "进行中的商机",
+    "createdAt": "创建日期",
+    "deactivate": "停用",
+    "reactivate": "重新启用",
+    "deactivatedToast": "客户已停用",
+    "reactivatedToast": "客户已重新启用",
+    "deactivateTitle": "停用 {name}？",
+    "reactivateTitle": "重新启用 {name}？",
+    "deactivateBody": "该客户将无法登录或预订，历史记录会保留。",
+    "reactivateBody": "该客户将可以再次登录和预订。",
+    "viewHint": "查看模式：字段为只读。点击“编辑”进行修改。",
+    "updated": "客户已更新",
+    "created": "客户已添加",
+    "identity": "身份信息",
+    "civility": "称谓",
+    "birthDate": "出生日期",
+    "licenseNumber": "驾照号码",
+    "contact": "联系方式",
+    "whatsapp": "WhatsApp",
+    "language": "邮件语言",
+    "languageHint": "自动邮件将以此语言发送给客户。",
+    "notes": "备注",
+    "changeClient": "更换客户",
+    "searchPlaceholder": "按姓名、邮箱或电话搜索…",
+    "noMatch": "未找到客户",
+    "createInline": "新客户：添加",
+    "newClient": "新客户",
+    "cancel": "取消",
+    "createAndSelect": "添加并选择",
+    "seg": {
+      "renting": "正在租车",
+      "negotiating": "洽谈中",
+      "rented": "曾经租过",
+      "never": "从未租过"
+    }
+  },
+  "Appointments": {
+    "title": "已安排的预约",
+    "hint": "与客户的门店会面、电话、送车和试驾。",
+    "new": "新预约",
+    "emptyTitle": "暂无预约",
+    "empty": "与现有客户或新客户安排一次预约。",
+    "minutes": "{count} 分钟",
+    "with": "负责人：{name}",
+    "markDone": "标记为完成",
+    "markNoShow": "客户未到",
+    "markCancelled": "取消预约",
+    "created": "预约已添加",
+    "client": "客户",
+    "type": "预约类型",
+    "duration": "时长",
+    "date": "日期",
+    "time": "时间",
+    "agency": "门店",
+    "car": "车辆",
+    "assignee": "负责人",
+    "notes": "备注",
+    "create": "安排",
+    "kind": {
+      "meeting": "门店会面",
+      "call": "电话",
+      "delivery": "送车",
+      "test_drive": "试驾",
+      "other": "其他"
+    },
+    "status": {
+      "planned": "已安排",
+      "done": "已完成",
+      "cancelled": "已取消",
+      "no_show": "未到"
+    }
   }
 }

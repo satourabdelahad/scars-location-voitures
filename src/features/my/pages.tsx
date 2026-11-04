@@ -1,20 +1,36 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/ui/misc";
 import type { SessionUser } from "@/server/guards";
-import { managerRentals, myAppointments } from "@/server/queries/manager-profile";
+import { dealFormOptions, managerRentals, myAppointments, scheduledAppointments, staffOptions } from "@/server/queries/manager-profile";
+import { allAgencies } from "@/server/queries/fleet";
+import { ScheduledAppointments } from "./scheduled";
 import { RentalsTab } from "@/features/managers/rentals-tab";
 import { Appointments } from "./appointments";
 import { RentalsChart } from "./rentals-chart";
 
 const resBase = (u: SessionUser) => (u.role === "admin" ? "/admin/reservations" : "/manager/reservations");
 
-/** "Mes rendez-vous" (menu en haut à droite). */
+/** "Mes rendez-vous" (menu en haut à droite) : rendez-vous planifiés, puis départs et retours. */
 export async function AppointmentsPage({ me }: { me: SessionUser }) {
-  const [rows, t] = await Promise.all([myAppointments(me), getTranslations("My")]);
+  const [rows, scheduled, agencies, deal, staff, t] = await Promise.all([
+    myAppointments(me),
+    scheduledAppointments(me),
+    allAgencies(),
+    dealFormOptions(),
+    me.role === "admin" ? staffOptions() : Promise.resolve([]),
+    getTranslations("My"),
+  ]);
+  const base = me.role === "admin" ? "/admin" : "/manager";
   return (
     <>
       <PageHeader title={t("appointmentsTitle")} subtitle={me.role === "admin" ? t("appointmentsAdmin") : t("appointmentsManager")} />
-      <Appointments rows={rows} reservationsBase={resBase(me)} />
+      <div className="space-y-6">
+        <ScheduledAppointments rows={scheduled} options={{ agencies, cars: deal.cars, staff }} base={base} isAdmin={me.role === "admin"} meId={me.id} />
+        <section>
+          <h2 className="mb-3 font-bold text-ink">{t("movementsTitle")}</h2>
+          <Appointments rows={rows} reservationsBase={resBase(me)} />
+        </section>
+      </div>
     </>
   );
 }

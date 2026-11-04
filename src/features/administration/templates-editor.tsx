@@ -11,14 +11,19 @@ import { Badge } from "@/components/ui/misc";
 import { useRouter } from "@/i18n/navigation";
 import { TEMPLATE_VARIABLES, type TemplateKey } from "@/lib/email-template-defs";
 import { cn, formatDateTime } from "@/lib/utils";
+import { localeMeta, locales, type Locale } from "@/i18n/config";
+import { Flag } from "@/components/flags";
 import { previewEmailTemplate, resetEmailTemplate, saveEmailTemplate, sendTestEmailTemplate } from "@/server/actions/email-templates";
 
-type Tpl = { key: TemplateKey; subject: string; html: string; custom: boolean; updatedAt: string | null };
+type Version = { subject: string; html: string; custom: boolean; updatedAt: string | null };
+type Tpl = { key: TemplateKey; byLocale: Record<string, Version> };
 const ICONS: Record<TemplateKey, typeof Mail> = { manager_invite: UserPlus, car_created: CarFront, reservation_created: CalendarCheck };
 
 export function TemplatesEditor({ templates, locale }: { templates: Tpl[]; locale: string }) {
   const t = useTranslations("Admin");
   const [active, setActive] = useState<TemplateKey>(templates[0].key);
+  // Langue en cours d'édition : celle de l'interface par défaut.
+  const [lang, setLang] = useState<string>((locales as readonly string[]).includes(locale) ? locale : "fr");
   const current = templates.find((x) => x.key === active)!;
   return (
     <div className="grid items-start gap-4 lg:grid-cols-[260px_1fr]">
@@ -43,13 +48,31 @@ export function TemplatesEditor({ templates, locale }: { templates: Tpl[]; local
           );
         })}
       </nav>
-      {/* key : on repart des valeurs enregistrées à chaque changement de modèle */}
-      <TemplateForm key={active} tpl={current} locale={locale} />
+      <div className="min-w-0 space-y-3">
+        <div role="tablist" aria-label={t("language")} className="scroll-thin flex gap-1 overflow-x-auto rounded-[12px] border border-mist bg-paper p-1">
+          {locales.map((l) => (
+            <button
+              key={l}
+              type="button"
+              role="tab"
+              aria-selected={lang === l}
+              onClick={() => setLang(l)}
+              className={cn("relative inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors", lang === l ? "bg-ink text-chalk" : "text-ink-2 hover:bg-chalk")}
+            >
+              <Flag locale={l} className="h-3.5 w-5" />
+              {localeMeta[l].native}
+              {current.byLocale[l]?.custom && <span className="size-1.5 rounded-full bg-palm" aria-label={t("custom")} />}
+            </button>
+          ))}
+        </div>
+        {/* key : on repart des valeurs enregistrées à chaque changement de modèle ou de langue */}
+        <TemplateForm key={`${active}-${lang}`} tplKey={active} lang={lang} version={current.byLocale[lang]} locale={locale} />
+      </div>
     </div>
   );
 }
 
-function TemplateForm({ tpl, locale }: { tpl: Tpl; locale: string }) {
+function TemplateForm({ tplKey, lang, version: tpl, locale }: { tplKey: TemplateKey; lang: string; version: Version; locale: string }) {
   const t = useTranslations("Admin");
   const te = useTranslations("Errors");
   const router = useRouter();
@@ -58,7 +81,7 @@ function TemplateForm({ tpl, locale }: { tpl: Tpl; locale: string }) {
   const [preview, setPreview] = useState<{ subject: string; html: string } | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, start] = useTransition();
-  const variables = TEMPLATE_VARIABLES[tpl.key].map((v) => ({ key: v.key, label: t.has(`vars.${v.key}`) ? t(`vars.${v.key}` as "vars.prenom") : v.key }));
+  const variables = TEMPLATE_VARIABLES[tplKey].map((v) => ({ key: v.key, label: t.has(`vars.${v.key}`) ? t(`vars.${v.key}` as "vars.prenom") : v.key }));
   const dirty = subject !== tpl.subject || html !== tpl.html;
 
   const run = (fn: () => Promise<void>) => start(fn);
@@ -68,8 +91,8 @@ function TemplateForm({ tpl, locale }: { tpl: Tpl; locale: string }) {
       <div className="rounded-2xl border border-mist bg-paper p-6 sm:p-8">
         <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="font-bold text-ink">{t(`tpl.${tpl.key}.name`)}</h2>
-            <p className="mt-0.5 text-sm text-ink-3">{t(`tpl.${tpl.key}.recipients`)}</p>
+            <h2 className="font-bold text-ink">{t(`tpl.${tplKey}.name`)}</h2>
+            <p className="mt-0.5 text-sm text-ink-3">{t(`tpl.${tplKey}.recipients`)}</p>
           </div>
           {tpl.custom ? (
             <Badge tone="info">{tpl.updatedAt ? t("customSince", { date: formatDateTime(tpl.updatedAt, locale) }) : t("custom")}</Badge>
@@ -79,6 +102,7 @@ function TemplateForm({ tpl, locale }: { tpl: Tpl; locale: string }) {
         </div>
 
         <div className="space-y-5">
+          <p className="-mt-1 text-xs text-ink-3">{t("languageHint", { language: localeMeta[lang as Locale].native })}</p>
           <Field label={t("subject")} required error={errors.subject ? te(errors.subject as "required") : undefined}>
             {(p) => <Input {...p} value={subject} onChange={(e) => setSubject(e.target.value)} />}
           </Field>
@@ -94,7 +118,7 @@ function TemplateForm({ tpl, locale }: { tpl: Tpl; locale: string }) {
           </div>
           <div>
             <p className="mb-1.5 text-sm font-semibold text-ink">{t("body")}</p>
-            <HtmlEditor value={html} onChange={setHtml} variables={variables} invalid={Boolean(errors.html)} minHeight={320} />
+            <HtmlEditor key={lang} dir={localeMeta[lang as Locale].dir} value={html} onChange={setHtml} variables={variables} invalid={Boolean(errors.html)} minHeight={320} />
             <p className="mt-2 text-xs text-ink-3">{t("bodyHint")}</p>
           </div>
         </div>
@@ -107,7 +131,7 @@ function TemplateForm({ tpl, locale }: { tpl: Tpl; locale: string }) {
               loading={pending}
               onClick={() =>
                 run(async () => {
-                  const r = await previewEmailTemplate({ key: tpl.key, subject, html });
+                  const r = await previewEmailTemplate({ key: tplKey, locale: lang, subject, html });
                   if (r.ok) setPreview(r.data!);
                   else toast.error(te(r.error as "unknown"));
                 })
@@ -123,7 +147,7 @@ function TemplateForm({ tpl, locale }: { tpl: Tpl; locale: string }) {
               title={dirty ? t("saveFirst") : undefined}
               onClick={() =>
                 run(async () => {
-                  const r = await sendTestEmailTemplate(tpl.key);
+                  const r = await sendTestEmailTemplate(tplKey, lang);
                   if (r.ok) toast.success(t("testSent", { to: r.data!.to }));
                   else toast.error(te(r.error as "unknown"));
                 })
@@ -139,7 +163,7 @@ function TemplateForm({ tpl, locale }: { tpl: Tpl; locale: string }) {
                 disabled={pending}
                 onClick={() =>
                   run(async () => {
-                    const r = await resetEmailTemplate(tpl.key);
+                    const r = await resetEmailTemplate(tplKey, lang);
                     if (r.ok) {
                       toast.success(t("resetDone"));
                       router.refresh();
@@ -159,7 +183,7 @@ function TemplateForm({ tpl, locale }: { tpl: Tpl; locale: string }) {
             onClick={() =>
               run(async () => {
                 setErrors({});
-                const r = await saveEmailTemplate({ key: tpl.key, subject, html });
+                const r = await saveEmailTemplate({ key: tplKey, locale: lang, subject, html });
                 if (r.ok) {
                   toast.success(t("saved"));
                   router.refresh();

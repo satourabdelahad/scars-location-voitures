@@ -16,11 +16,14 @@ import { promotionLabel } from "@/lib/promotion-label";
 import { cn, formatDate, formatDateTime, formatMoney, todayISO } from "@/lib/utils";
 import { addDealNote, createDeal, updateDeal } from "@/server/actions/deals";
 import type { DealRow } from "@/server/queries/manager-profile";
+import type { ClientOption } from "@/server/queries/clients";
+import { ClientPicker } from "@/features/clients/client-picker";
 
 const TYPES = dealTypeEnum.enumValues;
 const SOURCES = dealSourceEnum.enumValues;
 export const dealTone: Record<DealType, Tone> = {
   prospect: "info",
+  question: "neutral",
   negotiation: "warning",
   rental: "success",
   cancellation: "neutral",
@@ -29,6 +32,7 @@ export const dealTone: Record<DealType, Tone> = {
 
 type Options = { cars: { id: string; label: string }[]; promotions: { id: number; code: string; kind: "percent" | "amount"; value: number }[] };
 type FormValues = {
+  client: ClientOption | null;
   prospectName: string;
   phone: string;
   email: string;
@@ -43,6 +47,7 @@ type FormValues = {
   notes: string;
 };
 const EMPTY: FormValues = {
+  client: null,
   prospectName: "",
   phone: "",
   email: "",
@@ -57,6 +62,7 @@ const EMPTY: FormValues = {
   notes: "",
 };
 const toForm = (d: DealRow): FormValues => ({
+  client: d.clientId ? { id: d.clientId, name: d.clientName ?? d.prospectName, email: d.email, phone: d.phone } : null,
   prospectName: d.prospectName,
   phone: d.phone,
   email: d.email ?? "",
@@ -72,7 +78,23 @@ const toForm = (d: DealRow): FormValues => ({
 });
 
 /** Onglet "Deals / prospects" : mini CRM du gestionnaire. */
-export function DealsTab({ managerId, deals, options }: { managerId: string; deals: DealRow[]; options: Options }) {
+export type DealScope = { managerId?: string; clientId?: string };
+
+export function DealsTab({
+  scope,
+  deals,
+  options,
+  prefill,
+  showManager = false,
+}: {
+  /** Fiche gestionnaire (managerId) ou fiche client (clientId) */
+  scope: DealScope;
+  deals: DealRow[];
+  options: Options;
+  /** Valeurs pré-remplies pour un nouveau deal (ex. coordonnées du client) */
+  prefill?: Partial<FormValues>;
+  showManager?: boolean;
+}) {
   const t = useTranslations("Deals");
   const locale = useLocale();
   const [type, setType] = useState<DealType | "all">("all");
@@ -110,6 +132,7 @@ export function DealsTab({ managerId, deals, options }: { managerId: string; dea
         filter: { type: "select", options: TYPES.map((k) => ({ value: k, label: t(`types.${k}`) })) },
         cell: (d) => <Badge tone={dealTone[d.type]} dot>{t(`types.${d.type}`)}</Badge>,
       },
+      ...(showManager ? [{ id: "manager", header: t("followedBy"), text: (d: DealRow) => d.managerName ?? t("administration"), filter: { type: "text" as const } }] : []),
       { id: "car", header: t("car"), text: (d) => d.car ?? "", filter: { type: "text" } },
       { id: "amount", header: t("amount"), text: (d) => (d.amount != null ? formatMoney(d.amount, locale) : ""), sortValue: (d) => d.amount, align: "end" },
       { id: "promotion", header: t("promotion"), text: (d) => (d.promotion ? promotionLabel(d.promotion) : ""), defaultHidden: true },
@@ -137,13 +160,13 @@ export function DealsTab({ managerId, deals, options }: { managerId: string; dea
       },
       { id: "updatedAt", header: t("lastUpdate"), text: (d) => formatDateTime(d.updatedAt, locale), sortValue: (d) => d.updatedAt },
     ],
-    [t, locale, today],
+    [t, locale, today, showManager],
   );
 
   return (
     <div className="space-y-4">
       {/* Entonnoir : un bouton par type d'accord, avec le nombre de deals et le montant estimé */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7">
         {(["all", ...TYPES] as const).map((k) => (
           <button
             key={k}
@@ -181,7 +204,8 @@ export function DealsTab({ managerId, deals, options }: { managerId: string; dea
       {current && (
         <DealDialog
           key={current === "new" ? "new" : current.id}
-          managerId={managerId}
+          scope={scope}
+          prefill={prefill}
           deal={current === "new" ? null : current}
           options={options}
           onClose={() => setEditing(null)}
@@ -191,13 +215,13 @@ export function DealsTab({ managerId, deals, options }: { managerId: string; dea
   );
 }
 
-function DealDialog({ managerId, deal, options, onClose }: { managerId: string; deal: DealRow | null; options: Options; onClose: () => void }) {
+function DealDialog({ scope, prefill, deal, options, onClose }: { scope: DealScope; prefill?: Partial<FormValues>; deal: DealRow | null; options: Options; onClose: () => void }) {
   const t = useTranslations("Deals");
   const tc = useTranslations("Common");
   const te = useTranslations("Errors");
   const locale = useLocale();
   const router = useRouter();
-  const [v, setV] = useState<FormValues>(deal ? toForm(deal) : EMPTY);
+  const [v, setV] = useState<FormValues>(deal ? toForm(deal) : { ...EMPTY, ...prefill });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [note, setNote] = useState("");
   const [pending, start] = useTransition();
@@ -209,7 +233,8 @@ function DealDialog({ managerId, deal, options, onClose }: { managerId: string; 
     e.preventDefault();
     setErrors({});
     start(async () => {
-      const res = deal ? await updateDeal(deal.id, v) : await createDeal(managerId, v);
+      const payload = { ...v, clientId: v.client?.id ?? "" };
+      const res = deal ? await updateDeal(deal.id, payload) : await createDeal(scope, payload);
       if (res.ok) {
         toast.success(deal ? t("updated") : t("created"));
         router.refresh();
@@ -239,6 +264,23 @@ function DealDialog({ managerId, deal, options, onClose }: { managerId: string; 
         <div className={cn("grid gap-6", deal && "lg:grid-cols-[1fr_260px]")}>
           <form onSubmit={save} noValidate className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
+              {!scope.clientId && (
+                <Field label={t("linkedClient")} optionalLabel={tc("optional")} className="sm:col-span-2">
+                  {(p) => (
+                    <ClientPicker
+                      id={p.id}
+                      value={v.client}
+                      onChange={(c) =>
+                        setV((s) => ({
+                          ...s,
+                          client: c,
+                          ...(c ? { prospectName: s.prospectName || c.name, phone: s.phone || (c.phone ?? ""), email: s.email || (c.email ?? "") } : {}),
+                        }))
+                      }
+                    />
+                  )}
+                </Field>
+              )}
               <Field label={t("prospectName")} required error={err("prospectName")} className="sm:col-span-2">
                 {(p) => <Input {...p} autoFocus={!deal} value={v.prospectName} onChange={(x) => set("prospectName", x.target.value)} />}
               </Field>

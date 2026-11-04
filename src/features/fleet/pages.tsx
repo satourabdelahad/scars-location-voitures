@@ -15,6 +15,8 @@ import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import { FleetTable } from "./fleet-table";
 import { CarForm } from "./car-form";
 import { DeactivateCarButton } from "./deactivate-car";
+import { RepairButton } from "./repair-button";
+import { CAR_STATES, carState, STATE_TONE } from "@/lib/car-state";
 
 type Base = "/admin" | "/manager";
 
@@ -24,12 +26,7 @@ export async function FleetListPage({ base, userId }: { base: Base; userId: stri
     listFleet(),
     db.select().from(tablePreferences).where(and(eq(tablePreferences.userId, userId), eq(tablePreferences.tableKey, "fleet"))),
   ]);
-  const active = rows.filter((r) => r.status === "active");
-  const stats = [
-    { label: t("statusActive"), value: active.length },
-    { label: (await getTranslations("Back"))("kpiOnRoad"), value: active.filter((r) => r.onRoad).length },
-    { label: t("statusDeactivated"), value: rows.length - active.length },
-  ];
+  const stats = CAR_STATES.map((s) => ({ label: t(`state.${s}`), value: rows.filter((r) => carState(r) === s).length, tone: STATE_TONE[s] }));
   return (
     <>
       <PageHeader
@@ -37,7 +34,7 @@ export async function FleetListPage({ base, userId }: { base: Base; userId: stri
         subtitle={t("subtitle")}
         actions={<Button asChild><Link href={`${base}/fleet/new`}><Plus />{t("new")}</Link></Button>}
       />
-      <div className="mb-6 grid gap-4 sm:grid-cols-3">
+      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {stats.map((s) => (
           <Panel key={s.label} className="p-5">
             <p className="text-xs font-medium text-ink-3">{s.label}</p>
@@ -67,14 +64,24 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
   const [t, e, tc] = await Promise.all([getTranslations("Fleet"), getTranslations("Enums"), getTranslations("Common")]);
   const name = `${car.brand} ${car.model}`;
 
-  if (car.status === "active") {
+  if (car.status !== "deactivated") {
     return (
       <>
         <Link href={`${base}/fleet`} className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>
+        {car.status === "maintenance" && (
+          <div className="mt-3 flex items-center gap-2 rounded-2xl border border-saffron/50 bg-saffron/10 px-5 py-3 text-sm font-medium text-ink">
+            {t("inRepairBanner")}
+          </div>
+        )}
         <PageHeader
           title={t("editTitle", { car: name })}
           subtitle={<span dir="ltr" className="font-mono">{car.plateNumber}</span>}
-          actions={<DeactivateCarButton id={car.id} name={name} />}
+          actions={
+            <div className="flex flex-wrap gap-2">
+              <RepairButton id={car.id} inRepair={car.status === "maintenance"} />
+              <DeactivateCarButton id={car.id} name={name} />
+            </div>
+          }
         />
         <CarForm
           base={base}

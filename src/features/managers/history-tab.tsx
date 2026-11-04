@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, CheckCircle2, Handshake, KeyRound, LogIn, LogOut, Pencil, PlusCircle, StickyNote, Undo2, UserRound, XCircle } from "lucide-react";
+import { Ban, CalendarPlus, CheckCircle2, Handshake, KeyRound, LogIn, LogOut, Pencil, PlusCircle, StickyNote, Undo2, UserPlus, UserRound, Wrench, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, type ReactNode } from "react";
 import { DataTable, type Column } from "@/components/data-table/data-table";
@@ -12,7 +12,7 @@ import { cn, formatDateTime } from "@/lib/utils";
 import type { DealType } from "@/db/schema";
 import type { ActivityGroup, ActivityRow } from "@/server/queries/manager-profile";
 
-const GROUPS: ActivityGroup[] = ["session", "fleet", "reservations", "deals", "profile"];
+const GROUPS: ActivityGroup[] = ["session", "fleet", "reservations", "clients", "deals", "profile"];
 
 const STYLE: Record<string, { icon: ReactNode; tone: string; badge: Tone }> = {
   session_login: { icon: <LogIn />, tone: "bg-palm-soft text-palm", badge: "success" },
@@ -20,6 +20,11 @@ const STYLE: Record<string, { icon: ReactNode; tone: string; badge: Tone }> = {
   car_create: { icon: <PlusCircle />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
   car_update: { icon: <Pencil />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
   car_deactivate: { icon: <Ban />, tone: "bg-danger-soft text-danger", badge: "danger" },
+  car_repair_start: { icon: <Wrench />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
+  car_repair_end: { icon: <CheckCircle2 />, tone: "bg-palm-soft text-palm", badge: "success" },
+  client_create: { icon: <UserPlus />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  client_update: { icon: <Pencil />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  appointment_create: { icon: <CalendarPlus />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
   reservation_confirm: { icon: <CheckCircle2 />, tone: "bg-palm-soft text-palm", badge: "success" },
   reservation_reject: { icon: <XCircle />, tone: "bg-danger-soft text-danger", badge: "danger" },
   reservation_pickup: { icon: <KeyRound />, tone: "bg-ink text-chalk", badge: "dark" },

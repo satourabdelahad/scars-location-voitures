@@ -29,7 +29,8 @@ export async function listFleet() {
       agencyName: agencies.name,
       cover: sql<string | null>`(SELECT ci.url FROM ${carImages} ci WHERE ci.car_id = ${cars.id} ORDER BY ci.position LIMIT 1)`,
       reservationsCount: sql<number>`(SELECT count(*)::int FROM reservations r WHERE r.car_id = ${cars.id} AND r.status IN ('confirmed','ongoing','completed'))`,
-      onRoad: sql<boolean>`EXISTS (SELECT 1 FROM reservations r WHERE r.car_id = ${cars.id} AND r.status = 'ongoing')`,
+      onRoad: sql<boolean>`EXISTS (SELECT 1 FROM reservations r WHERE r.car_id = ${cars.id}
+        AND (r.status = 'ongoing' OR (r.status = 'confirmed' AND CURRENT_DATE >= r.start_date AND CURRENT_DATE < r.end_date)))`,
       nextBooking: sql<string | null>`(SELECT min(r.start_date)::text FROM reservations r WHERE r.car_id = ${cars.id} AND r.status IN ('pending','confirmed') AND r.start_date >= CURRENT_DATE)`,
     })
     .from(cars)
@@ -37,6 +38,8 @@ export async function listFleet() {
     .orderBy(asc(cars.status), asc(cars.brand), asc(cars.model));
 }
 export type FleetRow = Awaited<ReturnType<typeof listFleet>>[number];
+
+export { carState, type CarState } from "@/lib/car-state";
 
 export async function getFleetCar(id: string) {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;

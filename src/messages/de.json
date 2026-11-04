@@ -265,7 +265,8 @@
     "nothingToday": "Heute nichts geplant.",
     "profile": "Mein Profil",
     "security": "Sicherheit",
-    "administration": "Verwaltung"
+    "administration": "Verwaltung",
+    "clients": "Kunden"
   },
   "Managers": {
     "title": "Disponenten",
@@ -461,7 +462,18 @@
     "assignedManagersHint": "Sie erhalten die Buchungs-E-Mails dieses Autos. Keiner ausgewählt: alle Verwalter.",
     "noManagers": "Kein aktiver Verwalter.",
     "allManagers": "Alle Verwalter",
-    "someManagers": "{count, plural, one {# Verwalter zugeordnet} other {# Verwalter zugeordnet}}"
+    "someManagers": "{count, plural, one {# Verwalter zugeordnet} other {# Verwalter zugeordnet}}",
+    "startRepair": "In Reparatur geben",
+    "endRepair": "Wieder in Betrieb nehmen",
+    "repairStarted": "Auto in Reparatur: nicht mehr buchbar",
+    "repairEnded": "Auto wieder in Betrieb",
+    "inRepairBanner": "In Reparatur: Dieses Auto ist auf der Website nicht mehr buchbar.",
+    "state": {
+      "available": "Verfügbar",
+      "rented": "Vermietet",
+      "maintenance": "In Reparatur",
+      "deactivated": "Deaktiviert"
+    }
   },
   "Reservations": {
     "title": "Buchungen",
@@ -631,7 +643,13 @@
     "labelPickup": "Abholung",
     "labelTotal": "Gesamt",
     "labelReason": "Grund:",
-    "viewReservation": "Meine Buchungen ansehen"
+    "viewReservation": "Meine Buchungen ansehen",
+    "tplAllManagers": "Alle Verwalter",
+    "tplNone": "keine",
+    "tplBtnInvite": "Mein Passwort wählen",
+    "tplBtnCar": "Auto ansehen",
+    "tplBtnBooking": "Meine Buchung ansehen",
+    "tplBtnProcess": "Buchung bearbeiten"
   },
   "Activity": {
     "session_login": "Anmeldung",
@@ -664,8 +682,19 @@
       "fleet": "Flotte",
       "reservations": "Buchungen",
       "deals": "Deals",
-      "profile": "Profil"
-    }
+      "profile": "Profil",
+      "clients": "Kunden"
+    },
+    "car_repair_start": "In Reparatur: {car}",
+    "car_repair_end": "Wieder in Betrieb: {car}",
+    "client_create": "Kunde angelegt: {name}",
+    "client_update": "Kunde geändert: {name}",
+    "client_deactivate": "Kunde deaktiviert: {name}",
+    "client_reactivate": "Kunde reaktiviert: {name}",
+    "appointment_create": "Termin geplant mit {name}",
+    "appointment_done": "Termin erledigt mit {name}",
+    "appointment_cancelled": "Termin abgesagt mit {name}",
+    "appointment_no_show": "Nicht erschienen: {name}"
   },
   "Deals": {
     "title": "Deals / Interessenten",
@@ -699,6 +728,7 @@
     "noteLabel": "Notiz",
     "types": {
       "prospect": "Interessent",
+      "question": "Anfrage",
       "negotiation": "Verhandlung",
       "rental": "Vermietung",
       "cancellation": "Stornierung",
@@ -712,7 +742,10 @@
       "social": "Soziale Netzwerke",
       "referral": "Empfehlung",
       "other": "Sonstiges"
-    }
+    },
+    "linkedClient": "Verknüpfter Kunde",
+    "followedBy": "Betreut von",
+    "administration": "Verwaltung"
   },
   "Security": {
     "title": "Sicherheit",
@@ -812,7 +845,8 @@
     "appointmentsManager": "Abholungen und Rückgaben der nächsten 60 Tage für Ihre Autos und Buchungen.",
     "achievementsTitle": "Meine Erfolge",
     "achievementsAdmin": "Alle vom Team abgeschlossenen Vermietungen.",
-    "achievementsManager": "Die von Ihnen bestätigten Vermietungen."
+    "achievementsManager": "Die von Ihnen bestätigten Vermietungen.",
+    "movementsTitle": "Abholungen und Rückgaben"
   },
   "Editor": {
     "placeholder": "Text eingeben…",
@@ -912,12 +946,106 @@
       "numero_vol": "Flugnummer",
       "lien_reservation": "Link zur Buchung",
       "bouton_reservation": "Button zur Buchung"
-    }
+    },
+    "language": "Sprache",
+    "languageHint": "Vorlage auf {language}: Jede Sprache hat ihre eigene Vorlage. Empfänger erhalten die Vorlage ihrer Sprache."
   },
   "Phone": {
     "country": "Land: {country}",
     "search": "Land oder Vorwahl suchen",
     "countries": "Länder",
     "noResult": "Kein Land gefunden"
+  },
+  "Clients": {
+    "title": "Kunden",
+    "subtitle": "Kunden anlegen, bearbeiten und verfolgen. Sie werden nie gelöscht, nur deaktiviert.",
+    "new": "Neuer Kunde",
+    "createTitle": "Neuer Kunde",
+    "tabInfo": "Informationen",
+    "tabRentals": "{count, plural, =0 {Vermietungen} other {Vermietungen (#)}}",
+    "tabDeals": "Verhandlungen und Anfragen",
+    "since": "Kunde seit {date}",
+    "deactivationReason": "Grund der Deaktivierung",
+    "all": "Alle",
+    "lastName": "Nachname",
+    "firstName": "Vorname",
+    "segment": "Segment",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "city": "Stadt",
+    "rentals": "Vermietungen",
+    "totalSpent": "Gesamtausgaben",
+    "lastRental": "Letzte Miete",
+    "openDeals": "Offene Deals",
+    "createdAt": "Angelegt am",
+    "deactivate": "Deaktivieren",
+    "reactivate": "Reaktivieren",
+    "deactivatedToast": "Kunde deaktiviert",
+    "reactivatedToast": "Kunde reaktiviert",
+    "deactivateTitle": "{name} deaktivieren?",
+    "reactivateTitle": "{name} reaktivieren?",
+    "deactivateBody": "Der Kunde kann sich nicht mehr anmelden oder buchen. Der Verlauf bleibt erhalten.",
+    "reactivateBody": "Der Kunde kann sich wieder anmelden und buchen.",
+    "viewHint": "Ansicht: Die Felder sind schreibgeschützt. Klicken Sie auf „Bearbeiten“, um sie zu ändern.",
+    "updated": "Kunde aktualisiert",
+    "created": "Kunde angelegt",
+    "identity": "Identität",
+    "civility": "Anrede",
+    "birthDate": "Geburtsdatum",
+    "licenseNumber": "Führerscheinnummer",
+    "contact": "Kontaktdaten",
+    "whatsapp": "WhatsApp",
+    "language": "Sprache der E-Mails",
+    "languageHint": "Automatische E-Mails werden in dieser Sprache gesendet.",
+    "notes": "Notizen",
+    "changeClient": "Kunde wechseln",
+    "searchPlaceholder": "Nach Name, E-Mail oder Telefon suchen…",
+    "noMatch": "Kein Kunde gefunden",
+    "createInline": "Neuer Kunde: anlegen",
+    "newClient": "Neuer Kunde",
+    "cancel": "Abbrechen",
+    "createAndSelect": "Anlegen und auswählen",
+    "seg": {
+      "renting": "Mietet gerade",
+      "negotiating": "In Verhandlung",
+      "rented": "Hat schon gemietet",
+      "never": "Noch nie gemietet"
+    }
+  },
+  "Appointments": {
+    "title": "Geplante Termine",
+    "hint": "Filialbesuche, Anrufe, Lieferungen und Probefahrten mit Ihren Kunden.",
+    "new": "Neuer Termin",
+    "emptyTitle": "Kein geplanter Termin",
+    "empty": "Planen Sie einen Termin mit einem bestehenden oder neuen Kunden.",
+    "minutes": "{count} Min.",
+    "with": "mit {name}",
+    "markDone": "Als erledigt markieren",
+    "markNoShow": "Nicht erschienen",
+    "markCancelled": "Termin absagen",
+    "created": "Termin angelegt",
+    "client": "Kunde",
+    "type": "Terminart",
+    "duration": "Dauer",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "agency": "Filiale",
+    "car": "Auto",
+    "assignee": "Zuständig",
+    "notes": "Notizen",
+    "create": "Planen",
+    "kind": {
+      "meeting": "Termin in der Filiale",
+      "call": "Anruf",
+      "delivery": "Lieferung",
+      "test_drive": "Probefahrt",
+      "other": "Sonstiges"
+    },
+    "status": {
+      "planned": "Geplant",
+      "done": "Erledigt",
+      "cancelled": "Abgesagt",
+      "no_show": "Nicht erschienen"
+    }
   }
 }

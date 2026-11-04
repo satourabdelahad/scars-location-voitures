@@ -78,7 +78,7 @@ export async function ManagerProfile({
     body = <RentalsTab rows={await managerRentals(m.userId)} reservationsBase={reservationsBase} />;
   } else if (tab === "deals") {
     const [deals, options] = await Promise.all([managerDeals(m.id), dealFormOptions()]);
-    body = <DealsTab managerId={m.id} deals={deals} options={options} />;
+    body = <DealsTab scope={{ managerId: m.id }} deals={deals} options={options} />;
   } else if (tab === "history") {
     body = <HistoryTab rows={await managerActivity(m.userId, m.id)} />;
   } else if (!isAdmin) {
