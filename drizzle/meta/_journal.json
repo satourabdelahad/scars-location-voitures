@@ -50,6 +50,20 @@
       "when": 1793812861801,
       "tag": "0006_clients_appointments_repair_locales",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793817629446,
+      "tag": "0007_cdd_activation",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793825694164,
+      "tag": "0008_prospect_contact",
+      "breakpoints": true
     }
   ]
 }

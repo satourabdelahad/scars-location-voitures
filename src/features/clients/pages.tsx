@@ -4,13 +4,13 @@ import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { Badge, PageHeader } from "@/components/ui/misc";
 import { Link } from "@/i18n/navigation";
-import { cn, formatDate, initials } from "@/lib/utils";
+import { cn, formatDateTime, initials } from "@/lib/utils";
 import { clientReservations, getClient, listClients } from "@/server/queries/clients";
 import { dealFormOptions, listDeals } from "@/server/queries/manager-profile";
 import { RentalsTab } from "@/features/managers/rentals-tab";
 import { DealsTab } from "@/features/managers/deals-tab";
 import { ClientForm } from "./client-form";
-import { ClientStatusButton } from "./client-status";
+import { ClientInviteButton, ClientStatusButton } from "./client-status";
 import { ClientsTable, segmentTone } from "./clients-table";
 
 type Base = "/admin" | "/manager";
@@ -47,7 +47,9 @@ export async function NewClientPage({ base }: { base: Base }) {
 export async function ClientProfilePage({ base, id, tab, locale }: { base: Base; id: string; tab: Tab; locale: string }) {
   const client = await getClient(id);
   if (!client) notFound();
-  const [t, c, rows, all] = await Promise.all([getTranslations("Clients"), getTranslations("Common"), clientReservations(id), listClients()]);
+  const [t, c, tb, rows, all] = await Promise.all([getTranslations("Clients"), getTranslations("Common"), getTranslations("Back"), clientReservations(id), listClients()]);
+  const who = (p: { name: string; role: string } | null) =>
+    p ? `${p.name} (${p.role === "admin" ? tb("roleAdmin") : p.role === "manager" ? tb("roleManager") : tb("roleClient")})` : null;
   const name = `${client.firstName} ${client.lastName}`.trim() || client.email || "—";
   const segment = all.find((r) => r.id === id)?.segment ?? "never";
   const path = `${base}/clients/${id}`;
@@ -63,7 +65,7 @@ export async function ClientProfilePage({ base, id, tab, locale }: { base: Base;
         deals={deals}
         options={options}
         showManager
-        prefill={{ prospectName: name, phone: client.phone ?? "", email: client.email ?? "", city: client.city ?? "", source: "phone" }}
+        prefill={{ client: { id, name, email: client.email ?? null, phone: client.phone ?? null }, source: "phone" }}
       />
     );
   } else {
@@ -71,7 +73,12 @@ export async function ClientProfilePage({ base, id, tab, locale }: { base: Base;
       <ClientForm
         base={base}
         clientId={id}
-        statusActions={<ClientStatusButton id={id} name={name} status={client.status} />}
+        statusActions={
+          <>
+            {client.status === "active" && client.email && !client.hasAccount && <ClientInviteButton id={id} />}
+            <ClientStatusButton id={id} name={name} status={client.status} />
+          </>
+        }
         initial={{
           civility: client.civility ?? "",
           firstName: client.firstName,
@@ -110,8 +117,24 @@ export async function ClientProfilePage({ base, id, tab, locale }: { base: Base;
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <Badge tone={client.status === "active" ? "success" : "neutral"} dot>{client.status === "active" ? c("active") : c("deactivated")}</Badge>
             <Badge tone={segmentTone[segment]}>{t(`seg.${segment}`)}</Badge>
-            <span className="text-sm text-ink-3">{t("since", { date: formatDate(client.createdAt, locale) })}</span>
           </div>
+          <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-ink-3">
+            <div className="flex gap-1">
+              <dt>{t("addedBy")} :</dt>
+              <dd className="font-medium text-ink-2">{who(client.createdBy) ?? t("selfRegistered")}</dd>
+            </div>
+            <div className="flex gap-1">
+              <dt>{t("addedOn")} :</dt>
+              <dd className="font-medium text-ink-2">{formatDateTime(client.createdAt, locale)}</dd>
+            </div>
+            <div className="flex gap-1">
+              <dt>{t("updatedOn")} :</dt>
+              <dd className="font-medium text-ink-2">
+                {client.updatedAt ? formatDateTime(client.updatedAt, locale) : "—"}
+                {client.updatedBy && ` · ${who(client.updatedBy)}`}
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
 

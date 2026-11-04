@@ -54,7 +54,9 @@
     "profile": "Profile",
     "myAppointments": "My appointments",
     "myAchievements": "My achievements",
-    "myReservations": "My bookings"
+    "myReservations": "My bookings",
+    "myCars": "My cars",
+    "history": "History"
   },
   "Footer": {
     "tagline": "Cars ready to go in six Moroccan cities, at a quoted price that doesn't change at the counter.",
@@ -234,13 +236,15 @@
       "generic": "Sign-in failed. Try again.",
       "server": "The server couldn't verify the sign-in (database or configuration). Try again or contact the administrator.",
       "locked": "Too many attempts: this account is temporarily locked. Try again later or contact the administrator.",
-      "totp_invalid": "Wrong or expired code. Enter the code shown now."
+      "totp_invalid": "Wrong or expired code. Enter the code shown now.",
+      "captcha": "The anti-bot check failed. Reload the page and try again."
     },
     "totpTitle": "Two-step verification",
     "totpHint": "Open your authenticator app and enter the 6-digit code. You can also use a recovery code.",
     "totpCode": "Verification code",
     "totpSubmit": "Verify and sign in",
-    "totpBack": "Back to email and password"
+    "totpBack": "Back to email and password",
+    "recaptchaNotice": "This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply."
   },
   "Back": {
     "dashboard": "Dashboard",
@@ -360,7 +364,33 @@
     "locked": "Locked",
     "lockedBanner": "Sign-in locked until {date} after too many failures.",
     "handledBy": "Handled by",
-    "adminOnly": "Only the administrator can change this"
+    "adminOnly": "Only the administrator can change this",
+    "pendingActivation": "Invitation pending",
+    "pendingBannerTitle": "Account not activated yet",
+    "pendingBannerBody": "The manager stays deactivated until they click the activation link sent by email. You can resend the invitation.",
+    "tabCars": "Assigned cars",
+    "activate": "Activate",
+    "bulkDeactivated": "{count, plural, one {# manager deactivated} other {# managers deactivated}}",
+    "bulkActivated": "{count, plural, one {# manager activated} other {# managers activated}}",
+    "bulkInvited": "{count, plural, one {# invitation resent} other {# invitations resent}}",
+    "bulkSkipped": "{count, plural, one {# row skipped (action not applicable)} other {# rows skipped (action not applicable)}}",
+    "bulkDeactivateTitle": "{count, plural, one {Deactivate # manager} other {Deactivate # managers}}",
+    "assignedCarsTitle": "{count, plural, =0 {No assigned car} one {# assigned car} other {# assigned cars}}",
+    "assignedCarsHint": "{count, plural, =0 {They look after the cars below.} one {They also look after # shared car (no manager, so all managers).} other {They also look after # shared cars (no manager, so all managers).}}",
+    "assignCars": "Assign cars",
+    "assignCarsBody": "Tick the cars this manager is responsible for. A car with no manager is shared by everyone; once assigned, only its managers follow it and receive its emails.",
+    "noAssignedCars": "No assigned car",
+    "noAssignedCarsBody": "This manager looks after the shared cars (no manager).",
+    "noAssignedCarsShort": "None (shared cars)",
+    "unassignCar": "Remove this car",
+    "carUnassigned": "Car removed from the manager.",
+    "carsAssigned": "{count, plural, =0 {No new car assigned} one {# car assigned} other {# cars assigned}}",
+    "searchCars": "Make, model, plate, city…",
+    "selectShown": "Tick all",
+    "unselectShown": "Untick all",
+    "noCarFound": "No car found.",
+    "carsPicked": "{count, plural, =0 {No car ticked} one {# car ticked} other {# cars ticked}}",
+    "assign": "Assign"
   },
   "Documents": {
     "cin_front": "National ID card (CINE), front",
@@ -397,7 +427,12 @@
     "resetFilters": "Clear filters",
     "showAll": "Show all",
     "field": "Field",
-    "value": "Value"
+    "value": "Value",
+    "selected": "{count} selected",
+    "clearSelection": "Clear selection",
+    "refresh": "Refresh",
+    "selectAll": "Select all",
+    "selectRow": "Select row"
   },
   "Fleet": {
     "title": "Fleet",
@@ -473,7 +508,8 @@
       "rented": "Rented",
       "maintenance": "In repair",
       "deactivated": "Deactivated"
-    }
+    },
+    "managers": "Managers"
   },
   "Reservations": {
     "title": "Bookings",
@@ -523,7 +559,8 @@
     },
     "contract": {
       "freelance": "Freelance",
-      "cdi": "Permanent (CDI)"
+      "cdi": "Permanent (CDI)",
+      "cdd": "Fixed-term"
     },
     "category": {
       "city_car": "City car",
@@ -594,7 +631,11 @@
     "upload_failed": "The upload failed. Try again.",
     "promo_invalid": "This promo code isn't valid for this rental.",
     "futureDate": "The date can't be in the future",
-    "numberRange": "Enter a number between {min} and {max}"
+    "numberRange": "Enter a number between {min} and {max}",
+    "captcha": "The anti-bot check failed. Reload the page and try again.",
+    "email_failed": "The email could not be sent (check the domain in Resend).",
+    "email_not_configured": "Email sending is not configured (RESEND_API_KEY).",
+    "no_client_email": "The customer has no email address."
   },
   "About": {
     "title": "A Moroccan agency with well-kept cars",
@@ -649,7 +690,10 @@
     "tplBtnInvite": "Choose my password",
     "tplBtnCar": "View the car",
     "tplBtnBooking": "View my booking",
-    "tplBtnProcess": "Handle the booking"
+    "tplBtnProcess": "Handle the booking",
+    "tplBtnClientInvite": "Activate my account",
+    "tplBtnCars": "See our cars",
+    "sentToClientNote": "Summary sent to the customer ({email})."
   },
   "Activity": {
     "session_login": "Signed in",
@@ -694,7 +738,14 @@
     "appointment_create": "Appointment planned with {name}",
     "appointment_done": "Appointment done with {name}",
     "appointment_cancelled": "Appointment cancelled with {name}",
-    "appointment_no_show": "No-show: {name}"
+    "appointment_no_show": "No-show: {name}",
+    "by": "By",
+    "byName": "by {name}",
+    "profile_activated": "Account activated",
+    "manager_assign_cars": "Cars assigned to {name}",
+    "manager_unassign_car": "Car removed from {name}",
+    "client_invite": "Invitation sent to customer: {name}",
+    "security_unlock": "Account unlocked"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -745,7 +796,19 @@
     },
     "linkedClient": "Linked customer",
     "followedBy": "Followed by",
-    "administration": "Administration"
+    "administration": "Administration",
+    "author": "Author",
+    "contactAt": "Contact date",
+    "nextAction": "Next action",
+    "nextActionPlaceholder": "E.g. send a quote, call back on Friday…",
+    "prospectionType": "Prospecting type",
+    "contactDate": "Date",
+    "contactTime": "Time",
+    "linkedClientHint": "Search for the customer; if they don't exist, add them.",
+    "sentToClient": "Summary sent to {email}.",
+    "sendToClient": "Send to customer",
+    "noClientEmail": "This customer has no email.",
+    "lastSent": "Last sent to customer: {date}"
   },
   "Security": {
     "title": "Security",
@@ -819,7 +882,10 @@
     "changePassword": "Change password",
     "passwordWrong": "Current password is incorrect",
     "passwordWeak": "At least 10 characters, with a letter and a digit",
-    "passwordMismatch": "The two passwords don't match"
+    "passwordMismatch": "The two passwords don't match",
+    "welcomeTitle": "Welcome to Dizy Cars!",
+    "welcomeBody": "Your password is saved. Check and complete your details below, then save.",
+    "licenseNumber": "Driving licence number"
   },
   "My": {
     "chartTitle": "Revenue by month",
@@ -846,7 +912,16 @@
     "achievementsTitle": "My achievements",
     "achievementsAdmin": "Every rental completed by the team.",
     "achievementsManager": "The rentals you confirmed.",
-    "movementsTitle": "Pick-ups and returns"
+    "movementsTitle": "Pick-ups and returns",
+    "historyTitle": "History",
+    "historyAdmin": "All team activity: sign-ins, fleet, bookings, customers, prospects and profiles, with the author of each event.",
+    "historyManager": "All your activity: sign-ins, fleet, bookings, customers and prospects.",
+    "carsTitle": "My cars",
+    "carsAdmin": "{count, plural, =0 {You have not added any car yet.} one {# car added by you.} other {# cars added by you.}}",
+    "carsManager": "The cars you are responsible for, then those shared by the whole team.",
+    "carsAssigned": "{count, plural, =0 {No car assigned to you} one {# car assigned to you} other {# cars assigned to you}}",
+    "carsShared": "{count, plural, =0 {No shared car} one {# shared car} other {# shared cars}}",
+    "carsSharedHint": "No manager assigned: all managers follow them."
   },
   "Editor": {
     "placeholder": "Write your text…",
@@ -901,6 +976,16 @@
         "name": "Car booking",
         "when": "For every new booking",
         "recipients": "Sent to the customer, the administrator and the car's managers (all if none is assigned)."
+      },
+      "client_invite": {
+        "name": "Customer invitation",
+        "when": "When the team adds a customer",
+        "recipients": "Sent to the customer (if they have an email), with their link to choose a password and complete their profile."
+      },
+      "prospect_followup": {
+        "name": "Prospect follow-up",
+        "when": "“Send to customer” button on a prospect",
+        "recipients": "Sent to the customer linked to the prospect, signed by the sender."
       }
     },
     "vars": {
@@ -945,7 +1030,17 @@
       "agence_retour": "Return branch",
       "numero_vol": "Flight number",
       "lien_reservation": "Booking link",
-      "bouton_reservation": "Booking button"
+      "bouton_reservation": "Booking button",
+      "type_prospection": "Prospecting type",
+      "date": "Date",
+      "heure": "Time",
+      "note": "Note",
+      "prochaine_action": "Next action",
+      "gestionnaire": "Sender (full name)",
+      "gestionnaire_telephone": "Sender phone",
+      "gestionnaire_email": "Sender email",
+      "lien_site": "Link to the cars",
+      "bouton_site": "Button to the cars"
     },
     "language": "Language",
     "languageHint": "{language} template: each language has its own template. Recipients get the one in their language."
@@ -1010,7 +1105,14 @@
       "negotiating": "Negotiating",
       "rented": "Rented before",
       "never": "Never rented"
-    }
+    },
+    "addedBy": "Added by",
+    "addedOn": "Added on",
+    "updatedOn": "Updated on",
+    "selfRegistered": "Signed up on the website",
+    "inviteSent": "Invitation emailed to the customer.",
+    "sendInvite": "Send invitation",
+    "createFromSearch": "Add “{q}” as a new customer"
   },
   "Appointments": {
     "title": "Planned appointments",
@@ -1047,5 +1149,10 @@
       "cancelled": "Cancelled",
       "no_show": "No-show"
     }
+  },
+  "Cities": {
+    "search": "Search a city…",
+    "choose": "Choose a city",
+    "noResult": "No city found."
   }
 }

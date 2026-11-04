@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Link } from "@/i18n/navigation";
 import { loginAction } from "@/server/actions/auth";
+import { RecaptchaField, RecaptchaNotice } from "@/components/recaptcha/recaptcha";
 
-const KNOWN = ["invalid", "disabled", "staff", "OAuthAccountNotLinked", "server", "locked", "totp_invalid"];
+const KNOWN = ["invalid", "disabled", "staff", "OAuthAccountNotLinked", "server", "locked", "totp_invalid", "captcha"];
 
 export function LoginForm({ callbackUrl, initialError }: { callbackUrl?: string; initialError?: string }) {
   const t = useTranslations("Auth");
@@ -30,6 +31,7 @@ export function LoginForm({ callbackUrl, initialError }: { callbackUrl?: string;
   return (
     <form action={action} className="space-y-4">
       <input type="hidden" name="callbackUrl" value={callbackUrl ?? ""} />
+      <RecaptchaField action="login" refreshKey={state} />
       {error && <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">{error}</p>}
       <div className={needsCode ? "hidden" : "space-y-4"}>
         <Field label={t("email")} required>
@@ -93,6 +95,7 @@ export function LoginForm({ callbackUrl, initialError }: { callbackUrl?: string;
           <Link href={`/register${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ""}`} className="font-semibold text-majorelle hover:underline">{t("register")}</Link>
         </p>
       )}
+      <RecaptchaNotice text={t("recaptchaNotice")} />
     </form>
   );
 }

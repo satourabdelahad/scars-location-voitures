@@ -6,6 +6,7 @@ import { useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
+import { CityCombobox } from "@/components/ui/city-combobox";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { localeMeta, locales } from "@/i18n/config";
@@ -63,6 +64,7 @@ export function ClientForm({ base, clientId, initial, statusActions }: { base: s
       const res = clientId ? await updateClient(clientId, v) : await createClient(v);
       if (res.ok) {
         toast.success(clientId ? t("updated") : t("created"));
+        if (!clientId && (res.data as { invited?: boolean } | undefined)?.invited) toast.success(t("inviteSent"));
         if (clientId) {
           setMode("view");
           router.replace(pathname, { scroll: false });
@@ -123,7 +125,7 @@ export function ClientForm({ base, clientId, initial, statusActions }: { base: s
         <Field label={t("phone")} required={!locked} error={err("phone")}>{(p) => <PhoneInput key={`p-${version}`} {...p} disabled={locked} value={v.phone} onChange={(x) => set("phone", x)} />}</Field>
         <Field label={t("whatsapp")} optionalLabel={locked ? undefined : tc("optional")} error={err("whatsapp")}>{(p) => <PhoneInput key={`w-${version}`} {...p} disabled={locked} value={v.whatsapp} onChange={(x) => set("whatsapp", x)} />}</Field>
         <Field label={t("email")} optionalLabel={locked ? undefined : tc("optional")} error={err("email")}>{(p) => <Input {...p} disabled={locked} type="email" dir="ltr" value={v.email} onChange={(x) => set("email", x.target.value)} />}</Field>
-        <Field label={t("city")} optionalLabel={locked ? undefined : tc("optional")} error={err("city")}>{(p) => <Input {...p} disabled={locked} value={v.city} onChange={(x) => set("city", x.target.value)} />}</Field>
+        <Field label={t("city")} optionalLabel={locked ? undefined : tc("optional")} error={err("city")}>{(p) => <CityCombobox {...p} disabled={locked} value={v.city} onChange={(c) => set("city", c)} />}</Field>
         <Field label={t("language")} hint={locked ? undefined : t("languageHint")}>
           {(p) => (
             <Select {...p} disabled={locked} value={v.preferredLocale} onChange={(x) => set("preferredLocale", x.target.value)}>

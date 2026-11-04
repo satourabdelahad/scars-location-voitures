@@ -1,7 +1,7 @@
 "use client";
 
 import { DropdownMenu } from "radix-ui";
-import { CalendarCheck, CalendarClock, LayoutDashboard, LogOut, Trophy, UserRound } from "lucide-react";
+import { CalendarCheck, CalendarClock, CarFront, History, LayoutDashboard, LogOut, Trophy, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Link } from "@/i18n/navigation";
@@ -25,6 +25,8 @@ export function UserMenu({ user, tone = "light" }: { user: { name?: string | nul
       ? [
           { href: `${home}/appointments`, label: t("myAppointments"), Icon: CalendarClock },
           { href: `${home}/achievements`, label: t("myAchievements"), Icon: Trophy },
+          { href: `${home}/my-cars`, label: t("myCars"), Icon: CarFront },
+          { href: `${home}/history`, label: t("history"), Icon: History },
         ]
       : [{ href: "/account", label: t("myReservations"), Icon: CalendarCheck }]),
   ];

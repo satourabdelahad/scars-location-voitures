@@ -50,6 +50,23 @@ export function ClientPicker({
     timer.current = setTimeout(async () => setResults(await searchClients(text)), 250);
   }
 
+  /** Nouveau client à partir du texte recherché : email, téléphone ou « prénom nom ». */
+  function startCreate(text: string) {
+    const v = text.trim();
+    const digits = v.replace(/[\s.()-]/g, "");
+    const next = { firstName: "", lastName: "", phone: "", email: "" };
+    if (v.includes("@")) next.email = v;
+    else if (/^\+?\d{6,}$/.test(digits)) next.phone = digits.startsWith("+") ? digits : digits.startsWith("0") ? `+212${digits.slice(1)}` : `+${digits}`;
+    else {
+      const [first, ...rest] = v.split(/\s+/);
+      next.firstName = first ?? "";
+      next.lastName = rest.join(" ");
+    }
+    setDraft(next);
+    setOpen(false);
+    setCreating(true);
+  }
+
   function create() {
     setErrors({});
     start(async () => {
@@ -113,14 +130,29 @@ export function ClientPicker({
                   </button>
                 </li>
               ))}
-              {results.length === 0 && <li className="px-3 py-3 text-sm text-ink-3">{t("noMatch")}</li>}
+              {results.length === 0 && (
+                <li className="px-3 py-2">
+                  <p className="py-1 text-sm text-ink-3">{t("noMatch")}</p>
+                  {allowCreate && (
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => startCreate(q)}
+                      className="mt-1 inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-majorelle hover:bg-majorelle-soft"
+                    >
+                      <UserPlus className="size-4" />
+                      {t("createFromSearch", { q: q.trim() })}
+                    </button>
+                  )}
+                </li>
+              )}
             </ul>
           )}
         </div>
       )}
 
       {allowCreate && !creating && (
-        <button type="button" onClick={() => setCreating(true)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-majorelle hover:underline">
+        <button type="button" onClick={() => startCreate(q)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-majorelle hover:underline">
           <UserPlus className="size-4" />
           {t("createInline")}
         </button>

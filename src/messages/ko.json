@@ -54,7 +54,9 @@
     "profile": "프로필",
     "myAppointments": "내 일정",
     "myAchievements": "내 실적",
-    "myReservations": "내 예약"
+    "myReservations": "내 예약",
+    "myCars": "내 차량",
+    "history": "기록"
   },
   "Footer": {
     "tagline": "모로코 6개 도시에서 바로 출발할 수 있는 차량. 안내된 요금은 카운터에서도 바뀌지 않습니다.",
@@ -234,13 +236,15 @@
       "generic": "로그인하지 못했습니다. 다시 시도하세요.",
       "server": "서버가 로그인을 확인하지 못했습니다(데이터베이스 또는 설정). 다시 시도하거나 관리자에게 문의하세요.",
       "locked": "시도 횟수가 너무 많아 이 계정이 일시적으로 차단되었습니다. 나중에 다시 시도하거나 관리자에게 문의하세요.",
-      "totp_invalid": "코드가 잘못되었거나 만료되었습니다. 지금 표시된 코드를 입력하세요."
+      "totp_invalid": "코드가 잘못되었거나 만료되었습니다. 지금 표시된 코드를 입력하세요.",
+      "captcha": "자동화 방지 확인에 실패했습니다. 페이지를 새로고침한 뒤 다시 시도하세요."
     },
     "totpTitle": "2단계 인증",
     "totpHint": "인증 앱을 열고 6자리 코드를 입력하세요. 복구 코드도 사용할 수 있습니다.",
     "totpCode": "인증 코드",
     "totpSubmit": "확인 후 로그인",
-    "totpBack": "이메일과 비밀번호로 돌아가기"
+    "totpBack": "이메일과 비밀번호로 돌아가기",
+    "recaptchaNotice": "이 사이트는 reCAPTCHA로 보호되며 Google 개인정보처리방침 및 서비스 약관이 적용됩니다."
   },
   "Back": {
     "dashboard": "대시보드",
@@ -360,7 +364,33 @@
     "locked": "차단됨",
     "lockedBanner": "실패가 너무 많아 {date}까지 로그인이 차단되었습니다.",
     "handledBy": "담당자",
-    "adminOnly": "관리자만 변경할 수 있습니다"
+    "adminOnly": "관리자만 변경할 수 있습니다",
+    "pendingActivation": "초대 대기 중",
+    "pendingBannerTitle": "계정이 아직 활성화되지 않았습니다",
+    "pendingBannerBody": "이메일로 받은 활성화 링크를 클릭할 때까지 이 매니저는 비활성 상태입니다. 초대를 다시 보낼 수 있습니다.",
+    "tabCars": "담당 차량",
+    "activate": "활성화",
+    "bulkDeactivated": "매니저 {count}명을 비활성화했습니다",
+    "bulkActivated": "매니저 {count}명을 활성화했습니다",
+    "bulkInvited": "초대 {count}건을 다시 보냈습니다",
+    "bulkSkipped": "{count}개 행을 건너뛰었습니다(적용할 수 없는 작업)",
+    "bulkDeactivateTitle": "매니저 {count}명 비활성화",
+    "assignedCarsTitle": "{count, plural, =0 {담당 차량 없음} other {담당 차량 {count}대}}",
+    "assignedCarsHint": "{count, plural, =0 {아래 차량을 담당합니다.} other {공유 차량 {count}대(담당자 없음, 즉 모든 매니저)도 담당합니다.}}",
+    "assignCars": "차량 배정",
+    "assignCarsBody": "이 매니저가 담당할 차량을 선택하세요. 담당자가 없는 차량은 모두가 공유합니다. 배정하면 해당 매니저만 차량을 관리하고 이메일을 받습니다.",
+    "noAssignedCars": "담당 차량 없음",
+    "noAssignedCarsBody": "이 매니저는 공유 차량(담당자 없음)을 담당합니다.",
+    "noAssignedCarsShort": "없음(공유 차량)",
+    "unassignCar": "이 차량 해제",
+    "carUnassigned": "매니저에게서 차량을 해제했습니다.",
+    "carsAssigned": "{count, plural, =0 {새로 배정된 차량 없음} other {차량 {count}대 배정됨}}",
+    "searchCars": "브랜드, 모델, 번호판, 도시…",
+    "selectShown": "모두 선택",
+    "unselectShown": "모두 해제",
+    "noCarFound": "차량을 찾을 수 없습니다.",
+    "carsPicked": "{count, plural, =0 {선택한 차량 없음} other {{count}대 선택됨}}",
+    "assign": "배정"
   },
   "Documents": {
     "cin_front": "신분증(CINE) 앞면",
@@ -397,7 +427,12 @@
     "resetFilters": "필터 지우기",
     "showAll": "모두 표시",
     "field": "항목",
-    "value": "값"
+    "value": "값",
+    "selected": "{count}개 선택됨",
+    "clearSelection": "선택 해제",
+    "refresh": "새로고침",
+    "selectAll": "모두 선택",
+    "selectRow": "행 선택"
   },
   "Fleet": {
     "title": "차량 관리",
@@ -473,7 +508,8 @@
       "rented": "렌탈 중",
       "maintenance": "수리 중",
       "deactivated": "비활성"
-    }
+    },
+    "managers": "매니저"
   },
   "Reservations": {
     "title": "예약",
@@ -523,7 +559,8 @@
     },
     "contract": {
       "freelance": "프리랜서",
-      "cdi": "정규직(CDI)"
+      "cdi": "정규직(CDI)",
+      "cdd": "계약직"
     },
     "category": {
       "city_car": "시티카",
@@ -594,7 +631,11 @@
     "upload_failed": "업로드에 실패했습니다. 다시 시도하세요.",
     "promo_invalid": "이 프로모션 코드는 이 렌터카에 사용할 수 없습니다.",
     "futureDate": "미래 날짜는 입력할 수 없습니다",
-    "numberRange": "{min}~{max} 사이의 숫자를 입력하세요"
+    "numberRange": "{min}~{max} 사이의 숫자를 입력하세요",
+    "captcha": "자동화 방지 확인에 실패했습니다. 페이지를 새로고침한 뒤 다시 시도하세요.",
+    "email_failed": "이메일을 보낼 수 없습니다(Resend에서 도메인을 확인하세요).",
+    "email_not_configured": "이메일 발송이 설정되지 않았습니다(RESEND_API_KEY).",
+    "no_client_email": "고객에게 이메일 주소가 없습니다."
   },
   "About": {
     "title": "잘 관리된 차량을 갖춘 모로코 렌터카",
@@ -649,7 +690,10 @@
     "tplBtnInvite": "비밀번호 설정하기",
     "tplBtnCar": "차량 보기",
     "tplBtnBooking": "내 예약 보기",
-    "tplBtnProcess": "예약 처리하기"
+    "tplBtnProcess": "예약 처리하기",
+    "tplBtnClientInvite": "내 계정 활성화",
+    "tplBtnCars": "차량 보기",
+    "sentToClientNote": "고객에게 요약을 보냈습니다({email})."
   },
   "Activity": {
     "session_login": "로그인",
@@ -694,7 +738,14 @@
     "appointment_create": "{name} 님과 약속 예정",
     "appointment_done": "{name} 님과 약속 완료",
     "appointment_cancelled": "{name} 님과 약속 취소",
-    "appointment_no_show": "고객 불참: {name}"
+    "appointment_no_show": "고객 불참: {name}",
+    "by": "작업자",
+    "byName": "작업자: {name}",
+    "profile_activated": "계정 활성화",
+    "manager_assign_cars": "{name}에게 차량 배정",
+    "manager_unassign_car": "{name}에게서 차량 해제",
+    "client_invite": "고객에게 초대 발송: {name}",
+    "security_unlock": "계정 잠금 해제"
   },
   "Deals": {
     "title": "딜 / 잠재 고객",
@@ -745,7 +796,19 @@
     },
     "linkedClient": "연결된 고객",
     "followedBy": "담당",
-    "administration": "관리"
+    "administration": "관리",
+    "author": "작성자",
+    "contactAt": "연락 일시",
+    "nextAction": "다음 작업",
+    "nextActionPlaceholder": "예: 견적 보내기, 금요일에 다시 전화…",
+    "prospectionType": "영업 유형",
+    "contactDate": "날짜",
+    "contactTime": "시간",
+    "linkedClientHint": "고객을 검색하세요. 없으면 추가하세요.",
+    "sentToClient": "{email}(으)로 요약을 보냈습니다.",
+    "sendToClient": "고객에게 보내기",
+    "noClientEmail": "이 고객은 이메일이 없습니다.",
+    "lastSent": "마지막 발송: {date}"
   },
   "Security": {
     "title": "보안",
@@ -819,7 +882,10 @@
     "changePassword": "비밀번호 변경",
     "passwordWrong": "현재 비밀번호가 올바르지 않습니다",
     "passwordWeak": "10자 이상, 영문자와 숫자 포함",
-    "passwordMismatch": "두 비밀번호가 일치하지 않습니다"
+    "passwordMismatch": "두 비밀번호가 일치하지 않습니다",
+    "welcomeTitle": "Dizy Cars에 오신 것을 환영합니다!",
+    "welcomeBody": "비밀번호가 저장되었습니다. 아래 정보를 확인하고 입력한 뒤 저장하세요.",
+    "licenseNumber": "운전면허 번호"
   },
   "My": {
     "chartTitle": "월별 매출",
@@ -846,7 +912,16 @@
     "achievementsTitle": "내 실적",
     "achievementsAdmin": "팀이 완료한 모든 렌터카.",
     "achievementsManager": "내가 확정한 렌터카.",
-    "movementsTitle": "출고 및 반납"
+    "movementsTitle": "출고 및 반납",
+    "historyTitle": "기록",
+    "historyAdmin": "팀 전체 활동(로그인, 차량, 예약, 고객, 잠재 고객, 프로필)과 각 이벤트의 작업자.",
+    "historyManager": "내 모든 활동(로그인, 차량, 예약, 고객, 잠재 고객).",
+    "carsTitle": "내 차량",
+    "carsAdmin": "{count, plural, =0 {아직 추가한 차량이 없습니다.} other {내가 추가한 차량: {count}대}}",
+    "carsManager": "내가 담당하는 차량과 팀 전체가 공유하는 차량입니다.",
+    "carsAssigned": "{count, plural, =0 {나에게 배정된 차량 없음} other {나에게 배정된 차량: {count}대}}",
+    "carsShared": "{count, plural, =0 {공유 차량 없음} other {공유 차량: {count}대}}",
+    "carsSharedHint": "담당 매니저 없음: 모든 매니저가 관리합니다."
   },
   "Editor": {
     "placeholder": "내용을 입력하세요…",
@@ -901,6 +976,16 @@
         "name": "차량 예약",
         "when": "새 예약마다",
         "recipients": "고객, 관리자, 해당 차량 담당 매니저(지정되지 않으면 전체)에게 발송됩니다."
+      },
+      "client_invite": {
+        "name": "고객 초대",
+        "when": "팀이 고객을 추가할 때",
+        "recipients": "고객(이메일이 있는 경우)에게 비밀번호 설정 및 프로필 입력 링크와 함께 발송됩니다."
+      },
+      "prospect_followup": {
+        "name": "잠재 고객 후속 연락",
+        "when": "잠재 고객의 “고객에게 보내기” 버튼",
+        "recipients": "잠재 고객과 연결된 고객에게 발송자 서명과 함께 발송됩니다."
       }
     },
     "vars": {
@@ -945,7 +1030,17 @@
       "agence_retour": "반납 지점",
       "numero_vol": "항공편 번호",
       "lien_reservation": "예약 링크",
-      "bouton_reservation": "예약 버튼"
+      "bouton_reservation": "예약 버튼",
+      "type_prospection": "영업 유형",
+      "date": "날짜",
+      "heure": "시간",
+      "note": "메모",
+      "prochaine_action": "다음 작업",
+      "gestionnaire": "발송자(이름)",
+      "gestionnaire_telephone": "발송자 전화",
+      "gestionnaire_email": "발송자 이메일",
+      "lien_site": "차량 페이지 링크",
+      "bouton_site": "차량 페이지 버튼"
     },
     "language": "언어",
     "languageHint": "{language} 템플릿: 언어마다 템플릿이 따로 있으며, 받는 사람은 자신의 언어로 받습니다."
@@ -1010,7 +1105,14 @@
       "negotiating": "협상 중",
       "rented": "이용 경험 있음",
       "never": "이용 경험 없음"
-    }
+    },
+    "addedBy": "등록자",
+    "addedOn": "등록일",
+    "updatedOn": "수정일",
+    "selfRegistered": "웹사이트 가입",
+    "inviteSent": "고객에게 초대 이메일을 보냈습니다.",
+    "sendInvite": "초대 보내기",
+    "createFromSearch": "“{q}”을(를) 새 고객으로 추가"
   },
   "Appointments": {
     "title": "예정된 약속",
@@ -1047,5 +1149,10 @@
       "cancelled": "취소",
       "no_show": "불참"
     }
+  },
+  "Cities": {
+    "search": "도시 검색…",
+    "choose": "도시 선택",
+    "noResult": "도시를 찾을 수 없습니다."
   }
 }

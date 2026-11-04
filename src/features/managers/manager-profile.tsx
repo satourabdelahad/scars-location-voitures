@@ -1,4 +1,4 @@
-import { CalendarClock, Handshake, History, IdCard } from "lucide-react";
+import { CalendarClock, CarFront, Handshake, History, IdCard, MailWarning } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
@@ -15,8 +15,11 @@ import { ManagerCardExport } from "./managers-table";
 import { RentalsTab } from "./rentals-tab";
 import { DealsTab } from "./deals-tab";
 import { HistoryTab } from "./history-tab";
+import { AssignedCarsTab } from "./assigned-cars-tab";
+import { listFleet } from "@/server/queries/fleet";
+import { managerDisplayStatus } from "@/lib/manager-status";
 
-export const PROFILE_TABS = ["infos", "rentals", "deals", "history"] as const;
+export const PROFILE_TABS = ["infos", "cars", "rentals", "deals", "history"] as const;
 export type ProfileTab = (typeof PROFILE_TABS)[number];
 
 export function parseTab(v: string | string[] | undefined): ProfileTab {
@@ -47,9 +50,11 @@ export async function ManagerProfile({
   const name = `${m.firstName} ${m.lastName}`;
   const locked = m.user.loginLockedUntil && m.user.loginLockedUntil > new Date() ? m.user.loginLockedUntil : null;
   const reservationsBase = isAdmin ? "/admin/reservations" : "/manager/reservations";
+  const display = managerDisplayStatus(m);
 
   const tabs: { id: ProfileTab; label: string; Icon: typeof IdCard }[] = [
     { id: "infos", label: t("tabInfo"), Icon: IdCard },
+    { id: "cars", label: t("tabCars"), Icon: CarFront },
     { id: "rentals", label: t("tabRentals"), Icon: CalendarClock },
     { id: "deals", label: t("tabDeals"), Icon: Handshake },
     { id: "history", label: t("tabHistory"), Icon: History },
@@ -74,7 +79,19 @@ export async function ManagerProfile({
   };
 
   let body: React.ReactNode;
-  if (tab === "rentals") {
+  if (tab === "cars") {
+    const fleet = await listFleet();
+    body = (
+      <AssignedCarsTab
+        managerId={m.id}
+        assigned={fleet.filter((c) => c.managerIds.includes(m.id))}
+        candidates={fleet.filter((c) => c.status !== "deactivated" && !c.managerIds.includes(m.id))}
+        sharedCount={fleet.filter((c) => c.status !== "deactivated" && c.managerIds.length === 0).length}
+        canEdit={isAdmin}
+        fleetBase={isAdmin ? "/admin" : "/manager"}
+      />
+    );
+  } else if (tab === "rentals") {
     body = <RentalsTab rows={await managerRentals(m.userId)} reservationsBase={reservationsBase} />;
   } else if (tab === "deals") {
     const [deals, options] = await Promise.all([managerDeals(m.id), dealFormOptions()]);
@@ -89,7 +106,7 @@ export async function ManagerProfile({
         <ManagerForm
           managerId={m.id}
           initialPhotoUrl={m.photoUrl}
-          initialMode="view"
+          initialMode={edit && m.status === "active" ? "edit" : "view"}
           canEdit={m.status === "active"}
           canOpenDocs
           lockedFields={["workStartDate", "contractType"]}
@@ -106,11 +123,11 @@ export async function ManagerProfile({
         key={edit ? "edit" : "view"}
         managerId={m.id}
         initialPhotoUrl={m.photoUrl}
-        initialMode={edit && isAdmin && m.status === "active" ? "edit" : "view"}
-        canEdit={isAdmin && m.status === "active"}
+        initialMode={edit && isAdmin && display !== "deactivated" ? "edit" : "view"}
+        canEdit={isAdmin && display !== "deactivated"}
         canOpenDocs={isAdmin}
         statusActions={
-          isAdmin ? <ManagerActions id={m.id} name={name} status={m.status} canResendInvite={!m.user.hasPassword && m.status === "active"} /> : undefined
+          isAdmin ? <ManagerActions id={m.id} name={name} status={display} canResendInvite={!m.user.hasPassword && display === "active"} /> : undefined
         }
         initial={formInitial}
         existingDocs={m.documents.map((d) => d.kind)}
@@ -127,7 +144,9 @@ export async function ManagerProfile({
         <div className="min-w-[min(100%,14rem)] flex-1">
           <h1 className="display-md text-2xl text-ink sm:text-3xl">{name}</h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            <Badge tone={m.status === "active" ? "success" : "neutral"} dot>{m.status === "active" ? c("active") : c("deactivated")}</Badge>
+            <Badge tone={display === "active" ? "success" : display === "pending" ? "warning" : "neutral"} dot>
+              {display === "active" ? c("active") : display === "pending" ? t("pendingActivation") : c("deactivated")}
+            </Badge>
             <Badge tone="info">{e(`contract.${m.contractType}`)}</Badge>
             {locked && <Badge tone="danger" dot>{t("locked")}</Badge>}
             <span className="text-sm text-ink-3">{m.city}</span>
@@ -142,7 +161,16 @@ export async function ManagerProfile({
           {isAdmin && <UnlockButton userId={m.userId} />}
         </div>
       )}
-      {m.status === "deactivated" && (
+      {display === "pending" && (
+        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-saffron/40 bg-saffron/10 px-5 py-4">
+          <MailWarning className="mt-0.5 size-5 shrink-0 text-saffron-ink" />
+          <div>
+            <p className="font-semibold text-ink">{t("pendingBannerTitle")}</p>
+            <p className="mt-1 text-sm text-ink-2">{t("pendingBannerBody")}</p>
+          </div>
+        </div>
+      )}
+      {display === "deactivated" && (
         <div className="mb-6 rounded-2xl border border-mist-2 bg-mist/50 px-5 py-4">
           <p className="font-semibold text-ink">{t("deactivatedOn", { date: formatDate(m.deactivatedAt, locale) })}</p>
           <p className="mt-1 text-sm text-ink-2">{t("deactivationReason")} : {m.deactivationReason}</p>
@@ -172,7 +200,7 @@ export async function ManagerProfile({
 }
 
 async function exportRow(m: ManagerDetail) {
-  const counts = await managerRentalCounts(m.userId);
+  const [counts, fleet] = await Promise.all([managerRentalCounts(m.userId), listFleet()]);
   return {
     id: m.id,
     civility: m.civility,
@@ -196,6 +224,7 @@ async function exportRow(m: ManagerDetail) {
     rentalsWeek: counts.w,
     rentalsMonth: counts.m,
     rentalsYear: counts.y,
+    assignedCars: fleet.filter((c) => c.managerIds.includes(m.id)).map((c) => `${c.brand} ${c.model} ${c.year} (${c.plateNumber})`),
   };
 }
 

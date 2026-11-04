@@ -1,7 +1,7 @@
 import "server-only";
 import { asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { managerDocuments, managerEvents, managers, users } from "@/db/schema";
+import { managerDocuments, managerEvents, managers } from "@/db/schema";
 
 const TZ = "Africa/Casablanca";
 const RENTED = sql`('confirmed','ongoing','completed')`;
@@ -25,7 +25,7 @@ export async function listManagersWithStats() {
     birth_date: string;
     marital_status: "married" | "widowed" | "single" | null;
     work_start_date: string;
-    contract_type: "freelance" | "cdi";
+    contract_type: "cdi" | "cdd" | "freelance";
     photo_url: string | null;
     locked_until: string | null;
     status: "active" | "deactivated";
@@ -37,6 +37,7 @@ export async function listManagersWithStats() {
     rentals_week: number;
     rentals_month: number;
     rentals_year: number;
+    assigned_cars: string[] | null;
   }>(sql`
     WITH bounds AS (
       SELECT
@@ -53,7 +54,9 @@ export async function listManagersWithStats() {
       count(r.id) FILTER (WHERE r.confirmed_at >= b.d)::int AS rentals_day,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.w)::int AS rentals_week,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.m)::int AS rentals_month,
-      count(r.id) FILTER (WHERE r.confirmed_at >= b.y)::int AS rentals_year
+      count(r.id) FILTER (WHERE r.confirmed_at >= b.y)::int AS rentals_year,
+      (SELECT array_agg(c.brand || ' ' || c.model || ' ' || c.year || ' (' || c.plate_number || ')' ORDER BY c.brand, c.model)
+         FROM car_managers cm JOIN cars c ON c.id = cm.car_id WHERE cm.manager_id = m.id) AS assigned_cars
     FROM managers m
     JOIN users u ON u.id = m.user_id
     CROSS JOIN bounds b
@@ -85,6 +88,7 @@ export async function listManagersWithStats() {
     rentalsWeek: r.rentals_week,
     rentalsMonth: r.rentals_month,
     rentalsYear: r.rentals_year,
+    assignedCars: r.assigned_cars ?? [],
   }));
 }
 export type ManagerRow = Awaited<ReturnType<typeof listManagersWithStats>>[number];

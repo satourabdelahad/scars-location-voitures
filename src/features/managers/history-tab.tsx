@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, CalendarPlus, CheckCircle2, Handshake, KeyRound, LogIn, LogOut, Pencil, PlusCircle, StickyNote, Undo2, UserPlus, UserRound, Wrench, XCircle } from "lucide-react";
+import { Ban, CalendarPlus, CarFront, CheckCircle2, Handshake, KeyRound, LogIn, LogOut, Pencil, PlusCircle, Power, ShieldCheck, StickyNote, Undo2, UserCheck, UserPlus, UserRound, Wrench, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, type ReactNode } from "react";
 import { DataTable, type Column } from "@/components/data-table/data-table";
@@ -33,22 +33,40 @@ const STYLE: Record<string, { icon: ReactNode; tone: string; badge: Tone }> = {
   deal_create: { icon: <Handshake />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
   deal_update: { icon: <Handshake />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
   deal_note: { icon: <StickyNote />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
+  client_deactivate: { icon: <Ban />, tone: "bg-danger-soft text-danger", badge: "danger" },
+  client_reactivate: { icon: <Power />, tone: "bg-palm-soft text-palm", badge: "success" },
+  profile_created: { icon: <UserPlus />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  profile_updated: { icon: <Pencil />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  profile_deactivated: { icon: <Ban />, tone: "bg-danger-soft text-danger", badge: "danger" },
+  profile_reactivated: { icon: <Power />, tone: "bg-palm-soft text-palm", badge: "success" },
+  profile_activated: { icon: <UserCheck />, tone: "bg-palm-soft text-palm", badge: "success" },
+  manager_assign_cars: { icon: <CarFront />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  manager_unassign_car: { icon: <CarFront />, tone: "bg-mist text-ink-2", badge: "neutral" },
+  security_unlock: { icon: <ShieldCheck />, tone: "bg-palm-soft text-palm", badge: "success" },
 };
 const fallbackStyle = { icon: <UserRound />, tone: "bg-mist text-ink-2", badge: "neutral" as Tone };
 
-/** Onglet "Historique" : connexions, parc, réservations, deals et fiche, en tableau ou en frise. */
-export function HistoryTab({ rows }: { rows: ActivityRow[] }) {
+/**
+ * Onglet "Historique" : connexions, parc, réservations, clients, deals et fiche, en tableau ou en frise,
+ * avec l'auteur de chaque événement. `global` : historique de toute l'équipe (page Historique de l'administrateur).
+ */
+export function HistoryTab({ rows, global = false, tableKey = "manager-history" }: { rows: ActivityRow[]; global?: boolean; tableKey?: string }) {
   const t = useTranslations("Activity");
   const tm = useTranslations("Managers");
   const td = useTranslations("Deals");
+  const tb = useTranslations("Back");
   const locale = useLocale();
   const [mode, setMode] = useViewMode("manager-history", "timeline");
   const [group, setGroup] = useState<ActivityGroup | "all">("all");
 
   const label = (r: ActivityRow) => {
     const params = { car: r.car ?? "—", ref: r.reference ?? "—", name: r.dealName ?? "—" };
-    return t.has(r.kind as "session_login") ? t(r.kind as "session_login", params) : r.kind;
+    const base = t.has(r.kind as "session_login") ? t(r.kind as "session_login", params) : r.kind;
+    // Événements de fiche : on précise de quel gestionnaire il s'agit dans l'historique de l'équipe.
+    return global && r.group === "profile" && r.kind.startsWith("profile_") && r.dealName ? `${base} : ${r.dealName}` : base;
   };
+  const roleLabel = (r: ActivityRow) => (r.actorRole === "admin" ? tb("roleAdmin") : r.actorRole === "manager" ? tb("roleManager") : "");
+  const author = (r: ActivityRow) => (r.actorName ? `${r.actorName}${roleLabel(r) ? ` (${roleLabel(r)})` : ""}` : "—");
   const detail = (r: ActivityRow) => {
     if (r.kind === "session_login" && r.provider) return t("via", { provider: r.provider === "credentials" ? t("password") : r.provider });
     if (r.kind === "deal_update" && r.fromType && r.toType) return `${td(`types.${r.fromType as DealType}`)} → ${td(`types.${r.toType as DealType}`)}`;
@@ -82,10 +100,26 @@ export function HistoryTab({ rows }: { rows: ActivityRow[] }) {
           </span>
         ),
       },
+      {
+        id: "actor",
+        header: t("by"),
+        addedLater: true,
+        text: (r) => author(r),
+        filter: { type: "text" },
+        cell: (r) =>
+          r.actorName ? (
+            <span className="flex flex-wrap items-center gap-1.5">
+              <span className="font-medium text-ink">{r.actorName}</span>
+              {r.actorRole && <Badge tone={r.actorRole === "admin" ? "dark" : "info"}>{roleLabel(r)}</Badge>}
+            </span>
+          ) : (
+            "—"
+          ),
+      },
       { id: "detail", header: t("details"), text: (r) => detail(r) ?? "", filter: { type: "text" } },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [t, td, locale],
+    [t, td, tb, locale, global],
   );
 
   const month = new Intl.DateTimeFormat(intlLocale(locale), { month: "long", year: "numeric" });
@@ -115,7 +149,7 @@ export function HistoryTab({ rows }: { rows: ActivityRow[] }) {
       </div>
 
       {mode === "table" ? (
-        <DataTable tableKey="manager-history" columns={columns} data={filtered} exportTitle={tm("tabHistory")} exportFilename="historique" />
+        <DataTable tableKey={tableKey} columns={columns} data={filtered} exportTitle={tm("tabHistory")} exportFilename="historique" />
       ) : (
         <Panel className="p-6">
           <Timeline
@@ -130,7 +164,7 @@ export function HistoryTab({ rows }: { rows: ActivityRow[] }) {
                 icon: st.icon,
                 tone: st.tone,
                 title: label(r),
-                meta: formatDateTime(r.at, locale),
+                meta: r.actorName ? `${formatDateTime(r.at, locale)} · ${t("byName", { name: author(r) })}` : formatDateTime(r.at, locale),
                 detail: d ? <span className={r.group === "profile" ? "" : "text-ink-3"}>{d}</span> : null,
                 aside: <Badge tone={st.badge}>{t(`group.${r.group}`)}</Badge>,
               };

@@ -61,7 +61,7 @@ export async function NewCarPage({ base }: { base: Base }) {
 export async function CarDetailPage({ base, id, locale }: { base: Base; id: string; locale: string }) {
   const car = await getFleetCar(id);
   if (!car) notFound();
-  const [t, e, tc] = await Promise.all([getTranslations("Fleet"), getTranslations("Enums"), getTranslations("Common")]);
+  const [t, e] = await Promise.all([getTranslations("Fleet"), getTranslations("Enums")]);
   const name = `${car.brand} ${car.model}`;
 
   if (car.status !== "deactivated") {

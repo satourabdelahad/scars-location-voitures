@@ -54,7 +54,9 @@
     "profile": "プロフィール",
     "myAppointments": "予定",
     "myAchievements": "実績",
-    "myReservations": "予約一覧"
+    "myReservations": "予約一覧",
+    "myCars": "担当車両",
+    "history": "履歴"
   },
   "Footer": {
     "tagline": "モロッコ6都市ですぐに出発できる車を。表示価格はカウンターでも変わりません。",
@@ -234,13 +236,15 @@
       "generic": "ログインできませんでした。もう一度お試しください。",
       "server": "サーバーがログインを確認できませんでした（データベースまたは設定）。もう一度お試しいただくか、管理者にお問い合わせください。",
       "locked": "試行回数が多すぎるため、このアカウントは一時的にブロックされています。後でもう一度お試しいただくか、管理者にお問い合わせください。",
-      "totp_invalid": "コードが正しくないか期限切れです。現在表示されているコードを入力してください。"
+      "totp_invalid": "コードが正しくないか期限切れです。現在表示されているコードを入力してください。",
+      "captcha": "ボット対策の確認に失敗しました。ページを再読み込みしてもう一度お試しください。"
     },
     "totpTitle": "2段階認証",
     "totpHint": "認証アプリを開いて6桁のコードを入力してください。リカバリーコードも使用できます。",
     "totpCode": "確認コード",
     "totpSubmit": "確認してログイン",
-    "totpBack": "メールとパスワードに戻る"
+    "totpBack": "メールとパスワードに戻る",
+    "recaptchaNotice": "このサイトはreCAPTCHAで保護されており、Googleのプライバシーポリシーと利用規約が適用されます。"
   },
   "Back": {
     "dashboard": "ダッシュボード",
@@ -360,7 +364,33 @@
     "locked": "ブロック中",
     "lockedBanner": "失敗が多すぎたため {date} までログインがブロックされています。",
     "handledBy": "担当者",
-    "adminOnly": "管理者のみ変更できます"
+    "adminOnly": "管理者のみ変更できます",
+    "pendingActivation": "招待の承認待ち",
+    "pendingBannerTitle": "アカウントはまだ有効化されていません",
+    "pendingBannerBody": "メールで届いた有効化リンクをクリックするまで、このマネージャーは無効のままです。招待を再送できます。",
+    "tabCars": "担当車両",
+    "activate": "有効にする",
+    "bulkDeactivated": "{count}名のマネージャーを無効にしました",
+    "bulkActivated": "{count}名のマネージャーを有効にしました",
+    "bulkInvited": "{count}件の招待を再送しました",
+    "bulkSkipped": "{count}行をスキップしました（実行できない操作）",
+    "bulkDeactivateTitle": "{count}名のマネージャーを無効にする",
+    "assignedCarsTitle": "{count, plural, =0 {担当車両なし} other {担当車両 {count}台}}",
+    "assignedCarsHint": "{count, plural, =0 {下の車両を担当しています。} other {共有車両 {count}台（担当者なし＝全マネージャー）も担当しています。}}",
+    "assignCars": "車両を割り当てる",
+    "assignCarsBody": "このマネージャーが担当する車両にチェックを入れてください。担当者のいない車両は全員で共有されます。割り当てると、その担当者だけが車両を管理し、メールを受け取ります。",
+    "noAssignedCars": "担当車両なし",
+    "noAssignedCarsBody": "このマネージャーは共有車両（担当者なし）を担当しています。",
+    "noAssignedCarsShort": "なし（共有車両）",
+    "unassignCar": "この車両を外す",
+    "carUnassigned": "車両の担当を外しました。",
+    "carsAssigned": "{count, plural, =0 {新しく割り当てた車両はありません} other {{count}台を割り当てました}}",
+    "searchCars": "メーカー、モデル、ナンバー、都市…",
+    "selectShown": "すべてチェック",
+    "unselectShown": "すべて外す",
+    "noCarFound": "車両が見つかりません。",
+    "carsPicked": "{count, plural, =0 {チェックした車両なし} other {{count}台をチェック}}",
+    "assign": "割り当てる"
   },
   "Documents": {
     "cin_front": "身分証明書（CINE）表面",
@@ -397,7 +427,12 @@
     "resetFilters": "絞り込みをクリア",
     "showAll": "すべて表示",
     "field": "項目",
-    "value": "値"
+    "value": "値",
+    "selected": "{count}件を選択中",
+    "clearSelection": "選択を解除",
+    "refresh": "更新",
+    "selectAll": "すべて選択",
+    "selectRow": "行を選択"
   },
   "Fleet": {
     "title": "車両管理",
@@ -473,7 +508,8 @@
       "rented": "レンタル中",
       "maintenance": "修理中",
       "deactivated": "無効"
-    }
+    },
+    "managers": "マネージャー"
   },
   "Reservations": {
     "title": "予約",
@@ -523,7 +559,8 @@
     },
     "contract": {
       "freelance": "フリーランス",
-      "cdi": "無期雇用（CDI）"
+      "cdi": "無期雇用（CDI）",
+      "cdd": "有期雇用"
     },
     "category": {
       "city_car": "シティカー",
@@ -594,7 +631,11 @@
     "upload_failed": "アップロードに失敗しました。もう一度お試しください。",
     "promo_invalid": "このプロモコードはこのレンタルには使えません。",
     "futureDate": "未来の日付は指定できません",
-    "numberRange": "{min}〜{max} の数値を入力してください"
+    "numberRange": "{min}〜{max} の数値を入力してください",
+    "captcha": "ボット対策の確認に失敗しました。ページを再読み込みしてもう一度お試しください。",
+    "email_failed": "メールを送信できませんでした（Resendのドメインを確認してください）。",
+    "email_not_configured": "メール送信が設定されていません（RESEND_API_KEY）。",
+    "no_client_email": "顧客にメールアドレスがありません。"
   },
   "About": {
     "title": "整備の行き届いた車を、モロッコから",
@@ -649,7 +690,10 @@
     "tplBtnInvite": "パスワードを設定する",
     "tplBtnCar": "車両を見る",
     "tplBtnBooking": "予約を確認する",
-    "tplBtnProcess": "予約を処理する"
+    "tplBtnProcess": "予約を処理する",
+    "tplBtnClientInvite": "アカウントを有効化",
+    "tplBtnCars": "車両を見る",
+    "sentToClientNote": "顧客に概要を送信しました（{email}）。"
   },
   "Activity": {
     "session_login": "ログイン",
@@ -694,7 +738,14 @@
     "appointment_create": "{name} との予定を登録",
     "appointment_done": "{name} との予定が完了",
     "appointment_cancelled": "{name} との予定をキャンセル",
-    "appointment_no_show": "来店なし：{name}"
+    "appointment_no_show": "来店なし：{name}",
+    "by": "実行者",
+    "byName": "実行者：{name}",
+    "profile_activated": "アカウント有効化",
+    "manager_assign_cars": "{name}に車両を割り当て",
+    "manager_unassign_car": "{name}から車両を外す",
+    "client_invite": "顧客に招待を送信：{name}",
+    "security_unlock": "アカウントのロック解除"
   },
   "Deals": {
     "title": "商談 / 見込み客",
@@ -745,7 +796,19 @@
     },
     "linkedClient": "関連する顧客",
     "followedBy": "担当",
-    "administration": "管理"
+    "administration": "管理",
+    "author": "作成者",
+    "contactAt": "連絡日時",
+    "nextAction": "次のアクション",
+    "nextActionPlaceholder": "例：見積もりを送る、金曜日に折り返す…",
+    "prospectionType": "営業の種類",
+    "contactDate": "日付",
+    "contactTime": "時刻",
+    "linkedClientHint": "顧客を検索してください。いなければ追加します。",
+    "sentToClient": "{email} に概要を送信しました。",
+    "sendToClient": "顧客に送信",
+    "noClientEmail": "この顧客にはメールがありません。",
+    "lastSent": "最終送信：{date}"
   },
   "Security": {
     "title": "セキュリティ",
@@ -819,7 +882,10 @@
     "changePassword": "パスワードを変更",
     "passwordWrong": "現在のパスワードが正しくありません",
     "passwordWeak": "10文字以上、英字と数字を含めてください",
-    "passwordMismatch": "2つのパスワードが一致しません"
+    "passwordMismatch": "2つのパスワードが一致しません",
+    "welcomeTitle": "Dizy Carsへようこそ！",
+    "welcomeBody": "パスワードを保存しました。下の情報を確認・入力して保存してください。",
+    "licenseNumber": "運転免許証番号"
   },
   "My": {
     "chartTitle": "月別売上",
@@ -846,7 +912,16 @@
     "achievementsTitle": "実績",
     "achievementsAdmin": "チーム全体の完了したレンタル。",
     "achievementsManager": "あなたが確定したレンタル。",
-    "movementsTitle": "貸出と返却"
+    "movementsTitle": "貸出と返却",
+    "historyTitle": "履歴",
+    "historyAdmin": "チーム全体の活動（ログイン、車両、予約、顧客、見込み客、プロフィール）と各イベントの実行者。",
+    "historyManager": "あなたの活動（ログイン、車両、予約、顧客、見込み客）。",
+    "carsTitle": "担当車両",
+    "carsAdmin": "{count, plural, =0 {まだ車両を追加していません。} other {あなたが追加した車両：{count}台}}",
+    "carsManager": "あなたが担当する車両と、チーム全体で共有している車両です。",
+    "carsAssigned": "{count, plural, =0 {あなたの担当車両はありません} other {あなたの担当車両：{count}台}}",
+    "carsShared": "{count, plural, =0 {共有車両なし} other {共有車両：{count}台}}",
+    "carsSharedHint": "担当者なし：すべてのマネージャーが管理します。"
   },
   "Editor": {
     "placeholder": "テキストを入力…",
@@ -901,6 +976,16 @@
         "name": "車両の予約",
         "when": "新しい予約ごと",
         "recipients": "お客様、管理者、その車両の担当マネージャー（未設定なら全員）に送信されます。"
+      },
+      "client_invite": {
+        "name": "顧客招待",
+        "when": "チームが顧客を追加したとき",
+        "recipients": "顧客（メールがある場合）に送信。パスワード設定とプロフィール入力のリンク付き。"
+      },
+      "prospect_followup": {
+        "name": "見込み客フォローアップ",
+        "when": "見込み客の「顧客に送信」ボタン",
+        "recipients": "見込み客に紐づく顧客に、送信者の署名付きで送信。"
       }
     },
     "vars": {
@@ -945,7 +1030,17 @@
       "agence_retour": "返却店舗",
       "numero_vol": "便名",
       "lien_reservation": "予約へのリンク",
-      "bouton_reservation": "予約へのボタン"
+      "bouton_reservation": "予約へのボタン",
+      "type_prospection": "営業の種類",
+      "date": "日付",
+      "heure": "時刻",
+      "note": "メモ",
+      "prochaine_action": "次のアクション",
+      "gestionnaire": "送信者（氏名）",
+      "gestionnaire_telephone": "送信者の電話",
+      "gestionnaire_email": "送信者のメール",
+      "lien_site": "車両ページへのリンク",
+      "bouton_site": "車両ページへのボタン"
     },
     "language": "言語",
     "languageHint": "{language} のテンプレート：言語ごとにテンプレートがあり、受信者には自分の言語のものが届きます。"
@@ -1010,7 +1105,14 @@
       "negotiating": "商談中",
       "rented": "利用歴あり",
       "never": "利用歴なし"
-    }
+    },
+    "addedBy": "登録者",
+    "addedOn": "登録日",
+    "updatedOn": "更新日",
+    "selfRegistered": "サイトから登録",
+    "inviteSent": "顧客に招待メールを送信しました。",
+    "sendInvite": "招待を送信",
+    "createFromSearch": "「{q}」を新規顧客として追加"
   },
   "Appointments": {
     "title": "予定",
@@ -1047,5 +1149,10 @@
       "cancelled": "キャンセル",
       "no_show": "来店なし"
     }
+  },
+  "Cities": {
+    "search": "都市を検索…",
+    "choose": "都市を選択",
+    "noResult": "都市が見つかりません。"
   }
 }

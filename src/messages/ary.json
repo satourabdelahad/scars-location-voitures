@@ -54,7 +54,9 @@
     "profile": "البروفيل",
     "myAppointments": "المواعيد ديالي",
     "myAchievements": "الإنجازات ديالي",
-    "myReservations": "الحجوزات ديالي"
+    "myReservations": "الحجوزات ديالي",
+    "myCars": "الطوموبيلات ديالي",
+    "history": "التاريخ"
   },
   "Footer": {
     "tagline": "طوموبيلات واجدين يخرجو فستة دالمدن فالمغرب، بثمن معروف ما كيتبدّلش فالكونطوار.",
@@ -234,13 +236,15 @@
       "generic": "الدخول ما نجحش. عاود جرّب.",
       "server": "السيرفور ما قدرش يتأكد من الدخول (قاعدة البيانات ولا الإعدادات). عاود جرب ولا تاصل بالمسؤول.",
       "locked": "بزاف ديال المحاولات: هاد الحساب مبلوكي مؤقتا. عاود من بعد ولا تاصل بالمدير.",
-      "totp_invalid": "الكود غالط ولا سالا. كتب الكود اللي باين دابا."
+      "totp_invalid": "الكود غالط ولا سالا. كتب الكود اللي باين دابا.",
+      "captcha": "التحقق ضد الروبوات ما دازش. عاود شارجي الصفحة وجرّب مرة أخرى."
     },
     "totpTitle": "التحقق بجوج مراحل",
     "totpHint": "حل تطبيق التحقق وكتب الكود ديال 6 أرقام. تقدر حتى تستعمل كود الاحتياط.",
     "totpCode": "كود التحقق",
     "totpSubmit": "تحقق ودخل",
-    "totpBack": "رجع للإيميل وكلمة السر"
+    "totpBack": "رجع للإيميل وكلمة السر",
+    "recaptchaNotice": "هاد السيت محمي ب reCAPTCHA، وكتطبّق عليه سياسة الخصوصية وشروط الاستعمال ديال Google."
   },
   "Back": {
     "dashboard": "لوحة القيادة",
@@ -360,7 +364,33 @@
     "locked": "مبلوكي",
     "lockedBanner": "الدخول مبلوكي حتى {date} من بعد بزاف ديال الغلطات.",
     "handledBy": "تعامل معاها",
-    "adminOnly": "غير المدير اللي يقدر يبدلها"
+    "adminOnly": "غير المدير اللي يقدر يبدلها",
+    "pendingActivation": "الدعوة باقا كتسنا",
+    "pendingBannerTitle": "الحساب باقي ما تفعّلش",
+    "pendingBannerBody": "المسيّر غادي يبقى موقّف حتى يكليكي على اللّيان ديال التفعيل اللي جاه ف الإيميل. تقدر تعاود تصيفط ليه الدعوة.",
+    "tabCars": "الطوموبيلات المكلّف بيهم",
+    "activate": "فعّل",
+    "bulkDeactivated": "توقّفو {count} مسيّرين",
+    "bulkActivated": "تفعّلو {count} مسيّرين",
+    "bulkInvited": "تعاودات {count} دعوة",
+    "bulkSkipped": "تخطّينا {count} سطر (الإجراء ما كيصلحش ليهم)",
+    "bulkDeactivateTitle": "وقّف {count} مسيّرين",
+    "assignedCarsTitle": "{count, plural, =0 {حتى طوموبيل ما مكلّف بيها} other {الطوموبيلات المكلّف بيهم: {count}}}",
+    "assignedCarsHint": "{count, plural, =0 {كيتبع الطوموبيلات اللي لتحت.} other {كيتبع حتى {count} طوموبيل مشتركة (بلا مسيّر، يعني كاع المسيّرين).}}",
+    "assignCars": "كلّف بطوموبيلات",
+    "assignCarsBody": "علّم على الطوموبيلات اللي هاد المسيّر مسؤول عليهم. الطوموبيل اللي بلا مسيّر مشتركة بين كولشي؛ ومنين كتكلّف بيها، غير المسيّرين ديالها اللي كيتبعوها وكيجيهم الإيميلات ديالها.",
+    "noAssignedCars": "حتى طوموبيل ما مكلّف بيها",
+    "noAssignedCarsBody": "هاد المسيّر كيتبع الطوموبيلات المشتركة (بلا مسيّر).",
+    "noAssignedCarsShort": "والو (طوموبيلات مشتركة)",
+    "unassignCar": "حيّد هاد الطوموبيل",
+    "carUnassigned": "الطوموبيل تحيّدات من عند المسيّر.",
+    "carsAssigned": "{count, plural, =0 {حتى طوموبيل جديدة ما تكلّف بيها} other {تكلّف ب {count} طوموبيلات}}",
+    "searchCars": "الماركة، الموديل، الماتريكول، المدينة…",
+    "selectShown": "علّم كولشي",
+    "unselectShown": "حيّد العلامة على كولشي",
+    "noCarFound": "ما لقينا حتى طوموبيل.",
+    "carsPicked": "{count, plural, =0 {حتى طوموبيل ما معلّمة} other {{count} طوموبيلات معلّمين}}",
+    "assign": "كلّف"
   },
   "Documents": {
     "cin_front": "لاكارط ناسيونال (CINE) — القدّام",
@@ -397,7 +427,12 @@
     "resetFilters": "مسح الفرز",
     "showAll": "بيّن كلشي",
     "field": "الخانة",
-    "value": "القيمة"
+    "value": "القيمة",
+    "selected": "{count} مختارين",
+    "clearSelection": "لغي الاختيار",
+    "refresh": "جدّد",
+    "selectAll": "ختار كولشي",
+    "selectRow": "ختار السطر"
   },
   "Fleet": {
     "title": "الطوموبيلات ديال الشركة",
@@ -473,7 +508,8 @@
       "rented": "مكرية",
       "maintenance": "فالإصلاح",
       "deactivated": "موقفة"
-    }
+    },
+    "managers": "المسيّرين"
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -523,7 +559,8 @@
     },
     "contract": {
       "freelance": "فريلانس",
-      "cdi": "CDI"
+      "cdi": "CDI",
+      "cdd": "كونطرا محدود (CDD)"
     },
     "category": {
       "city_car": "طوموبيل ديال المدينة",
@@ -594,7 +631,11 @@
     "upload_failed": "الفيشي ما طلعش. عاود جرّب.",
     "promo_invalid": "هاد كود البروموسيون ما صالحش لهاد الكرية.",
     "futureDate": "التاريخ ما يمكنش يكون فالمستقبل",
-    "numberRange": "كتب رقم بين {min} و {max}"
+    "numberRange": "كتب رقم بين {min} و {max}",
+    "captcha": "التحقق ضد الروبوات ما دازش. عاود شارجي الصفحة وجرّب مرة أخرى.",
+    "email_failed": "الإيميل ما قدرش يتصيفط (شوف الدومين ف Resend).",
+    "email_not_configured": "صيفيط الإيميلات ما مريڭلش (RESEND_API_KEY).",
+    "no_client_email": "الكليان ما عندوش إيميل."
   },
   "About": {
     "title": "وكالة مغربية، وطوموبيلات مقادّين",
@@ -649,7 +690,10 @@
     "tplBtnInvite": "ختار كلمة السر",
     "tplBtnCar": "شوف الطوموبيل",
     "tplBtnBooking": "شوف الحجز ديالي",
-    "tplBtnProcess": "عالج الحجز"
+    "tplBtnProcess": "عالج الحجز",
+    "tplBtnClientInvite": "فعّل الحساب ديالي",
+    "tplBtnCars": "شوف الطوموبيلات ديالنا",
+    "sentToClientNote": "الملخص تصيفط للكليان ({email})."
   },
   "Activity": {
     "session_login": "دخول",
@@ -694,7 +738,14 @@
     "appointment_create": "موعد مبرمج مع {name}",
     "appointment_done": "موعد تدار مع {name}",
     "appointment_cancelled": "موعد ملغي مع {name}",
-    "appointment_no_show": "ما جاش: {name}"
+    "appointment_no_show": "ما جاش: {name}",
+    "by": "دارها",
+    "byName": "دارها {name}",
+    "profile_activated": "الحساب تفعّل",
+    "manager_assign_cars": "طوموبيلات تكلّف بيهم {name}",
+    "manager_unassign_car": "طوموبيل تحيّدات من عند {name}",
+    "client_invite": "تصيفطات الدعوة للكليان: {name}",
+    "security_unlock": "الحساب تحلّ"
   },
   "Deals": {
     "title": "الصفقات / الزبناء المحتملين",
@@ -745,7 +796,19 @@
     },
     "linkedClient": "الكليان المرتبط",
     "followedBy": "كيتبعو",
-    "administration": "الإدارة"
+    "administration": "الإدارة",
+    "author": "شكون زادو",
+    "contactAt": "نهار التواصل",
+    "nextAction": "الخطوة الجاية",
+    "nextActionPlaceholder": "مثلا: صيفط ديفي، عاود عيّط نهار الجمعة…",
+    "prospectionType": "نوع البروسبيكسيون",
+    "contactDate": "التاريخ",
+    "contactTime": "الساعة",
+    "linkedClientHint": "قلّب على الكليان؛ إلا ما كاينش، زيدو.",
+    "sentToClient": "الملخص تصيفط ل {email}.",
+    "sendToClient": "صيفط للكليان",
+    "noClientEmail": "هاد الكليان ما عندوش إيميل.",
+    "lastSent": "آخر مرة تصيفط للكليان: {date}"
   },
   "Security": {
     "title": "الأمان",
@@ -819,7 +882,10 @@
     "changePassword": "بدّل كلمة السر",
     "passwordWrong": "كلمة السر الحالية غالطة",
     "passwordWeak": "على الأقل 10 حروف، فيها حرف ورقم",
-    "passwordMismatch": "جوج كلمات السر ماشي بحال بحال"
+    "passwordMismatch": "جوج كلمات السر ماشي بحال بحال",
+    "welcomeTitle": "مرحبا بيك ف Dizy Cars!",
+    "welcomeBody": "كلمة السر تسجّلات. شوف المعلومات ديالك لتحت وكمّلهم، ومن بعد سجّل.",
+    "licenseNumber": "نمرة البيرمي"
   },
   "My": {
     "chartTitle": "المداخيل فكل شهر",
@@ -846,7 +912,16 @@
     "achievementsTitle": "الإنجازات ديالي",
     "achievementsAdmin": "كاع الكريات اللي دار الفريق.",
     "achievementsManager": "الكريات اللي أكدتي.",
-    "movementsTitle": "الخروجات والرجوعات"
+    "movementsTitle": "الخروجات والرجوعات",
+    "historyTitle": "التاريخ",
+    "historyAdmin": "كاع النشاط ديال الفريق: الدخول، الطوموبيلات، الريزيرفاسيونات، الكليان، البروسبي والفيشات، مع شكون دار كل حاجة.",
+    "historyManager": "كاع النشاط ديالك: الدخول، الطوموبيلات، الريزيرفاسيونات، الكليان والبروسبي.",
+    "carsTitle": "الطوموبيلات ديالي",
+    "carsAdmin": "{count, plural, =0 {باقي ما زدتي حتى طوموبيل.} other {زدتي {count} طوموبيلات.}}",
+    "carsManager": "الطوموبيلات اللي نتا مسؤول عليهم، ومن بعد اللي مشتركين بين الفريق كامل.",
+    "carsAssigned": "{count, plural, =0 {حتى طوموبيل ما مكلّف بيها} other {مكلّف ب {count} طوموبيلات}}",
+    "carsShared": "{count, plural, =0 {حتى طوموبيل ما مشتركة} other {{count} طوموبيلات مشتركين}}",
+    "carsSharedHint": "بلا مسيّر: كاع المسيّرين كيتبعوهم."
   },
   "Editor": {
     "placeholder": "كتب النص ديالك…",
@@ -901,6 +976,16 @@
         "name": "حجز طوموبيل",
         "when": "فكل حجز جديد",
         "recipients": "كيتصيفط للكليان والمدير والمسيرين ديال الطوموبيل (كاملين إلا ما كان حتى واحد)."
+      },
+      "client_invite": {
+        "name": "دعوة الكليان",
+        "when": "منين الفريق كيزيد شي كليان",
+        "recipients": "كتمشي للكليان (إلا عندو إيميل)، مع اللّيان باش يختار كلمة السر ويكمّل الفيشة ديالو."
+      },
+      "prospect_followup": {
+        "name": "تتبّع البروسبي",
+        "when": "البوطونة «صيفط للكليان» ف شي بروسبي",
+        "recipients": "كتمشي للكليان المربوط بالبروسبي، بالسمية ديال اللي صيفطها."
       }
     },
     "vars": {
@@ -945,7 +1030,17 @@
       "agence_retour": "وكالة الرجوع",
       "numero_vol": "رقم الطيارة",
       "lien_reservation": "رابط الحجز",
-      "bouton_reservation": "بوطونة الحجز"
+      "bouton_reservation": "بوطونة الحجز",
+      "type_prospection": "نوع البروسبيكسيون",
+      "date": "التاريخ",
+      "heure": "الساعة",
+      "note": "ملاحظة",
+      "prochaine_action": "الخطوة الجاية",
+      "gestionnaire": "اللي صيفط (السمية كاملة)",
+      "gestionnaire_telephone": "تيليفون اللي صيفط",
+      "gestionnaire_email": "إيميل اللي صيفط",
+      "lien_site": "اللّيان ديال الطوموبيلات",
+      "bouton_site": "البوطونة ديال الطوموبيلات"
     },
     "language": "اللغة",
     "languageHint": "قالب بـ{language}: كل لغة عندها القالب ديالها. كل واحد كيوصلو القالب بلغتو."
@@ -1010,7 +1105,14 @@
       "negotiating": "فالمفاوضة",
       "rented": "سبق ليه كرا",
       "never": "عمرو ما كرا"
-    }
+    },
+    "addedBy": "زادو",
+    "addedOn": "تزاد نهار",
+    "updatedOn": "تبدّل نهار",
+    "selfRegistered": "تسجّل ف السيت",
+    "inviteSent": "الدعوة تصيفطات للكليان ف الإيميل.",
+    "sendInvite": "صيفط الدعوة",
+    "createFromSearch": "زيد «{q}» ككليان جديد"
   },
   "Appointments": {
     "title": "المواعيد المبرمجة",
@@ -1047,5 +1149,10 @@
       "cancelled": "ملغي",
       "no_show": "ما جاش"
     }
+  },
+  "Cities": {
+    "search": "قلّب على شي مدينة…",
+    "choose": "ختار المدينة",
+    "noResult": "ما لقينا حتى مدينة."
   }
 }

@@ -32,6 +32,11 @@ export async function listFleet() {
       onRoad: sql<boolean>`EXISTS (SELECT 1 FROM reservations r WHERE r.car_id = ${cars.id}
         AND (r.status = 'ongoing' OR (r.status = 'confirmed' AND CURRENT_DATE >= r.start_date AND CURRENT_DATE < r.end_date)))`,
       nextBooking: sql<string | null>`(SELECT min(r.start_date)::text FROM reservations r WHERE r.car_id = ${cars.id} AND r.status IN ('pending','confirmed') AND r.start_date >= CURRENT_DATE)`,
+      /** Gestionnaires associés (vide = tous les gestionnaires) */
+      managerNames: sql<string[]>`COALESCE((SELECT array_agg(m.first_name || ' ' || m.last_name ORDER BY m.last_name) FROM car_managers cm JOIN managers m ON m.id = cm.manager_id WHERE cm.car_id = ${cars.id}), '{}')`,
+      managerIds: sql<string[]>`COALESCE((SELECT array_agg(cm.manager_id::text) FROM car_managers cm WHERE cm.car_id = ${cars.id}), '{}')`,
+      createdBy: cars.createdBy,
+      createdAt: cars.createdAt,
     })
     .from(cars)
     .innerJoin(agencies, eq(agencies.id, cars.agencyId))

@@ -1,9 +1,10 @@
 "use client";
 
 import { Popover } from "radix-ui";
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Columns3, Search, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Columns3, RefreshCw, Search, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
+import { useRouter } from "@/i18n/navigation";
 import { intlLocale, localeMeta, type Locale } from "@/i18n/config";
 import { exportTable, type ExportFormat } from "@/lib/export";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,8 @@ export type Column<T> = {
   /** Colonne d'action : jamais exportée, jamais masquable */
   isAction?: boolean;
   defaultHidden?: boolean;
+  /** Colonne ajoutée dans une version récente : affichée même avec des préférences enregistrées avant elle */
+  addedLater?: boolean;
   minWidth?: number;
 };
 
@@ -42,6 +45,7 @@ export function DataTable<T extends { id: string }>({
   toolbar,
   rowClassName,
   onRowClick,
+  bulkActions,
 }: {
   tableKey: string;
   columns: Column<T>[];
@@ -52,6 +56,8 @@ export function DataTable<T extends { id: string }>({
   toolbar?: ReactNode;
   rowClassName?: (row: T) => string | undefined;
   onRowClick?: (row: T) => void;
+  /** Active la sélection de lignes et affiche ces actions groupées quand des lignes sont cochées */
+  bulkActions?: (rows: T[], clear: () => void) => ReactNode;
 }) {
   const t = useTranslations("Table");
   const locale = useLocale() as Locale;
@@ -61,14 +67,26 @@ export function DataTable<T extends { id: string }>({
   const defaultVisible = hideable.filter((c) => !c.defaultHidden).map((c) => c.id);
   const [visible, setVisible] = useState<string[]>(() => {
     const known = new Set(hideable.map((c) => c.id));
-    const saved = initialPrefs?.visibleColumns.filter((id) => known.has(id));
-    return saved?.length ? saved : defaultVisible;
+    const entries = initialPrefs?.visibleColumns ?? [];
+    // "!id" = colonne masquée volontairement ; une colonne inconnue des préférences suit son réglage par défaut.
+    const hidden = new Set(entries.filter((e) => e.startsWith("!")).map((e) => e.slice(1)));
+    const saved = entries.filter((id) => known.has(id));
+    if (!saved.length) return defaultVisible;
+    const seen = new Set([...saved, ...hidden]);
+    const added = hideable.filter((c) => !c.defaultHidden && !seen.has(c.id) && (hidden.size > 0 || c.addedLater)).map((c) => c.id);
+    return [...saved, ...added];
   });
   const [pageSize, setPageSize] = useState<number>(initialPrefs?.pageSize ?? 25);
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [sort, setSort] = useState<Sort>(null);
   const [page, setPage] = useState(0);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const router = useRouter();
+  const [refreshing, startRefresh] = useTransition();
+  // Seules les lignes encore présentes restent sélectionnées (après une actualisation).
+  const selectedRows = useMemo(() => data.filter((r) => selected.has(r.id)), [data, selected]);
+  const clearSelection = () => setSelected(new Set());
 
   // Préférences : enregistrées en base (par utilisateur) avec un léger délai, relues côté serveur au chargement.
   const firstRun = useRef(true);
@@ -77,8 +95,10 @@ export function DataTable<T extends { id: string }>({
       firstRun.current = false;
       return;
     }
-    const h = setTimeout(() => void saveTablePreferences(tableKey, visible, pageSize), 500);
+    const hiddenIds = hideable.filter((c) => !visible.includes(c.id)).map((c) => `!${c.id}`);
+    const h = setTimeout(() => void saveTablePreferences(tableKey, [...visible, ...hiddenIds], pageSize), 500);
     return () => clearTimeout(h);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, pageSize, tableKey]);
 
   const shown = columns.filter((c) => c.isAction || visible.includes(c.id));
@@ -93,7 +113,11 @@ export function DataTable<T extends { id: string }>({
         const col = columns.find((c) => c.id === id);
         if (!col) continue;
         const cellText = col.text(row);
-        if (col.filter?.type === "select" ? cellText !== v : !norm(cellText).includes(norm(v))) return false;
+        if (col.filter?.type === "select") {
+          // La valeur d'option peut être un code (ex. "active") ou le libellé affiché.
+          const label = col.filter.options.find((o) => o.value === v)?.label;
+          if (cellText !== v && cellText !== label) return false;
+        } else if (!norm(cellText).includes(norm(v))) return false;
       }
       if (!q) return true;
       return orderedVisible.some((c) => norm(c.text(row)).includes(q));
@@ -165,7 +189,25 @@ export function DataTable<T extends { id: string }>({
           </button>
         )}
         <div className="ms-auto flex flex-wrap items-center gap-2">
+          {bulkActions && selectedRows.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 rounded-[10px] bg-majorelle-soft px-2 py-1">
+              <span className="px-1 text-sm font-semibold text-majorelle">{t("selected", { count: selectedRows.length })}</span>
+              {bulkActions(selectedRows, clearSelection)}
+              <button type="button" onClick={clearSelection} aria-label={t("clearSelection")} title={t("clearSelection")} className="grid size-8 place-items-center rounded-lg text-majorelle hover:bg-paper">
+                <X className="size-4" />
+              </button>
+            </div>
+          )}
           {toolbar}
+          <button
+            type="button"
+            onClick={() => startRefresh(() => router.refresh())}
+            aria-label={t("refresh")}
+            title={t("refresh")}
+            className="grid size-10 place-items-center rounded-[10px] border border-mist-2 bg-paper text-ink hover:border-ink-3"
+          >
+            <RefreshCw className={cn("size-4", refreshing && "animate-spin")} />
+          </button>
           <Popover.Root>
             <Popover.Trigger className="inline-flex h-10 items-center gap-2 rounded-[10px] border border-mist-2 bg-paper px-3.5 text-sm font-semibold text-ink hover:border-ink-3 data-[state=open]:border-majorelle">
               <Columns3 className="size-4" />
@@ -212,6 +254,20 @@ export function DataTable<T extends { id: string }>({
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="border-b border-mist bg-chalk/60">
+              {bulkActions && (
+                <th rowSpan={2} className="w-10 px-3">
+                  <input
+                    type="checkbox"
+                    aria-label={t("selectAll")}
+                    className="size-4 accent-[var(--majorelle)]"
+                    checked={sorted.length > 0 && sorted.every((r) => selected.has(r.id))}
+                    ref={(el) => {
+                      if (el) el.indeterminate = selectedRows.length > 0 && !sorted.every((r) => selected.has(r.id));
+                    }}
+                    onChange={(e) => setSelected(e.target.checked ? new Set(sorted.map((r) => r.id)) : new Set())}
+                  />
+                </th>
+              )}
               {shown.map((c) => {
                 const s = sort?.id === c.id ? sort.dir : null;
                 return (
@@ -269,7 +325,7 @@ export function DataTable<T extends { id: string }>({
           <tbody>
             {slice.length === 0 ? (
               <tr>
-                <td colSpan={shown.length} className="px-4 py-16 text-center text-ink-3">{t("noResults")}</td>
+                <td colSpan={shown.length + (bulkActions ? 1 : 0)} className="px-4 py-16 text-center text-ink-3">{t("noResults")}</td>
               </tr>
             ) : (
               slice.map((row) => (
@@ -285,8 +341,26 @@ export function DataTable<T extends { id: string }>({
                         }
                       : undefined
                   }
-                  className={cn("border-b border-mist/70 transition-colors last:border-0 hover:bg-chalk/70", onRowClick && "cursor-pointer", rowClassName?.(row))}
+                  className={cn("border-b border-mist/70 transition-colors last:border-0 hover:bg-chalk/70", onRowClick && "cursor-pointer", selected.has(row.id) && "bg-majorelle-soft/50", rowClassName?.(row))}
                 >
+                  {bulkActions && (
+                    <td className="w-10 px-3">
+                      <input
+                        type="checkbox"
+                        aria-label={t("selectRow")}
+                        className="size-4 accent-[var(--majorelle)]"
+                        checked={selected.has(row.id)}
+                        onChange={(e) =>
+                          setSelected((prev) => {
+                            const next = new Set(prev);
+                            if (e.target.checked) next.add(row.id);
+                            else next.delete(row.id);
+                            return next;
+                          })
+                        }
+                      />
+                    </td>
+                  )}
                   {shown.map((c) => (
                     <td key={c.id} className={cn("px-3 py-3 whitespace-nowrap text-ink-2", c.align === "end" && "text-end tabular", c.align === "center" && "text-center")}>
                       {c.cell ? c.cell(row) : c.text(row) || "—"}

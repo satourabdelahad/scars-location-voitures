@@ -1,11 +1,12 @@
 "use client";
 
-import { Camera, KeyRound, Save, X } from "lucide-react";
+import { Camera, KeyRound, PartyPopper, Save, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
+import { CityCombobox } from "@/components/ui/city-combobox";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useRouter } from "@/i18n/navigation";
 import { ACCEPT_IMAGES, uploadFile } from "@/lib/upload-client";
@@ -13,7 +14,20 @@ import { changeMyPassword, updateMyProfile } from "@/server/actions/profile";
 import { ManagerAvatar } from "@/features/managers/manager-avatar";
 import type { Role } from "@/db/schema";
 
-type Values = { name: string; email: string; phone: string; whatsapp: string; city: string; maritalStatus: "" | "married" | "widowed" | "single" };
+type Values = {
+  name: string;
+  email: string;
+  phone: string;
+  whatsapp: string;
+  city: string;
+  maritalStatus: "" | "married" | "widowed" | "single";
+  /** Client */
+  civility: "" | "male" | "female";
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  licenseNumber: string;
+};
 
 function Card({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
   return (
@@ -35,6 +49,7 @@ export function ProfileForm({
   displayName,
   readOnly = [],
   hasPassword,
+  welcome = false,
 }: {
   role: Role;
   initial: Partial<Values>;
@@ -43,6 +58,8 @@ export function ProfileForm({
   /** Informations visibles mais gérées par l'administrateur (gestionnaire) */
   readOnly?: { label: string; value: ReactNode }[];
   hasPassword: boolean;
+  /** Première visite après l'invitation : bandeau d'accueil, formulaire à compléter */
+  welcome?: boolean;
 }) {
   const t = useTranslations("Profile");
   const tm = useTranslations("Managers");
@@ -50,7 +67,20 @@ export function ProfileForm({
   const te = useTranslations("Errors");
   const e = useTranslations("Enums");
   const router = useRouter();
-  const [v, setV] = useState<Values>({ name: "", email: "", phone: "", whatsapp: "", city: "", maritalStatus: "", ...initial });
+  const [v, setV] = useState<Values>({
+    name: "",
+    email: "",
+    phone: "",
+    whatsapp: "",
+    city: "",
+    maritalStatus: "",
+    civility: "",
+    firstName: "",
+    lastName: "",
+    birthDate: "",
+    licenseNumber: "",
+    ...initial,
+  });
   const [photo, setPhoto] = useState<{ publicId: string; url: string } | null | undefined>(undefined);
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -84,7 +114,16 @@ export function ProfileForm({
         ? { phone: v.phone, whatsapp: v.whatsapp, city: v.city, maritalStatus: v.maritalStatus || null }
         : role === "admin"
           ? { name: v.name, email: v.email, phone: v.phone }
-          : { name: v.name, phone: v.phone };
+          : {
+              civility: v.civility,
+              firstName: v.firstName,
+              lastName: v.lastName,
+              phone: v.phone,
+              whatsapp: v.whatsapp,
+              city: v.city,
+              birthDate: v.birthDate,
+              licenseNumber: v.licenseNumber,
+            };
     start(async () => {
       const r = await updateMyProfile({ data, photo: photo === undefined ? undefined : photo && { publicId: photo.publicId } });
       if (r.ok) {
@@ -102,6 +141,15 @@ export function ProfileForm({
 
   return (
     <div className="space-y-4">
+      {welcome && (
+        <div className="flex items-start gap-3 rounded-2xl border border-palm/30 bg-palm-soft px-5 py-4">
+          <PartyPopper className="mt-0.5 size-5 shrink-0 text-palm" />
+          <div>
+            <p className="font-semibold text-ink">{t("welcomeTitle")}</p>
+            <p className="mt-1 text-sm text-ink-2">{t("welcomeBody")}</p>
+          </div>
+        </div>
+      )}
       <form onSubmit={save} noValidate className="rounded-2xl border border-mist bg-paper p-6 sm:p-8">
         <Card title={tm("photo")} hint={tm("photoHint")}>
           <div className="flex items-center gap-5">
@@ -124,7 +172,25 @@ export function ProfileForm({
 
         <Card title={t("infos")}>
           <div className="grid gap-5 sm:grid-cols-2">
-            {role !== "manager" && (
+            {role === "client" && (
+              <>
+                <Field label={tm("civility")} className="sm:col-span-2">
+                  {(p) => (
+                    <Select {...p} value={v.civility} onChange={(x) => set("civility", x.target.value as Values["civility"])}>
+                      <option value="">—</option>
+                      {(["male", "female"] as const).map((c) => <option key={c} value={c}>{e(`civility.${c}`)}</option>)}
+                    </Select>
+                  )}
+                </Field>
+                <Field label={tm("firstName")} required error={msg(errors.firstName)}>
+                  {(p) => <Input {...p} autoFocus={welcome} value={v.firstName} onChange={(x) => set("firstName", x.target.value)} autoComplete="given-name" />}
+                </Field>
+                <Field label={tm("lastName")} required error={msg(errors.lastName)}>
+                  {(p) => <Input {...p} value={v.lastName} onChange={(x) => set("lastName", x.target.value)} autoComplete="family-name" />}
+                </Field>
+              </>
+            )}
+            {role === "admin" && (
               <Field label={t("name")} required error={msg(errors.name)}>
                 {(p) => <Input {...p} value={v.name} onChange={(x) => set("name", x.target.value)} autoComplete="name" />}
               </Field>
@@ -137,13 +203,29 @@ export function ProfileForm({
             <Field label={tm("phone")} required={role === "manager"} error={msg(errors.phone)}>
               {(p) => <PhoneInput {...p} value={v.phone} onChange={(x) => set("phone", x)} />}
             </Field>
+            {role === "client" && (
+              <>
+                <Field label={tm("whatsapp")} error={msg(errors.whatsapp)}>
+                  {(p) => <PhoneInput {...p} value={v.whatsapp} onChange={(x) => set("whatsapp", x)} />}
+                </Field>
+                <Field label={tm("city")} error={msg(errors.city)}>
+                  {(p) => <CityCombobox {...p} value={v.city} onChange={(c) => set("city", c)} />}
+                </Field>
+                <Field label={tm("birthDate")} error={msg(errors.birthDate)}>
+                  {(p) => <Input {...p} type="date" value={v.birthDate} onChange={(x) => set("birthDate", x.target.value)} />}
+                </Field>
+                <Field label={t("licenseNumber")} error={msg(errors.licenseNumber)}>
+                  {(p) => <Input {...p} dir="ltr" value={v.licenseNumber} onChange={(x) => set("licenseNumber", x.target.value)} />}
+                </Field>
+              </>
+            )}
             {role === "manager" && (
               <>
                 <Field label={tm("whatsapp")} required error={msg(errors.whatsapp)}>
                   {(p) => <PhoneInput {...p} value={v.whatsapp} onChange={(x) => set("whatsapp", x)} />}
                 </Field>
                 <Field label={tm("city")} required error={msg(errors.city)}>
-                  {(p) => <Input {...p} value={v.city} onChange={(x) => set("city", x.target.value)} />}
+                  {(p) => <CityCombobox {...p} value={v.city} onChange={(c) => set("city", c)} />}
                 </Field>
                 <Field label={tm("maritalStatus")}>
                   {(p) => (

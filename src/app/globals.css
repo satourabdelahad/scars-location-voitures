@@ -204,3 +204,8 @@ body {
 .html-editor-content hr { border: 0; border-top: 1px solid var(--mist-2); margin: 1.2em 0; }
 .html-editor-content strong { font-weight: 700; }
 .html-editor-content p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: var(--ink-3); float: inline-start; height: 0; pointer-events: none; }
+
+/* reCAPTCHA v3 : badge masqué, la mention légale est affichée sous les formulaires. */
+.grecaptcha-badge {
+  visibility: hidden;
+}

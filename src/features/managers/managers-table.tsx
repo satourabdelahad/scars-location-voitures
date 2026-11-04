@@ -1,8 +1,15 @@
 "use client";
 
-import { Eye, Pencil } from "lucide-react";
+import { Eye, MailPlus, Pencil, Power, PowerOff } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Field, Textarea } from "@/components/ui/field";
+import { useRowPatches } from "@/components/data-table/use-row-patches";
+import { managerDisplayStatus, type ManagerDisplayStatus } from "@/lib/manager-status";
+import { bulkManagerAction } from "@/server/actions/managers";
 import { DataTable, type Column } from "@/components/data-table/data-table";
 import { ManagerActions } from "./manager-actions";
 import { ExportMenu } from "@/components/data-table/export-menu";
@@ -31,13 +38,23 @@ export function useManagerFields() {
     { key: "maritalStatus", label: t("maritalStatus"), value: m.maritalStatus ? e(`marital.${m.maritalStatus}`) : "—" },
     { key: "workStartDate", label: t("workStartDate"), value: formatDate(m.workStartDate, locale) },
     { key: "contractType", label: t("contractType"), value: e(`contract.${m.contractType}`) },
-    { key: "status", label: c("status"), value: m.status === "active" ? c("active") : `${c("deactivated")} (${m.deactivationReason ?? ""})` },
+    {
+      key: "status",
+      label: c("status"),
+      value:
+        managerDisplayStatus(m) === "active"
+          ? c("active")
+          : managerDisplayStatus(m) === "pending"
+            ? t("pendingActivation")
+            : `${c("deactivated")} (${m.deactivationReason ?? ""})`,
+    },
     { key: "lastLogin", label: t("lastLogin"), value: m.lastLoginAt ? formatDateTime(m.lastLoginAt, locale) : c("never") },
     { key: "adminUpdatedAt", label: t("adminUpdatedAt"), value: formatDateTime(m.adminUpdatedAt, locale) },
     { key: "rentalsDay", label: t("rentalsDay"), value: String(m.rentalsDay) },
     { key: "rentalsWeek", label: t("rentalsWeek"), value: String(m.rentalsWeek) },
     { key: "rentalsMonth", label: t("rentalsMonth"), value: String(m.rentalsMonth) },
     { key: "rentalsYear", label: t("rentalsYear"), value: String(m.rentalsYear) },
+    { key: "assignedCars", label: t("tabCars"), value: m.assignedCars.length ? m.assignedCars.join(", ") : t("noAssignedCarsShort") },
   ];
 }
 
@@ -67,12 +84,15 @@ export function ManagerCardExport({ manager, size = "icon" }: { manager: Manager
   );
 }
 
-export function ManagersTable({ rows, prefs }: { rows: ManagerRow[]; prefs: { visibleColumns: string[]; pageSize: number } | null }) {
+export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[]; prefs: { visibleColumns: string[]; pageSize: number } | null }) {
   const t = useTranslations("Managers");
   const e = useTranslations("Enums");
   const c = useTranslations("Common");
   const locale = useLocale();
   const router = useRouter();
+  // Nouvel état affiché tout de suite après une action, avant le rechargement des données.
+  const [rows, patch] = useRowPatches(serverRows);
+  const statusLabel = (s: ManagerDisplayStatus) => (s === "active" ? c("active") : s === "pending" ? t("pendingActivation") : c("deactivated"));
 
   const columns = useMemo<Column<ManagerRow>[]>(() => {
     const num = (id: keyof ManagerRow, header: string): Column<ManagerRow> => ({
@@ -131,18 +151,21 @@ export function ManagersTable({ rows, prefs }: { rows: ManagerRow[]; prefs: { vi
         filter: { type: "select", options: (["married", "widowed", "single"] as const).map((v) => ({ value: v, label: e(`marital.${v}`) })) },
       },
       { id: "workStartDate", header: t("workStartDate"), text: (m) => formatDate(m.workStartDate, locale), sortValue: (m) => m.workStartDate, filter: { type: "text" } },
-      { id: "contractType", header: t("contractType"), text: (m) => e(`contract.${m.contractType}`), defaultHidden: true, filter: { type: "select", options: (["cdi", "freelance"] as const).map((v) => ({ value: v, label: e(`contract.${v}`) })) } },
+      { id: "contractType", header: t("contractType"), text: (m) => e(`contract.${m.contractType}`), defaultHidden: true, filter: { type: "select", options: (["cdi", "cdd", "freelance"] as const).map((v) => ({ value: v, label: e(`contract.${v}`) })) } },
       {
         id: "status",
         header: c("status"),
-        text: (m) => (m.status === "active" ? c("active") : c("deactivated")),
-        filter: { type: "select", options: [{ value: "active", label: c("active") }, { value: "deactivated", label: c("deactivated") }] },
-        cell: (m) => (
-          <span title={m.deactivationReason ?? undefined}>
-            <Badge tone={m.status === "active" ? "success" : "neutral"} dot>{m.status === "active" ? c("active") : c("deactivated")}</Badge>
-            {m.lockedUntil && <Badge tone="danger" className="ms-1.5">{t("locked")}</Badge>}
-          </span>
-        ),
+        text: (m) => statusLabel(managerDisplayStatus(m)),
+        filter: { type: "select", options: (["active", "pending", "deactivated"] as const).map((v) => ({ value: v, label: statusLabel(v) })) },
+        cell: (m) => {
+          const s = managerDisplayStatus(m);
+          return (
+            <span title={s === "deactivated" ? (m.deactivationReason ?? undefined) : undefined}>
+              <Badge tone={s === "active" ? "success" : s === "pending" ? "warning" : "neutral"} dot>{statusLabel(s)}</Badge>
+              {m.lockedUntil && <Badge tone="danger" className="ms-1.5">{t("locked")}</Badge>}
+            </span>
+          );
+        },
       },
       { id: "lastLogin", header: t("lastLogin"), text: (m) => (m.lastLoginAt ? formatDateTime(m.lastLoginAt, locale) : c("never")), sortValue: (m) => m.lastLoginAt, filter: { type: "text" } },
       num("rentalsDay", t("rentalsDay")),
@@ -164,12 +187,13 @@ export function ManagersTable({ rows, prefs }: { rows: ManagerRow[]; prefs: { vi
             <Link href={`/admin/managers/${m.id}?edit=1`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("edit")} title={c("edit")}>
               <Pencil className="size-4" />
             </Link>
-            <ManagerActions id={m.id} name={`${m.firstName} ${m.lastName}`} status={m.status} compact />
+            <ManagerActions id={m.id} name={`${m.firstName} ${m.lastName}`} status={managerDisplayStatus(m)} compact onDone={(next) => patch(m.id, next)} />
           </div>
         ),
       },
     ];
-  }, [t, e, c, locale]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [t, e, c, locale, patch]);
 
   return (
     <DataTable
@@ -179,8 +203,82 @@ export function ManagersTable({ rows, prefs }: { rows: ManagerRow[]; prefs: { vi
       initialPrefs={prefs}
       exportTitle={t("title")}
       exportFilename="gestionnaires"
-      rowClassName={(m) => (m.status === "deactivated" ? "opacity-60" : undefined)}
+      rowClassName={(m) => (managerDisplayStatus(m) === "deactivated" ? "opacity-60" : undefined)}
       onRowClick={(m) => router.push(`/admin/managers/${m.id}`)}
+      bulkActions={(selected, clear) => <ManagersBulkActions selected={selected} onDone={(ids, next) => { if (next) patch(ids, next); clear(); }} />}
     />
+  );
+}
+
+/** Action groupée sur les lignes cochées : Désactiver (avec motif), Activer, Renvoyer l'invitation. */
+function ManagersBulkActions({
+  selected,
+  onDone,
+}: {
+  selected: ManagerRow[];
+  onDone: (ids: string[], next: Partial<ManagerRow> | null) => void;
+}) {
+  const t = useTranslations("Managers");
+  const tc = useTranslations("Common");
+  const te = useTranslations("Errors");
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [asking, setAsking] = useState(false);
+  const [reason, setReason] = useState("");
+  const by = (s: ManagerDisplayStatus) => selected.filter((m) => managerDisplayStatus(m) === s);
+  const active = by("active");
+  const deactivated = by("deactivated");
+  const invited = by("pending");
+
+  const run = (action: "deactivate" | "activate" | "resend", rows: ManagerRow[]) =>
+    start(async () => {
+      const r = await bulkManagerAction(rows.map((m) => m.id), action, action === "deactivate" ? reason : undefined);
+      if (!r.ok) return void toast.error(te(r.error as "unknown"));
+      const { done, skipped } = r.data!;
+      toast.success(t(action === "deactivate" ? "bulkDeactivated" : action === "activate" ? "bulkActivated" : "bulkInvited", { count: done.length }));
+      if (skipped) toast.warning(t("bulkSkipped", { count: skipped }));
+      onDone(
+        done,
+        action === "deactivate"
+          ? { status: "deactivated", deactivationReason: reason.trim() }
+          : action === "activate"
+            ? { status: "active", deactivationReason: null }
+            : null,
+      );
+      setAsking(false);
+      setReason("");
+      if (action !== "resend") router.refresh();
+    });
+
+  return (
+    <>
+      <Button size="sm" variant="dangerOutline" disabled={pending || active.length === 0} onClick={() => setAsking(true)}>
+        <PowerOff />
+        {t("deactivate")} {active.length > 0 && `(${active.length})`}
+      </Button>
+      <Button size="sm" variant="success" loading={pending} disabled={pending || deactivated.length === 0} onClick={() => run("activate", deactivated)}>
+        <Power />
+        {t("activate")} {deactivated.length > 0 && `(${deactivated.length})`}
+      </Button>
+      <Button size="sm" variant="outline" disabled={pending || invited.length === 0} onClick={() => run("resend", invited)}>
+        <MailPlus />
+        {t("resendInvite")} {invited.length > 0 && `(${invited.length})`}
+      </Button>
+      <Dialog open={asking} onOpenChange={setAsking}>
+        <DialogContent title={t("bulkDeactivateTitle", { count: active.length })} description={t("deactivateBody")} closeLabel={tc("close")}>
+          <p className="mb-3 text-sm text-ink-2">{active.map((m) => `${m.firstName} ${m.lastName}`).join(", ")}</p>
+          <Field label={t("deactivationReason")} required hint={t("deactivationReasonHint")}>
+            {(p) => <Textarea {...p} autoFocus value={reason} onChange={(x) => setReason(x.target.value)} />}
+          </Field>
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setAsking(false)}>{tc("cancel")}</Button>
+            <Button variant="danger" loading={pending} disabled={reason.trim().length < 3} onClick={() => run("deactivate", active)}>
+              <PowerOff />
+              {t("deactivate")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

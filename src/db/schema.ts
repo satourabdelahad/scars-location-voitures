@@ -26,8 +26,8 @@ export const roleEnum = pgEnum("role", ["admin", "manager", "client"]);
 export const accountStatusEnum = pgEnum("account_status", ["active", "deactivated"]);
 export const civilityEnum = pgEnum("civility", ["male", "female"]);
 export const maritalStatusEnum = pgEnum("marital_status", ["married", "widowed", "single"]);
-export const contractTypeEnum = pgEnum("contract_type", ["freelance", "cdi"]);
-export const managerEventEnum = pgEnum("manager_event", ["created", "updated", "deactivated", "reactivated"]);
+export const contractTypeEnum = pgEnum("contract_type", ["cdi", "cdd", "freelance"]);
+export const managerEventEnum = pgEnum("manager_event", ["created", "updated", "deactivated", "reactivated", "activated"]);
 export const documentKindEnum = pgEnum("document_kind", [
   "cin_front",
   "cin_back",
@@ -519,7 +519,13 @@ export const deals = pgTable(
     amount: numeric("amount", { precision: 10, scale: 2, mode: "number" }),
     expectedDate: date("expected_date", { mode: "string" }),
     nextFollowUp: date("next_follow_up", { mode: "string" }),
+    /** Date et heure de l'échange avec le client */
+    contactAt: timestamp("contact_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    /** Prochaine action prévue (ex. envoyer un devis) */
+    nextAction: text("next_action"),
     notes: text("notes"),
+    /** Dernier envoi du récapitulatif au client */
+    sentToClientAt: timestamp("sent_to_client_at", { withTimezone: true, mode: "date" }),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     ...timestamps,
@@ -691,6 +697,7 @@ export const promotionsRelations = relations(promotions, ({ many }) => ({
 export const dealsRelations = relations(deals, ({ one, many }) => ({
   manager: one(managers, { fields: [deals.managerId], references: [managers.id] }),
   client: one(users, { fields: [deals.clientId], references: [users.id] }),
+  author: one(users, { fields: [deals.createdBy], references: [users.id] }),
   car: one(cars, { fields: [deals.carId], references: [cars.id] }),
   promotion: one(promotions, { fields: [deals.promotionId], references: [promotions.id] }),
   reservation: one(reservations, { fields: [deals.reservationId], references: [reservations.id] }),

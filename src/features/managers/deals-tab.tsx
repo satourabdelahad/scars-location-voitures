@@ -1,6 +1,6 @@
 "use client";
 
-import { AlarmClock, Handshake, MessageCircle, Phone, Plus, StickyNote } from "lucide-react";
+import { AlarmClock, Handshake, MessageCircle, Phone, Plus, Save, Send, StickyNote } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -8,13 +8,13 @@ import { DataTable, type Column } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
-import { PhoneInput } from "@/components/ui/phone-input";
 import { Badge, EmptyState, Panel, type Tone } from "@/components/ui/misc";
 import { useRouter } from "@/i18n/navigation";
 import { dealSourceEnum, dealTypeEnum, type DealSource, type DealType } from "@/db/schema";
 import { promotionLabel } from "@/lib/promotion-label";
 import { cn, formatDate, formatDateTime, formatMoney, todayISO } from "@/lib/utils";
-import { addDealNote, createDeal, updateDeal } from "@/server/actions/deals";
+import { addDealNote, createDeal, sendDealToClient, updateDeal } from "@/server/actions/deals";
+import { casablancaNow } from "@/lib/casablanca-time";
 import type { DealRow } from "@/server/queries/manager-profile";
 import type { ClientOption } from "@/server/queries/clients";
 import { ClientPicker } from "@/features/clients/client-picker";
@@ -33,49 +33,53 @@ export const dealTone: Record<DealType, Tone> = {
 type Options = { cars: { id: string; label: string }[]; promotions: { id: number; code: string; kind: "percent" | "amount"; value: number }[] };
 type FormValues = {
   client: ClientOption | null;
-  prospectName: string;
-  phone: string;
-  email: string;
-  city: string;
   source: DealSource;
   type: DealType;
+  contactDate: string;
+  contactTime: string;
   carId: string;
   promotionId: string;
   amount: string;
   expectedDate: string;
   nextFollowUp: string;
+  nextAction: string;
   notes: string;
 };
-const EMPTY: FormValues = {
-  client: null,
-  prospectName: "",
-  phone: "",
-  email: "",
-  city: "",
-  source: "phone",
-  type: "prospect",
-  carId: "",
-  promotionId: "",
-  amount: "",
-  expectedDate: "",
-  nextFollowUp: "",
-  notes: "",
+/** Nouveau prospect : date et heure de l'échange = maintenant (heure du Maroc). */
+const empty = (): FormValues => {
+  const now = casablancaNow();
+  return {
+    client: null,
+    source: "phone",
+    type: "prospect",
+    contactDate: now.date,
+    contactTime: now.time,
+    carId: "",
+    promotionId: "",
+    amount: "",
+    expectedDate: "",
+    nextFollowUp: "",
+    nextAction: "",
+    notes: "",
+  };
 };
-const toForm = (d: DealRow): FormValues => ({
-  client: d.clientId ? { id: d.clientId, name: d.clientName ?? d.prospectName, email: d.email, phone: d.phone } : null,
-  prospectName: d.prospectName,
-  phone: d.phone,
-  email: d.email ?? "",
-  city: d.city ?? "",
-  source: d.source,
-  type: d.type,
-  carId: d.carId ?? "",
-  promotionId: d.promotionId ? String(d.promotionId) : "",
-  amount: d.amount != null ? String(d.amount) : "",
-  expectedDate: d.expectedDate ?? "",
-  nextFollowUp: d.nextFollowUp ?? "",
-  notes: d.notes ?? "",
-});
+const toForm = (d: DealRow): FormValues => {
+  const at = casablancaNow(new Date(d.contactAt));
+  return {
+    client: d.clientId ? { id: d.clientId, name: d.clientName ?? d.prospectName, email: d.email, phone: d.phone } : null,
+    source: d.source,
+    type: d.type,
+    contactDate: at.date,
+    contactTime: at.time,
+    carId: d.carId ?? "",
+    promotionId: d.promotionId ? String(d.promotionId) : "",
+    amount: d.amount != null ? String(d.amount) : "",
+    expectedDate: d.expectedDate ?? "",
+    nextFollowUp: d.nextFollowUp ?? "",
+    nextAction: d.nextAction ?? "",
+    notes: d.notes ?? "",
+  };
+};
 
 /** Onglet "Deals / prospects" : mini CRM du gestionnaire. */
 export type DealScope = { managerId?: string; clientId?: string };
@@ -96,6 +100,7 @@ export function DealsTab({
   showManager?: boolean;
 }) {
   const t = useTranslations("Deals");
+  const tb = useTranslations("Back");
   const locale = useLocale();
   const [type, setType] = useState<DealType | "all">("all");
   const [editing, setEditing] = useState<DealRow | "new" | null>(null);
@@ -133,12 +138,30 @@ export function DealsTab({
         cell: (d) => <Badge tone={dealTone[d.type]} dot>{t(`types.${d.type}`)}</Badge>,
       },
       ...(showManager ? [{ id: "manager", header: t("followedBy"), text: (d: DealRow) => d.managerName ?? t("administration"), filter: { type: "text" as const } }] : []),
-      { id: "car", header: t("car"), text: (d) => d.car ?? "", filter: { type: "text" } },
+      {
+        id: "author",
+        header: t("author"),
+        addedLater: true,
+        text: (d) => (d.authorName ? `${d.authorName} (${d.authorRole === "admin" ? tb("roleAdmin") : tb("roleManager")})` : "—"),
+        filter: { type: "text" },
+        cell: (d) =>
+          d.authorName ? (
+            <span className="flex flex-wrap items-center gap-1.5">
+              <span className="font-medium text-ink">{d.authorName}</span>
+              {d.authorRole && <Badge tone={d.authorRole === "admin" ? "dark" : "info"}>{d.authorRole === "admin" ? tb("roleAdmin") : tb("roleManager")}</Badge>}
+            </span>
+          ) : (
+            "—"
+          ),
+      },
+      { id: "contactAt", addedLater: true, header: t("contactAt"), text: (d) => formatDateTime(d.contactAt, locale), sortValue: (d) => d.contactAt },
+      { id: "nextAction", addedLater: true, header: t("nextAction"), text: (d) => d.nextAction ?? "", filter: { type: "text" } },
+      { id: "car", header: t("car"), text: (d) => d.car ?? "", filter: { type: "text" }, defaultHidden: true },
       { id: "amount", header: t("amount"), text: (d) => (d.amount != null ? formatMoney(d.amount, locale) : ""), sortValue: (d) => d.amount, align: "end" },
       { id: "promotion", header: t("promotion"), text: (d) => (d.promotion ? promotionLabel(d.promotion) : ""), defaultHidden: true },
       {
         id: "source",
-        header: t("source"),
+        header: t("prospectionType"),
         text: (d) => t(`sources.${d.source}`),
         filter: { type: "select", options: SOURCES.map((k) => ({ value: k, label: t(`sources.${k}`) })) },
       },
@@ -160,7 +183,7 @@ export function DealsTab({
       },
       { id: "updatedAt", header: t("lastUpdate"), text: (d) => formatDateTime(d.updatedAt, locale), sortValue: (d) => d.updatedAt },
     ],
-    [t, locale, today, showManager],
+    [t, tb, locale, today, showManager],
   );
 
   return (
@@ -221,28 +244,59 @@ function DealDialog({ scope, prefill, deal, options, onClose }: { scope: DealSco
   const te = useTranslations("Errors");
   const locale = useLocale();
   const router = useRouter();
-  const [v, setV] = useState<FormValues>(deal ? toForm(deal) : { ...EMPTY, ...prefill });
+  const [initial] = useState<FormValues>(() => (deal ? toForm(deal) : { ...empty(), ...prefill }));
+  const [v, setV] = useState<FormValues>(initial);
+  const [savedId, setSavedId] = useState<string | null>(deal?.id ?? null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [note, setNote] = useState("");
   const [pending, start] = useTransition();
+  const [sending, startSend] = useTransition();
   const [noting, startNote] = useTransition();
   const set = <K extends keyof FormValues>(k: K, value: FormValues[K]) => setV((s) => ({ ...s, [k]: value }));
   const err = (k: string) => (errors[k] ? te(errors[k] as "required") : undefined);
+  const dirty = JSON.stringify(v) !== JSON.stringify(initial) || !savedId;
+
+  /** Enregistre et renvoie l'identifiant du prospect (null en cas d'erreur). */
+  async function persist(): Promise<string | null> {
+    setErrors({});
+    if (!v.client) {
+      setErrors({ clientId: "required" });
+      return null;
+    }
+    const payload = { ...v, clientId: v.client.id };
+    const res = savedId ? await updateDeal(savedId, payload) : await createDeal(scope, payload);
+    if (!res.ok) {
+      if (res.fieldErrors) setErrors(res.fieldErrors);
+      toast.error(te(res.error as "unknown"));
+      return null;
+    }
+    const id = savedId ?? (res.data as { id: string }).id;
+    setSavedId(id);
+    return id;
+  }
 
   function save(e: React.FormEvent) {
     e.preventDefault();
-    setErrors({});
     start(async () => {
-      const payload = { ...v, clientId: v.client?.id ?? "" };
-      const res = deal ? await updateDeal(deal.id, payload) : await createDeal(scope, payload);
-      if (res.ok) {
-        toast.success(deal ? t("updated") : t("created"));
+      const id = await persist();
+      if (!id) return;
+      toast.success(deal ? t("updated") : t("created"));
+      router.refresh();
+      onClose();
+    });
+  }
+
+  /** « Envoyer au client » : enregistre d'abord si besoin, puis envoie le récapitulatif par email. */
+  function sendToClient() {
+    startSend(async () => {
+      const id = dirty ? await persist() : savedId;
+      if (!id) return;
+      const r = await sendDealToClient(id);
+      if (r.ok) {
+        toast.success(t("sentToClient", { email: r.data!.to }));
         router.refresh();
         onClose();
-      } else {
-        if (res.fieldErrors) setErrors(res.fieldErrors);
-        toast.error(te(res.error as "unknown"));
-      }
+      } else toast.error(te(r.error as "unknown"));
     });
   }
 
@@ -258,37 +312,35 @@ function DealDialog({ scope, prefill, deal, options, onClose }: { scope: DealSco
     });
   }
 
+  const phone = v.client?.phone ?? deal?.phone ?? "";
+
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent title={deal ? t("editTitle", { name: deal.prospectName }) : t("createTitle")} closeLabel={tc("close")} className="max-h-[calc(100dvh-32px)] max-w-3xl overflow-y-auto">
         <div className={cn("grid gap-6", deal && "lg:grid-cols-[1fr_260px]")}>
           <form onSubmit={save} noValidate className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              {!scope.clientId && (
-                <Field label={t("linkedClient")} optionalLabel={tc("optional")} className="sm:col-span-2">
-                  {(p) => (
-                    <ClientPicker
-                      id={p.id}
-                      value={v.client}
-                      onChange={(c) =>
-                        setV((s) => ({
-                          ...s,
-                          client: c,
-                          ...(c ? { prospectName: s.prospectName || c.name, phone: s.phone || (c.phone ?? ""), email: s.email || (c.email ?? "") } : {}),
-                        }))
-                      }
-                    />
-                  )}
-                </Field>
-              )}
-              <Field label={t("prospectName")} required error={err("prospectName")} className="sm:col-span-2">
-                {(p) => <Input {...p} autoFocus={!deal} value={v.prospectName} onChange={(x) => set("prospectName", x.target.value)} />}
+              <Field label={t("linkedClient")} required hint={scope.clientId ? undefined : t("linkedClientHint")} error={err("clientId")} className="sm:col-span-2">
+                {(p) =>
+                  scope.clientId && v.client ? (
+                    <div className="flex items-center gap-3 rounded-[10px] border border-mist-2 bg-chalk px-3 py-2">
+                      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-majorelle text-xs font-bold text-white">{v.client.name.charAt(0).toUpperCase()}</span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold text-ink">{v.client.name}</span>
+                        <span className="block truncate text-xs text-ink-3" dir="ltr">{[v.client.phone, v.client.email].filter(Boolean).join(" · ")}</span>
+                      </span>
+                    </div>
+                  ) : (
+                    <ClientPicker id={p.id} value={v.client} invalid={Boolean(errors.clientId)} onChange={(c) => set("client", c)} />
+                  )
+                }
               </Field>
-              <Field label={t("phone")} required error={err("phone")}>
-                {(p) => <PhoneInput {...p} value={v.phone} onChange={(x) => set("phone", x)} />}
-              </Field>
-              <Field label={t("email")} optionalLabel={tc("optional")} error={err("email")}>
-                {(p) => <Input {...p} type="email" dir="ltr" value={v.email} onChange={(x) => set("email", x.target.value)} />}
+              <Field label={t("prospectionType")} required>
+                {(p) => (
+                  <Select {...p} value={v.source} onChange={(x) => set("source", x.target.value as DealSource)}>
+                    {SOURCES.map((k) => <option key={k} value={k}>{t(`sources.${k}`)}</option>)}
+                  </Select>
+                )}
               </Field>
               <Field label={t("type")} required>
                 {(p) => (
@@ -297,12 +349,20 @@ function DealDialog({ scope, prefill, deal, options, onClose }: { scope: DealSco
                   </Select>
                 )}
               </Field>
-              <Field label={t("source")} required>
-                {(p) => (
-                  <Select {...p} value={v.source} onChange={(x) => set("source", x.target.value as DealSource)}>
-                    {SOURCES.map((k) => <option key={k} value={k}>{t(`sources.${k}`)}</option>)}
-                  </Select>
-                )}
+              <Field label={t("contactDate")} required error={err("contactDate")}>
+                {(p) => <Input {...p} type="date" value={v.contactDate} onChange={(x) => set("contactDate", x.target.value)} />}
+              </Field>
+              <Field label={t("contactTime")} required error={err("contactTime")}>
+                {(p) => <Input {...p} type="time" value={v.contactTime} onChange={(x) => set("contactTime", x.target.value)} />}
+              </Field>
+              <Field label={t("notes")} optionalLabel={tc("optional")} className="sm:col-span-2">
+                {(p) => <Textarea {...p} rows={3} value={v.notes} onChange={(x) => set("notes", x.target.value)} />}
+              </Field>
+              <Field label={t("nextAction")} optionalLabel={tc("optional")} error={err("nextAction")} className="sm:col-span-2">
+                {(p) => <Input {...p} value={v.nextAction} placeholder={t("nextActionPlaceholder")} onChange={(x) => set("nextAction", x.target.value)} />}
+              </Field>
+              <Field label={t("nextFollowUp")} optionalLabel={tc("optional")} error={err("nextFollowUp")}>
+                {(p) => <Input {...p} type="date" value={v.nextFollowUp} onChange={(x) => set("nextFollowUp", x.target.value)} />}
               </Field>
               <Field label={t("car")} optionalLabel={tc("optional")}>
                 {(p) => (
@@ -323,31 +383,37 @@ function DealDialog({ scope, prefill, deal, options, onClose }: { scope: DealSco
               <Field label={t("amount")} optionalLabel={tc("optional")} error={err("amount")}>
                 {(p) => <Input {...p} type="number" min={0} step={50} value={v.amount} onChange={(x) => set("amount", x.target.value)} />}
               </Field>
-              <Field label={t("city")} optionalLabel={tc("optional")}>
-                {(p) => <Input {...p} value={v.city} onChange={(x) => set("city", x.target.value)} />}
-              </Field>
               <Field label={t("expectedDate")} optionalLabel={tc("optional")} error={err("expectedDate")}>
                 {(p) => <Input {...p} type="date" value={v.expectedDate} onChange={(x) => set("expectedDate", x.target.value)} />}
               </Field>
-              <Field label={t("nextFollowUp")} optionalLabel={tc("optional")} error={err("nextFollowUp")}>
-                {(p) => <Input {...p} type="date" value={v.nextFollowUp} onChange={(x) => set("nextFollowUp", x.target.value)} />}
-              </Field>
-              <Field label={t("notes")} optionalLabel={tc("optional")} className="sm:col-span-2">
-                {(p) => <Textarea {...p} rows={3} value={v.notes} onChange={(x) => set("notes", x.target.value)} />}
-              </Field>
             </div>
+            {deal?.sentToClientAt && <p className="text-xs text-ink-3">{t("lastSent", { date: formatDateTime(deal.sentToClientAt, locale) })}</p>}
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-mist pt-4">
-              {deal ? (
+              {phone ? (
                 <div className="flex gap-1">
-                  <a href={`tel:${deal.phone}`} className="grid size-9 place-items-center rounded-lg text-ink-2 hover:bg-chalk" aria-label={t("phone")} title={t("phone")}><Phone className="size-4" /></a>
-                  <a href={`https://wa.me/${deal.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener" className="grid size-9 place-items-center rounded-lg text-palm hover:bg-palm-soft" aria-label="WhatsApp" title="WhatsApp"><MessageCircle className="size-4" /></a>
+                  <a href={`tel:${phone}`} className="grid size-9 place-items-center rounded-lg text-ink-2 hover:bg-chalk" aria-label={t("phone")} title={t("phone")}><Phone className="size-4" /></a>
+                  <a href={`https://wa.me/${phone.replace(/\D/g, "")}`} target="_blank" rel="noopener" className="grid size-9 place-items-center rounded-lg text-palm hover:bg-palm-soft" aria-label="WhatsApp" title="WhatsApp"><MessageCircle className="size-4" /></a>
                 </div>
               ) : (
                 <span />
               )}
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="ghost" onClick={onClose}>{tc("cancel")}</Button>
-                <Button type="submit" loading={pending}>{pending ? tc("saving") : tc("save")}</Button>
+                <Button type="submit" loading={pending} disabled={sending}>
+                  <Save />
+                  {pending ? tc("saving") : tc("save")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  loading={sending}
+                  disabled={pending || !v.client?.email}
+                  title={v.client && !v.client.email ? t("noClientEmail") : undefined}
+                  onClick={sendToClient}
+                >
+                  <Send />
+                  {t("sendToClient")}
+                </Button>
               </div>
             </div>
           </form>

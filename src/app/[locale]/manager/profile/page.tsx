@@ -13,5 +13,5 @@ export default async function MyProfilePage({ params, searchParams }: PageProps<
   const id = await managerIdForUser(viewer.id);
   const m = id ? await getManager(id) : null;
   if (!m) notFound();
-  return <ManagerProfile manager={m} viewer={viewer} basePath="/manager/profile" tab={parseTab(sp.tab)} edit={false} locale={locale} />;
+  return <ManagerProfile manager={m} viewer={viewer} basePath="/manager/profile" tab={parseTab(sp.tab)} edit={sp.edit === "1"} locale={locale} />;
 }

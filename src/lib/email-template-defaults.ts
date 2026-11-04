@@ -6,7 +6,8 @@ type Lang = "fr" | "ary" | "ar" | "en" | "es" | "de" | "ja" | "zh" | "ko";
 /** Paragraphe aligné à droite pour l'arabe et la darija (les clients email n'appliquent pas toujours dir="rtl"). */
 const rtl = (html: string) => html.replace(/<(h2|p|ul)>/g, '<$1 style="text-align:right" dir="rtl">');
 
-const T: Record<Lang, Record<TemplateKey, Tpl>> = {
+type BaseKey = "manager_invite" | "car_created" | "reservation_created";
+const T: Record<Lang, Record<BaseKey, Tpl>> = {
   fr: {
     manager_invite: {
       subject: "Bienvenue chez {{site}}, {{prenom}} : activez votre compte",
@@ -261,6 +262,201 @@ const T: Record<Lang, Record<TemplateKey, Tpl>> = {
   },
 };
 
+
+/** Invitation d'un client ajouté par l'équipe, et suivi d'un prospect envoyé au client. */
+const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
+  fr: {
+    client_invite: {
+      subject: "{{prenom}}, votre espace client {{site}} vous attend",
+      html: `<h2>Bonjour {{civilite}} {{prenom}} {{nom}},</h2>
+<p>{{ajoute_par}} vient de créer votre fiche client chez <strong>{{site}}</strong>.</p>
+<p>Avec le bouton ci-dessous, choisissez votre mot de passe puis vérifiez et complétez vos informations (téléphone, ville, permis…). Vous pourrez ensuite réserver en quelques clics et suivre vos locations. Ce lien est valable 7 jours.</p>
+<p>{{bouton_invitation}}</p>
+<p>Votre identifiant de connexion : <strong>{{email}}</strong></p>
+<p>À très vite,<br>L'équipe {{site}}</p>`,
+    },
+    prospect_followup: {
+      subject: "Suite à notre échange du {{date}} : {{site}}",
+      html: `<h2>Bonjour {{prenom}} {{nom}},</h2>
+<p>Merci pour notre échange du {{date}} à {{heure}} ({{type_prospection}}).</p>
+<p>{{note}}</p>
+<p><strong>Prochaine étape :</strong> {{prochaine_action}}</p>
+<p>{{bouton_site}}</p>
+<p>Je reste à votre disposition : {{gestionnaire_telephone}} · {{gestionnaire_email}}</p>
+<p>Cordialement,<br>{{gestionnaire}}, {{site}}</p>`,
+    },
+  },
+  en: {
+    client_invite: {
+      subject: "{{prenom}}, your {{site}} customer account is ready",
+      html: `<h2>Hello {{prenom}} {{nom}},</h2>
+<p>{{ajoute_par}} has just created your customer profile at <strong>{{site}}</strong>.</p>
+<p>Use the button below to choose your password, then check and complete your details (phone, city, driving licence…). You can then book in a few clicks and follow your rentals. This link is valid for 7 days.</p>
+<p>{{bouton_invitation}}</p>
+<p>Your sign-in email: <strong>{{email}}</strong></p>
+<p>See you soon,<br>The {{site}} team</p>`,
+    },
+    prospect_followup: {
+      subject: "Following our conversation on {{date}}: {{site}}",
+      html: `<h2>Hello {{prenom}} {{nom}},</h2>
+<p>Thank you for our conversation on {{date}} at {{heure}} ({{type_prospection}}).</p>
+<p>{{note}}</p>
+<p><strong>Next step:</strong> {{prochaine_action}}</p>
+<p>{{bouton_site}}</p>
+<p>I remain at your disposal: {{gestionnaire_telephone}} · {{gestionnaire_email}}</p>
+<p>Best regards,<br>{{gestionnaire}}, {{site}}</p>`,
+    },
+  },
+  es: {
+    client_invite: {
+      subject: "{{prenom}}, tu área de cliente de {{site}} te espera",
+      html: `<h2>Hola {{prenom}} {{nom}}:</h2>
+<p>{{ajoute_par}} acaba de crear tu ficha de cliente en <strong>{{site}}</strong>.</p>
+<p>Con el botón de abajo, elige tu contraseña y después revisa y completa tus datos (teléfono, ciudad, permiso de conducir…). Así podrás reservar en pocos clics y seguir tus alquileres. Este enlace es válido durante 7 días.</p>
+<p>{{bouton_invitation}}</p>
+<p>Tu correo de acceso: <strong>{{email}}</strong></p>
+<p>¡Hasta pronto!<br>El equipo de {{site}}</p>`,
+    },
+    prospect_followup: {
+      subject: "Tras nuestra conversación del {{date}}: {{site}}",
+      html: `<h2>Hola {{prenom}} {{nom}}:</h2>
+<p>Gracias por nuestra conversación del {{date}} a las {{heure}} ({{type_prospection}}).</p>
+<p>{{note}}</p>
+<p><strong>Próximo paso:</strong> {{prochaine_action}}</p>
+<p>{{bouton_site}}</p>
+<p>Quedo a tu disposición: {{gestionnaire_telephone}} · {{gestionnaire_email}}</p>
+<p>Un saludo,<br>{{gestionnaire}}, {{site}}</p>`,
+    },
+  },
+  de: {
+    client_invite: {
+      subject: "{{prenom}}, Ihr Kundenkonto bei {{site}} ist bereit",
+      html: `<h2>Guten Tag {{prenom}} {{nom}},</h2>
+<p>{{ajoute_par}} hat soeben Ihr Kundenprofil bei <strong>{{site}}</strong> angelegt.</p>
+<p>Wählen Sie über die Schaltfläche unten Ihr Passwort und prüfen und ergänzen Sie anschließend Ihre Angaben (Telefon, Stadt, Führerschein…). Danach buchen Sie mit wenigen Klicks und behalten Ihre Mieten im Blick. Der Link ist 7 Tage gültig.</p>
+<p>{{bouton_invitation}}</p>
+<p>Ihre Anmelde-E-Mail: <strong>{{email}}</strong></p>
+<p>Bis bald,<br>Ihr {{site}}-Team</p>`,
+    },
+    prospect_followup: {
+      subject: "Im Anschluss an unser Gespräch vom {{date}}: {{site}}",
+      html: `<h2>Guten Tag {{prenom}} {{nom}},</h2>
+<p>Vielen Dank für unser Gespräch am {{date}} um {{heure}} ({{type_prospection}}).</p>
+<p>{{note}}</p>
+<p><strong>Nächster Schritt:</strong> {{prochaine_action}}</p>
+<p>{{bouton_site}}</p>
+<p>Ich stehe Ihnen gern zur Verfügung: {{gestionnaire_telephone}} · {{gestionnaire_email}}</p>
+<p>Mit freundlichen Grüßen<br>{{gestionnaire}}, {{site}}</p>`,
+    },
+  },
+  ar: {
+    client_invite: {
+      subject: "{{prenom}}، فضاء العميل الخاص بك في {{site}} جاهز",
+      html: rtl(`<h2>مرحبًا {{prenom}} {{nom}}،</h2>
+<p>أنشأ {{ajoute_par}} ملفك كعميل لدى <strong>{{site}}</strong>.</p>
+<p>اختر كلمة المرور عبر الزر أدناه، ثم راجع معلوماتك وأكملها (الهاتف، المدينة، رخصة السياقة…). بعد ذلك يمكنك الحجز ببضع نقرات ومتابعة كراءاتك. هذا الرابط صالح لمدة 7 أيام.</p>
+<p>{{bouton_invitation}}</p>
+<p>بريد تسجيل الدخول: <strong>{{email}}</strong></p>
+<p>إلى اللقاء قريبًا،<br>فريق {{site}}</p>`),
+    },
+    prospect_followup: {
+      subject: "متابعة لمحادثتنا بتاريخ {{date}}: {{site}}",
+      html: rtl(`<h2>مرحبًا {{prenom}} {{nom}}،</h2>
+<p>شكرًا على محادثتنا بتاريخ {{date}} على الساعة {{heure}} ({{type_prospection}}).</p>
+<p>{{note}}</p>
+<p><strong>الخطوة التالية:</strong> {{prochaine_action}}</p>
+<p>{{bouton_site}}</p>
+<p>أبقى رهن إشارتك: {{gestionnaire_telephone}} · {{gestionnaire_email}}</p>
+<p>مع خالص التحية،<br>{{gestionnaire}}، {{site}}</p>`),
+    },
+  },
+  ary: {
+    client_invite: {
+      subject: "{{prenom}}، الفضاء ديالك ف {{site}} واجد",
+      html: rtl(`<h2>السلام {{prenom}} {{nom}}،</h2>
+<p>{{ajoute_par}} صاوب ليك الفيشة ديالك كزبون ف <strong>{{site}}</strong>.</p>
+<p>ضغط على البوطونة لتحت باش تختار كلمة السر، ومن بعد شوف المعلومات ديالك وكملهم (التيليفون، المدينة، البيرمي…). من بعد تقدر تريزيرفي ف جوج كليكات وتتبع الكرا ديالك. هاد الليان صالح 7 أيام.</p>
+<p>{{bouton_invitation}}</p>
+<p>الإيميل باش تدخل: <strong>{{email}}</strong></p>
+<p>نتلاقاو قريب،<br>الفريق ديال {{site}}</p>`),
+    },
+    prospect_followup: {
+      subject: "من بعد الهضرة ديالنا نهار {{date}}: {{site}}",
+      html: rtl(`<h2>السلام {{prenom}} {{nom}}،</h2>
+<p>شكرا على الهضرة ديالنا نهار {{date}} مع {{heure}} ({{type_prospection}}).</p>
+<p>{{note}}</p>
+<p><strong>الخطوة الجاية:</strong> {{prochaine_action}}</p>
+<p>{{bouton_site}}</p>
+<p>أنا رهن الإشارة: {{gestionnaire_telephone}} · {{gestionnaire_email}}</p>
+<p>بالتوفيق،<br>{{gestionnaire}}، {{site}}</p>`),
+    },
+  },
+  ja: {
+    client_invite: {
+      subject: "{{prenom}}様、{{site}}のお客様アカウントの準備ができました",
+      html: `<h2>{{nom}} {{prenom}} 様</h2>
+<p>{{ajoute_par}}が<strong>{{site}}</strong>にお客様情報を登録しました。</p>
+<p>下のボタンからパスワードを設定し、ご登録内容（電話番号、都市、運転免許など）をご確認・ご入力ください。数クリックで予約でき、レンタル状況も確認できます。このリンクの有効期限は7日間です。</p>
+<p>{{bouton_invitation}}</p>
+<p>ログイン用メールアドレス：<strong>{{email}}</strong></p>
+<p>{{site}}チーム</p>`,
+    },
+    prospect_followup: {
+      subject: "{{date}}のご相談について：{{site}}",
+      html: `<h2>{{nom}} {{prenom}} 様</h2>
+<p>{{date}} {{heure}}のご相談（{{type_prospection}}）ありがとうございました。</p>
+<p>{{note}}</p>
+<p><strong>次のステップ：</strong>{{prochaine_action}}</p>
+<p>{{bouton_site}}</p>
+<p>ご不明な点はお気軽にご連絡ください：{{gestionnaire_telephone}} · {{gestionnaire_email}}</p>
+<p>{{gestionnaire}}（{{site}}）</p>`,
+    },
+  },
+  zh: {
+    client_invite: {
+      subject: "{{prenom}}，您的 {{site}} 客户账户已准备就绪",
+      html: `<h2>{{nom}}{{prenom}}，您好：</h2>
+<p>{{ajoute_par}} 已在 <strong>{{site}}</strong> 为您创建客户资料。</p>
+<p>请点击下方按钮设置密码，然后核对并补充您的信息（电话、城市、驾照等）。之后只需几步即可预订并查看您的租车记录。此链接 7 天内有效。</p>
+<p>{{bouton_invitation}}</p>
+<p>登录邮箱：<strong>{{email}}</strong></p>
+<p>{{site}} 团队</p>`,
+    },
+    prospect_followup: {
+      subject: "关于 {{date}} 的沟通：{{site}}",
+      html: `<h2>{{nom}}{{prenom}}，您好：</h2>
+<p>感谢您在 {{date}} {{heure}} 与我们沟通（{{type_prospection}}）。</p>
+<p>{{note}}</p>
+<p><strong>下一步：</strong>{{prochaine_action}}</p>
+<p>{{bouton_site}}</p>
+<p>如有任何问题，请随时联系我：{{gestionnaire_telephone}} · {{gestionnaire_email}}</p>
+<p>此致<br>{{gestionnaire}}，{{site}}</p>`,
+    },
+  },
+  ko: {
+    client_invite: {
+      subject: "{{prenom}} 님, {{site}} 고객 계정이 준비되었습니다",
+      html: `<h2>{{nom}}{{prenom}} 님, 안녕하세요.</h2>
+<p>{{ajoute_par}} 님이 <strong>{{site}}</strong>에 고객 정보를 등록했습니다.</p>
+<p>아래 버튼을 눌러 비밀번호를 설정한 뒤 정보(전화번호, 도시, 운전면허 등)를 확인하고 입력해 주세요. 이후 몇 번의 클릭으로 예약하고 렌트 내역을 확인할 수 있습니다. 이 링크는 7일 동안 유효합니다.</p>
+<p>{{bouton_invitation}}</p>
+<p>로그인 이메일: <strong>{{email}}</strong></p>
+<p>{{site}} 팀 드림</p>`,
+    },
+    prospect_followup: {
+      subject: "{{date}} 상담 관련 안내: {{site}}",
+      html: `<h2>{{nom}}{{prenom}} 님, 안녕하세요.</h2>
+<p>{{date}} {{heure}} 상담({{type_prospection}})에 감사드립니다.</p>
+<p>{{note}}</p>
+<p><strong>다음 단계:</strong> {{prochaine_action}}</p>
+<p>{{bouton_site}}</p>
+<p>궁금한 점은 언제든 연락 주세요: {{gestionnaire_telephone}} · {{gestionnaire_email}}</p>
+<p>{{gestionnaire}}, {{site}} 드림</p>`,
+    },
+  },
+};
+
 export function defaultTemplate(key: TemplateKey, locale: string): Tpl {
-  return (T[locale as Lang] ?? T.fr)[key];
+  const l: Lang = locale in T ? (locale as Lang) : "fr";
+  return key === "client_invite" || key === "prospect_followup" ? T2[l][key] : T[l][key];
 }

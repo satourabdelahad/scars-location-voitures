@@ -1,5 +1,6 @@
 "use server";
 
+import { verifyRecaptcha } from "@/server/recaptcha";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
@@ -45,9 +46,10 @@ async function notify(reservationId: string, kind: "received" | "confirmed" | "r
 
 /* ───────────────────────── Côté client ───────────────────────── */
 
-export async function createReservation(input: unknown): Promise<ActionResult<{ reference: string }>> {
+export async function createReservation(input: unknown, recaptcha?: string): Promise<ActionResult<{ reference: string }>> {
   try {
     const user = await assertRole(["client"]);
+    if (!(await verifyRecaptcha(recaptcha, "booking"))) return { ok: false, error: "captcha" };
     const locale = await getLocale();
     const parsed = reservationSchema.safeParse(input);
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };

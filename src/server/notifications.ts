@@ -2,7 +2,7 @@ import "server-only";
 import { and, eq, inArray } from "drizzle-orm";
 import { createTranslator } from "next-intl";
 import { db } from "@/db";
-import { carManagers, managers, reservations, users } from "@/db/schema";
+import { carManagers, clientProfiles, managers, reservations, users } from "@/db/schema";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { APP_BASE_URL, emailButton, sendTemplate } from "@/server/email";
 import { isLocale, type Locale } from "@/i18n/config";
@@ -67,6 +67,34 @@ export async function notifyManagerInvite(managerId: string, token: string, loca
         date_debut: date(m.workStartDate),
         lien_invitation: link,
         bouton_invitation: emailButton(tm("tplBtnInvite"), link),
+      },
+    },
+  ]);
+}
+
+/** Invitation d'un client ajouté par l'équipe (modèle "Invitation client", dans la langue du client). */
+export async function notifyClientInvite(clientId: string, token: string, actorName: string) {
+  const [c] = await db
+    .select({ email: users.email, locale: users.preferredLocale, civility: clientProfiles.civility, first: clientProfiles.firstName, last: clientProfiles.lastName })
+    .from(users)
+    .leftJoin(clientProfiles, eq(clientProfiles.userId, users.id))
+    .where(eq(users.id, clientId))
+    .limit(1);
+  if (!c?.email) return { sent: 0, failed: 0, skipped: 1 };
+  const { e, m, locale } = await tr(c.locale);
+  const link = `${APP_BASE_URL}/${locale}/set-password?token=${token}`;
+  return sendTemplate("client_invite", [
+    {
+      to: c.email,
+      locale,
+      vars: {
+        civilite: c.civility ? e(`civility.${c.civility}`) : "",
+        prenom: c.first ?? "",
+        nom: c.last ?? "",
+        email: c.email,
+        ajoute_par: actorName,
+        lien_invitation: link,
+        bouton_invitation: emailButton(m("tplBtnClientInvite"), link),
       },
     },
   ]);

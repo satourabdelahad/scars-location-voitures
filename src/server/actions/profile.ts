@@ -6,7 +6,7 @@ import { getLocale } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
-import { managerEvents, managers, users } from "@/db/schema";
+import { auditLogs, clientProfiles, managerEvents, managers, users } from "@/db/schema";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { resolvePhoto } from "@/server/photo";
 import { PHONE_RE } from "@/lib/validation";
@@ -24,7 +24,34 @@ const staffOrClientSchema = z.object({
   email: z.string().trim().toLowerCase().email("email"),
   phone: optionalPhone,
 });
-const clientSchema = staffOrClientSchema.omit({ email: true });
+/** Le client complète sa fiche (après l'invitation envoyée par l'équipe, ou à tout moment). */
+const optionalText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .transform((s) => s || null)
+    .nullable()
+    .optional()
+    .transform((s) => s ?? null);
+const clientSelfSchema = z.object({
+  civility: z
+    .enum(["male", "female", ""])
+    .optional()
+    .transform((s) => (s ? s : null)),
+  firstName: z.string().trim().min(1, "required").max(120),
+  lastName: z.string().trim().min(1, "required").max(120),
+  phone: optionalPhone,
+  whatsapp: optionalPhone.optional().transform((s) => s ?? null),
+  city: optionalText(120),
+  birthDate: z
+    .string()
+    .trim()
+    .optional()
+    .transform((s) => s || null)
+    .refine((s) => s === null || (/^\d{4}-\d{2}-\d{2}$/.test(s) && new Date(s) < new Date()), "date"),
+  licenseNumber: optionalText(64),
+});
 /** Le gestionnaire modifie ses coordonnées ; identité, contrat et pièces restent gérés par l'administrateur. */
 const managerSelfSchema = z.object({
   phone,
@@ -58,17 +85,30 @@ export async function updateMyProfile(input: { data: unknown; photo?: unknown })
         await tx.update(users).set({ phone: parsed.data.phone, ...(photo ? { image: photo.photoUrl } : {}) }).where(eq(users.id, me.id));
         if (Object.keys(changes).length) await tx.insert(managerEvents).values({ managerId: m.id, event: "updated", changes, actorId: me.id });
       });
-    } else {
-      const parsed = (me.role === "admin" ? staffOrClientSchema : clientSchema).safeParse(input.data);
+    } else if (me.role === "client") {
+      const parsed = clientSelfSchema.safeParse(input.data);
       if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error) };
-      const d = parsed.data as { name: string; phone: string | null; email?: string };
-      if (d.email) {
-        const [other] = await db.select({ id: users.id }).from(users).where(eq(users.email, d.email)).limit(1);
-        if (other && other.id !== me.id) return { ok: false, error: "unique:users_email_unique", fieldErrors: { email: "unique:users_email_unique" } };
-      }
+      const { phone: tel, ...profile } = parsed.data;
+      await db.transaction(async (tx) => {
+        await tx
+          .update(users)
+          .set({ name: `${profile.firstName} ${profile.lastName}`, phone: tel, ...(photo ? { image: photo.photoUrl } : {}) })
+          .where(eq(users.id, me.id));
+        await tx
+          .insert(clientProfiles)
+          .values({ userId: me.id, ...profile, updatedBy: me.id })
+          .onConflictDoUpdate({ target: clientProfiles.userId, set: { ...profile, updatedBy: me.id, updatedAt: new Date() } });
+        await tx.insert(auditLogs).values({ actorId: me.id, entity: "client", entityId: me.id, action: "update", changes: parsed.data });
+      });
+    } else {
+      const parsed = staffOrClientSchema.safeParse(input.data);
+      if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error) };
+      const d = parsed.data;
+      const [other] = await db.select({ id: users.id }).from(users).where(eq(users.email, d.email)).limit(1);
+      if (other && other.id !== me.id) return { ok: false, error: "unique:users_email_unique", fieldErrors: { email: "unique:users_email_unique" } };
       await db
         .update(users)
-        .set({ name: d.name, phone: d.phone, ...(d.email ? { email: d.email } : {}), ...(photo ? { image: photo.photoUrl } : {}) })
+        .set({ name: d.name, phone: d.phone, email: d.email, ...(photo ? { image: photo.photoUrl } : {}) })
         .where(eq(users.id, me.id));
     }
     revalidatePath(`/${locale}`, "layout");

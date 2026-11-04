@@ -98,6 +98,7 @@ export async function listDeals(scope: { managerId?: string; clientId?: string }
       car: { columns: { id: true, brand: true, model: true, plateNumber: true } },
       promotion: { columns: { id: true, code: true, kind: true, value: true } },
       events: { orderBy: [desc(dealEvents.createdAt)], with: { actor: { columns: { name: true, email: true } } } },
+      author: { columns: { name: true, email: true, role: true }, with: { manager: { columns: { firstName: true, lastName: true } } } },
     },
   });
   return rows.map((d) => ({
@@ -120,6 +121,12 @@ export async function listDeals(scope: { managerId?: string; clientId?: string }
     expectedDate: d.expectedDate,
     nextFollowUp: d.nextFollowUp,
     notes: d.notes,
+    nextAction: d.nextAction,
+    contactAt: d.contactAt.toISOString(),
+    sentToClientAt: d.sentToClientAt?.toISOString() ?? null,
+    /** Auteur du prospect : gestionnaire ou administrateur */
+    authorName: d.author ? (d.author.manager ? `${d.author.manager.firstName} ${d.author.manager.lastName}` : (d.author.name ?? d.author.email)) : null,
+    authorRole: d.author?.role === "admin" || d.author?.role === "manager" ? d.author.role : null,
     createdAt: d.createdAt.toISOString(),
     updatedAt: d.updatedAt.toISOString(),
     events: d.events.map((e) => ({
@@ -163,7 +170,16 @@ export type ActivityGroup = "session" | "fleet" | "reservations" | "clients" | "
  * Journal d'un gestionnaire : connexions, actions sur le parc et les réservations (audit_logs),
  * suivi des deals (deal_events) et événements de sa fiche (manager_events).
  */
-export async function managerActivity(userId: string, managerId: string) {
+export function managerActivity(userId: string, managerId: string) {
+  return activityLog({ userId, managerId });
+}
+
+/**
+ * Historique : connexions, parc, réservations, clients, deals et fiche, avec l'auteur de chaque événement
+ * (nom complet, gestionnaire ou administrateur). Sans périmètre (null) : toute l'équipe, pour l'administrateur.
+ */
+export async function activityLog(scope: { userId: string; managerId: string | null } | null) {
+  const byActor = (col: ReturnType<typeof sql.raw>) => (scope ? sql`${col} = ${scope.userId}` : sql`TRUE`);
   const res = await db.execute<{
     id: string;
     at: string;
@@ -177,38 +193,65 @@ export async function managerActivity(userId: string, managerId: string) {
     to_type: string | null;
     detail: string | null;
     provider: string | null;
+    actor_name: string | null;
+    actor_role: "admin" | "manager" | "client" | null;
   }>(sql`
-    SELECT * FROM (
+    SELECT x.*,
+           COALESCE(NULLIF(trim(xm.first_name || ' ' || xm.last_name), ''), xu.name, xu.email) AS actor_name,
+           xu.role AS actor_role
+    FROM (
       SELECT 'a' || l.id AS id, l.created_at AS at, 'audit' AS source, l.entity, l.action,
              CASE WHEN c.id IS NOT NULL THEN c.brand || ' ' || c.model || ' (' || c.plate_number || ')' END AS car,
-             r.reference, COALESCE(cu.name, au.name) AS deal_name, NULL AS from_type, NULL AS to_type,
+             r.reference,
+             COALESCE(NULLIF(trim(coalesce(cp.first_name, '') || ' ' || coalesce(cp.last_name, '')), ''), cu.name, cu.email,
+                      NULLIF(trim(coalesce(ap_cp.first_name, '') || ' ' || coalesce(ap_cp.last_name, '')), ''), au.name,
+                      NULLIF(trim(lm.first_name || ' ' || lm.last_name), '')) AS deal_name,
+             NULL AS from_type, NULL AS to_type,
              COALESCE(l.changes->>'reason', l.changes->>'note') AS detail,
-             l.changes->>'provider' AS provider
+             l.changes->>'provider' AS provider,
+             l.actor_id
       FROM audit_logs l
       LEFT JOIN cars c ON l.entity = 'car' AND c.id::text = l.entity_id
       LEFT JOIN reservations r ON l.entity = 'reservation' AND r.id::text = l.entity_id
       LEFT JOIN users cu ON l.entity = 'client' AND cu.id::text = l.entity_id
+      LEFT JOIN client_profiles cp ON cp.user_id = cu.id
       LEFT JOIN appointments ap ON l.entity = 'appointment' AND ap.id::text = l.entity_id
       LEFT JOIN users au ON au.id = ap.client_id
-      WHERE l.actor_id = ${userId}
+      LEFT JOIN client_profiles ap_cp ON ap_cp.user_id = au.id
+      LEFT JOIN managers lm ON l.entity = 'manager' AND lm.id::text = l.entity_id
+      WHERE (${byActor(sql.raw("l.actor_id"))}
+             OR ${scope?.managerId ? sql`(l.entity = 'manager' AND l.entity_id = ${scope.managerId})` : sql`FALSE`})
+        AND l.entity <> 'email_template'
       UNION ALL
       SELECT 'd' || e.id, e.created_at, 'deal', 'deal',
              CASE WHEN e.from_type IS NULL THEN 'create' WHEN e.from_type IS DISTINCT FROM e.to_type THEN 'update' ELSE 'note' END,
-             NULL, NULL, d.prospect_name, e.from_type::text, e.to_type::text, e.note, NULL
+             NULL, NULL, d.prospect_name, e.from_type::text, e.to_type::text, e.note, NULL, e.actor_id
       FROM deal_events e JOIN deals d ON d.id = e.deal_id
-      WHERE e.actor_id = ${userId}
+      WHERE ${byActor(sql.raw("e.actor_id"))}
       UNION ALL
       SELECT 'p' || me.id, me.created_at, 'profile', 'profile', me.event::text,
-             NULL, NULL, NULL, NULL, NULL, me.reason, NULL
-      FROM manager_events me
-      WHERE me.manager_id = ${managerId}
+             NULL, NULL, pm.first_name || ' ' || pm.last_name, NULL, NULL, me.reason, NULL, me.actor_id
+      FROM manager_events me JOIN managers pm ON pm.id = me.manager_id
+      WHERE ${scope ? (scope.managerId ? sql`me.manager_id = ${scope.managerId}` : sql`FALSE`) : sql`TRUE`}
     ) x
-    ORDER BY at DESC
-    LIMIT 500
+    LEFT JOIN users xu ON xu.id = x.actor_id
+    LEFT JOIN managers xm ON xm.user_id = x.actor_id
+    ORDER BY x.at DESC
+    LIMIT ${scope ? 500 : 1000}
   `);
   return res.rows.map((r) => {
     const group: ActivityGroup =
-      r.source === "deal" ? "deals" : r.source === "profile" ? "profile" : r.entity === "session" ? "session" : r.entity === "car" ? "fleet" : r.entity === "client" || r.entity === "appointment" ? "clients" : "reservations";
+      r.source === "deal"
+        ? "deals"
+        : r.source === "profile" || r.entity === "manager"
+          ? "profile"
+          : r.entity === "session" || r.entity === "security"
+            ? "session"
+            : r.entity === "car"
+              ? "fleet"
+              : r.entity === "client" || r.entity === "appointment"
+                ? "clients"
+                : "reservations";
     const kind = r.source === "audit" ? `${r.entity}_${r.action}` : r.source === "deal" ? `deal_${r.action}` : `profile_${r.action}`;
     return {
       id: r.id,
@@ -222,6 +265,8 @@ export async function managerActivity(userId: string, managerId: string) {
       toType: r.to_type,
       detail: r.detail,
       provider: r.provider,
+      actorName: r.actor_name,
+      actorRole: r.actor_role === "client" ? null : r.actor_role,
     };
   });
 }

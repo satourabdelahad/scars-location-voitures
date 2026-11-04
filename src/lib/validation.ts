@@ -34,7 +34,7 @@ export const managerSchema = z.object({
   birthDate: isoDate.refine((d) => yearsBetween(d) >= 18, "minAge18"),
   maritalStatus: z.enum(["married", "widowed", "single"]).nullable().optional(),
   workStartDate: isoDate,
-  contractType: z.enum(["freelance", "cdi"], { message: "required" }),
+  contractType: z.enum(["cdi", "cdd", "freelance"], { message: "required" }),
 });
 export type ManagerInput = z.infer<typeof managerSchema>;
 

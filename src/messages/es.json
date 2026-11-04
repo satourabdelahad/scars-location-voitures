@@ -54,7 +54,9 @@
     "profile": "Perfil",
     "myAppointments": "Mis citas",
     "myAchievements": "Mis logros",
-    "myReservations": "Mis reservas"
+    "myReservations": "Mis reservas",
+    "myCars": "Mis coches",
+    "history": "Historial"
   },
   "Footer": {
     "tagline": "Coches listos para salir en seis ciudades de Marruecos, con un precio anunciado que no cambia en el mostrador.",
@@ -234,13 +236,15 @@
       "generic": "No se pudo iniciar sesión. Inténtalo de nuevo.",
       "server": "El servidor no pudo verificar el inicio de sesión (base de datos o configuración). Inténtelo de nuevo o contacte con el administrador.",
       "locked": "Demasiados intentos: esta cuenta está bloqueada temporalmente. Vuelva a intentarlo más tarde o contacte con el administrador.",
-      "totp_invalid": "Código incorrecto o caducado. Introduzca el código que aparece ahora."
+      "totp_invalid": "Código incorrecto o caducado. Introduzca el código que aparece ahora.",
+      "captcha": "La verificación antirrobots ha fallado. Recarga la página e inténtalo de nuevo."
     },
     "totpTitle": "Verificación en dos pasos",
     "totpHint": "Abra su aplicación de autenticación e introduzca el código de 6 cifras. También puede usar un código de recuperación.",
     "totpCode": "Código de verificación",
     "totpSubmit": "Verificar e iniciar sesión",
-    "totpBack": "Volver al email y la contraseña"
+    "totpBack": "Volver al email y la contraseña",
+    "recaptchaNotice": "Este sitio está protegido por reCAPTCHA y se aplican la Política de privacidad y las Condiciones del servicio de Google."
   },
   "Back": {
     "dashboard": "Panel",
@@ -360,7 +364,33 @@
     "locked": "Bloqueado",
     "lockedBanner": "Acceso bloqueado hasta el {date} tras demasiados fallos.",
     "handledBy": "Gestionada por",
-    "adminOnly": "Solo el administrador puede modificarlo"
+    "adminOnly": "Solo el administrador puede modificarlo",
+    "pendingActivation": "Invitación pendiente",
+    "pendingBannerTitle": "Cuenta aún no activada",
+    "pendingBannerBody": "El gestor permanece desactivado hasta que haga clic en el enlace de activación recibido por correo. Puedes reenviar la invitación.",
+    "tabCars": "Coches asignados",
+    "activate": "Activar",
+    "bulkDeactivated": "{count, plural, one {# gestor desactivado} other {# gestores desactivados}}",
+    "bulkActivated": "{count, plural, one {# gestor activado} other {# gestores activados}}",
+    "bulkInvited": "{count, plural, one {# invitación reenviada} other {# invitaciones reenviadas}}",
+    "bulkSkipped": "{count, plural, one {# fila omitida (acción no aplicable)} other {# filas omitidas (acción no aplicable)}}",
+    "bulkDeactivateTitle": "{count, plural, one {Desactivar # gestor} other {Desactivar # gestores}}",
+    "assignedCarsTitle": "{count, plural, =0 {Ningún coche asignado} one {# coche asignado} other {# coches asignados}}",
+    "assignedCarsHint": "{count, plural, =0 {Se ocupa de los coches de abajo.} one {También se ocupa de # coche compartido (sin gestor, es decir, todos los gestores).} other {También se ocupa de # coches compartidos (sin gestor, es decir, todos los gestores).}}",
+    "assignCars": "Asignar coches",
+    "assignCarsBody": "Marca los coches de los que es responsable este gestor. Un coche sin gestor lo comparten todos; en cuanto se asigna, solo sus gestores lo siguen y reciben sus correos.",
+    "noAssignedCars": "Ningún coche asignado",
+    "noAssignedCarsBody": "Este gestor se ocupa de los coches compartidos (sin gestor).",
+    "noAssignedCarsShort": "Ninguno (coches compartidos)",
+    "unassignCar": "Quitar este coche",
+    "carUnassigned": "Coche retirado del gestor.",
+    "carsAssigned": "{count, plural, =0 {Ningún coche nuevo asignado} one {# coche asignado} other {# coches asignados}}",
+    "searchCars": "Marca, modelo, matrícula, ciudad…",
+    "selectShown": "Marcar todo",
+    "unselectShown": "Desmarcar todo",
+    "noCarFound": "No se encontró ningún coche.",
+    "carsPicked": "{count, plural, =0 {Ningún coche marcado} one {# coche marcado} other {# coches marcados}}",
+    "assign": "Asignar"
   },
   "Documents": {
     "cin_front": "Documento de identidad (CINE), anverso",
@@ -397,7 +427,12 @@
     "resetFilters": "Borrar filtros",
     "showAll": "Mostrar todo",
     "field": "Campo",
-    "value": "Valor"
+    "value": "Valor",
+    "selected": "{count, plural, one {# seleccionado} other {# seleccionados}}",
+    "clearSelection": "Anular la selección",
+    "refresh": "Actualizar",
+    "selectAll": "Seleccionar todo",
+    "selectRow": "Seleccionar la fila"
   },
   "Fleet": {
     "title": "Flota",
@@ -473,7 +508,8 @@
       "rented": "Alquilado",
       "maintenance": "En reparación",
       "deactivated": "Desactivado"
-    }
+    },
+    "managers": "Gestores"
   },
   "Reservations": {
     "title": "Reservas",
@@ -523,7 +559,8 @@
     },
     "contract": {
       "freelance": "Autónomo",
-      "cdi": "Indefinido (CDI)"
+      "cdi": "Indefinido (CDI)",
+      "cdd": "Contrato temporal"
     },
     "category": {
       "city_car": "Urbano",
@@ -594,7 +631,11 @@
     "upload_failed": "No se pudo subir el archivo. Inténtalo de nuevo.",
     "promo_invalid": "Este código promocional no es válido para este alquiler.",
     "futureDate": "La fecha no puede ser futura",
-    "numberRange": "Introduzca un número entre {min} y {max}"
+    "numberRange": "Introduzca un número entre {min} y {max}",
+    "captcha": "La verificación antirrobots ha fallado. Recarga la página e inténtalo de nuevo.",
+    "email_failed": "No se pudo enviar el correo (revisa el dominio en Resend).",
+    "email_not_configured": "El envío de correos no está configurado (RESEND_API_KEY).",
+    "no_client_email": "El cliente no tiene dirección de correo."
   },
   "About": {
     "title": "Una agencia marroquí con coches bien cuidados",
@@ -649,7 +690,10 @@
     "tplBtnInvite": "Elegir mi contraseña",
     "tplBtnCar": "Ver el coche",
     "tplBtnBooking": "Ver mi reserva",
-    "tplBtnProcess": "Gestionar la reserva"
+    "tplBtnProcess": "Gestionar la reserva",
+    "tplBtnClientInvite": "Activar mi cuenta",
+    "tplBtnCars": "Ver nuestros coches",
+    "sentToClientNote": "Resumen enviado al cliente ({email})."
   },
   "Activity": {
     "session_login": "Inicio de sesión",
@@ -694,7 +738,14 @@
     "appointment_create": "Cita planificada con {name}",
     "appointment_done": "Cita hecha con {name}",
     "appointment_cancelled": "Cita anulada con {name}",
-    "appointment_no_show": "Cliente ausente: {name}"
+    "appointment_no_show": "Cliente ausente: {name}",
+    "by": "Por",
+    "byName": "por {name}",
+    "profile_activated": "Cuenta activada",
+    "manager_assign_cars": "Coches asignados a {name}",
+    "manager_unassign_car": "Coche retirado a {name}",
+    "client_invite": "Invitación enviada al cliente: {name}",
+    "security_unlock": "Cuenta desbloqueada"
   },
   "Deals": {
     "title": "Deals / prospectos",
@@ -745,7 +796,19 @@
     },
     "linkedClient": "Cliente vinculado",
     "followedBy": "Seguido por",
-    "administration": "Administración"
+    "administration": "Administración",
+    "author": "Autor",
+    "contactAt": "Fecha del contacto",
+    "nextAction": "Próxima acción",
+    "nextActionPlaceholder": "Ej. enviar un presupuesto, volver a llamar el viernes…",
+    "prospectionType": "Tipo de prospección",
+    "contactDate": "Fecha",
+    "contactTime": "Hora",
+    "linkedClientHint": "Busca al cliente; si no existe, añádelo.",
+    "sentToClient": "Resumen enviado a {email}.",
+    "sendToClient": "Enviar al cliente",
+    "noClientEmail": "Este cliente no tiene correo.",
+    "lastSent": "Último envío al cliente: {date}"
   },
   "Security": {
     "title": "Seguridad",
@@ -819,7 +882,10 @@
     "changePassword": "Cambiar la contraseña",
     "passwordWrong": "La contraseña actual no es correcta",
     "passwordWeak": "Al menos 10 caracteres, con una letra y una cifra",
-    "passwordMismatch": "Las dos contraseñas no coinciden"
+    "passwordMismatch": "Las dos contraseñas no coinciden",
+    "welcomeTitle": "¡Bienvenido a Dizy Cars!",
+    "welcomeBody": "Tu contraseña está guardada. Revisa y completa tus datos a continuación y guarda.",
+    "licenseNumber": "Número de permiso de conducir"
   },
   "My": {
     "chartTitle": "Facturación por mes",
@@ -846,7 +912,16 @@
     "achievementsTitle": "Mis logros",
     "achievementsAdmin": "Todos los alquileres realizados por el equipo.",
     "achievementsManager": "Los alquileres que usted confirmó.",
-    "movementsTitle": "Entregas y devoluciones"
+    "movementsTitle": "Entregas y devoluciones",
+    "historyTitle": "Historial",
+    "historyAdmin": "Toda la actividad del equipo: conexiones, flota, reservas, clientes, prospectos y fichas, con el autor de cada evento.",
+    "historyManager": "Toda tu actividad: conexiones, flota, reservas, clientes y prospectos.",
+    "carsTitle": "Mis coches",
+    "carsAdmin": "{count, plural, =0 {Aún no has añadido ningún coche.} one {# coche añadido por ti.} other {# coches añadidos por ti.}}",
+    "carsManager": "Los coches de los que eres responsable y, después, los compartidos por todo el equipo.",
+    "carsAssigned": "{count, plural, =0 {Ningún coche asignado a ti} one {# coche asignado a ti} other {# coches asignados a ti}}",
+    "carsShared": "{count, plural, =0 {Ningún coche compartido} one {# coche compartido} other {# coches compartidos}}",
+    "carsSharedHint": "Sin gestor asignado: todos los gestores los siguen."
   },
   "Editor": {
     "placeholder": "Escriba su texto…",
@@ -901,6 +976,16 @@
         "name": "Reserva de un coche",
         "when": "En cada nueva reserva",
         "recipients": "Se envía al cliente, al administrador y a los gestores del coche (todos si no hay ninguno asociado)."
+      },
+      "client_invite": {
+        "name": "Invitación de cliente",
+        "when": "Cuando el equipo añade un cliente",
+        "recipients": "Se envía al cliente (si tiene correo), con su enlace para elegir contraseña y completar su perfil."
+      },
+      "prospect_followup": {
+        "name": "Seguimiento de prospección",
+        "when": "Botón «Enviar al cliente» de un prospecto",
+        "recipients": "Se envía al cliente vinculado al prospecto, firmado por quien lo envía."
       }
     },
     "vars": {
@@ -945,7 +1030,17 @@
       "agence_retour": "Agencia de devolución",
       "numero_vol": "Número de vuelo",
       "lien_reservation": "Enlace a la reserva",
-      "bouton_reservation": "Botón a la reserva"
+      "bouton_reservation": "Botón a la reserva",
+      "type_prospection": "Tipo de prospección",
+      "date": "Fecha",
+      "heure": "Hora",
+      "note": "Nota",
+      "prochaine_action": "Próxima acción",
+      "gestionnaire": "Remitente (nombre completo)",
+      "gestionnaire_telephone": "Teléfono del remitente",
+      "gestionnaire_email": "Correo del remitente",
+      "lien_site": "Enlace a los coches",
+      "bouton_site": "Botón a los coches"
     },
     "language": "Idioma",
     "languageHint": "Plantilla en {language}: cada idioma tiene su propia plantilla. El destinatario recibe la de su idioma."
@@ -1010,7 +1105,14 @@
       "negotiating": "En negociación",
       "rented": "Ya ha alquilado",
       "never": "Nunca ha alquilado"
-    }
+    },
+    "addedBy": "Añadido por",
+    "addedOn": "Añadido el",
+    "updatedOn": "Modificado el",
+    "selfRegistered": "Registro en la web",
+    "inviteSent": "Invitación enviada al cliente por correo.",
+    "sendInvite": "Enviar la invitación",
+    "createFromSearch": "Añadir «{q}» como nuevo cliente"
   },
   "Appointments": {
     "title": "Citas planificadas",
@@ -1047,5 +1149,10 @@
       "cancelled": "Anulada",
       "no_show": "Ausente"
     }
+  },
+  "Cities": {
+    "search": "Buscar una ciudad…",
+    "choose": "Elegir una ciudad",
+    "noResult": "No se encontró ninguna ciudad."
   }
 }

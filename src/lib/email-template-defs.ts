@@ -1,5 +1,5 @@
 /** Modèles d'email modifiables dans Administration. Partagé navigateur / serveur (pas de secrets ici). */
-export const TEMPLATE_KEYS = ["manager_invite", "car_created", "reservation_created"] as const;
+export const TEMPLATE_KEYS = ["manager_invite", "client_invite", "car_created", "reservation_created", "prospect_followup"] as const;
 export type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
 /** Variables disponibles par modèle, avec une valeur d'exemple pour l'aperçu. */
@@ -13,6 +13,16 @@ export const TEMPLATE_VARIABLES: Record<TemplateKey, { key: string; sample: stri
     { key: "ville", sample: "Casablanca" },
     { key: "type_contrat", sample: "CDI" },
     { key: "date_debut", sample: "1 décembre 2026" },
+    { key: "lien_invitation", sample: "https://dizy-cars.com/fr/set-password?token=…" },
+    { key: "bouton_invitation", sample: "[bouton]" },
+    { key: "site", sample: "Dizy Cars" },
+  ],
+  client_invite: [
+    { key: "civilite", sample: "Monsieur" },
+    { key: "prenom", sample: "Youssef" },
+    { key: "nom", sample: "Alaoui" },
+    { key: "email", sample: "youssef@gmail.com" },
+    { key: "ajoute_par", sample: "Salma Bennani" },
     { key: "lien_invitation", sample: "https://dizy-cars.com/fr/set-password?token=…" },
     { key: "bouton_invitation", sample: "[bouton]" },
     { key: "site", sample: "Dizy Cars" },
@@ -63,10 +73,25 @@ export const TEMPLATE_VARIABLES: Record<TemplateKey, { key: string; sample: stri
     { key: "bouton_reservation", sample: "[bouton]" },
     { key: "site", sample: "Dizy Cars" },
   ],
+  prospect_followup: [
+    { key: "prenom", sample: "Youssef" },
+    { key: "nom", sample: "Alaoui" },
+    { key: "type_prospection", sample: "Appel téléphonique" },
+    { key: "date", sample: "4 novembre 2026" },
+    { key: "heure", sample: "15:30" },
+    { key: "note", sample: "Intéressé par un SUV automatique pour 10 jours en décembre." },
+    { key: "prochaine_action", sample: "Envoyer un devis pour une Dacia Duster" },
+    { key: "gestionnaire", sample: "Salma Bennani" },
+    { key: "gestionnaire_telephone", sample: "+212 6 61 23 45 02" },
+    { key: "gestionnaire_email", sample: "salma@dizy-cars.com" },
+    { key: "lien_site", sample: "https://dizy-cars.com/fr/cars" },
+    { key: "bouton_site", sample: "[bouton]" },
+    { key: "site", sample: "Dizy Cars" },
+  ],
 };
 
 /** Variables qui insèrent un bloc HTML (bouton) au lieu d'un texte. */
-export const RAW_VARIABLES = new Set(["bouton_invitation", "bouton_voiture", "bouton_reservation"]);
+export const RAW_VARIABLES = new Set(["bouton_invitation", "bouton_voiture", "bouton_reservation", "bouton_site"]);
 
 
 /** Remplace les {{variables}} ; les valeurs texte sont échappées, les boutons sont insérés tels quels. */

@@ -12,6 +12,7 @@ import { Link } from "@/i18n/navigation";
 import type { CarCategory } from "@/db/schema";
 import { formatDate, formatMoney, rentalDays, todayISO } from "@/lib/utils";
 import { checkPromoCode, createReservation } from "@/server/actions/reservations";
+import { getRecaptchaToken, RecaptchaScript } from "@/components/recaptcha/recaptcha";
 
 type Props = {
   car: { id: string; name: string; category: CarCategory; colorHex: string; dailyPrice: number; deposit: number; agencyId: number; cover: string | null };
@@ -84,7 +85,7 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
     e.preventDefault();
     setErrors({});
     start(async () => {
-      const res = await createReservation({ ...v, carId: car.id, promoCode: promo?.code });
+      const res = await createReservation({ ...v, carId: car.id, promoCode: promo?.code }, await getRecaptchaToken("booking"));
       if (res.ok) {
         setDone(res.data!.reference);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -108,6 +109,7 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
 
   return (
     <form onSubmit={submit} className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]" noValidate>
+      <RecaptchaScript />
       <div className="space-y-8">
         <fieldset className="rounded-[22px] border border-mist bg-paper p-6">
           <legend className="sr-only">{t("stepDates")}</legend>

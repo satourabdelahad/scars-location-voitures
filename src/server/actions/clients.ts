@@ -8,7 +8,16 @@ import { db } from "@/db";
 import { auditLogs, clientProfiles, users } from "@/db/schema";
 import { clientSchema } from "@/lib/validation";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
-import { searchClientsQuery, type ClientOption } from "@/server/queries/clients";
+import { searchClientsQuery, staffName, type ClientOption } from "@/server/queries/clients";
+import { notifyClientInvite } from "@/server/notifications";
+import { issuePasswordToken } from "@/server/tokens";
+
+/** Envoie au client l'email d'invitation (choisir son mot de passe puis compléter sa fiche). */
+async function inviteClient(clientId: string, actorId: string) {
+  const token = await issuePasswordToken(clientId, "invite");
+  const who = await staffName(actorId);
+  return notifyClientInvite(clientId, token, who?.name ?? "Dizy Cars");
+}
 
 function fieldErrors(err: z.ZodError) {
   const out: Record<string, string> = {};
@@ -25,8 +34,11 @@ async function emailTaken(email: string | null, exceptId?: string) {
   return Boolean(u && u.id !== exceptId);
 }
 
-/** Création d'un client par l'équipe (sans mot de passe : il pourra en créer un via « mot de passe oublié »). */
-export async function createClient(input: unknown): Promise<ActionResult<{ id: string; name: string; email: string | null; phone: string | null }>> {
+/**
+ * Création d'un client par l'équipe. S'il a un email, il reçoit l'invitation (modèle "Invitation client") :
+ * il choisit son mot de passe puis arrive sur « Mon profil » pour compléter ses informations.
+ */
+export async function createClient(input: unknown): Promise<ActionResult<{ id: string; name: string; email: string | null; phone: string | null; invited: boolean }>> {
   try {
     const staff = await assertRole(["admin", "manager"]);
     const p = clientSchema.safeParse(input);
@@ -55,8 +67,16 @@ export async function createClient(input: unknown): Promise<ActionResult<{ id: s
       await tx.insert(auditLogs).values({ actorId: staff.id, entity: "client", entityId: u.id, action: "create" });
       return u.id;
     });
+    let invited = false;
+    if (d.email) {
+      const r = await inviteClient(id, staff.id).catch((e) => {
+        console.error("[clients] invitation", e);
+        return null;
+      });
+      invited = Boolean(r?.sent);
+    }
     revalidatePath(`/${await getLocale()}`, "layout");
-    return { ok: true, data: { id, name, email: d.email, phone: d.phone } };
+    return { ok: true, data: { id, name, email: d.email, phone: d.phone, invited } };
   } catch (err) {
     return toActionError(err);
   }
@@ -94,6 +114,22 @@ export async function updateClient(id: string, input: unknown): Promise<ActionRe
       await tx.insert(auditLogs).values({ actorId: staff.id, entity: "client", entityId: id, action: "update", changes: d });
     });
     revalidatePath(`/${await getLocale()}`, "layout");
+    return { ok: true };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+/** Renvoie l'invitation à un client qui n'a pas encore de compte (aucun mot de passe ni connexion Google). */
+export async function resendClientInvite(id: string): Promise<ActionResult> {
+  try {
+    const staff = await assertRole(["admin", "manager"]);
+    const u = await db.query.users.findFirst({ where: eq(users.id, id), columns: { role: true, email: true, passwordHash: true, status: true } });
+    if (!u || u.role !== "client" || !u.email || u.passwordHash || u.status !== "active") return { ok: false, error: "invalid_transition" };
+    const r = await inviteClient(id, staff.id);
+    if (r.failed) return { ok: false, error: "email_failed" };
+    if (r.skipped) return { ok: false, error: "email_not_configured" };
+    await db.insert(auditLogs).values({ actorId: staff.id, entity: "client", entityId: id, action: "invite" });
     return { ok: true };
   } catch (err) {
     return toActionError(err);

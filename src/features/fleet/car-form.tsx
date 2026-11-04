@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { CarArt } from "@/components/car-art";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
+import { CityCombobox } from "@/components/ui/city-combobox";
 import { useRouter } from "@/i18n/navigation";
 import { localeMeta, locales, type Locale } from "@/i18n/config";
 import { carCategoryEnum, fuelEnum, transmissionEnum, type CarCategory } from "@/db/schema";
@@ -240,7 +241,7 @@ export function CarForm({
       </Section>
 
       <Section title={t("purchase")} hint={t("purchaseHint")}>
-        <Field label={t("purchaseCity")} required error={err("purchaseCity")}>{(p) => <Input {...p} value={v.purchaseCity} onChange={(x) => set("purchaseCity", x.target.value)} />}</Field>
+        <Field label={t("purchaseCity")} required error={err("purchaseCity")}>{(p) => <CityCombobox {...p} value={v.purchaseCity} onChange={(c) => set("purchaseCity", c)} />}</Field>
         <Field label={t("purchaseDate")} required error={err("purchaseDate")}>{(p) => <Input {...p} type="date" max={new Date().toISOString().slice(0, 10)} value={v.purchaseDate} onChange={(x) => set("purchaseDate", x.target.value)} />}</Field>
         <Field label={t("purchasePrice")} required error={err("purchasePrice")}>{(p) => <Input {...p} type="number" min={0} step={1000} value={v.purchasePrice} onChange={num("purchasePrice")} />}</Field>
       </Section>

@@ -120,6 +120,7 @@ export { emailButton };
  */
 export async function sendTemplate(key: TemplateKey, recipients: { to: string | null | undefined; locale?: string | null; vars: Record<string, string> }[]) {
   const seen = new Set<string>();
+  const out = { sent: 0, failed: 0, skipped: 0 };
   for (const r of recipients) {
     if (!r.to || seen.has(r.to.toLowerCase())) continue;
     seen.add(r.to.toLowerCase());
@@ -127,8 +128,13 @@ export async function sendTemplate(key: TemplateKey, recipients: { to: string | 
     const locale: Locale = isLocale(r.locale ?? "") ? (r.locale as Locale) : "fr";
     const tpl = await getTemplate(key, locale);
     const vars = { site: "Dizy Cars", ...r.vars };
-    await send(r.to, fillTemplate(tpl.subject, vars, { html: false }), brandedEmail(fillTemplate(tpl.html, vars, { html: true }), locale)).catch((e) =>
-      console.error(`[email] modèle ${key} vers ${r.to}`, e),
-    );
+    const res = await send(r.to, fillTemplate(tpl.subject, vars, { html: false }), brandedEmail(fillTemplate(tpl.html, vars, { html: true }), locale)).catch((e) => {
+      console.error(`[email] modèle ${key} vers ${r.to}`, e);
+      return { skipped: false as const, error: e };
+    });
+    if (res.skipped) out.skipped++;
+    else if (res.error) out.failed++;
+    else out.sent++;
   }
+  return out;
 }

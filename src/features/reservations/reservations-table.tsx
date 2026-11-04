@@ -3,18 +3,22 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { DataTable, type Column } from "@/components/data-table/data-table";
+import { useRowPatches } from "@/components/data-table/use-row-patches";
+import { ReservationRowActions } from "./reservation-actions";
 import { Badge, reservationTone } from "@/components/ui/misc";
 import { Link, useRouter } from "@/i18n/navigation";
 import { reservationStatusEnum } from "@/db/schema";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import type { StaffReservationRow } from "@/server/queries/reservations";
 
-export function ReservationsTable({ rows, base, prefs }: { rows: StaffReservationRow[]; base: string; prefs: { visibleColumns: string[]; pageSize: number } | null }) {
+export function ReservationsTable({ rows: serverRows, base, prefs }: { rows: StaffReservationRow[]; base: string; prefs: { visibleColumns: string[]; pageSize: number } | null }) {
   const t = useTranslations("Reservations");
   const ts = useTranslations("Status");
   const c = useTranslations("Common");
   const locale = useLocale();
   const router = useRouter();
+  // Nouvel état affiché tout de suite après une action de la colonne.
+  const [rows, patch] = useRowPatches(serverRows);
 
   const columns = useMemo<Column<StaffReservationRow>[]>(
     () => [
@@ -40,8 +44,16 @@ export function ReservationsTable({ rows, base, prefs }: { rows: StaffReservatio
       { id: "total", header: t("total"), text: (r) => formatMoney(r.totalPrice, locale), sortValue: (r) => r.totalPrice, align: "end" },
       { id: "handledBy", header: t("handledBy"), text: (r) => r.handledBy ?? "", filter: { type: "text" } },
       { id: "createdAt", header: t("createdAt"), text: (r) => formatDateTime(r.createdAt, locale), sortValue: (r) => new Date(r.createdAt).getTime(), defaultHidden: true },
+      {
+        id: "actions",
+        header: c("actions"),
+        text: () => "",
+        isAction: true,
+        align: "end",
+        cell: (r) => <ReservationRowActions id={r.id} status={r.status} onDone={(status) => patch(r.id, { status })} />,
+      },
     ],
-    [t, ts, c, locale, base],
+    [t, ts, c, locale, base, patch],
   );
 
   return (

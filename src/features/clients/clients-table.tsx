@@ -4,6 +4,7 @@ import { CarFront, Handshake, History, UserRoundX, UsersRound } from "lucide-rea
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { DataTable, type Column } from "@/components/data-table/data-table";
+import { useRowPatches } from "@/components/data-table/use-row-patches";
 import { Badge, type Tone } from "@/components/ui/misc";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn, formatDate, formatMoney } from "@/lib/utils";
@@ -19,7 +20,9 @@ const SEGMENTS: { id: ClientSegment; Icon: typeof CarFront; tone: Tone }[] = [
 export const segmentTone = Object.fromEntries(SEGMENTS.map((s) => [s.id, s.tone])) as Record<ClientSegment, Tone>;
 
 /** Liste des clients : compteurs par segment (cliquables pour filtrer) puis tableau. */
-export function ClientsTable({ rows, base }: { rows: ClientRow[]; base: string }) {
+export function ClientsTable({ rows: serverRows, base }: { rows: ClientRow[]; base: string }) {
+  // Nouvel état affiché tout de suite après activer / désactiver.
+  const [rows, patch] = useRowPatches(serverRows);
   const t = useTranslations("Clients");
   const c = useTranslations("Common");
   const locale = useLocale();
@@ -59,6 +62,8 @@ export function ClientsTable({ rows, base }: { rows: ClientRow[]; base: string }
       { id: "lastRental", header: t("lastRental"), text: (r) => (r.lastRental ? formatDate(r.lastRental, locale) : ""), sortValue: (r) => r.lastRental },
       { id: "openDeals", header: t("openDeals"), text: (r) => String(r.openDeals), sortValue: (r) => r.openDeals, align: "end", defaultHidden: true },
       { id: "createdAt", header: t("createdAt"), text: (r) => formatDate(r.createdAt, locale), sortValue: (r) => r.createdAt, defaultHidden: true },
+      { id: "addedBy", header: t("addedBy"), text: (r) => r.addedBy ?? t("selfRegistered"), filter: { type: "text" }, defaultHidden: true },
+      { id: "updatedAt", header: t("updatedOn"), text: (r) => (r.updatedAt ? formatDate(r.updatedAt, locale) : ""), sortValue: (r) => r.updatedAt, defaultHidden: true },
       {
         id: "status",
         header: c("status"),
@@ -71,10 +76,10 @@ export function ClientsTable({ rows, base }: { rows: ClientRow[]; base: string }
         header: "",
         text: () => "",
         isAction: true,
-        cell: (r) => <ClientStatusButton id={r.id} name={`${r.firstName} ${r.lastName}`} status={r.status} compact />,
+        cell: (r) => <ClientStatusButton id={r.id} name={`${r.firstName} ${r.lastName}`} status={r.status} compact onDone={(status) => patch(r.id, { status })} />,
       },
     ],
-    [t, c, locale, base],
+    [t, c, locale, base, patch],
   );
 
   return (

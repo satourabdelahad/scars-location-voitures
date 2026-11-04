@@ -54,7 +54,9 @@
     "profile": "个人资料",
     "myAppointments": "我的预约",
     "myAchievements": "我的业绩",
-    "myReservations": "我的预订"
+    "myReservations": "我的预订",
+    "myCars": "我的车辆",
+    "history": "历史记录"
   },
   "Footer": {
     "tagline": "摩洛哥六座城市随时可出发的车辆，标价在柜台也不会改变。",
@@ -234,13 +236,15 @@
       "generic": "登录失败，请重试。",
       "server": "服务器无法验证登录（数据库或配置问题）。请重试或联系管理员。",
       "locked": "尝试次数过多：此账户已被暂时锁定。请稍后再试或联系管理员。",
-      "totp_invalid": "验证码错误或已过期，请输入当前显示的验证码。"
+      "totp_invalid": "验证码错误或已过期，请输入当前显示的验证码。",
+      "captcha": "人机验证失败。请刷新页面后重试。"
     },
     "totpTitle": "两步验证",
     "totpHint": "打开验证器应用并输入 6 位验证码，也可以使用备用码。",
     "totpCode": "验证码",
     "totpSubmit": "验证并登录",
-    "totpBack": "返回邮箱和密码"
+    "totpBack": "返回邮箱和密码",
+    "recaptchaNotice": "本网站受 reCAPTCHA 保护，适用 Google 隐私政策和服务条款。"
   },
   "Back": {
     "dashboard": "概览",
@@ -360,7 +364,33 @@
     "locked": "已锁定",
     "lockedBanner": "因失败次数过多，登录已锁定至 {date}。",
     "handledBy": "处理人",
-    "adminOnly": "仅管理员可修改"
+    "adminOnly": "仅管理员可修改",
+    "pendingActivation": "邀请待激活",
+    "pendingBannerTitle": "账户尚未激活",
+    "pendingBannerBody": "在点击邮件中的激活链接之前，该经理账户保持停用状态。您可以重新发送邀请。",
+    "tabCars": "负责车辆",
+    "activate": "启用",
+    "bulkDeactivated": "已停用 {count} 位经理",
+    "bulkActivated": "已启用 {count} 位经理",
+    "bulkInvited": "已重新发送 {count} 份邀请",
+    "bulkSkipped": "已跳过 {count} 行（操作不适用）",
+    "bulkDeactivateTitle": "停用 {count} 位经理",
+    "assignedCarsTitle": "{count, plural, =0 {没有负责车辆} other {负责车辆 {count} 辆}}",
+    "assignedCarsHint": "{count, plural, =0 {负责下列车辆。} other {同时负责 {count} 辆共享车辆（无指定经理，即所有经理）。}}",
+    "assignCars": "分配车辆",
+    "assignCarsBody": "勾选该经理负责的车辆。没有经理的车辆由所有人共享；一旦分配，只有其经理跟进并接收相关邮件。",
+    "noAssignedCars": "没有负责车辆",
+    "noAssignedCarsBody": "该经理负责共享车辆（无指定经理）。",
+    "noAssignedCarsShort": "无（共享车辆）",
+    "unassignCar": "移除此车辆",
+    "carUnassigned": "已从该经理移除车辆。",
+    "carsAssigned": "{count, plural, =0 {没有新分配的车辆} other {已分配 {count} 辆车}}",
+    "searchCars": "品牌、型号、车牌、城市…",
+    "selectShown": "全部勾选",
+    "unselectShown": "全部取消",
+    "noCarFound": "未找到车辆。",
+    "carsPicked": "{count, plural, =0 {未勾选车辆} other {已勾选 {count} 辆}}",
+    "assign": "分配"
   },
   "Documents": {
     "cin_front": "身份证（CINE）正面",
@@ -397,7 +427,12 @@
     "resetFilters": "清除筛选",
     "showAll": "全部显示",
     "field": "字段",
-    "value": "值"
+    "value": "值",
+    "selected": "已选 {count} 项",
+    "clearSelection": "取消选择",
+    "refresh": "刷新",
+    "selectAll": "全选",
+    "selectRow": "选择此行"
   },
   "Fleet": {
     "title": "车队管理",
@@ -473,7 +508,8 @@
       "rented": "出租中",
       "maintenance": "维修中",
       "deactivated": "已停用"
-    }
+    },
+    "managers": "经理"
   },
   "Reservations": {
     "title": "预订",
@@ -523,7 +559,8 @@
     },
     "contract": {
       "freelance": "自由职业",
-      "cdi": "无固定期限合同（CDI）"
+      "cdi": "无固定期限合同（CDI）",
+      "cdd": "固定期限合同"
     },
     "category": {
       "city_car": "城市车",
@@ -594,7 +631,11 @@
     "upload_failed": "上传失败，请重试。",
     "promo_invalid": "此优惠码不适用于本次租赁。",
     "futureDate": "日期不能晚于今天",
-    "numberRange": "请输入 {min} 到 {max} 之间的数字"
+    "numberRange": "请输入 {min} 到 {max} 之间的数字",
+    "captcha": "人机验证失败。请刷新页面后重试。",
+    "email_failed": "邮件发送失败（请检查 Resend 中的域名）。",
+    "email_not_configured": "未配置邮件发送（RESEND_API_KEY）。",
+    "no_client_email": "该客户没有邮箱地址。"
   },
   "About": {
     "title": "一家车况可靠的摩洛哥租车公司",
@@ -649,7 +690,10 @@
     "tplBtnInvite": "设置我的密码",
     "tplBtnCar": "查看车辆",
     "tplBtnBooking": "查看我的预订",
-    "tplBtnProcess": "处理预订"
+    "tplBtnProcess": "处理预订",
+    "tplBtnClientInvite": "激活我的账户",
+    "tplBtnCars": "查看我们的车辆",
+    "sentToClientNote": "已向客户发送摘要（{email}）。"
   },
   "Activity": {
     "session_login": "登录",
@@ -694,7 +738,14 @@
     "appointment_create": "与 {name} 安排预约",
     "appointment_done": "与 {name} 的预约已完成",
     "appointment_cancelled": "与 {name} 的预约已取消",
-    "appointment_no_show": "客户未到：{name}"
+    "appointment_no_show": "客户未到：{name}",
+    "by": "操作人",
+    "byName": "操作人：{name}",
+    "profile_activated": "账户已激活",
+    "manager_assign_cars": "为 {name} 分配车辆",
+    "manager_unassign_car": "从 {name} 移除车辆",
+    "client_invite": "已向客户发送邀请：{name}",
+    "security_unlock": "账户已解锁"
   },
   "Deals": {
     "title": "商机 / 潜在客户",
@@ -745,7 +796,19 @@
     },
     "linkedClient": "关联客户",
     "followedBy": "跟进人",
-    "administration": "管理"
+    "administration": "管理",
+    "author": "创建人",
+    "contactAt": "沟通时间",
+    "nextAction": "下一步",
+    "nextActionPlaceholder": "例如：发送报价，周五回电…",
+    "prospectionType": "拓客方式",
+    "contactDate": "日期",
+    "contactTime": "时间",
+    "linkedClientHint": "搜索客户；如果不存在，请添加。",
+    "sentToClient": "已将摘要发送至 {email}。",
+    "sendToClient": "发送给客户",
+    "noClientEmail": "该客户没有邮箱。",
+    "lastSent": "上次发送给客户：{date}"
   },
   "Security": {
     "title": "安全",
@@ -819,7 +882,10 @@
     "changePassword": "修改密码",
     "passwordWrong": "当前密码不正确",
     "passwordWeak": "至少 10 个字符，包含字母和数字",
-    "passwordMismatch": "两次输入的密码不一致"
+    "passwordMismatch": "两次输入的密码不一致",
+    "welcomeTitle": "欢迎来到 Dizy Cars！",
+    "welcomeBody": "密码已保存。请核对并补充下方信息，然后保存。",
+    "licenseNumber": "驾照号码"
   },
   "My": {
     "chartTitle": "每月营业额",
@@ -846,7 +912,16 @@
     "achievementsTitle": "我的业绩",
     "achievementsAdmin": "团队完成的全部租赁。",
     "achievementsManager": "您确认的租赁。",
-    "movementsTitle": "取车与还车"
+    "movementsTitle": "取车与还车",
+    "historyTitle": "历史记录",
+    "historyAdmin": "团队全部活动：登录、车队、预订、客户、潜在客户和档案，并显示每个事件的操作人。",
+    "historyManager": "您的全部活动：登录、车队、预订、客户和潜在客户。",
+    "carsTitle": "我的车辆",
+    "carsAdmin": "{count, plural, =0 {您还没有添加车辆。} other {您添加的车辆：{count} 辆}}",
+    "carsManager": "您负责的车辆，以及整个团队共享的车辆。",
+    "carsAssigned": "{count, plural, =0 {没有分配给您的车辆} other {分配给您的车辆：{count} 辆}}",
+    "carsShared": "{count, plural, =0 {没有共享车辆} other {共享车辆：{count} 辆}}",
+    "carsSharedHint": "未指定经理：所有经理共同跟进。"
   },
   "Editor": {
     "placeholder": "输入文字…",
@@ -901,6 +976,16 @@
         "name": "车辆预订",
         "when": "每次新预订时",
         "recipients": "发送给客户、管理员和该车辆的负责经理（未指定则为全部经理）。"
+      },
+      "client_invite": {
+        "name": "客户邀请",
+        "when": "团队添加客户时",
+        "recipients": "发送给客户（如有邮箱），附带设置密码和完善资料的链接。"
+      },
+      "prospect_followup": {
+        "name": "潜在客户跟进",
+        "when": "潜在客户的“发送给客户”按钮",
+        "recipients": "发送给与潜在客户关联的客户，由发送人署名。"
       }
     },
     "vars": {
@@ -945,7 +1030,17 @@
       "agence_retour": "还车门店",
       "numero_vol": "航班号",
       "lien_reservation": "预订链接",
-      "bouton_reservation": "预订按钮"
+      "bouton_reservation": "预订按钮",
+      "type_prospection": "拓客方式",
+      "date": "日期",
+      "heure": "时间",
+      "note": "备注",
+      "prochaine_action": "下一步",
+      "gestionnaire": "发送人（全名）",
+      "gestionnaire_telephone": "发送人电话",
+      "gestionnaire_email": "发送人邮箱",
+      "lien_site": "车辆页面链接",
+      "bouton_site": "车辆页面按钮"
     },
     "language": "语言",
     "languageHint": "{language}模板：每种语言都有自己的模板，收件人会收到其语言的版本。"
@@ -1010,7 +1105,14 @@
       "negotiating": "洽谈中",
       "rented": "曾经租过",
       "never": "从未租过"
-    }
+    },
+    "addedBy": "添加人",
+    "addedOn": "添加时间",
+    "updatedOn": "修改时间",
+    "selfRegistered": "网站注册",
+    "inviteSent": "已通过邮件向客户发送邀请。",
+    "sendInvite": "发送邀请",
+    "createFromSearch": "将“{q}”添加为新客户"
   },
   "Appointments": {
     "title": "已安排的预约",
@@ -1047,5 +1149,10 @@
       "cancelled": "已取消",
       "no_show": "未到"
     }
+  },
+  "Cities": {
+    "search": "搜索城市…",
+    "choose": "选择城市",
+    "noResult": "未找到城市。"
   }
 }

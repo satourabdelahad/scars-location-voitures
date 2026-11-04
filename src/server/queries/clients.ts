@@ -1,7 +1,7 @@
 import "server-only";
 import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { clientProfiles, users } from "@/db/schema";
+import { accounts, clientProfiles, managers, users } from "@/db/schema";
 
 /**
  * Segment d'un client, du plus actif au moins actif (un client n'est que dans un segment) :
@@ -31,9 +31,13 @@ export async function listClients() {
     total_spent: string;
     last_rental: string | null;
     has_account: boolean;
+    added_by: string | null;
+    updated_at: string | null;
   }>(sql`
     SELECT u.id, u.name, p.first_name, p.last_name, p.civility, u.email, u.phone, p.whatsapp, p.city, u.status,
-           u.created_at, u.last_login_at, u.preferred_locale,
+           u.created_at, u.last_login_at, u.preferred_locale, p.updated_at,
+           (SELECT COALESCE(NULLIF(trim(sm.first_name || ' ' || sm.last_name), ''), su.name, su.email)
+              FROM users su LEFT JOIN managers sm ON sm.user_id = su.id WHERE su.id = p.created_by) AS added_by,
            (u.password_hash IS NOT NULL OR EXISTS (SELECT 1 FROM accounts a WHERE a.user_id = u.id)) AS has_account,
            (SELECT count(*)::int FROM reservations r WHERE r.client_id = u.id AND r.status IN ('confirmed', 'ongoing', 'completed')) AS rentals,
            EXISTS (SELECT 1 FROM reservations r WHERE r.client_id = u.id
@@ -67,6 +71,8 @@ export async function listClients() {
       totalSpent: Number(r.total_spent),
       lastRental: r.last_rental,
       hasAccount: r.has_account,
+      addedBy: r.added_by,
+      updatedAt: r.updated_at ? new Date(r.updated_at).toISOString() : null,
       segment,
     };
   });
@@ -77,14 +83,21 @@ export async function getClient(id: string) {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   const u = await db.query.users.findFirst({
     where: and(eq(users.id, id), eq(users.role, "client")),
-    columns: { id: true, name: true, email: true, phone: true, status: true, image: true, preferredLocale: true, createdAt: true, lastLoginAt: true },
+    columns: { id: true, name: true, email: true, phone: true, status: true, image: true, preferredLocale: true, createdAt: true, lastLoginAt: true, passwordHash: true },
     with: { clientProfile: true },
   });
   if (!u) return null;
   const [first, ...rest] = (u.name ?? "").split(" ");
   const p = u.clientProfile;
+  const [createdBy, updatedBy] = await Promise.all([staffName(p?.createdBy), staffName(p?.updatedBy)]);
+  const { passwordHash, ...rest2 } = u;
+  const [linked] = passwordHash ? [] : await db.select({ id: accounts.userId }).from(accounts).where(eq(accounts.userId, id)).limit(1);
   return {
-    ...u,
+    ...rest2,
+    hasAccount: Boolean(passwordHash) || Boolean(linked),
+    createdBy,
+    updatedBy,
+    updatedAt: p?.updatedAt ?? null,
     firstName: p?.firstName ?? first ?? "",
     lastName: p?.lastName ?? rest.join(" "),
     civility: p?.civility ?? null,
@@ -96,6 +109,19 @@ export async function getClient(id: string) {
     deactivationReason: p?.deactivationReason ?? null,
   };
 }
+/** Nom complet et rôle d'un membre de l'équipe (auteur d'une création ou d'une modification). */
+export async function staffName(userId: string | null | undefined) {
+  if (!userId) return null;
+  const [r] = await db
+    .select({ name: users.name, email: users.email, role: users.role, first: managers.firstName, last: managers.lastName })
+    .from(users)
+    .leftJoin(managers, eq(managers.userId, users.id))
+    .where(eq(users.id, userId))
+    .limit(1);
+  if (!r) return null;
+  return { name: r.first ? `${r.first} ${r.last}` : (r.name ?? r.email ?? "—"), role: r.role };
+}
+
 export type ClientDetail = NonNullable<Awaited<ReturnType<typeof getClient>>>;
 
 /** Recherche rapide (rendez-vous, deals) : nom, email ou téléphone. */

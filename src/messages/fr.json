@@ -54,7 +54,9 @@
     "profile": "Profil",
     "myAppointments": "Mes rendez-vous",
     "myAchievements": "Mes réalisations",
-    "myReservations": "Mes réservations"
+    "myReservations": "Mes réservations",
+    "myCars": "Mes voitures",
+    "history": "Historique"
   },
   "Footer": {
     "tagline": "Des voitures prêtes à partir dans six villes du Maroc, avec un prix annoncé qui ne change pas au comptoir.",
@@ -234,13 +236,15 @@
       "generic": "La connexion a échoué. Réessayez.",
       "server": "Le serveur n'a pas pu vérifier la connexion (base de données ou configuration). Réessayez ou contactez l'administrateur.",
       "locked": "Trop de tentatives : ce compte est temporairement bloqué. Réessayez plus tard ou contactez l'administrateur.",
-      "totp_invalid": "Code incorrect ou expiré. Saisissez le code affiché maintenant."
+      "totp_invalid": "Code incorrect ou expiré. Saisissez le code affiché maintenant.",
+      "captcha": "La vérification anti-robot a échoué. Rechargez la page et réessayez."
     },
     "totpTitle": "Vérification en deux étapes",
     "totpHint": "Ouvrez votre application d'authentification et saisissez le code à 6 chiffres. Vous pouvez aussi utiliser un code de secours.",
     "totpCode": "Code de vérification",
     "totpSubmit": "Vérifier et se connecter",
-    "totpBack": "Revenir à l'email et au mot de passe"
+    "totpBack": "Revenir à l'email et au mot de passe",
+    "recaptchaNotice": "Ce site est protégé par reCAPTCHA : les règles de confidentialité et les conditions d'utilisation de Google s'appliquent."
   },
   "Back": {
     "dashboard": "Tableau de bord",
@@ -360,7 +364,33 @@
     "locked": "Bloqué",
     "lockedBanner": "Connexion bloquée jusqu'au {date} après trop d'échecs.",
     "handledBy": "Traitée par",
-    "adminOnly": "Modifiable uniquement par l'administrateur"
+    "adminOnly": "Modifiable uniquement par l'administrateur",
+    "pendingActivation": "Invitation en attente",
+    "pendingBannerTitle": "Compte pas encore activé",
+    "pendingBannerBody": "Le gestionnaire est désactivé tant qu'il n'a pas cliqué sur le lien d'activation reçu par email. Vous pouvez renvoyer l'invitation.",
+    "tabCars": "Voitures affectées",
+    "activate": "Activer",
+    "bulkDeactivated": "{count, plural, one {# gestionnaire désactivé} other {# gestionnaires désactivés}}",
+    "bulkActivated": "{count, plural, one {# gestionnaire activé} other {# gestionnaires activés}}",
+    "bulkInvited": "{count, plural, one {# invitation renvoyée} other {# invitations renvoyées}}",
+    "bulkSkipped": "{count, plural, one {# ligne ignorée (action non applicable)} other {# lignes ignorées (action non applicable)}}",
+    "bulkDeactivateTitle": "{count, plural, one {Désactiver # gestionnaire} other {Désactiver # gestionnaires}}",
+    "assignedCarsTitle": "{count, plural, =0 {Aucune voiture affectée} one {# voiture affectée} other {# voitures affectées}}",
+    "assignedCarsHint": "{count, plural, =0 {Il suit les voitures ci-dessous.} one {Il suit aussi # voiture partagée (sans gestionnaire, donc tous les gestionnaires).} other {Il suit aussi # voitures partagées (sans gestionnaire, donc tous les gestionnaires).}}",
+    "assignCars": "Affecter des voitures",
+    "assignCarsBody": "Cochez les voitures dont ce gestionnaire est responsable. Une voiture sans gestionnaire est partagée par tous ; dès qu'elle est affectée, seuls ses gestionnaires la suivent et reçoivent ses emails.",
+    "noAssignedCars": "Aucune voiture affectée",
+    "noAssignedCarsBody": "Ce gestionnaire suit les voitures partagées (sans gestionnaire).",
+    "noAssignedCarsShort": "Aucune (voitures partagées)",
+    "unassignCar": "Retirer cette voiture",
+    "carUnassigned": "Voiture retirée du gestionnaire.",
+    "carsAssigned": "{count, plural, =0 {Aucune nouvelle voiture affectée} one {# voiture affectée} other {# voitures affectées}}",
+    "searchCars": "Marque, modèle, immatriculation, ville…",
+    "selectShown": "Tout cocher",
+    "unselectShown": "Tout décocher",
+    "noCarFound": "Aucune voiture trouvée.",
+    "carsPicked": "{count, plural, =0 {Aucune voiture cochée} one {# voiture cochée} other {# voitures cochées}}",
+    "assign": "Affecter"
   },
   "Documents": {
     "cin_front": "Carte d'identité (CINE) — recto",
@@ -397,7 +427,12 @@
     "resetFilters": "Effacer les filtres",
     "showAll": "Tout afficher",
     "field": "Champ",
-    "value": "Valeur"
+    "value": "Valeur",
+    "selected": "{count, plural, one {# sélectionné} other {# sélectionnés}}",
+    "clearSelection": "Annuler la sélection",
+    "refresh": "Actualiser",
+    "selectAll": "Tout sélectionner",
+    "selectRow": "Sélectionner la ligne"
   },
   "Fleet": {
     "title": "Parc automobile",
@@ -473,7 +508,8 @@
       "rented": "En location",
       "maintenance": "En réparation",
       "deactivated": "Désactivée"
-    }
+    },
+    "managers": "Gestionnaires"
   },
   "Reservations": {
     "title": "Réservations",
@@ -523,7 +559,8 @@
     },
     "contract": {
       "freelance": "Freelance",
-      "cdi": "CDI"
+      "cdi": "CDI",
+      "cdd": "CDD"
     },
     "category": {
       "city_car": "Citadine",
@@ -594,7 +631,11 @@
     "upload_failed": "L'envoi du fichier a échoué. Réessayez.",
     "promo_invalid": "Ce code promo n'est pas valable pour cette location.",
     "futureDate": "La date ne peut pas être dans le futur",
-    "numberRange": "Saisissez un nombre entre {min} et {max}"
+    "numberRange": "Saisissez un nombre entre {min} et {max}",
+    "captcha": "La vérification anti-robot a échoué. Rechargez la page et réessayez.",
+    "email_failed": "L'email n'a pas pu être envoyé (vérifiez le domaine dans Resend).",
+    "email_not_configured": "L'envoi d'emails n'est pas configuré (RESEND_API_KEY).",
+    "no_client_email": "Le client n'a pas d'adresse email."
   },
   "About": {
     "title": "Une agence marocaine, des voitures bien tenues",
@@ -649,7 +690,10 @@
     "tplBtnInvite": "Choisir mon mot de passe",
     "tplBtnCar": "Voir la voiture",
     "tplBtnBooking": "Voir ma réservation",
-    "tplBtnProcess": "Traiter la réservation"
+    "tplBtnProcess": "Traiter la réservation",
+    "tplBtnClientInvite": "Activer mon espace client",
+    "tplBtnCars": "Voir nos voitures",
+    "sentToClientNote": "Récapitulatif envoyé au client ({email})."
   },
   "Activity": {
     "session_login": "Connexion",
@@ -694,7 +738,14 @@
     "appointment_create": "Rendez-vous planifié avec {name}",
     "appointment_done": "Rendez-vous fait avec {name}",
     "appointment_cancelled": "Rendez-vous annulé avec {name}",
-    "appointment_no_show": "Client absent au rendez-vous : {name}"
+    "appointment_no_show": "Client absent au rendez-vous : {name}",
+    "by": "Par",
+    "byName": "par {name}",
+    "profile_activated": "Compte activé",
+    "manager_assign_cars": "Voitures affectées à {name}",
+    "manager_unassign_car": "Voiture retirée à {name}",
+    "client_invite": "Invitation envoyée au client : {name}",
+    "security_unlock": "Compte débloqué"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -745,7 +796,19 @@
     },
     "linkedClient": "Client lié",
     "followedBy": "Suivi par",
-    "administration": "Administration"
+    "administration": "Administration",
+    "author": "Auteur",
+    "contactAt": "Date de l'échange",
+    "nextAction": "Prochaine action",
+    "nextActionPlaceholder": "Ex. envoyer un devis, rappeler vendredi…",
+    "prospectionType": "Type de prospection",
+    "contactDate": "Date",
+    "contactTime": "Heure",
+    "linkedClientHint": "Recherchez le client ; s'il n'existe pas, ajoutez-le.",
+    "sentToClient": "Récapitulatif envoyé à {email}.",
+    "sendToClient": "Envoyer au client",
+    "noClientEmail": "Ce client n'a pas d'email.",
+    "lastSent": "Dernier envoi au client : {date}"
   },
   "Security": {
     "title": "Sécurité",
@@ -819,7 +882,10 @@
     "changePassword": "Changer le mot de passe",
     "passwordWrong": "Mot de passe actuel incorrect",
     "passwordWeak": "Au moins 10 caractères, avec une lettre et un chiffre",
-    "passwordMismatch": "Les deux mots de passe ne correspondent pas"
+    "passwordMismatch": "Les deux mots de passe ne correspondent pas",
+    "welcomeTitle": "Bienvenue chez Dizy Cars !",
+    "welcomeBody": "Votre mot de passe est enregistré. Vérifiez et complétez vos informations ci-dessous, puis enregistrez.",
+    "licenseNumber": "Numéro de permis"
   },
   "My": {
     "chartTitle": "Chiffre d'affaires par mois",
@@ -846,7 +912,16 @@
     "achievementsTitle": "Mes réalisations",
     "achievementsAdmin": "Toutes les locations réalisées par l'équipe.",
     "achievementsManager": "Les locations que vous avez confirmées.",
-    "movementsTitle": "Départs et retours"
+    "movementsTitle": "Départs et retours",
+    "historyTitle": "Historique",
+    "historyAdmin": "Toute l'activité de l'équipe : connexions, parc, réservations, clients, prospects et fiches, avec l'auteur de chaque événement.",
+    "historyManager": "Toute votre activité : connexions, parc, réservations, clients et prospects.",
+    "carsTitle": "Mes voitures",
+    "carsAdmin": "{count, plural, =0 {Vous n'avez encore ajouté aucune voiture.} one {# voiture ajoutée par vous.} other {# voitures ajoutées par vous.}}",
+    "carsManager": "Les voitures dont vous êtes responsable, puis celles partagées par toute l'équipe.",
+    "carsAssigned": "{count, plural, =0 {Aucune voiture ne vous est affectée} one {# voiture vous est affectée} other {# voitures vous sont affectées}}",
+    "carsShared": "{count, plural, =0 {Aucune voiture partagée} one {# voiture partagée} other {# voitures partagées}}",
+    "carsSharedHint": "Sans gestionnaire affecté : tous les gestionnaires les suivent."
   },
   "Editor": {
     "placeholder": "Écrivez votre texte…",
@@ -901,6 +976,16 @@
         "name": "Réservation d'une voiture",
         "when": "À chaque nouvelle réservation",
         "recipients": "Envoyé au client, à l'administrateur et aux gestionnaires de la voiture (tous si aucun n'est associé)."
+      },
+      "client_invite": {
+        "name": "Invitation client",
+        "when": "À l'ajout d'un client par l'équipe",
+        "recipients": "Envoyé au client (s'il a un email), avec son lien pour choisir son mot de passe et compléter son profil."
+      },
+      "prospect_followup": {
+        "name": "Suivi de prospection",
+        "when": "Bouton « Envoyer au client » d'un prospect",
+        "recipients": "Envoyé au client lié au prospect, signé par la personne qui l'envoie."
       }
     },
     "vars": {
@@ -945,7 +1030,17 @@
       "agence_retour": "Agence de retour",
       "numero_vol": "Numéro de vol",
       "lien_reservation": "Lien vers la réservation",
-      "bouton_reservation": "Bouton vers la réservation"
+      "bouton_reservation": "Bouton vers la réservation",
+      "type_prospection": "Type de prospection",
+      "date": "Date",
+      "heure": "Heure",
+      "note": "Note",
+      "prochaine_action": "Prochaine action",
+      "gestionnaire": "Expéditeur (nom complet)",
+      "gestionnaire_telephone": "Téléphone de l'expéditeur",
+      "gestionnaire_email": "Email de l'expéditeur",
+      "lien_site": "Lien vers les voitures",
+      "bouton_site": "Bouton vers les voitures"
     },
     "language": "Langue",
     "languageHint": "Modèle en {language} : chaque langue a son propre modèle. Le destinataire reçoit celui de sa langue."
@@ -1010,7 +1105,14 @@
       "negotiating": "En négociation",
       "rented": "A déjà loué",
       "never": "Jamais loué"
-    }
+    },
+    "addedBy": "Ajouté par",
+    "addedOn": "Ajouté le",
+    "updatedOn": "Modifié le",
+    "selfRegistered": "Inscription sur le site",
+    "inviteSent": "Invitation envoyée au client par email.",
+    "sendInvite": "Envoyer l'invitation",
+    "createFromSearch": "Ajouter « {q} » comme nouveau client"
   },
   "Appointments": {
     "title": "Rendez-vous planifiés",
@@ -1047,5 +1149,10 @@
       "cancelled": "Annulé",
       "no_show": "Absent"
     }
+  },
+  "Cities": {
+    "search": "Rechercher une ville…",
+    "choose": "Choisir une ville",
+    "noResult": "Aucune ville trouvée."
   }
 }

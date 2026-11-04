@@ -1,8 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/ui/misc";
 import type { SessionUser } from "@/server/guards";
-import { dealFormOptions, managerRentals, myAppointments, scheduledAppointments, staffOptions } from "@/server/queries/manager-profile";
-import { allAgencies } from "@/server/queries/fleet";
+import { activityLog, dealFormOptions, managerIdForUser, managerRentals, myAppointments, scheduledAppointments, staffOptions } from "@/server/queries/manager-profile";
+import { allAgencies, listFleet } from "@/server/queries/fleet";
+import { HistoryTab } from "@/features/managers/history-tab";
+import { FleetTable } from "@/features/fleet/fleet-table";
 import { ScheduledAppointments } from "./scheduled";
 import { RentalsTab } from "@/features/managers/rentals-tab";
 import { Appointments } from "./appointments";
@@ -44,6 +46,58 @@ export async function AchievementsPage({ me }: { me: SessionUser }) {
       <div className="space-y-4">
         <RentalsChart rows={rows} />
         <RentalsTab rows={rows} reservationsBase={resBase(me)} showHandler={me.role === "admin"} />
+      </div>
+    </>
+  );
+}
+
+/** "Historique" : l'activité du gestionnaire connecté, ou de toute l'équipe pour l'administrateur. */
+export async function HistoryPage({ me }: { me: SessionUser }) {
+  const isAdmin = me.role === "admin";
+  const [rows, t] = await Promise.all([
+    isAdmin ? activityLog(null) : managerIdForUser(me.id).then((managerId) => activityLog({ userId: me.id, managerId })),
+    getTranslations("My"),
+  ]);
+  return (
+    <>
+      <PageHeader title={t("historyTitle")} subtitle={isAdmin ? t("historyAdmin") : t("historyManager")} />
+      <HistoryTab rows={rows} global={isAdmin} tableKey="my-history" />
+    </>
+  );
+}
+
+/**
+ * "Mes voitures" : pour un gestionnaire, les voitures qui lui sont affectées puis celles partagées
+ * par tous (sans gestionnaire) ; pour l'administrateur, les voitures qu'il a ajoutées.
+ */
+export async function MyCarsPage({ me }: { me: SessionUser }) {
+  const base = me.role === "admin" ? "/admin" : "/manager";
+  const [fleet, t] = await Promise.all([listFleet(), getTranslations("My")]);
+  if (me.role === "admin") {
+    const mine = fleet.filter((c) => c.createdBy === me.id);
+    return (
+      <>
+        <PageHeader title={t("carsTitle")} subtitle={t("carsAdmin", { count: mine.length })} />
+        <FleetTable rows={mine} base={base} prefs={null} tableKey="my-cars" />
+      </>
+    );
+  }
+  const managerId = await managerIdForUser(me.id);
+  const assigned = fleet.filter((c) => managerId && c.managerIds.includes(managerId));
+  const shared = fleet.filter((c) => c.managerIds.length === 0 && c.status !== "deactivated");
+  return (
+    <>
+      <PageHeader title={t("carsTitle")} subtitle={t("carsManager")} />
+      <div className="space-y-8">
+        <section>
+          <h2 className="mb-3 font-bold text-ink">{t("carsAssigned", { count: assigned.length })}</h2>
+          <FleetTable rows={assigned} base={base} prefs={null} tableKey="my-cars" />
+        </section>
+        <section>
+          <h2 className="mb-1 font-bold text-ink">{t("carsShared", { count: shared.length })}</h2>
+          <p className="mb-3 text-sm text-ink-3">{t("carsSharedHint")}</p>
+          <FleetTable rows={shared} base={base} prefs={null} tableKey="my-cars-shared" />
+        </section>
       </div>
     </>
   );

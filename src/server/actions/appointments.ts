@@ -1,5 +1,6 @@
 "use server";
 
+import { casablancaToDate } from "@/lib/casablanca-time";
 import { and, eq } from "drizzle-orm";
 import { getLocale } from "next-intl/server";
 import { revalidatePath } from "next/cache";
@@ -21,16 +22,7 @@ const schema = z.object({
 });
 
 /** Date et heure saisies à l'heure du Maroc (Africa/Casablanca), converties en instant UTC. */
-function toDate(date: string, time: string) {
-  const asUtc = new Date(`${date}T${time}:00Z`);
-  // Décalage réel du fuseau à cette date (il change pendant le ramadan).
-  const offset = new Intl.DateTimeFormat("en", { timeZone: "Africa/Casablanca", timeZoneName: "longOffset" })
-    .formatToParts(asUtc)
-    .find((p) => p.type === "timeZoneName")?.value; // ex. "GMT+01:00" ou "GMT"
-  const m = offset?.match(/GMT([+-])(\d{2}):(\d{2})/);
-  const minutes = m ? (m[1] === "+" ? 1 : -1) * (Number(m[2]) * 60 + Number(m[3])) : 0;
-  return new Date(asUtc.getTime() - minutes * 60_000);
-}
+const toDate = casablancaToDate;
 
 export async function createAppointment(input: unknown): Promise<ActionResult<{ id: string }>> {
   try {

@@ -54,7 +54,9 @@
     "profile": "الملف الشخصي",
     "myAppointments": "مواعيدي",
     "myAchievements": "إنجازاتي",
-    "myReservations": "حجوزاتي"
+    "myReservations": "حجوزاتي",
+    "myCars": "سياراتي",
+    "history": "السجل"
   },
   "Footer": {
     "tagline": "سيارات جاهزة للانطلاق في ست مدن مغربية، بسعر معلن لا يتغير عند الشباك.",
@@ -234,13 +236,15 @@
       "generic": "تعذّر تسجيل الدخول. حاول مرة أخرى.",
       "server": "تعذّر على الخادم التحقق من تسجيل الدخول (قاعدة البيانات أو الإعدادات). حاول مرة أخرى أو اتصل بالمسؤول.",
       "locked": "محاولات كثيرة جدًا: هذا الحساب محظور مؤقتًا. أعد المحاولة لاحقًا أو تواصل مع المسؤول.",
-      "totp_invalid": "رمز غير صحيح أو منتهي الصلاحية. أدخل الرمز الظاهر الآن."
+      "totp_invalid": "رمز غير صحيح أو منتهي الصلاحية. أدخل الرمز الظاهر الآن.",
+      "captcha": "فشل التحقق من أنك لست روبوتًا. أعد تحميل الصفحة وحاول مجددًا."
     },
     "totpTitle": "التحقق بخطوتين",
     "totpHint": "افتح تطبيق المصادقة وأدخل الرمز المكوّن من 6 أرقام. يمكنك أيضًا استخدام رمز احتياطي.",
     "totpCode": "رمز التحقق",
     "totpSubmit": "تحقّق وسجّل الدخول",
-    "totpBack": "العودة إلى البريد وكلمة المرور"
+    "totpBack": "العودة إلى البريد وكلمة المرور",
+    "recaptchaNotice": "هذا الموقع محمي بواسطة reCAPTCHA، وتنطبق عليه سياسة الخصوصية وشروط الخدمة لدى Google."
   },
   "Back": {
     "dashboard": "لوحة القيادة",
@@ -360,7 +364,33 @@
     "locked": "محظور",
     "lockedBanner": "تسجيل الدخول محظور حتى {date} بعد محاولات فاشلة كثيرة.",
     "handledBy": "عالجها",
-    "adminOnly": "لا يمكن تعديله إلا من طرف المسؤول"
+    "adminOnly": "لا يمكن تعديله إلا من طرف المسؤول",
+    "pendingActivation": "الدعوة في الانتظار",
+    "pendingBannerTitle": "الحساب غير مفعّل بعد",
+    "pendingBannerBody": "يبقى المسيّر معطّلًا إلى أن ينقر على رابط التفعيل المرسل عبر البريد الإلكتروني. يمكنك إعادة إرسال الدعوة.",
+    "tabCars": "السيارات المسندة",
+    "activate": "تفعيل",
+    "bulkDeactivated": "تم تعطيل {count} مسيّر",
+    "bulkActivated": "تم تفعيل {count} مسيّر",
+    "bulkInvited": "أعيد إرسال {count} دعوة",
+    "bulkSkipped": "تم تجاهل {count} سطر (الإجراء غير ممكن)",
+    "bulkDeactivateTitle": "تعطيل {count} مسيّر",
+    "assignedCarsTitle": "{count, plural, =0 {لا توجد سيارة مسندة} other {السيارات المسندة: {count}}}",
+    "assignedCarsHint": "{count, plural, =0 {يتابع السيارات أدناه.} other {يتابع أيضًا {count} سيارة مشتركة (بدون مسيّر، أي جميع المسيّرين).}}",
+    "assignCars": "إسناد سيارات",
+    "assignCarsBody": "حدّد السيارات التي يكون هذا المسيّر مسؤولًا عنها. السيارة بدون مسيّر مشتركة بين الجميع؛ وبمجرد إسنادها يتابعها مسيّروها فقط ويتلقون رسائلها.",
+    "noAssignedCars": "لا توجد سيارة مسندة",
+    "noAssignedCarsBody": "يتابع هذا المسيّر السيارات المشتركة (بدون مسيّر).",
+    "noAssignedCarsShort": "لا شيء (سيارات مشتركة)",
+    "unassignCar": "سحب هذه السيارة",
+    "carUnassigned": "تم سحب السيارة من المسيّر.",
+    "carsAssigned": "{count, plural, =0 {لم تُسند أي سيارة جديدة} other {تم إسناد {count} سيارة}}",
+    "searchCars": "العلامة، الطراز، رقم التسجيل، المدينة…",
+    "selectShown": "تحديد الكل",
+    "unselectShown": "إلغاء تحديد الكل",
+    "noCarFound": "لم يتم العثور على أي سيارة.",
+    "carsPicked": "{count, plural, =0 {لم تُحدَّد أي سيارة} other {تم تحديد {count} سيارة}}",
+    "assign": "إسناد"
   },
   "Documents": {
     "cin_front": "البطاقة الوطنية (CINE) — الوجه",
@@ -397,7 +427,12 @@
     "resetFilters": "مسح عوامل التصفية",
     "showAll": "عرض الكل",
     "field": "الحقل",
-    "value": "القيمة"
+    "value": "القيمة",
+    "selected": "{count} محدد",
+    "clearSelection": "إلغاء التحديد",
+    "refresh": "تحديث",
+    "selectAll": "تحديد الكل",
+    "selectRow": "تحديد السطر"
   },
   "Fleet": {
     "title": "أسطول السيارات",
@@ -473,7 +508,8 @@
       "rented": "مؤجَّرة",
       "maintenance": "في الإصلاح",
       "deactivated": "معطَّلة"
-    }
+    },
+    "managers": "المسيّرون"
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -523,7 +559,8 @@
     },
     "contract": {
       "freelance": "عمل حر",
-      "cdi": "عقد غير محدد المدة"
+      "cdi": "عقد غير محدد المدة",
+      "cdd": "عقد محدد المدة"
     },
     "category": {
       "city_car": "سيارة مدينة",
@@ -594,7 +631,11 @@
     "upload_failed": "فشل رفع الملف. حاول مرة أخرى.",
     "promo_invalid": "هذا الرمز الترويجي غير صالح لهذا الإيجار.",
     "futureDate": "لا يمكن أن يكون التاريخ في المستقبل",
-    "numberRange": "أدخل رقمًا بين {min} و{max}"
+    "numberRange": "أدخل رقمًا بين {min} و{max}",
+    "captcha": "فشل التحقق من أنك لست روبوتًا. أعد تحميل الصفحة وحاول مجددًا.",
+    "email_failed": "تعذّر إرسال البريد الإلكتروني (تحقق من النطاق في Resend).",
+    "email_not_configured": "إرسال البريد الإلكتروني غير مُعدّ (RESEND_API_KEY).",
+    "no_client_email": "ليس للعميل عنوان بريد إلكتروني."
   },
   "About": {
     "title": "وكالة مغربية بسيارات في حالة جيدة",
@@ -649,7 +690,10 @@
     "tplBtnInvite": "اختيار كلمة المرور",
     "tplBtnCar": "عرض السيارة",
     "tplBtnBooking": "عرض حجزي",
-    "tplBtnProcess": "معالجة الحجز"
+    "tplBtnProcess": "معالجة الحجز",
+    "tplBtnClientInvite": "تفعيل حسابي",
+    "tplBtnCars": "اكتشف سياراتنا",
+    "sentToClientNote": "تم إرسال الملخص إلى العميل ({email})."
   },
   "Activity": {
     "session_login": "تسجيل الدخول",
@@ -694,7 +738,14 @@
     "appointment_create": "موعد مبرمج مع {name}",
     "appointment_done": "موعد تم مع {name}",
     "appointment_cancelled": "موعد ملغى مع {name}",
-    "appointment_no_show": "لم يحضر: {name}"
+    "appointment_no_show": "لم يحضر: {name}",
+    "by": "بواسطة",
+    "byName": "بواسطة {name}",
+    "profile_activated": "تم تفعيل الحساب",
+    "manager_assign_cars": "سيارات مسندة إلى {name}",
+    "manager_unassign_car": "سيارة مسحوبة من {name}",
+    "client_invite": "دعوة مرسلة إلى العميل: {name}",
+    "security_unlock": "تم فك قفل الحساب"
   },
   "Deals": {
     "title": "الصفقات / العملاء المحتملون",
@@ -745,7 +796,19 @@
     },
     "linkedClient": "العميل المرتبط",
     "followedBy": "يتابعه",
-    "administration": "الإدارة"
+    "administration": "الإدارة",
+    "author": "صاحب الإدخال",
+    "contactAt": "تاريخ التواصل",
+    "nextAction": "الإجراء التالي",
+    "nextActionPlaceholder": "مثال: إرسال عرض سعر، إعادة الاتصال يوم الجمعة…",
+    "prospectionType": "نوع التنقيب",
+    "contactDate": "التاريخ",
+    "contactTime": "الساعة",
+    "linkedClientHint": "ابحث عن العميل؛ وإن لم يكن موجودًا فأضفه.",
+    "sentToClient": "تم إرسال الملخص إلى {email}.",
+    "sendToClient": "إرسال إلى العميل",
+    "noClientEmail": "ليس لهذا العميل بريد إلكتروني.",
+    "lastSent": "آخر إرسال إلى العميل: {date}"
   },
   "Security": {
     "title": "الأمان",
@@ -819,7 +882,10 @@
     "changePassword": "تغيير كلمة المرور",
     "passwordWrong": "كلمة المرور الحالية غير صحيحة",
     "passwordWeak": "10 أحرف على الأقل، مع حرف ورقم",
-    "passwordMismatch": "كلمتا المرور غير متطابقتين"
+    "passwordMismatch": "كلمتا المرور غير متطابقتين",
+    "welcomeTitle": "مرحبًا بك في Dizy Cars!",
+    "welcomeBody": "تم حفظ كلمة المرور. راجع معلوماتك أدناه وأكملها ثم احفظها.",
+    "licenseNumber": "رقم رخصة السياقة"
   },
   "My": {
     "chartTitle": "رقم المعاملات حسب الشهر",
@@ -846,7 +912,16 @@
     "achievementsTitle": "إنجازاتي",
     "achievementsAdmin": "جميع الإيجارات التي أنجزها الفريق.",
     "achievementsManager": "الإيجارات التي أكدتَها.",
-    "movementsTitle": "التسليم والإرجاع"
+    "movementsTitle": "التسليم والإرجاع",
+    "historyTitle": "السجل",
+    "historyAdmin": "كل نشاط الفريق: تسجيلات الدخول، الأسطول، الحجوزات، العملاء، العملاء المحتملون والملفات، مع صاحب كل حدث.",
+    "historyManager": "كل نشاطك: تسجيلات الدخول، الأسطول، الحجوزات، العملاء والعملاء المحتملون.",
+    "carsTitle": "سياراتي",
+    "carsAdmin": "{count, plural, =0 {لم تُضف أي سيارة بعد.} other {أضفت {count} سيارة.}}",
+    "carsManager": "السيارات التي أنت مسؤول عنها، ثم تلك المشتركة بين الفريق كله.",
+    "carsAssigned": "{count, plural, =0 {لا توجد سيارة مسندة إليك} other {السيارات المسندة إليك: {count}}}",
+    "carsShared": "{count, plural, =0 {لا توجد سيارة مشتركة} other {السيارات المشتركة: {count}}}",
+    "carsSharedHint": "بدون مسيّر مسند: يتابعها جميع المسيّرين."
   },
   "Editor": {
     "placeholder": "اكتب نصك…",
@@ -901,6 +976,16 @@
         "name": "حجز سيارة",
         "when": "عند كل حجز جديد",
         "recipients": "تُرسل إلى العميل والمسؤول ومسيّري السيارة (الجميع إن لم يُحدَّد أحد)."
+      },
+      "client_invite": {
+        "name": "دعوة عميل",
+        "when": "عند إضافة عميل من طرف الفريق",
+        "recipients": "تُرسل إلى العميل (إن كان لديه بريد إلكتروني)، مع رابط لاختيار كلمة المرور وإكمال ملفه."
+      },
+      "prospect_followup": {
+        "name": "متابعة التنقيب",
+        "when": "زر «إرسال إلى العميل» في عميل محتمل",
+        "recipients": "تُرسل إلى العميل المرتبط بالعميل المحتمل، بتوقيع المرسِل."
       }
     },
     "vars": {
@@ -945,7 +1030,17 @@
       "agence_retour": "وكالة الإرجاع",
       "numero_vol": "رقم الرحلة",
       "lien_reservation": "رابط الحجز",
-      "bouton_reservation": "زر الحجز"
+      "bouton_reservation": "زر الحجز",
+      "type_prospection": "نوع التنقيب",
+      "date": "التاريخ",
+      "heure": "الساعة",
+      "note": "ملاحظة",
+      "prochaine_action": "الإجراء التالي",
+      "gestionnaire": "المرسِل (الاسم الكامل)",
+      "gestionnaire_telephone": "هاتف المرسِل",
+      "gestionnaire_email": "بريد المرسِل",
+      "lien_site": "رابط السيارات",
+      "bouton_site": "زر السيارات"
     },
     "language": "اللغة",
     "languageHint": "قالب بـ{language}: لكل لغة قالبها. يتلقى المستلم القالب بلغته."
@@ -1010,7 +1105,14 @@
       "negotiating": "في التفاوض",
       "rented": "سبق أن استأجر",
       "never": "لم يستأجر أبدًا"
-    }
+    },
+    "addedBy": "أضافه",
+    "addedOn": "تاريخ الإضافة",
+    "updatedOn": "تاريخ التعديل",
+    "selfRegistered": "تسجيل عبر الموقع",
+    "inviteSent": "تم إرسال الدعوة إلى العميل عبر البريد الإلكتروني.",
+    "sendInvite": "إرسال الدعوة",
+    "createFromSearch": "إضافة «{q}» كعميل جديد"
   },
   "Appointments": {
     "title": "المواعيد المبرمجة",
@@ -1047,5 +1149,10 @@
       "cancelled": "ملغى",
       "no_show": "غائب"
     }
+  },
+  "Cities": {
+    "search": "ابحث عن مدينة…",
+    "choose": "اختر مدينة",
+    "noResult": "لم يتم العثور على أي مدينة."
   }
 }

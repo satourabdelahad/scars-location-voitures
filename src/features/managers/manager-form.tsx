@@ -6,6 +6,7 @@ import { useRef, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select } from "@/components/ui/field";
+import { CityCombobox } from "@/components/ui/city-combobox";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { DocumentLink } from "./manager-actions";
@@ -26,7 +27,7 @@ export type ManagerFormValues = {
   birthDate: string;
   maritalStatus: "" | "married" | "widowed" | "single";
   workStartDate: string;
-  contractType: "" | "freelance" | "cdi";
+  contractType: "" | "cdi" | "cdd" | "freelance";
 };
 
 const EMPTY: ManagerFormValues = {
@@ -152,7 +153,11 @@ export function ManagerForm({
     try {
       const up = await uploadFile(file, "identity");
       setDocs((d) => ({ ...d, [kind]: { publicId: up.publicId, resourceType: up.resourceType as "image" | "raw", name: file.name } }));
-      setErrors(({ [kind]: _, ...rest }) => rest);
+      setErrors((errs) => {
+        const next = { ...errs };
+        delete next[kind];
+        return next;
+      });
     } catch (x) {
       const code = (x as Error).message;
       toast.error(code === "too_big" ? td("tooBig") : code === "bad_type" ? td("badType") : code === "cloudinary_not_configured" ? td("notConfigured") : te("unknown"));
@@ -311,7 +316,7 @@ export function ManagerForm({
           </Field>
           {!locked && <Checkbox label={t("sameAsPhone")} checked={sameWa} onChange={(x) => { setSameWa(x.target.checked); if (x.target.checked) setV((s) => ({ ...s, whatsapp: s.phone })); }} />}
         </div>
-        <Field label={t("city")} required={!locked} error={err("city")}>{(p) => <Input {...p} disabled={locked} autoComplete="address-level2" value={v.city} onChange={(x) => set("city", x.target.value)} />}</Field>
+        <Field label={t("city")} required={!locked} error={err("city")}>{(p) => <CityCombobox {...p} disabled={locked} value={v.city} onChange={(c) => set("city", c)} />}</Field>
       </Section>
 
       <Section title={t("employment")}>
@@ -320,7 +325,7 @@ export function ManagerForm({
           {(p) => (
             <Select {...p} disabled={locked || lockedFields.includes("contractType")} value={v.contractType} onChange={(x) => set("contractType", x.target.value as ManagerFormValues["contractType"])}>
               <option value="">—</option>
-              {(["cdi", "freelance"] as const).map((c) => <option key={c} value={c}>{e(`contract.${c}`)}</option>)}
+              {(["cdi", "cdd", "freelance"] as const).map((c) => <option key={c} value={c}>{e(`contract.${c}`)}</option>)}
             </Select>
           )}
         </Field>

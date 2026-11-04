@@ -12,7 +12,7 @@ import { formatDate, formatMoney } from "@/lib/utils";
 import type { FleetRow } from "@/server/queries/fleet";
 import { CAR_STATES, carState, STATE_TONE } from "@/lib/car-state";
 
-export function FleetTable({ rows, base, prefs }: { rows: FleetRow[]; base: string; prefs: { visibleColumns: string[]; pageSize: number } | null }) {
+export function FleetTable({ rows, base, prefs, tableKey = "fleet" }: { rows: FleetRow[]; base: string; prefs: { visibleColumns: string[]; pageSize: number } | null; tableKey?: string }) {
   const t = useTranslations("Fleet");
   const e = useTranslations("Enums");
   const ts = useTranslations("Status");
@@ -50,6 +50,19 @@ export function FleetTable({ rows, base, prefs }: { rows: FleetRow[]; base: stri
       { id: "transmission", header: t("transmission"), text: (r) => e(`transmission.${r.transmission}`), defaultHidden: true, filter: { type: "select", options: transmissionEnum.enumValues.map((v) => ({ value: v, label: e(`transmission.${v}`) })) } },
       { id: "fuel", header: t("fuel"), text: (r) => e(`fuel.${r.fuel}`), defaultHidden: true, filter: { type: "select", options: fuelEnum.enumValues.map((v) => ({ value: v, label: e(`fuel.${v}`) })) } },
       { id: "colorName", header: t("colorName"), text: (r) => r.colorName, defaultHidden: true, filter: { type: "text" }, cell: (r) => <span className="flex items-center gap-2"><span className="size-3 rounded-full border border-mist-2" style={{ background: r.colorHex }} />{r.colorName}</span> },
+      {
+        id: "managers",
+        header: t("managers"),
+        addedLater: true,
+        text: (r) => (r.managerNames.length ? r.managerNames.join(", ") : t("allManagers")),
+        filter: { type: "text" },
+        cell: (r) =>
+          r.managerNames.length ? (
+            <span className="text-ink-2">{r.managerNames.join(", ")}</span>
+          ) : (
+            <Badge tone="neutral">{t("allManagers")}</Badge>
+          ),
+      },
       { id: "city", header: t("agency"), text: (r) => `${r.city}, ${r.agencyName}`, filter: { type: "text" } },
       { id: "mileage", header: t("mileage"), text: (r) => `${r.mileage.toLocaleString(locale)} km`, sortValue: (r) => r.mileage, align: "end", defaultHidden: true },
       { id: "dailyPrice", header: t("dailyPrice"), text: (r) => formatMoney(r.dailyPrice, locale), sortValue: (r) => r.dailyPrice, align: "end", filter: { type: "text" } },
@@ -84,7 +97,7 @@ export function FleetTable({ rows, base, prefs }: { rows: FleetRow[]; base: stri
 
   return (
     <DataTable
-      tableKey="fleet"
+      tableKey={tableKey}
       columns={columns}
       data={rows}
       initialPrefs={prefs}
