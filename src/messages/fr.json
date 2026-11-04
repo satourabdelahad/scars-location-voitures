@@ -228,8 +228,15 @@
       "passwordWeak": "Au moins 10 caractères, avec une lettre et un chiffre.",
       "emailTaken": "Un compte existe déjà avec cet email.",
       "generic": "La connexion a échoué. Réessayez.",
-      "server": "Le serveur n'a pas pu vérifier la connexion (base de données ou configuration). Réessayez ou contactez l'administrateur."
-    }
+      "server": "Le serveur n'a pas pu vérifier la connexion (base de données ou configuration). Réessayez ou contactez l'administrateur.",
+      "locked": "Trop de tentatives. Réessayez dans 15 minutes.",
+      "totp_invalid": "Code incorrect ou expiré. Saisissez le code affiché maintenant."
+    },
+    "totpTitle": "Vérification en deux étapes",
+    "totpHint": "Ouvrez votre application d'authentification et saisissez le code à 6 chiffres. Vous pouvez aussi utiliser un code de secours.",
+    "totpCode": "Code de vérification",
+    "totpSubmit": "Vérifier et se connecter",
+    "totpBack": "Revenir à l'email et au mot de passe"
   },
   "Back": {
     "dashboard": "Tableau de bord",
@@ -252,7 +259,8 @@
     "todayDepartures": "Départs du jour",
     "todayReturns": "Retours du jour",
     "nothingToday": "Rien de prévu aujourd'hui.",
-    "profile": "Mon profil"
+    "profile": "Mon profil",
+    "security": "Sécurité"
   },
   "Managers": {
     "title": "Gestionnaires",
@@ -688,5 +696,42 @@
       "referral": "Recommandation",
       "other": "Autre"
     }
+  },
+  "Security": {
+    "title": "Sécurité",
+    "subtitle": "Protégez l'accès à l'administration de Dizy Cars.",
+    "twoFactor": "Double authentification",
+    "twoFactorHint": "À chaque connexion, un code à 6 chiffres généré par votre téléphone est demandé en plus du mot de passe.",
+    "on": "Activée",
+    "off": "Désactivée",
+    "enable": "Activer la double authentification",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "qrAlt": "QR code à scanner avec l'application d'authentification",
+    "scan1": "Installez Google Authenticator, Microsoft Authenticator ou une application équivalente.",
+    "scan2": "Scannez ce QR code, ou saisissez la clé ci-dessous.",
+    "scan3": "Tapez le code à 6 chiffres affiché par l'application.",
+    "manualKey": "Clé à saisir manuellement",
+    "copied": "Copié",
+    "code": "Code à 6 chiffres ou code de secours",
+    "codeInvalid": "Code incorrect ou expiré. Réessayez avec le code affiché maintenant.",
+    "enabled": "Double authentification activée",
+    "disabled": "Double authentification désactivée",
+    "recoveryTitle": "Codes de secours",
+    "recoveryHint": "Gardez-les en lieu sûr (gestionnaire de mots de passe, papier). Chacun permet de se connecter une fois si vous perdez votre téléphone. Ils ne seront plus affichés.",
+    "copy": "Copier",
+    "download": "Télécharger",
+    "done": "J'ai enregistré mes codes",
+    "enabledSince": "Activée depuis le {date}",
+    "codesLeft": "{count, plural, =0 {aucun code de secours restant} one {# code de secours restant} other {# codes de secours restants}}",
+    "manageHint": "Pour régénérer les codes de secours ou désactiver la protection, saisissez d'abord un code de l'application.",
+    "regenerate": "Nouveaux codes de secours",
+    "disable": "Désactiver",
+    "rulesTitle": "Règles appliquées à tous les comptes",
+    "ruleLock": "Après 5 mots de passe erronés, la connexion est bloquée {minutes} minutes pour cet email (20 essais par adresse IP).",
+    "ruleSession": "Les comptes administrateur et gestionnaires sont déconnectés au bout de {hours} heures ; les clients restent connectés 14 jours.",
+    "ruleSocial": "Les comptes de l'équipe ne peuvent pas se connecter avec Google, Facebook, X, TikTok ou Instagram.",
+    "bannerTitle": "Activez la double authentification",
+    "bannerBody": "Votre compte administrateur n'est protégé que par un mot de passe."
   }
 }

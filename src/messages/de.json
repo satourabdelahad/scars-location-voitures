@@ -228,8 +228,15 @@
       "passwordWeak": "Mindestens 10 Zeichen, mit einem Buchstaben und einer Ziffer.",
       "emailTaken": "Mit dieser E-Mail existiert bereits ein Konto.",
       "generic": "Die Anmeldung ist fehlgeschlagen. Versuchen Sie es erneut.",
-      "server": "Der Server konnte die Anmeldung nicht prüfen (Datenbank oder Konfiguration). Versuchen Sie es erneut oder wenden Sie sich an den Administrator."
-    }
+      "server": "Der Server konnte die Anmeldung nicht prüfen (Datenbank oder Konfiguration). Versuchen Sie es erneut oder wenden Sie sich an den Administrator.",
+      "locked": "Zu viele Versuche. Versuchen Sie es in 15 Minuten erneut.",
+      "totp_invalid": "Falscher oder abgelaufener Code. Geben Sie den aktuell angezeigten Code ein."
+    },
+    "totpTitle": "Bestätigung in zwei Schritten",
+    "totpHint": "Öffnen Sie Ihre Authenticator-App und geben Sie den 6-stelligen Code ein. Sie können auch einen Wiederherstellungscode verwenden.",
+    "totpCode": "Bestätigungscode",
+    "totpSubmit": "Prüfen und anmelden",
+    "totpBack": "Zurück zu E-Mail und Passwort"
   },
   "Back": {
     "dashboard": "Übersicht",
@@ -252,7 +259,8 @@
     "todayDepartures": "Heutige Abholungen",
     "todayReturns": "Heutige Rückgaben",
     "nothingToday": "Heute nichts geplant.",
-    "profile": "Mein Profil"
+    "profile": "Mein Profil",
+    "security": "Sicherheit"
   },
   "Managers": {
     "title": "Disponenten",
@@ -688,5 +696,42 @@
       "referral": "Empfehlung",
       "other": "Sonstiges"
     }
+  },
+  "Security": {
+    "title": "Sicherheit",
+    "subtitle": "Schützen Sie den Zugang zur Verwaltung von Dizy Cars.",
+    "twoFactor": "Zwei-Faktor-Authentifizierung",
+    "twoFactorHint": "Bei jeder Anmeldung wird zusätzlich zum Passwort ein 6-stelliger Code von Ihrem Telefon abgefragt.",
+    "on": "Aktiv",
+    "off": "Inaktiv",
+    "enable": "Zwei-Faktor-Authentifizierung aktivieren",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "qrAlt": "QR-Code zum Scannen mit der Authenticator-App",
+    "scan1": "Installieren Sie Google Authenticator, Microsoft Authenticator oder eine ähnliche App.",
+    "scan2": "Scannen Sie diesen QR-Code oder geben Sie den Schlüssel unten ein.",
+    "scan3": "Geben Sie den 6-stelligen Code aus der App ein.",
+    "manualKey": "Schlüssel zur manuellen Eingabe",
+    "copied": "Kopiert",
+    "code": "6-stelliger Code oder Wiederherstellungscode",
+    "codeInvalid": "Falscher oder abgelaufener Code. Versuchen Sie den aktuell angezeigten Code.",
+    "enabled": "Zwei-Faktor-Authentifizierung aktiviert",
+    "disabled": "Zwei-Faktor-Authentifizierung deaktiviert",
+    "recoveryTitle": "Wiederherstellungscodes",
+    "recoveryHint": "Bewahren Sie sie sicher auf (Passwortmanager, Papier). Jeder ermöglicht eine Anmeldung, falls Sie Ihr Telefon verlieren. Sie werden nicht erneut angezeigt.",
+    "copy": "Kopieren",
+    "download": "Herunterladen",
+    "done": "Ich habe meine Codes gespeichert",
+    "enabledSince": "Aktiv seit {date}",
+    "codesLeft": "{count, plural, =0 {keine Wiederherstellungscodes mehr} one {# Wiederherstellungscode übrig} other {# Wiederherstellungscodes übrig}}",
+    "manageHint": "Um Codes neu zu erzeugen oder den Schutz zu deaktivieren, geben Sie zuerst einen Code aus der App ein.",
+    "regenerate": "Neue Wiederherstellungscodes",
+    "disable": "Deaktivieren",
+    "rulesTitle": "Regeln für alle Konten",
+    "ruleLock": "Nach 5 falschen Passwörtern wird die Anmeldung für diese E-Mail {minutes} Minuten gesperrt (20 Versuche pro IP-Adresse).",
+    "ruleSession": "Administrator- und Verwalterkonten werden nach {hours} Stunden abgemeldet; Kunden bleiben 14 Tage angemeldet.",
+    "ruleSocial": "Teamkonten können sich nicht mit Google, Facebook, X, TikTok oder Instagram anmelden.",
+    "bannerTitle": "Aktivieren Sie die Zwei-Faktor-Authentifizierung",
+    "bannerBody": "Ihr Administratorkonto ist nur durch ein Passwort geschützt."
   }
 }

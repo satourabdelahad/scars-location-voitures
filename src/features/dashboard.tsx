@@ -1,4 +1,7 @@
-import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, ShieldAlert } from "lucide-react";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { users } from "@/db/schema";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge, PageHeader, Panel, reservationTone } from "@/components/ui/misc";
@@ -41,9 +44,24 @@ export async function Dashboard({ base, user, locale }: { base: "/admin" | "/man
     </Panel>
   );
 
+  // Rappel tant que l'administrateur n'a pas activé la double authentification.
+  const [sec] =
+    base === "/admin" ? await db.select({ on: users.totpEnabledAt }).from(users).where(eq(users.id, user.id)).limit(1) : [{ on: new Date() }];
+  const tsec = await getTranslations("Security");
+
   return (
     <>
       <PageHeader title={t("dashboard")} subtitle={`${t("signedInAs")} ${user.name ?? user.email}`} />
+      {!sec?.on && (
+        <Link href="/admin/security" className="mb-4 flex items-center gap-3 rounded-2xl border border-saffron/50 bg-saffron/10 px-5 py-4 hover:border-saffron">
+          <ShieldAlert className="size-5 shrink-0 text-saffron-ink" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold text-ink">{tsec("bannerTitle")}</span>
+            <span className="text-sm text-ink-2">{tsec("bannerBody")}</span>
+          </span>
+          <span className="text-sm font-semibold text-majorelle">{tsec("enable")} →</span>
+        </Link>
+      )}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {kpis.map((k) => (
           <Link key={k.label} href={k.href} className={`rounded-2xl border p-5 transition-colors hover:border-mist-2 ${k.accent ? "border-saffron/60 bg-saffron/10" : "border-mist bg-paper"}`}>

@@ -228,8 +228,15 @@
       "passwordWeak": "At least 10 characters, with a letter and a number.",
       "emailTaken": "An account already exists with this email.",
       "generic": "Sign-in failed. Try again.",
-      "server": "The server couldn't verify the sign-in (database or configuration). Try again or contact the administrator."
-    }
+      "server": "The server couldn't verify the sign-in (database or configuration). Try again or contact the administrator.",
+      "locked": "Too many attempts. Try again in 15 minutes.",
+      "totp_invalid": "Wrong or expired code. Enter the code shown now."
+    },
+    "totpTitle": "Two-step verification",
+    "totpHint": "Open your authenticator app and enter the 6-digit code. You can also use a recovery code.",
+    "totpCode": "Verification code",
+    "totpSubmit": "Verify and sign in",
+    "totpBack": "Back to email and password"
   },
   "Back": {
     "dashboard": "Dashboard",
@@ -252,7 +259,8 @@
     "todayDepartures": "Today's pickups",
     "todayReturns": "Today's returns",
     "nothingToday": "Nothing scheduled today.",
-    "profile": "My profile"
+    "profile": "My profile",
+    "security": "Security"
   },
   "Managers": {
     "title": "Managers",
@@ -688,5 +696,42 @@
       "referral": "Referral",
       "other": "Other"
     }
+  },
+  "Security": {
+    "title": "Security",
+    "subtitle": "Protect access to the Dizy Cars administration.",
+    "twoFactor": "Two-factor authentication",
+    "twoFactorHint": "Each sign-in asks for a 6-digit code from your phone in addition to your password.",
+    "on": "On",
+    "off": "Off",
+    "enable": "Turn on two-factor authentication",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "qrAlt": "QR code to scan with your authenticator app",
+    "scan1": "Install Google Authenticator, Microsoft Authenticator or a similar app.",
+    "scan2": "Scan this QR code, or enter the key below.",
+    "scan3": "Type the 6-digit code shown in the app.",
+    "manualKey": "Key for manual entry",
+    "copied": "Copied",
+    "code": "6-digit code or recovery code",
+    "codeInvalid": "Wrong or expired code. Try the code shown now.",
+    "enabled": "Two-factor authentication turned on",
+    "disabled": "Two-factor authentication turned off",
+    "recoveryTitle": "Recovery codes",
+    "recoveryHint": "Keep them somewhere safe (password manager, paper). Each one lets you sign in once if you lose your phone. They won't be shown again.",
+    "copy": "Copy",
+    "download": "Download",
+    "done": "I've saved my codes",
+    "enabledSince": "On since {date}",
+    "codesLeft": "{count, plural, =0 {no recovery codes left} one {# recovery code left} other {# recovery codes left}}",
+    "manageHint": "To regenerate recovery codes or turn protection off, first enter a code from the app.",
+    "regenerate": "New recovery codes",
+    "disable": "Turn off",
+    "rulesTitle": "Rules applied to every account",
+    "ruleLock": "After 5 wrong passwords, sign-in is blocked for {minutes} minutes for that email (20 attempts per IP address).",
+    "ruleSession": "Administrator and manager accounts are signed out after {hours} hours; customers stay signed in for 14 days.",
+    "ruleSocial": "Team accounts can't sign in with Google, Facebook, X, TikTok or Instagram.",
+    "bannerTitle": "Turn on two-factor authentication",
+    "bannerBody": "Your administrator account is protected by a password only."
   }
 }

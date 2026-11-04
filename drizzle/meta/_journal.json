@@ -29,6 +29,13 @@
       "when": 1793795687204,
       "tag": "0003_fleet_purchase_photo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793806021512,
+      "tag": "0004_auth_hardening",
+      "breakpoints": true
     }
   ]
 }

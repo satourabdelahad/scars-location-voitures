@@ -228,8 +228,15 @@
       "passwordWeak": "Al menos 10 caracteres, con una letra y un número.",
       "emailTaken": "Ya existe una cuenta con este correo.",
       "generic": "No se pudo iniciar sesión. Inténtalo de nuevo.",
-      "server": "El servidor no pudo verificar el inicio de sesión (base de datos o configuración). Inténtelo de nuevo o contacte con el administrador."
-    }
+      "server": "El servidor no pudo verificar el inicio de sesión (base de datos o configuración). Inténtelo de nuevo o contacte con el administrador.",
+      "locked": "Demasiados intentos. Vuelva a intentarlo dentro de 15 minutos.",
+      "totp_invalid": "Código incorrecto o caducado. Introduzca el código que aparece ahora."
+    },
+    "totpTitle": "Verificación en dos pasos",
+    "totpHint": "Abra su aplicación de autenticación e introduzca el código de 6 cifras. También puede usar un código de recuperación.",
+    "totpCode": "Código de verificación",
+    "totpSubmit": "Verificar e iniciar sesión",
+    "totpBack": "Volver al email y la contraseña"
   },
   "Back": {
     "dashboard": "Panel",
@@ -252,7 +259,8 @@
     "todayDepartures": "Recogidas de hoy",
     "todayReturns": "Devoluciones de hoy",
     "nothingToday": "Nada previsto para hoy.",
-    "profile": "Mi perfil"
+    "profile": "Mi perfil",
+    "security": "Seguridad"
   },
   "Managers": {
     "title": "Gestores",
@@ -688,5 +696,42 @@
       "referral": "Recomendación",
       "other": "Otro"
     }
+  },
+  "Security": {
+    "title": "Seguridad",
+    "subtitle": "Proteja el acceso a la administración de Dizy Cars.",
+    "twoFactor": "Verificación en dos pasos",
+    "twoFactorHint": "En cada inicio de sesión se pide, además de la contraseña, un código de 6 cifras generado por su teléfono.",
+    "on": "Activada",
+    "off": "Desactivada",
+    "enable": "Activar la verificación en dos pasos",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "qrAlt": "Código QR para escanear con la aplicación de autenticación",
+    "scan1": "Instale Google Authenticator, Microsoft Authenticator u otra aplicación similar.",
+    "scan2": "Escanee este código QR o introduzca la clave de abajo.",
+    "scan3": "Escriba el código de 6 cifras que muestra la aplicación.",
+    "manualKey": "Clave para introducir manualmente",
+    "copied": "Copiado",
+    "code": "Código de 6 cifras o código de recuperación",
+    "codeInvalid": "Código incorrecto o caducado. Pruebe con el código que aparece ahora.",
+    "enabled": "Verificación en dos pasos activada",
+    "disabled": "Verificación en dos pasos desactivada",
+    "recoveryTitle": "Códigos de recuperación",
+    "recoveryHint": "Guárdelos en un lugar seguro (gestor de contraseñas, papel). Cada uno permite iniciar sesión una vez si pierde el teléfono. No se volverán a mostrar.",
+    "copy": "Copiar",
+    "download": "Descargar",
+    "done": "He guardado mis códigos",
+    "enabledSince": "Activada desde el {date}",
+    "codesLeft": "{count, plural, =0 {no quedan códigos de recuperación} one {queda # código de recuperación} other {quedan # códigos de recuperación}}",
+    "manageHint": "Para regenerar los códigos o desactivar la protección, introduzca primero un código de la aplicación.",
+    "regenerate": "Nuevos códigos de recuperación",
+    "disable": "Desactivar",
+    "rulesTitle": "Reglas aplicadas a todas las cuentas",
+    "ruleLock": "Tras 5 contraseñas erróneas, el acceso se bloquea {minutes} minutos para ese email (20 intentos por dirección IP).",
+    "ruleSession": "Las cuentas de administrador y gestores se cierran a las {hours} horas; los clientes siguen conectados 14 días.",
+    "ruleSocial": "Las cuentas del equipo no pueden iniciar sesión con Google, Facebook, X, TikTok ni Instagram.",
+    "bannerTitle": "Active la verificación en dos pasos",
+    "bannerBody": "Su cuenta de administrador solo está protegida por una contraseña."
   }
 }

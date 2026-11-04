@@ -28,14 +28,15 @@ export async function loginAction(_: AuthFormState, form: FormData): Promise<Aut
     await signIn("credentials", {
       email: form.get("email"),
       password: form.get("password"),
+      code: String(form.get("code") ?? ""),
       redirectTo: callbackUrl.startsWith(`/${locale}/`) ? callbackUrl : `/${locale}/after-login`,
     });
   } catch (err) {
     if (err instanceof AuthError) {
       // Seule une vraie erreur d'identifiants s'affiche "email ou mot de passe incorrect".
       if (err.type === "CredentialsSignin") {
-        const code = (err as AuthError & { code?: string }).code;
-        return { error: code === "disabled" ? "disabled" : "invalid" };
+        const code = (err as AuthError & { code?: string }).code ?? "";
+        return { error: ["disabled", "locked", "totp_required", "totp_invalid"].includes(code) ? code : "invalid" };
       }
       // Base inaccessible, AUTH_SECRET manquant… : on le dit clairement et on détaille dans le terminal.
       console.error("[auth] Échec de connexion côté serveur :", err.type, err.cause ?? err.message);

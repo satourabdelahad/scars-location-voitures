@@ -103,9 +103,28 @@ export const users = pgTable(
     phone: varchar("phone", { length: 32 }),
     preferredLocale: localeEnum("preferred_locale"),
     lastLoginAt: timestamp("last_login_at", { withTimezone: true, mode: "date" }),
+    /** Double authentification (TOTP). Secrets chiffrés en AES-256-GCM avec une clé dérivée d'AUTH_SECRET. */
+    totpSecret: text("totp_secret"),
+    totpPendingSecret: text("totp_pending_secret"),
+    totpEnabledAt: timestamp("totp_enabled_at", { withTimezone: true, mode: "date" }),
+    /** Dernier pas de 30 s accepté : un même code ne peut pas servir deux fois. */
+    totpLastStep: integer("totp_last_step"),
+    /** Codes de secours (empreintes SHA-256), chacun utilisable une seule fois. */
+    totpRecoveryCodes: jsonb("totp_recovery_codes").$type<string[]>(),
     ...timestamps,
   },
   (t) => [index("users_role_idx").on(t.role)],
+);
+
+/** Échecs de connexion, par email et par adresse IP, pour bloquer les essais en série. */
+export const loginFailures = pgTable(
+  "login_failures",
+  {
+    id: serial("id").primaryKey(),
+    key: varchar("key", { length: 300 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [index("login_failures_key_idx").on(t.key, t.createdAt)],
 );
 
 export const accounts = pgTable(

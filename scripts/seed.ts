@@ -128,6 +128,15 @@ async function main() {
       .returning();
     console.log(`✓ Administrateur ${adminEmail} : mot de passe remis à la valeur de SEED_ADMIN_PASSWORD`);
   }
+  // Téléphone et codes de secours perdus : seule personne ayant accès à la base, on peut couper la double authentification.
+  if (process.argv.includes("--reset-2fa")) {
+    await db
+      .update(users)
+      .set({ totpSecret: null, totpPendingSecret: null, totpEnabledAt: null, totpLastStep: null, totpRecoveryCodes: null })
+      .where(eq(users.id, admin.id));
+    await db.delete(schema.loginFailures).where(eq(schema.loginFailures.key, `email:${adminEmail}`));
+    console.log(`✓ Double authentification désactivée pour ${adminEmail} : réactivez-la depuis Administration → Sécurité`);
+  }
 
   if (!demo) {
     console.log("✓ Agences et options prêtes. Ajoutez --demo pour un jeu de démonstration.");

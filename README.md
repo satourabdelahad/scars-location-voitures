@@ -89,6 +89,14 @@ Les comptes de l'équipe (administrateur, gestionnaires) se connectent uniquemen
 
 ---
 
+## Sécurité des connexions
+
+- **Blocage des essais** : 5 mots de passe erronés en 15 minutes bloquent l'email, 20 bloquent l'adresse IP. Les contrôles sont faits dans Auth.js, donc aussi pour un appel direct à l'URL de connexion.
+- **Session de l'équipe** : administrateur et gestionnaires sont déconnectés au bout de 12 heures ; les clients restent connectés 14 jours.
+- **Double authentification de l'administrateur** : Administration → Sécurité. Code à 6 chiffres (Google Authenticator, Microsoft Authenticator…) et 8 codes de secours à usage unique.
+- **Téléphone et codes de secours perdus** : depuis le poste qui a accès à la base, `npm run db:seed -- --reset-2fa` désactive la double authentification de `SEED_ADMIN_EMAIL` et lève son blocage.
+- Les secrets de double authentification sont chiffrés avec une clé dérivée d'`AUTH_SECRET`. **Changer `AUTH_SECRET` les rend illisibles** : il faut alors lancer `--reset-2fa` puis réactiver la protection.
+
 ## Structure
 
 ```

@@ -1,11 +1,11 @@
 "use client";
 
-import { CalendarRange, CarFront, CircleUserRound, LayoutGrid, Menu, UsersRound } from "lucide-react";
+import { CalendarRange, CarFront, CircleUserRound, LayoutGrid, Menu, ShieldCheck, UsersRound } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
-const ICONS = { dashboard: LayoutGrid, managers: UsersRound, fleet: CarFront, reservations: CalendarRange, profile: CircleUserRound };
+const ICONS = { dashboard: LayoutGrid, managers: UsersRound, fleet: CarFront, reservations: CalendarRange, profile: CircleUserRound, security: ShieldCheck };
 export type NavItem = { href: string; label: string; icon: keyof typeof ICONS; exact?: boolean };
 
 export function SideNav({ items, mobile }: { items: NavItem[]; mobile?: boolean }) {

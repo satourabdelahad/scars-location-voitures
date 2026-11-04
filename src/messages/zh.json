@@ -228,8 +228,15 @@
       "passwordWeak": "至少 10 个字符，包含字母和数字。",
       "emailTaken": "该邮箱已注册。",
       "generic": "登录失败，请重试。",
-      "server": "服务器无法验证登录（数据库或配置问题）。请重试或联系管理员。"
-    }
+      "server": "服务器无法验证登录（数据库或配置问题）。请重试或联系管理员。",
+      "locked": "尝试次数过多，请 15 分钟后再试。",
+      "totp_invalid": "验证码错误或已过期，请输入当前显示的验证码。"
+    },
+    "totpTitle": "两步验证",
+    "totpHint": "打开验证器应用并输入 6 位验证码，也可以使用备用码。",
+    "totpCode": "验证码",
+    "totpSubmit": "验证并登录",
+    "totpBack": "返回邮箱和密码"
   },
   "Back": {
     "dashboard": "概览",
@@ -252,7 +259,8 @@
     "todayDepartures": "今日取车",
     "todayReturns": "今日还车",
     "nothingToday": "今天没有安排。",
-    "profile": "我的档案"
+    "profile": "我的档案",
+    "security": "安全"
   },
   "Managers": {
     "title": "经理",
@@ -688,5 +696,42 @@
       "referral": "推荐",
       "other": "其他"
     }
+  },
+  "Security": {
+    "title": "安全",
+    "subtitle": "保护 Dizy Cars 管理后台的访问。",
+    "twoFactor": "双重验证",
+    "twoFactorHint": "每次登录时，除密码外还需输入手机生成的 6 位验证码。",
+    "on": "已开启",
+    "off": "未开启",
+    "enable": "开启双重验证",
+    "cancel": "取消",
+    "confirm": "确认",
+    "qrAlt": "用验证器应用扫描的二维码",
+    "scan1": "请安装 Google Authenticator、Microsoft Authenticator 或类似应用。",
+    "scan2": "扫描此二维码，或输入下方密钥。",
+    "scan3": "输入应用中显示的 6 位验证码。",
+    "manualKey": "手动输入密钥",
+    "copied": "已复制",
+    "code": "6 位验证码或备用码",
+    "codeInvalid": "验证码错误或已过期，请输入当前显示的验证码。",
+    "enabled": "已开启双重验证",
+    "disabled": "已关闭双重验证",
+    "recoveryTitle": "备用码",
+    "recoveryHint": "请妥善保存（密码管理器、纸张）。手机丢失时，每个备用码可登录一次。之后不会再次显示。",
+    "copy": "复制",
+    "download": "下载",
+    "done": "我已保存备用码",
+    "enabledSince": "自 {date} 起开启",
+    "codesLeft": "{count, plural, =0 {没有剩余备用码} other {剩余 # 个备用码}}",
+    "manageHint": "如需重新生成备用码或关闭保护，请先输入应用中的验证码。",
+    "regenerate": "重新生成备用码",
+    "disable": "关闭",
+    "rulesTitle": "适用于所有账户的规则",
+    "ruleLock": "密码错误 5 次后，该邮箱的登录将被锁定 {minutes} 分钟（每个 IP 地址 20 次）。",
+    "ruleSession": "管理员和经理账户 {hours} 小时后自动退出；客户可保持登录 14 天。",
+    "ruleSocial": "团队账户不能使用 Google、Facebook、X、TikTok 或 Instagram 登录。",
+    "bannerTitle": "请开启双重验证",
+    "bannerBody": "您的管理员账户仅受密码保护。"
   }
 }
