@@ -17,6 +17,8 @@ import { RentalsTab } from "./rentals-tab";
 import { DealsTab } from "./deals-tab";
 import { HistoryTab } from "./history-tab";
 import { AssignedCarsTab } from "./assigned-cars-tab";
+import { RentalsChart } from "@/features/my/rentals-chart";
+import { AppointmentsSection } from "@/features/my/pages";
 import { listFleet } from "@/server/queries/fleet";
 import { managerDisplayStatus } from "@/lib/manager-status";
 
@@ -101,10 +103,22 @@ export async function ManagerProfile({
       />
     );
   } else if (tab === "rentals") {
-    body = <RentalsTab rows={await managerRentals(m.userId)} reservationsBase={reservationsBase} />;
+    const rentals = await managerRentals(m.userId);
+    body = (
+      <div className="space-y-4">
+        <RentalsChart rows={rentals} />
+        <RentalsTab rows={rentals} reservationsBase={reservationsBase} />
+      </div>
+    );
   } else if (tab === "deals") {
     const [deals, options] = await Promise.all([managerDeals(m.id), dealFormOptions()]);
-    body = <DealsTab scope={{ managerId: m.id }} deals={deals} options={options} />;
+    body = (
+      <>
+        <DealsTab scope={{ managerId: m.id }} deals={deals} options={options} />
+        {/* Sur sa propre fiche : ses rendez-vous, départs et retours sous ses deals */}
+        {isSelf && <AppointmentsSection me={viewer} />}
+      </>
+    );
   } else if (tab === "history") {
     body = <HistoryTab rows={await managerActivity(m.userId, m.id)} />;
   } else if (!isAdmin) {
@@ -234,6 +248,7 @@ async function exportRow(m: ManagerDetail) {
     rentalsWeek: counts.w,
     rentalsMonth: counts.m,
     rentalsYear: counts.y,
+    hasPassword: m.user.hasPassword,
     assignedCars: fleet.filter((c) => c.managerIds.includes(m.id)).map((c) => `${c.brand} ${c.model} ${c.year} (${c.plateNumber})`),
   };
 }

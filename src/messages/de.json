@@ -56,7 +56,8 @@
     "myAchievements": "Meine Erfolge",
     "myReservations": "Meine Buchungen",
     "myCars": "Meine Autos",
-    "history": "Verlauf"
+    "history": "Verlauf",
+    "myDeals": "Meine Deals / Interessenten"
   },
   "Footer": {
     "tagline": "Abfahrbereite Autos in sechs marokkanischen Städten, zu einem Preis, der sich am Schalter nicht ändert.",
@@ -270,7 +271,8 @@
     "profile": "Mein Profil",
     "security": "Sicherheit",
     "administration": "E-Mail-Vorlagen",
-    "clients": "Kunden"
+    "clients": "Kunden",
+    "agencies": "Meine Filialen"
   },
   "Managers": {
     "title": "Disponenten",
@@ -419,7 +421,8 @@
     "saveAsRuleHint": "Alle passenden Autos werden zugewiesen, auch später zur Flotte hinzugefügte. Ein deaktiviertes Auto fällt aus der Liste.",
     "alreadyAssigned": "Bereits zugewiesen",
     "ruleMatches": "{count, plural, =0 {Kein Auto passt} one {# Auto passt} other {# Autos passen}}",
-    "saveRule": "Regel speichern"
+    "saveRule": "Regel speichern",
+    "adminCarsHint": "{count, plural, =0 {Sie haben noch kein Auto hinzugefügt. Der Administrator betreut die ganze Flotte.} one {# von Ihnen hinzugefügtes Auto. Der Administrator betreut die ganze Flotte.} other {# von Ihnen hinzugefügte Autos. Der Administrator betreut die ganze Flotte.}}"
   },
   "Documents": {
     "cin_front": "Personalausweis (CINE), Vorderseite",
@@ -461,7 +464,9 @@
     "clearSelection": "Auswahl aufheben",
     "refresh": "Aktualisieren",
     "selectAll": "Alle auswählen",
-    "selectRow": "Zeile auswählen"
+    "selectRow": "Zeile auswählen",
+    "bulkHint": "Sammelaktion: Zeilen auswählen",
+    "bulkLabel": "Sammelaktion"
   },
   "Fleet": {
     "title": "Fuhrpark",
@@ -523,7 +528,7 @@
     "mainPhoto": "Hauptfoto",
     "makeCoverShort": "Hauptfoto",
     "assignedManagers": "Zugeordnete Verwalter",
-    "assignedManagersHint": "Sie erhalten die Buchungs-E-Mails dieses Autos. Keiner ausgewählt: alle Verwalter.",
+    "assignedManagersHint": "Angehakte Manager können dieses Auto vermieten und erhalten seine E-Mails; die anderen nicht. Keiner angehakt: alle können es vermieten.",
     "noManagers": "Kein aktiver Verwalter.",
     "allManagers": "Alle Verwalter",
     "someManagers": "{count, plural, one {# Verwalter zugeordnet} other {# Verwalter zugeordnet}}",
@@ -538,7 +543,31 @@
       "maintenance": "In Reparatur",
       "deactivated": "Deaktiviert"
     },
-    "managers": "Manager"
+    "managers": "Manager",
+    "tabStats": "Statistiken",
+    "tabInfos": "Informationen",
+    "tabPricing": "Tarif",
+    "tabPhotos": "Fotos",
+    "tabDescriptions": "Ausführliche Beschreibung",
+    "tabManagers": "Zugewiesene Manager",
+    "tabHistory": "Verlauf",
+    "chooseBrandFirst": "Wählen Sie zuerst die Marke.",
+    "searchModel": "Modell suchen…",
+    "chooseModel": "Modell wählen",
+    "noModel": "Kein Modell gefunden.",
+    "useModel": "„{model}“ verwenden",
+    "photoRequired": "Das Hauptfoto ist Pflicht.",
+    "noAgencyTitle": "Keine Filiale",
+    "noAgencyBody": "Ein Auto gehört zu einer Filiale. Fügen Sie zuerst unter „Meine Filialen“ eine Filiale hinzu.",
+    "addAgency": "Filiale hinzufügen",
+    "lastRental": "Letzte Vermietung",
+    "neverRented": "Nie vermietet",
+    "totalRevenue": "Gesamtumsatz",
+    "city": "Stadt",
+    "statRentals": "Vermietungen",
+    "statDays": "Vermietete Tage",
+    "statAverage": "Durchschnitt pro Vermietung",
+    "statOccupancy": "Auslastung (12 Monate)"
   },
   "Reservations": {
     "title": "Buchungen",
@@ -664,7 +693,8 @@
     "captcha": "Die Anti-Bot-Prüfung ist fehlgeschlagen. Laden Sie die Seite neu und versuchen Sie es erneut.",
     "email_failed": "Die E-Mail konnte nicht gesendet werden (Domain in Resend prüfen).",
     "email_not_configured": "Der E-Mail-Versand ist nicht eingerichtet (RESEND_API_KEY).",
-    "no_client_email": "Der Kunde hat keine E-Mail-Adresse."
+    "no_client_email": "Der Kunde hat keine E-Mail-Adresse.",
+    "agency_has_cars": "Diese Filiale hat noch Autos im Einsatz: verlegen oder deaktivieren Sie diese zuerst."
   },
   "About": {
     "title": "Eine marokkanische Agentur mit gepflegten Autos",
@@ -757,7 +787,9 @@
       "reservations": "Buchungen",
       "deals": "Deals",
       "profile": "Profil",
-      "clients": "Kunden"
+      "clients": "Kunden",
+      "agencies": "Filialen",
+      "exports": "Exporte"
     },
     "car_repair_start": "In Reparatur: {car}",
     "car_repair_end": "Wieder in Betrieb: {car}",
@@ -778,7 +810,17 @@
     "security_unlock": "Konto entsperrt",
     "manager_password_set": "Passwort vom Administrator geändert: {name}",
     "manager_assign_rule": "Zuweisungsregel für {name} gespeichert",
-    "manager_clear_rule": "Zuweisungsregel für {name} entfernt"
+    "manager_clear_rule": "Zuweisungsregel für {name} entfernt",
+    "agency_create": "Filiale hinzugefügt: {name}",
+    "agency_update": "Filiale geändert: {name}",
+    "agency_deactivate": "Filiale deaktiviert: {name}",
+    "agency_reactivate": "Filiale reaktiviert: {name}",
+    "export_table": "Export: {name}",
+    "export_record": "Datensatz-Export: {name}",
+    "manager_bulk_deactivate": "Sammelaktion: {name} Manager deaktiviert",
+    "manager_bulk_activate": "Sammelaktion: {name} Manager aktiviert",
+    "manager_bulk_resend": "Sammelaktion: {name} Einladung(en) erneut gesendet",
+    "security_password_change": "Passwort geändert"
   },
   "Deals": {
     "title": "Deals / Interessenten",
@@ -1203,5 +1245,34 @@
     "search": "Stadt suchen…",
     "choose": "Stadt wählen",
     "noResult": "Keine Stadt gefunden."
+  },
+  "Agencies": {
+    "title": "Meine Filialen",
+    "subtitle": "Filialen werden nie gelöscht: deaktivieren Sie sie mit Begründung.",
+    "new": "Neue Filiale",
+    "createTitle": "Neue Filiale",
+    "agency": "Filiale",
+    "name": "Name der Filiale",
+    "city": "Stadt",
+    "address": "Adresse",
+    "phone": "Telefonnummer",
+    "whatsapp": "WhatsApp-Nummer",
+    "isAirport": "Flughafenfiliale",
+    "airport": "Flughafen",
+    "manager": "Verantwortliche Person",
+    "managerHint": "Verantwortlich für die Filiale.",
+    "created": "Filiale hinzugefügt.",
+    "updated": "Filiale gespeichert.",
+    "cars": "Autos",
+    "updatedAt": "Geändert am",
+    "deactivate": "Deaktivieren",
+    "reactivate": "Reaktivieren",
+    "deactivateTitle": "Filiale {name} deaktivieren?",
+    "reactivateTitle": "Filiale {name} reaktivieren?",
+    "deactivateBody": "Sie erscheint nicht mehr auf der Website und in Formularen.",
+    "reason": "Begründung",
+    "deactivatedToast": "Filiale deaktiviert.",
+    "reactivatedToast": "Filiale reaktiviert.",
+    "carsCount": "{count, plural, =0 {kein Auto} one {# Auto} other {# Autos}}"
   }
 }

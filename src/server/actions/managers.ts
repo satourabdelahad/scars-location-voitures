@@ -220,7 +220,7 @@ export async function bulkManagerAction(
   reason?: string,
 ): Promise<ActionResult<{ done: string[]; skipped: number }>> {
   try {
-    await assertRole(["admin"]);
+    const admin = await assertRole(["admin"]);
     const list = z.array(z.string().uuid()).min(1).max(200).safeParse(ids);
     if (!list.success) return { ok: false, error: "validation" };
     if (action === "deactivate" && (reason ?? "").trim().length < 3) return { ok: false, error: "validation", fieldErrors: { reason: "minLength" } };
@@ -230,6 +230,22 @@ export async function bulkManagerAction(
         action === "deactivate" ? await deactivateManager(id, reason ?? "") : action === "activate" ? await reactivateManager(id) : await resendManagerInvite(id);
       if (r.ok) done.push(id);
     }
+    // Historique : une ligne pour l'action groupée, avec les noms des gestionnaires concernés.
+    const names = done.length
+      ? await db.select({ first: managers.firstName, last: managers.lastName }).from(managers).where(inArray(managers.id, done))
+      : [];
+    await db.insert(auditLogs).values({
+      actorId: admin.id,
+      entity: "manager",
+      entityId: "bulk",
+      action: `bulk_${action}`,
+      changes: {
+        note: [names.map((n) => `${n.first} ${n.last}`).join(", "), action === "deactivate" ? reason?.trim() : null].filter(Boolean).join(" · "),
+        title: String(done.length),
+        done,
+        skipped: list.data.length - done.length,
+      },
+    });
     return { ok: true, data: { done, skipped: list.data.length - done.length } };
   } catch (err) {
     return toActionError(err);

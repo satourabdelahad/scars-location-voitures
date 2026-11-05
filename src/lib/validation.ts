@@ -114,3 +114,19 @@ export const clientSchema = z.object({
   notes: z.preprocess(emptyToNull, z.string().trim().max(4000).nullable()),
 });
 export type ClientInput = z.infer<typeof clientSchema>;
+
+/** Agence : toutes les informations sont obligatoires (nom, ville, adresse, téléphones, responsable). */
+export const agencySchema = z.object({
+  name: z.string().trim().min(2, "required").max(160),
+  city: z.string().trim().min(2, "required").max(120),
+  address: z.string().trim().min(5, "required").max(500),
+  phone,
+  whatsapp: phone,
+  isAirport: z.boolean().default(false),
+  managerCivility: z.enum(["male", "female"], { error: "required" }),
+  managerLastName: z.string().trim().min(1, "required").max(120),
+  managerFirstName: z.string().trim().min(1, "required").max(120),
+  managerEmail: z.string().trim().toLowerCase().email("email"),
+  managerPhone: phone,
+});
+export type AgencyInput = z.infer<typeof agencySchema>;

@@ -56,7 +56,8 @@
     "myAchievements": "我的业绩",
     "myReservations": "我的预订",
     "myCars": "我的车辆",
-    "history": "历史记录"
+    "history": "历史记录",
+    "myDeals": "我的商机 / 潜在客户"
   },
   "Footer": {
     "tagline": "摩洛哥六座城市随时可出发的车辆，标价在柜台也不会改变。",
@@ -270,7 +271,8 @@
     "profile": "我的档案",
     "security": "安全",
     "administration": "邮件模板",
-    "clients": "客户"
+    "clients": "客户",
+    "agencies": "我的门店"
   },
   "Managers": {
     "title": "经理",
@@ -419,7 +421,8 @@
     "saveAsRuleHint": "所有符合条件的车辆都会分配给他，包括以后加入车队的车辆。停用的车辆会从列表中移除。",
     "alreadyAssigned": "已分配",
     "ruleMatches": "符合条件：{count} 辆",
-    "saveRule": "保存规则"
+    "saveRule": "保存规则",
+    "adminCarsHint": "{count, plural, =0 {您还没有添加车辆。管理员跟进整个车队。} other {您添加的车辆：{count} 辆。管理员跟进整个车队。}}"
   },
   "Documents": {
     "cin_front": "身份证（CINE）正面",
@@ -461,7 +464,9 @@
     "clearSelection": "取消选择",
     "refresh": "刷新",
     "selectAll": "全选",
-    "selectRow": "选择此行"
+    "selectRow": "选择此行",
+    "bulkHint": "批量操作：请选择行",
+    "bulkLabel": "批量操作"
   },
   "Fleet": {
     "title": "车队管理",
@@ -523,7 +528,7 @@
     "mainPhoto": "主图",
     "makeCoverShort": "主图",
     "assignedManagers": "负责经理",
-    "assignedManagersHint": "他们会收到此车辆的预订邮件。未勾选：全部经理。",
+    "assignedManagersHint": "勾选的经理可以出租该车并接收其邮件，其他经理不可以。都不勾选：所有经理都可以出租。",
     "noManagers": "没有在职经理。",
     "allManagers": "全部经理",
     "someManagers": "{count, plural, other {已指定 # 位经理}}",
@@ -538,7 +543,31 @@
       "maintenance": "维修中",
       "deactivated": "已停用"
     },
-    "managers": "经理"
+    "managers": "经理",
+    "tabStats": "统计",
+    "tabInfos": "基本信息",
+    "tabPricing": "价格",
+    "tabPhotos": "照片",
+    "tabDescriptions": "详细描述",
+    "tabManagers": "关联经理",
+    "tabHistory": "历史记录",
+    "chooseBrandFirst": "请先选择品牌。",
+    "searchModel": "搜索车型…",
+    "chooseModel": "选择车型",
+    "noModel": "未找到车型。",
+    "useModel": "使用“{model}”",
+    "photoRequired": "主照片为必填项。",
+    "noAgencyTitle": "没有门店",
+    "noAgencyBody": "车辆隶属于门店。请先在“我的门店”中添加门店。",
+    "addAgency": "添加门店",
+    "lastRental": "最近一次出租",
+    "neverRented": "从未出租",
+    "totalRevenue": "累计收入",
+    "city": "城市",
+    "statRentals": "出租次数",
+    "statDays": "出租天数",
+    "statAverage": "每次平均",
+    "statOccupancy": "出租率（12 个月）"
   },
   "Reservations": {
     "title": "预订",
@@ -664,7 +693,8 @@
     "captcha": "人机验证失败。请刷新页面后重试。",
     "email_failed": "邮件发送失败（请检查 Resend 中的域名）。",
     "email_not_configured": "未配置邮件发送（RESEND_API_KEY）。",
-    "no_client_email": "该客户没有邮箱地址。"
+    "no_client_email": "该客户没有邮箱地址。",
+    "agency_has_cars": "该门店仍有在用车辆：请先将其转到其他门店或停用。"
   },
   "About": {
     "title": "一家车况可靠的摩洛哥租车公司",
@@ -757,7 +787,9 @@
       "reservations": "预订",
       "deals": "商机",
       "profile": "档案",
-      "clients": "客户"
+      "clients": "客户",
+      "agencies": "门店",
+      "exports": "导出"
     },
     "car_repair_start": "送修：{car}",
     "car_repair_end": "恢复使用：{car}",
@@ -778,7 +810,17 @@
     "security_unlock": "账户已解锁",
     "manager_password_set": "管理员更改了密码：{name}",
     "manager_assign_rule": "已保存 {name} 的分配规则",
-    "manager_clear_rule": "已删除 {name} 的分配规则"
+    "manager_clear_rule": "已删除 {name} 的分配规则",
+    "agency_create": "添加门店：{name}",
+    "agency_update": "修改门店：{name}",
+    "agency_deactivate": "停用门店：{name}",
+    "agency_reactivate": "重新启用门店：{name}",
+    "export_table": "导出：{name}",
+    "export_record": "导出档案：{name}",
+    "manager_bulk_deactivate": "批量操作：停用 {name} 位经理",
+    "manager_bulk_activate": "批量操作：启用 {name} 位经理",
+    "manager_bulk_resend": "批量操作：重新发送 {name} 份邀请",
+    "security_password_change": "密码已更改"
   },
   "Deals": {
     "title": "商机 / 潜在客户",
@@ -1203,5 +1245,34 @@
     "search": "搜索城市…",
     "choose": "选择城市",
     "noResult": "未找到城市。"
+  },
+  "Agencies": {
+    "title": "我的门店",
+    "subtitle": "门店不会被删除：请填写原因后停用。",
+    "new": "新建门店",
+    "createTitle": "新建门店",
+    "agency": "门店",
+    "name": "门店名称",
+    "city": "城市",
+    "address": "地址",
+    "phone": "电话号码",
+    "whatsapp": "WhatsApp 号码",
+    "isAirport": "机场门店",
+    "airport": "机场",
+    "manager": "负责人",
+    "managerHint": "门店负责人。",
+    "created": "门店已添加。",
+    "updated": "门店已保存。",
+    "cars": "车辆",
+    "updatedAt": "修改时间",
+    "deactivate": "停用",
+    "reactivate": "重新启用",
+    "deactivateTitle": "停用门店 {name}？",
+    "reactivateTitle": "重新启用门店 {name}？",
+    "deactivateBody": "它将不再显示在网站和表单中。",
+    "reason": "原因",
+    "deactivatedToast": "门店已停用。",
+    "reactivatedToast": "门店已重新启用。",
+    "carsCount": "{count} 辆"
   }
 }

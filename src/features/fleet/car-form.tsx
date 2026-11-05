@@ -1,14 +1,16 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { Check, ImagePlus, Star, Trash2 } from "lucide-react";
+import { BarChart3, Check, FileText, History, ImagePlus, Info, Star, Tag, Trash2, UsersRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { CarArt } from "@/components/car-art";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
-import { CityCombobox } from "@/components/ui/city-combobox";
+import { CityCombobox, SuggestCombobox } from "@/components/ui/city-combobox";
+import { Flag } from "@/components/flags";
+import { modelsFor } from "@/lib/car-models";
 import { useRouter } from "@/i18n/navigation";
 import { localeMeta, locales, type Locale } from "@/i18n/config";
 import { carCategoryEnum, fuelEnum, transmissionEnum, type CarCategory } from "@/db/schema";
@@ -80,6 +82,10 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
   );
 }
 
+export type CarTab = "stats" | "infos" | "pricing" | "photos" | "descriptions" | "managers" | "history";
+/** Onglet où se trouve chaque champ, pour ouvrir le bon onglet en cas d'erreur. */
+const FIELD_TAB: Record<string, CarTab> = { dailyPrice: "pricing", deposit: "pricing", images: "photos", descriptions: "descriptions" };
+
 export function CarForm({
   base,
   carId,
@@ -88,6 +94,8 @@ export function CarForm({
   initialImages = [],
   managers = [],
   initialManagerIds = [],
+  stats,
+  history,
 }: {
   base: string;
   carId?: string;
@@ -97,6 +105,10 @@ export function CarForm({
   /** Gestionnaires actifs proposés à l'association */
   managers?: { id: string; name: string; city: string }[];
   initialManagerIds?: string[];
+  /** Onglet « Statistiques » (voiture existante) */
+  stats?: ReactNode;
+  /** Onglet « Historique » des locations (voiture existante) */
+  history?: ReactNode;
 }) {
   const t = useTranslations("Fleet");
   const te = useTranslations("Errors");
@@ -108,6 +120,17 @@ export function CarForm({
   const [images, setImages] = useState<Img[]>(initialImages);
   const [managerIds, setManagerIds] = useState<string[]>(initialManagerIds);
   const [lang, setLang] = useState<Locale>("fr");
+  const [tab, setTab] = useState<CarTab>(stats ? "stats" : "infos");
+  const tabs: { id: CarTab; label: string; Icon: typeof Info }[] = [
+    ...(stats ? [{ id: "stats" as const, label: t("tabStats"), Icon: BarChart3 }] : []),
+    { id: "infos", label: t("tabInfos"), Icon: Info },
+    { id: "pricing", label: t("tabPricing"), Icon: Tag },
+    { id: "photos", label: t("tabPhotos"), Icon: ImagePlus },
+    { id: "descriptions", label: t("tabDescriptions"), Icon: FileText },
+    { id: "managers", label: t("tabManagers"), Icon: UsersRound },
+    ...(history ? [{ id: "history" as const, label: t("tabHistory"), Icon: History }] : []),
+  ];
+  const models = modelsFor(v.brand);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(0);
   const [pending, start] = useTransition();
@@ -147,9 +170,17 @@ export function CarForm({
     });
   }
 
+  function showErrors(fe: Record<string, string>) {
+    setErrors(fe);
+    const first = Object.keys(fe)[0];
+    if (first) setTab(FIELD_TAB[first] ?? "infos");
+  }
+
   function submit(ev: React.FormEvent) {
     ev.preventDefault();
     setErrors({});
+    // Photo principale obligatoire
+    if (images.length === 0) return showErrors({ images: "photoRequired" });
     start(async () => {
       const payload = { data: v, images, managerIds };
       const res = carId ? await updateCar(carId, payload) : await createCar(payload);
@@ -161,15 +192,41 @@ export function CarForm({
         const fe = { ...(res.fieldErrors ?? {}) };
         if (res.error.startsWith("unique:cars_plate")) fe.plateNumber = res.error;
         if (res.error.startsWith("unique:cars_vin")) fe.vin = res.error;
-        setErrors(fe);
+        showErrors(fe);
         if (fe.descriptions) setLang("fr");
         toast.error(te(res.error as "unknown"));
       }
     });
   }
 
+  const formTab = tab !== "stats" && tab !== "history";
   return (
-    <form onSubmit={submit} noValidate className="rounded-2xl border border-mist bg-paper p-6 sm:p-8">
+    <>
+    <nav aria-label={t("title")} className="scroll-thin mb-6 flex gap-1 overflow-x-auto border-b border-mist">
+      {tabs.map(({ id, label, Icon }) => {
+        const bad = Object.keys(errors).some((k) => (FIELD_TAB[k] ?? "infos") === id);
+        return (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            aria-current={tab === id ? "page" : undefined}
+            className={cn(
+              "-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition-colors",
+              tab === id ? "border-majorelle text-majorelle" : "border-transparent text-ink-3 hover:text-ink",
+            )}
+          >
+            <Icon className="size-4" />
+            {label}
+            {bad && <span className="size-2 rounded-full bg-danger" aria-hidden />}
+          </button>
+        );
+      })}
+    </nav>
+    {tab === "stats" && stats}
+    {tab === "history" && history}
+    <form onSubmit={submit} noValidate className={cn("rounded-2xl border border-mist bg-paper p-6 sm:p-8", !formTab && "hidden")}>
+      <div className={tab === "infos" ? undefined : "hidden"}>
       <Section title={t("general")}>
         <Field label={t("brand")} required error={err("brand")}>
           {(p) => (
@@ -181,7 +238,19 @@ export function CarForm({
             </Select>
           )}
         </Field>
-        <Field label={t("model")} required error={err("model")}>{(p) => <Input {...p} value={v.model} onChange={(x) => set("model", x.target.value)} />}</Field>
+        <Field label={t("model")} required error={err("model")} hint={v.brand ? undefined : t("chooseBrandFirst")}>
+          {(p) => (
+            <SuggestCombobox
+              {...p}
+              free
+              disabled={!v.brand}
+              options={models}
+              value={v.model}
+              onChange={(m) => set("model", m)}
+              labels={{ search: t("searchModel"), choose: t("chooseModel"), noResult: t("noModel"), useTyped: (q) => t("useModel", { model: q }) }}
+            />
+          )}
+        </Field>
         <Field label={t("year")} required error={err("year")}>{(p) => <Input {...p} type="number" min={1990} max={2100} value={v.year} onChange={num("year")} />}</Field>
         <Field label={t("plateNumber")} required error={err("plateNumber")}>{(p) => <Input {...p} dir="ltr" className="font-mono uppercase" placeholder="12345-A-40" value={v.plateNumber} onChange={(x) => set("plateNumber", x.target.value)} />}</Field>
         <Field label={t("vin")} optionalLabel={tc("optional")} error={err("vin")}>{(p) => <Input {...p} dir="ltr" maxLength={17} className="font-mono uppercase" value={v.vin} onChange={(x) => set("vin", x.target.value)} />}</Field>
@@ -235,18 +304,23 @@ export function CarForm({
         </div>
       </Section>
 
+      </div>
+      <div className={tab === "pricing" ? undefined : "hidden"}>
       <Section title={t("pricing")}>
         <Field label={t("dailyPrice")} required error={err("dailyPrice")}>{(p) => <Input {...p} type="number" min={1} step={10} value={v.dailyPrice} onChange={num("dailyPrice")} />}</Field>
         <Field label={t("deposit")} required error={err("deposit")}>{(p) => <Input {...p} type="number" min={0} step={500} value={v.deposit} onChange={num("deposit")} />}</Field>
       </Section>
 
+      </div>
+      <div className={tab === "infos" ? undefined : "hidden"}>
       <Section title={t("purchase")} hint={t("purchaseHint")}>
         <Field label={t("purchaseCity")} required error={err("purchaseCity")}>{(p) => <CityCombobox {...p} value={v.purchaseCity} onChange={(c) => set("purchaseCity", c)} />}</Field>
         <Field label={t("purchaseDate")} required error={err("purchaseDate")}>{(p) => <Input {...p} type="date" max={new Date().toISOString().slice(0, 10)} value={v.purchaseDate} onChange={(x) => set("purchaseDate", x.target.value)} />}</Field>
         <Field label={t("purchasePrice")} required error={err("purchasePrice")}>{(p) => <Input {...p} type="number" min={0} step={1000} value={v.purchasePrice} onChange={num("purchasePrice")} />}</Field>
       </Section>
 
-      <section className="grid gap-6 border-b border-mist py-8 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]">
+      </div>
+      <section className={cn("grid gap-6 py-2 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]", tab !== "managers" && "hidden")}>
         <div>
           <h2 className="text-[15px] font-bold text-ink">{t("assignedManagers")}</h2>
           <p className="mt-1 text-sm text-ink-3">{t("assignedManagersHint")}</p>
@@ -285,7 +359,7 @@ export function CarForm({
         </div>
       </section>
 
-      <section className="grid gap-6 border-b border-mist py-8 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]">
+      <section className={cn("grid gap-6 py-2 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]", tab !== "photos" && "hidden")}>
         <div>
           <h2 className="text-[15px] font-bold text-ink">{t("photos")}</h2>
           <p className="mt-1 text-sm text-ink-3">{t("photosHint")}</p>
@@ -340,11 +414,11 @@ export function CarForm({
               </li>
             )}
           </ul>
-          {images.length === 0 && <p className="mt-3 text-sm text-ink-3">{t("noPhotos")}</p>}
+          {images.length === 0 && <p className={cn("mt-3 text-sm", errors.images ? "font-semibold text-danger" : "text-ink-3")}>{errors.images ? t("photoRequired") : t("noPhotos")}</p>}
         </div>
       </section>
 
-      <section className="grid gap-6 py-8 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]">
+      <section className={cn("grid gap-6 py-2 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]", tab !== "descriptions" && "hidden")}>
         <div>
           <h2 className="text-[15px] font-bold text-ink">{t("descriptions")}</h2>
           <p className="mt-1 text-sm text-ink-3">{t("descriptionsHint")}</p>
@@ -358,14 +432,15 @@ export function CarForm({
                 role="tab"
                 aria-selected={lang === l}
                 onClick={() => setLang(l)}
-                className={cn("relative shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors", lang === l ? "bg-paper text-ink shadow-sm" : "text-ink-3 hover:text-ink")}
+                className={cn("relative inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors", lang === l ? "bg-paper text-ink shadow-sm" : "text-ink-3 hover:text-ink")}
               >
+                <Flag locale={l} className="h-3.5 w-5" />
                 {localeMeta[l].native}
                 {(v.descriptions[l] ?? "").trim() && <span className="ms-1.5 inline-block size-1.5 rounded-full bg-palm align-middle" aria-hidden />}
               </button>
             ))}
           </div>
-          <Field label={localeMeta[lang].native} required={lang === "fr"} error={lang === "fr" ? err("descriptions") : undefined}>
+          <Field label={<span className="inline-flex items-center gap-2"><Flag locale={lang} className="h-3.5 w-5" />{localeMeta[lang].native}</span>} required={lang === "fr"} error={lang === "fr" ? err("descriptions") : undefined}>
             {(p) => (
               <Textarea
                 {...p}
@@ -386,5 +461,6 @@ export function CarForm({
         <Button type="submit" loading={pending} disabled={uploading > 0}>{pending ? tc("saving") : tc("save")}</Button>
       </div>
     </form>
+    </>
   );
 }

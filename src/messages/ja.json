@@ -56,7 +56,8 @@
     "myAchievements": "実績",
     "myReservations": "予約一覧",
     "myCars": "担当車両",
-    "history": "履歴"
+    "history": "履歴",
+    "myDeals": "自分の商談・見込み客"
   },
   "Footer": {
     "tagline": "モロッコ6都市ですぐに出発できる車を。表示価格はカウンターでも変わりません。",
@@ -270,7 +271,8 @@
     "profile": "マイプロフィール",
     "security": "セキュリティ",
     "administration": "メールテンプレート",
-    "clients": "顧客"
+    "clients": "顧客",
+    "agencies": "店舗一覧"
   },
   "Managers": {
     "title": "マネージャー",
@@ -419,7 +421,8 @@
     "saveAsRuleHint": "条件に合う車両がすべて割り当てられ、今後追加される車両も含まれます。無効化された車両はリストから外れます。",
     "alreadyAssigned": "割り当て済み",
     "ruleMatches": "該当車両：{count}台",
-    "saveRule": "ルールを保存"
+    "saveRule": "ルールを保存",
+    "adminCarsHint": "{count, plural, =0 {まだ車両を追加していません。管理者は全車両を管理します。} other {あなたが追加した車両：{count}台。管理者は全車両を管理します。}}"
   },
   "Documents": {
     "cin_front": "身分証明書（CINE）表面",
@@ -461,7 +464,9 @@
     "clearSelection": "選択を解除",
     "refresh": "更新",
     "selectAll": "すべて選択",
-    "selectRow": "行を選択"
+    "selectRow": "行を選択",
+    "bulkHint": "一括操作：行を選択してください",
+    "bulkLabel": "一括操作"
   },
   "Fleet": {
     "title": "車両管理",
@@ -523,7 +528,7 @@
     "mainPhoto": "メイン写真",
     "makeCoverShort": "メイン",
     "assignedManagers": "担当マネージャー",
-    "assignedManagersHint": "この車両の予約メールを受け取ります。未選択の場合はマネージャー全員。",
+    "assignedManagersHint": "チェックしたマネージャーはこの車両を貸し出せ、メールを受け取ります。それ以外は貸し出せません。誰もチェックしない場合は全員が貸し出せます。",
     "noManagers": "有効なマネージャーがいません。",
     "allManagers": "すべてのマネージャー",
     "someManagers": "{count, plural, other {担当マネージャー # 人}}",
@@ -538,7 +543,31 @@
       "maintenance": "修理中",
       "deactivated": "無効"
     },
-    "managers": "マネージャー"
+    "managers": "マネージャー",
+    "tabStats": "統計",
+    "tabInfos": "基本情報",
+    "tabPricing": "料金",
+    "tabPhotos": "写真",
+    "tabDescriptions": "詳細説明",
+    "tabManagers": "担当マネージャー",
+    "tabHistory": "履歴",
+    "chooseBrandFirst": "先にメーカーを選択してください。",
+    "searchModel": "モデルを検索…",
+    "chooseModel": "モデルを選択",
+    "noModel": "モデルが見つかりません。",
+    "useModel": "「{model}」を使用",
+    "photoRequired": "メイン写真は必須です。",
+    "noAgencyTitle": "店舗がありません",
+    "noAgencyBody": "車両は店舗に所属します。先に「店舗一覧」で店舗を追加してください。",
+    "addAgency": "店舗を追加",
+    "lastRental": "最後のレンタル",
+    "neverRented": "レンタル実績なし",
+    "totalRevenue": "累計売上",
+    "city": "都市",
+    "statRentals": "レンタル回数",
+    "statDays": "レンタル日数",
+    "statAverage": "1回あたりの平均",
+    "statOccupancy": "稼働率（12か月）"
   },
   "Reservations": {
     "title": "予約",
@@ -664,7 +693,8 @@
     "captcha": "ボット対策の確認に失敗しました。ページを再読み込みしてもう一度お試しください。",
     "email_failed": "メールを送信できませんでした（Resendのドメインを確認してください）。",
     "email_not_configured": "メール送信が設定されていません（RESEND_API_KEY）。",
-    "no_client_email": "顧客にメールアドレスがありません。"
+    "no_client_email": "顧客にメールアドレスがありません。",
+    "agency_has_cars": "この店舗にはまだ稼働中の車両があります。先に別の店舗へ移すか無効化してください。"
   },
   "About": {
     "title": "整備の行き届いた車を、モロッコから",
@@ -757,7 +787,9 @@
       "reservations": "予約",
       "deals": "商談",
       "profile": "プロフィール",
-      "clients": "顧客"
+      "clients": "顧客",
+      "agencies": "店舗",
+      "exports": "エクスポート"
     },
     "car_repair_start": "修理に出しました：{car}",
     "car_repair_end": "運用に戻しました：{car}",
@@ -778,7 +810,17 @@
     "security_unlock": "アカウントのロック解除",
     "manager_password_set": "管理者がパスワードを変更：{name}",
     "manager_assign_rule": "{name}の割り当てルールを保存",
-    "manager_clear_rule": "{name}の割り当てルールを削除"
+    "manager_clear_rule": "{name}の割り当てルールを削除",
+    "agency_create": "店舗を追加：{name}",
+    "agency_update": "店舗を編集：{name}",
+    "agency_deactivate": "店舗を無効化：{name}",
+    "agency_reactivate": "店舗を再有効化：{name}",
+    "export_table": "エクスポート：{name}",
+    "export_record": "レコードのエクスポート：{name}",
+    "manager_bulk_deactivate": "一括操作：{name}名のマネージャーを無効化",
+    "manager_bulk_activate": "一括操作：{name}名のマネージャーを有効化",
+    "manager_bulk_resend": "一括操作：{name}件の招待を再送",
+    "security_password_change": "パスワードを変更"
   },
   "Deals": {
     "title": "商談 / 見込み客",
@@ -1203,5 +1245,34 @@
     "search": "都市を検索…",
     "choose": "都市を選択",
     "noResult": "都市が見つかりません。"
+  },
+  "Agencies": {
+    "title": "店舗一覧",
+    "subtitle": "店舗は削除されません。理由を入力して無効化してください。",
+    "new": "新しい店舗",
+    "createTitle": "新しい店舗",
+    "agency": "店舗",
+    "name": "店舗名",
+    "city": "都市",
+    "address": "住所",
+    "phone": "電話番号",
+    "whatsapp": "WhatsApp番号",
+    "isAirport": "空港店",
+    "airport": "空港",
+    "manager": "責任者",
+    "managerHint": "店舗の責任者。",
+    "created": "店舗を追加しました。",
+    "updated": "店舗を保存しました。",
+    "cars": "車両",
+    "updatedAt": "更新日",
+    "deactivate": "無効にする",
+    "reactivate": "再有効化",
+    "deactivateTitle": "店舗「{name}」を無効にしますか？",
+    "reactivateTitle": "店舗「{name}」を再有効化しますか？",
+    "deactivateBody": "サイトやフォームに表示されなくなります。",
+    "reason": "理由",
+    "deactivatedToast": "店舗を無効にしました。",
+    "reactivatedToast": "店舗を再有効化しました。",
+    "carsCount": "{count}台"
   }
 }

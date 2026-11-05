@@ -56,7 +56,8 @@
     "myAchievements": "Mis logros",
     "myReservations": "Mis reservas",
     "myCars": "Mis coches",
-    "history": "Historial"
+    "history": "Historial",
+    "myDeals": "Mis tratos / prospectos"
   },
   "Footer": {
     "tagline": "Coches listos para salir en seis ciudades de Marruecos, con un precio anunciado que no cambia en el mostrador.",
@@ -270,7 +271,8 @@
     "profile": "Mi perfil",
     "security": "Seguridad",
     "administration": "Plantillas de correo",
-    "clients": "Clientes"
+    "clients": "Clientes",
+    "agencies": "Mis agencias"
   },
   "Managers": {
     "title": "Gestores",
@@ -419,7 +421,8 @@
     "saveAsRuleHint": "Se le asignan todos los coches que coinciden, también los que se añadan después a la flota. Un coche desactivado sale de su lista.",
     "alreadyAssigned": "Ya asignado",
     "ruleMatches": "{count, plural, =0 {Ningún coche coincide} one {# coche coincide} other {# coches coinciden}}",
-    "saveRule": "Guardar la regla"
+    "saveRule": "Guardar la regla",
+    "adminCarsHint": "{count, plural, =0 {Aún no has añadido ningún coche. El administrador sigue toda la flota.} one {# coche añadido por ti. El administrador sigue toda la flota.} other {# coches añadidos por ti. El administrador sigue toda la flota.}}"
   },
   "Documents": {
     "cin_front": "Documento de identidad (CINE), anverso",
@@ -461,7 +464,9 @@
     "clearSelection": "Anular la selección",
     "refresh": "Actualizar",
     "selectAll": "Seleccionar todo",
-    "selectRow": "Seleccionar la fila"
+    "selectRow": "Seleccionar la fila",
+    "bulkHint": "Acción agrupada: selecciona filas",
+    "bulkLabel": "Acción agrupada"
   },
   "Fleet": {
     "title": "Flota",
@@ -523,7 +528,7 @@
     "mainPhoto": "Foto principal",
     "makeCoverShort": "Principal",
     "assignedManagers": "Gestores asociados",
-    "assignedManagersHint": "Reciben los emails de reserva de este coche. Ninguno marcado: todos los gestores.",
+    "assignedManagersHint": "Los gestores marcados pueden alquilar este coche y reciben sus correos; los demás no. Ninguno marcado: todos pueden alquilarlo.",
     "noManagers": "Ningún gestor activo.",
     "allManagers": "Todos los gestores",
     "someManagers": "{count, plural, one {# gestor asociado} other {# gestores asociados}}",
@@ -538,7 +543,31 @@
       "maintenance": "En reparación",
       "deactivated": "Desactivado"
     },
-    "managers": "Gestores"
+    "managers": "Gestores",
+    "tabStats": "Estadísticas",
+    "tabInfos": "Información",
+    "tabPricing": "Tarifa",
+    "tabPhotos": "Fotos",
+    "tabDescriptions": "Descripción detallada",
+    "tabManagers": "Gestores asociados",
+    "tabHistory": "Historial",
+    "chooseBrandFirst": "Elige primero la marca.",
+    "searchModel": "Buscar un modelo…",
+    "chooseModel": "Elegir un modelo",
+    "noModel": "No se encontró ningún modelo.",
+    "useModel": "Usar «{model}»",
+    "photoRequired": "La foto principal es obligatoria.",
+    "noAgencyTitle": "Ninguna agencia",
+    "noAgencyBody": "Un coche pertenece a una agencia. Añade primero una agencia en «Mis agencias».",
+    "addAgency": "Añadir una agencia",
+    "lastRental": "Último alquiler",
+    "neverRented": "Nunca alquilado",
+    "totalRevenue": "Ingresos acumulados",
+    "city": "Ciudad",
+    "statRentals": "Alquileres",
+    "statDays": "Días alquilados",
+    "statAverage": "Media por alquiler",
+    "statOccupancy": "Ocupación (12 meses)"
   },
   "Reservations": {
     "title": "Reservas",
@@ -664,7 +693,8 @@
     "captcha": "La verificación antirrobots ha fallado. Recarga la página e inténtalo de nuevo.",
     "email_failed": "No se pudo enviar el correo (revisa el dominio en Resend).",
     "email_not_configured": "El envío de correos no está configurado (RESEND_API_KEY).",
-    "no_client_email": "El cliente no tiene dirección de correo."
+    "no_client_email": "El cliente no tiene dirección de correo.",
+    "agency_has_cars": "Esta agencia aún tiene coches en servicio: pásalos a otra agencia o desactívalos primero."
   },
   "About": {
     "title": "Una agencia marroquí con coches bien cuidados",
@@ -757,7 +787,9 @@
       "reservations": "Reservas",
       "deals": "Deals",
       "profile": "Ficha",
-      "clients": "Clientes"
+      "clients": "Clientes",
+      "agencies": "Agencias",
+      "exports": "Exportaciones"
     },
     "car_repair_start": "Enviado a reparación: {car}",
     "car_repair_end": "De nuevo en servicio: {car}",
@@ -778,7 +810,17 @@
     "security_unlock": "Cuenta desbloqueada",
     "manager_password_set": "Contraseña cambiada por el administrador: {name}",
     "manager_assign_rule": "Regla de asignación guardada para {name}",
-    "manager_clear_rule": "Regla de asignación eliminada para {name}"
+    "manager_clear_rule": "Regla de asignación eliminada para {name}",
+    "agency_create": "Agencia añadida: {name}",
+    "agency_update": "Agencia modificada: {name}",
+    "agency_deactivate": "Agencia desactivada: {name}",
+    "agency_reactivate": "Agencia reactivada: {name}",
+    "export_table": "Exportación: {name}",
+    "export_record": "Exportación de ficha: {name}",
+    "manager_bulk_deactivate": "Acción agrupada: {name} gestor(es) desactivado(s)",
+    "manager_bulk_activate": "Acción agrupada: {name} gestor(es) activado(s)",
+    "manager_bulk_resend": "Acción agrupada: {name} invitación(es) reenviada(s)",
+    "security_password_change": "Contraseña cambiada"
   },
   "Deals": {
     "title": "Deals / prospectos",
@@ -1203,5 +1245,34 @@
     "search": "Buscar una ciudad…",
     "choose": "Elegir una ciudad",
     "noResult": "No se encontró ninguna ciudad."
+  },
+  "Agencies": {
+    "title": "Mis agencias",
+    "subtitle": "Las agencias nunca se eliminan: desactívalas indicando el motivo.",
+    "new": "Nueva agencia",
+    "createTitle": "Nueva agencia",
+    "agency": "Agencia",
+    "name": "Nombre de la agencia",
+    "city": "Ciudad",
+    "address": "Dirección",
+    "phone": "Número de teléfono",
+    "whatsapp": "Número de WhatsApp",
+    "isAirport": "Agencia de aeropuerto",
+    "airport": "Aeropuerto",
+    "manager": "Responsable",
+    "managerHint": "Persona responsable de la agencia.",
+    "created": "Agencia añadida.",
+    "updated": "Agencia guardada.",
+    "cars": "Coches",
+    "updatedAt": "Modificada el",
+    "deactivate": "Desactivar",
+    "reactivate": "Reactivar",
+    "deactivateTitle": "¿Desactivar la agencia {name}?",
+    "reactivateTitle": "¿Reactivar la agencia {name}?",
+    "deactivateBody": "Dejará de aparecer en la web y en los formularios.",
+    "reason": "Motivo",
+    "deactivatedToast": "Agencia desactivada.",
+    "reactivatedToast": "Agencia reactivada.",
+    "carsCount": "{count, plural, =0 {ningún coche} one {# coche} other {# coches}}"
   }
 }

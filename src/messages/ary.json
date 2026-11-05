@@ -56,7 +56,8 @@
     "myAchievements": "الإنجازات ديالي",
     "myReservations": "الحجوزات ديالي",
     "myCars": "الطوموبيلات ديالي",
-    "history": "التاريخ"
+    "history": "التاريخ",
+    "myDeals": "الصفقات ديالي / البروسبي"
   },
   "Footer": {
     "tagline": "طوموبيلات واجدين يخرجو فستة دالمدن فالمغرب، بثمن معروف ما كيتبدّلش فالكونطوار.",
@@ -270,7 +271,8 @@
     "profile": "الفيشة ديالي",
     "security": "الأمان",
     "administration": "قوالب الإيميلات",
-    "clients": "الكليان"
+    "clients": "الكليان",
+    "agencies": "الوكالات ديالي"
   },
   "Managers": {
     "title": "المسيّرين",
@@ -419,7 +421,8 @@
     "saveAsRuleHint": "كاع الطوموبيلات اللي كيتوافقو كيتكلّف بيهم، حتى اللي غادي يتزادو من بعد. الطوموبيل اللي توقّفات كتخرج من اللائحة ديالو.",
     "alreadyAssigned": "مكلّف بيها من قبل",
     "ruleMatches": "الطوموبيلات اللي كيتوافقو: {count}",
-    "saveRule": "سجّل القاعدة"
+    "saveRule": "سجّل القاعدة",
+    "adminCarsHint": "{count, plural, =0 {باقي ما زدتي حتى طوموبيل. المسؤول كيتبع الطوموبيلات كاملين.} other {زدتي {count} طوموبيلات. المسؤول كيتبع الطوموبيلات كاملين.}}"
   },
   "Documents": {
     "cin_front": "لاكارط ناسيونال (CINE) — القدّام",
@@ -461,7 +464,9 @@
     "clearSelection": "لغي الاختيار",
     "refresh": "جدّد",
     "selectAll": "ختار كولشي",
-    "selectRow": "ختار السطر"
+    "selectRow": "ختار السطر",
+    "bulkHint": "إجراء جماعي: ختار شي سطورة",
+    "bulkLabel": "إجراء جماعي"
   },
   "Fleet": {
     "title": "الطوموبيلات ديال الشركة",
@@ -523,7 +528,7 @@
     "mainPhoto": "التصويرة الرئيسية",
     "makeCoverShort": "رئيسية",
     "assignedManagers": "المسيرين المرتبطين",
-    "assignedManagersHint": "كيوصلهم الإيميلات ديال الحجز ديال هاد الطوموبيل. حتى واحد ما مختار: كاع المسيرين.",
+    "assignedManagersHint": "المسيّرين المعلّمين يقدرو يكريو هاد الطوموبيل وكيجيهم الإيميلات ديالها؛ الآخرين لا. إلا ما تعلّم حتى واحد: كولشي يقدر يكريها.",
     "noManagers": "ما كاين حتى مسير خدام.",
     "allManagers": "كاع المسيرين",
     "someManagers": "{count, plural, one {مسير واحد مرتبط} other {# مسيرين مرتبطين}}",
@@ -538,7 +543,31 @@
       "maintenance": "فالإصلاح",
       "deactivated": "موقفة"
     },
-    "managers": "المسيّرين"
+    "managers": "المسيّرين",
+    "tabStats": "الإحصائيات",
+    "tabInfos": "المعلومات",
+    "tabPricing": "الثمن",
+    "tabPhotos": "التصاور",
+    "tabDescriptions": "الوصف المفصّل",
+    "tabManagers": "المسيّرين المرتبطين",
+    "tabHistory": "التاريخ",
+    "chooseBrandFirst": "ختار الماركة قبل.",
+    "searchModel": "قلّب على موديل…",
+    "chooseModel": "ختار الموديل",
+    "noModel": "ما لقينا حتى موديل.",
+    "useModel": "استعمل «{model}»",
+    "photoRequired": "التصويرة الرئيسية ضرورية.",
+    "noAgencyTitle": "حتى وكالة",
+    "noAgencyBody": "الطوموبيل كتكون تابعة لوكالة. زيد وكالة قبل ف «الوكالات ديالي».",
+    "addAgency": "زيد وكالة",
+    "lastRental": "آخر كرا",
+    "neverRented": "عمرها ما تكرات",
+    "totalRevenue": "المدخول كامل",
+    "city": "المدينة",
+    "statRentals": "الكرا",
+    "statDays": "الأيام ديال الكرا",
+    "statAverage": "المعدل ف كل كرا",
+    "statOccupancy": "نسبة الخدمة (12 شهر)"
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -664,7 +693,8 @@
     "captcha": "التحقق ضد الروبوات ما دازش. عاود شارجي الصفحة وجرّب مرة أخرى.",
     "email_failed": "الإيميل ما قدرش يتصيفط (شوف الدومين ف Resend).",
     "email_not_configured": "صيفيط الإيميلات ما مريڭلش (RESEND_API_KEY).",
-    "no_client_email": "الكليان ما عندوش إيميل."
+    "no_client_email": "الكليان ما عندوش إيميل.",
+    "agency_has_cars": "هاد الوكالة باقي فيها طوموبيلات خدامين: نقلهم لوكالة أخرى ولا وقّفهم قبل."
   },
   "About": {
     "title": "وكالة مغربية، وطوموبيلات مقادّين",
@@ -757,7 +787,9 @@
       "reservations": "الحجوزات",
       "deals": "الصفقات",
       "profile": "الفيشة",
-      "clients": "الكليان"
+      "clients": "الكليان",
+      "agencies": "الوكالات",
+      "exports": "التصدير"
     },
     "car_repair_start": "مشات للإصلاح: {car}",
     "car_repair_end": "رجعات للخدمة: {car}",
@@ -778,7 +810,17 @@
     "security_unlock": "الحساب تحلّ",
     "manager_password_set": "المسؤول بدّل كلمة السر: {name}",
     "manager_assign_rule": "قاعدة التكليف تسجّلات ل {name}",
-    "manager_clear_rule": "قاعدة التكليف تحيّدات ل {name}"
+    "manager_clear_rule": "قاعدة التكليف تحيّدات ل {name}",
+    "agency_create": "تزادت وكالة: {name}",
+    "agency_update": "تبدّلات وكالة: {name}",
+    "agency_deactivate": "توقّفات وكالة: {name}",
+    "agency_reactivate": "تعاود تفعّلات وكالة: {name}",
+    "export_table": "تصدير: {name}",
+    "export_record": "تصدير فيشة: {name}",
+    "manager_bulk_deactivate": "إجراء جماعي: توقّفو {name} مسيّرين",
+    "manager_bulk_activate": "إجراء جماعي: تفعّلو {name} مسيّرين",
+    "manager_bulk_resend": "إجراء جماعي: تعاودات {name} دعوة",
+    "security_password_change": "كلمة السر تبدّلات"
   },
   "Deals": {
     "title": "الصفقات / الزبناء المحتملين",
@@ -1203,5 +1245,34 @@
     "search": "قلّب على شي مدينة…",
     "choose": "ختار المدينة",
     "noResult": "ما لقينا حتى مدينة."
+  },
+  "Agencies": {
+    "title": "الوكالات ديالي",
+    "subtitle": "الوكالات عمرها ما كتمسح: وقّفها وكتب السبب.",
+    "new": "وكالة جديدة",
+    "createTitle": "وكالة جديدة",
+    "agency": "الوكالة",
+    "name": "سمية الوكالة",
+    "city": "المدينة",
+    "address": "العنوان",
+    "phone": "نمرة التيليفون",
+    "whatsapp": "نمرة الواتساب",
+    "isAirport": "وكالة ديال المطار",
+    "airport": "المطار",
+    "manager": "المسؤول",
+    "managerHint": "الشخص المسؤول على الوكالة.",
+    "created": "الوكالة تزادت.",
+    "updated": "الوكالة تسجّلات.",
+    "cars": "الطوموبيلات",
+    "updatedAt": "تبدّلات نهار",
+    "deactivate": "وقّف",
+    "reactivate": "عاود فعّل",
+    "deactivateTitle": "توقّف الوكالة {name}؟",
+    "reactivateTitle": "تعاود تفعّل الوكالة {name}؟",
+    "deactivateBody": "ما غاديش تبان ف السيت ولا ف الفورميلير.",
+    "reason": "السبب",
+    "deactivatedToast": "الوكالة توقّفات.",
+    "reactivatedToast": "الوكالة تعاود تفعّلات.",
+    "carsCount": "{count} طوموبيلات"
   }
 }

@@ -38,6 +38,7 @@ export async function listManagersWithStats() {
     rentals_month: number;
     rentals_year: number;
     assigned_cars: string[] | null;
+    has_password: boolean;
   }>(sql`
     WITH bounds AS (
       SELECT
@@ -49,7 +50,7 @@ export async function listManagersWithStats() {
     SELECT
       m.id, m.user_id, m.civility, m.last_name, m.first_name, u.email, m.phone, m.whatsapp, m.city,
       m.birth_date::text, m.marital_status, m.work_start_date::text, m.contract_type, m.photo_url, m.status,
-      m.deactivation_reason, m.deactivated_at, u.last_login_at, m.admin_updated_at,
+      m.deactivation_reason, m.deactivated_at, u.last_login_at, m.admin_updated_at, (u.password_hash IS NOT NULL) AS has_password,
       CASE WHEN u.login_locked_until > now() THEN u.login_locked_until END AS locked_until,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.d)::int AS rentals_day,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.w)::int AS rentals_week,
@@ -89,6 +90,7 @@ export async function listManagersWithStats() {
     rentalsMonth: r.rentals_month,
     rentalsYear: r.rentals_year,
     assignedCars: r.assigned_cars ?? [],
+    hasPassword: r.has_password,
   }));
 }
 export type ManagerRow = Awaited<ReturnType<typeof listManagersWithStats>>[number];

@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { CalendarClock, History, IdCard, KeyRound } from "lucide-react";
+import { CalendarClock, CarFront, Handshake, History, IdCard, KeyRound } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
@@ -7,14 +7,19 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import type { SessionUser } from "@/server/guards";
-import { activityLog, managerRentals, staffSummary } from "@/server/queries/manager-profile";
+import { activityLog, dealFormOptions, listDeals, managerRentals, staffSummary } from "@/server/queries/manager-profile";
+import { listFleet } from "@/server/queries/fleet";
+import { FleetTable } from "@/features/fleet/fleet-table";
+import { DealsTab } from "./deals-tab";
+import { RentalsChart } from "@/features/my/rentals-chart";
+import { AppointmentsSection } from "@/features/my/pages";
 import { PasswordForm, ProfileForm } from "@/features/profile/profile-form";
 import { ManagerAvatar } from "./manager-avatar";
 import { StaffHeader } from "./staff-header";
 import { RentalsTab } from "./rentals-tab";
 import { HistoryTab } from "./history-tab";
 
-export const ADMIN_PROFILE_TABS = ["infos", "password", "rentals", "history"] as const;
+export const ADMIN_PROFILE_TABS = ["infos", "password", "cars", "rentals", "deals", "history"] as const;
 export type AdminProfileTab = (typeof ADMIN_PROFILE_TABS)[number];
 export const parseAdminTab = (v: unknown): AdminProfileTab => (ADMIN_PROFILE_TABS.includes(v as AdminProfileTab) ? (v as AdminProfileTab) : "infos");
 
@@ -41,13 +46,40 @@ export async function AdminProfile({ me, tab, locale }: { me: SessionUser; tab: 
   const tabs = [
     { id: "infos" as const, label: t("tabInfo"), Icon: IdCard },
     { id: "password" as const, label: t("tabPassword"), Icon: KeyRound },
+    { id: "cars" as const, label: t("tabCars"), Icon: CarFront },
     { id: "rentals" as const, label: t("tabRentals"), Icon: CalendarClock },
+    { id: "deals" as const, label: t("tabDeals"), Icon: Handshake },
     { id: "history" as const, label: t("tabHistory"), Icon: History },
   ];
 
   let body: React.ReactNode;
   if (tab === "password") body = <PasswordForm hasPassword={Boolean(u?.hash)} />;
-  else if (tab === "rentals") body = <RentalsTab rows={await managerRentals(me.id)} reservationsBase="/admin/reservations" />;
+  else if (tab === "cars") {
+    // L'administrateur suit tout le parc : ici, les voitures qu'il a ajoutées.
+    const mine = (await listFleet()).filter((car) => car.createdBy === me.id);
+    body = (
+      <div className="space-y-3">
+        <p className="text-sm text-ink-3">{t("adminCarsHint", { count: mine.length })}</p>
+        <FleetTable rows={mine} base="/admin" prefs={null} tableKey="admin-my-cars" />
+      </div>
+    );
+  } else if (tab === "rentals") {
+    const rentals = await managerRentals(me.id);
+    body = (
+      <div className="space-y-4">
+        <RentalsChart rows={rentals} />
+        <RentalsTab rows={rentals} reservationsBase="/admin/reservations" />
+      </div>
+    );
+  } else if (tab === "deals") {
+    const [deals, options] = await Promise.all([listDeals({ createdBy: me.id }), dealFormOptions()]);
+    body = (
+      <>
+        <DealsTab scope={{}} deals={deals} options={options} />
+        <AppointmentsSection me={me} />
+      </>
+    );
+  }
   else if (tab === "history") body = <HistoryTab rows={await activityLog({ userId: me.id, managerId: null })} tableKey="admin-self-history" />;
   else
     body = (

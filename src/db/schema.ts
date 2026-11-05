@@ -200,8 +200,18 @@ export const agencies = pgTable("agencies", {
   name: varchar("name", { length: 160 }).notNull(),
   address: text("address").notNull(),
   phone: varchar("phone", { length: 32 }),
+  whatsapp: varchar("whatsapp", { length: 32 }),
   isAirport: boolean("is_airport").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
+  /** Responsable de l'agence */
+  managerCivility: civilityEnum("manager_civility"),
+  managerLastName: varchar("manager_last_name", { length: 120 }),
+  managerFirstName: varchar("manager_first_name", { length: 120 }),
+  managerEmail: varchar("manager_email", { length: 255 }),
+  managerPhone: varchar("manager_phone", { length: 32 }),
+  deactivationReason: text("deactivation_reason"),
+  createdBy: uuid("created_by"),
+  updatedBy: uuid("updated_by"),
   ...timestamps,
 });
 

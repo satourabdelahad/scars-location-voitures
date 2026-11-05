@@ -56,7 +56,8 @@
     "myAchievements": "My achievements",
     "myReservations": "My bookings",
     "myCars": "My cars",
-    "history": "History"
+    "history": "History",
+    "myDeals": "My deals / prospects"
   },
   "Footer": {
     "tagline": "Cars ready to go in six Moroccan cities, at a quoted price that doesn't change at the counter.",
@@ -270,7 +271,8 @@
     "profile": "My profile",
     "security": "Security",
     "administration": "Email templates",
-    "clients": "Customers"
+    "clients": "Customers",
+    "agencies": "My branches"
   },
   "Managers": {
     "title": "Managers",
@@ -419,7 +421,8 @@
     "saveAsRuleHint": "All matching cars are assigned to them, including those added to the fleet later. A deactivated car leaves their list.",
     "alreadyAssigned": "Already assigned",
     "ruleMatches": "{count, plural, =0 {No car matches} one {# car matches} other {# cars match}}",
-    "saveRule": "Save rule"
+    "saveRule": "Save rule",
+    "adminCarsHint": "{count, plural, =0 {You have not added any car yet. The administrator follows the whole fleet.} one {# car added by you. The administrator follows the whole fleet.} other {# cars added by you. The administrator follows the whole fleet.}}"
   },
   "Documents": {
     "cin_front": "National ID card (CINE), front",
@@ -461,7 +464,9 @@
     "clearSelection": "Clear selection",
     "refresh": "Refresh",
     "selectAll": "Select all",
-    "selectRow": "Select row"
+    "selectRow": "Select row",
+    "bulkHint": "Bulk action: select rows",
+    "bulkLabel": "Bulk action"
   },
   "Fleet": {
     "title": "Fleet",
@@ -523,7 +528,7 @@
     "mainPhoto": "Main photo",
     "makeCoverShort": "Main",
     "assignedManagers": "Assigned managers",
-    "assignedManagersHint": "They receive this car's booking emails. None ticked: every manager.",
+    "assignedManagersHint": "Ticked managers can rent this car and receive its emails; the others cannot. None ticked: all managers can rent it.",
     "noManagers": "No active manager.",
     "allManagers": "All managers",
     "someManagers": "{count, plural, one {# manager assigned} other {# managers assigned}}",
@@ -538,7 +543,31 @@
       "maintenance": "In repair",
       "deactivated": "Deactivated"
     },
-    "managers": "Managers"
+    "managers": "Managers",
+    "tabStats": "Statistics",
+    "tabInfos": "Information",
+    "tabPricing": "Rates",
+    "tabPhotos": "Photos",
+    "tabDescriptions": "Detailed description",
+    "tabManagers": "Assigned managers",
+    "tabHistory": "History",
+    "chooseBrandFirst": "Choose the make first.",
+    "searchModel": "Search a model…",
+    "chooseModel": "Choose a model",
+    "noModel": "No model found.",
+    "useModel": "Use “{model}”",
+    "photoRequired": "The main photo is required.",
+    "noAgencyTitle": "No branch",
+    "noAgencyBody": "A car belongs to a branch. Add a branch first in “My branches”.",
+    "addAgency": "Add a branch",
+    "lastRental": "Last rental",
+    "neverRented": "Never rented",
+    "totalRevenue": "Total revenue",
+    "city": "City",
+    "statRentals": "Rentals",
+    "statDays": "Days rented",
+    "statAverage": "Average per rental",
+    "statOccupancy": "Occupancy (12 months)"
   },
   "Reservations": {
     "title": "Bookings",
@@ -664,7 +693,8 @@
     "captcha": "The anti-bot check failed. Reload the page and try again.",
     "email_failed": "The email could not be sent (check the domain in Resend).",
     "email_not_configured": "Email sending is not configured (RESEND_API_KEY).",
-    "no_client_email": "The customer has no email address."
+    "no_client_email": "The customer has no email address.",
+    "agency_has_cars": "This branch still has cars in service: move them to another branch or deactivate them first."
   },
   "About": {
     "title": "A Moroccan agency with well-kept cars",
@@ -757,7 +787,9 @@
       "reservations": "Bookings",
       "deals": "Deals",
       "profile": "Profile",
-      "clients": "Customers"
+      "clients": "Customers",
+      "agencies": "Branches",
+      "exports": "Exports"
     },
     "car_repair_start": "Sent to repair: {car}",
     "car_repair_end": "Back in service: {car}",
@@ -778,7 +810,17 @@
     "security_unlock": "Account unlocked",
     "manager_password_set": "Password changed by the administrator: {name}",
     "manager_assign_rule": "Assignment rule saved for {name}",
-    "manager_clear_rule": "Assignment rule removed for {name}"
+    "manager_clear_rule": "Assignment rule removed for {name}",
+    "agency_create": "Branch added: {name}",
+    "agency_update": "Branch updated: {name}",
+    "agency_deactivate": "Branch deactivated: {name}",
+    "agency_reactivate": "Branch reactivated: {name}",
+    "export_table": "Export: {name}",
+    "export_record": "Record export: {name}",
+    "manager_bulk_deactivate": "Bulk action: {name} manager(s) deactivated",
+    "manager_bulk_activate": "Bulk action: {name} manager(s) activated",
+    "manager_bulk_resend": "Bulk action: {name} invitation(s) resent",
+    "security_password_change": "Password changed"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -1203,5 +1245,34 @@
     "search": "Search a city…",
     "choose": "Choose a city",
     "noResult": "No city found."
+  },
+  "Agencies": {
+    "title": "My branches",
+    "subtitle": "Branches are never deleted: deactivate them with a reason.",
+    "new": "New branch",
+    "createTitle": "New branch",
+    "agency": "Branch",
+    "name": "Branch name",
+    "city": "City",
+    "address": "Address",
+    "phone": "Phone number",
+    "whatsapp": "WhatsApp number",
+    "isAirport": "Airport branch",
+    "airport": "Airport",
+    "manager": "Manager in charge",
+    "managerHint": "Person responsible for the branch.",
+    "created": "Branch added.",
+    "updated": "Branch saved.",
+    "cars": "Cars",
+    "updatedAt": "Updated on",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "deactivateTitle": "Deactivate branch {name}?",
+    "reactivateTitle": "Reactivate branch {name}?",
+    "deactivateBody": "It will no longer appear on the website or in forms.",
+    "reason": "Reason",
+    "deactivatedToast": "Branch deactivated.",
+    "reactivatedToast": "Branch reactivated.",
+    "carsCount": "{count, plural, =0 {no car} one {# car} other {# cars}}"
   }
 }

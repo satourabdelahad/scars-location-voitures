@@ -20,7 +20,7 @@ export async function managerIdForUser(userId: string) {
 /* ───────────────────────────── Réalisations ───────────────────────────── */
 
 /** Locations réalisées par un gestionnaire, ou par toute l'équipe quand userId est null (administrateur). */
-export async function managerRentals(userId: string | null) {
+export async function managerRentals(userId: string | null, opts: { carId?: string } = {}) {
   const res = await db.execute<{
     id: string;
     reference: string;
@@ -56,7 +56,7 @@ export async function managerRentals(userId: string | null) {
     JOIN cars c ON c.id = r.car_id
     JOIN agencies a ON a.id = r.pickup_agency_id
     LEFT JOIN promotions p ON p.id = r.promotion_id
-    WHERE ${userId ? sql`r.handled_by = ${userId} AND` : sql``} r.status IN ('confirmed', 'ongoing', 'completed')
+    WHERE ${userId ? sql`r.handled_by = ${userId} AND` : sql``} ${opts.carId ? sql`r.car_id = ${opts.carId} AND` : sql``} r.status IN ('confirmed', 'ongoing', 'completed')
     ORDER BY r.start_date DESC
     LIMIT 1000
   `);
@@ -88,9 +88,9 @@ export type RentalRow = Awaited<ReturnType<typeof managerRentals>>[number];
 /* ──────────────────────────────── Deals ──────────────────────────────── */
 
 /** Deals d'un gestionnaire ou d'un client (fiche client : tous les gestionnaires). */
-export async function listDeals(scope: { managerId?: string; clientId?: string }) {
+export async function listDeals(scope: { managerId?: string; clientId?: string; createdBy?: string }) {
   const rows = await db.query.deals.findMany({
-    where: scope.clientId ? eq(deals.clientId, scope.clientId) : eq(deals.managerId, scope.managerId!),
+    where: scope.clientId ? eq(deals.clientId, scope.clientId) : scope.createdBy ? eq(deals.createdBy, scope.createdBy) : eq(deals.managerId, scope.managerId!),
     orderBy: [desc(deals.updatedAt)],
     with: {
       manager: { columns: { id: true, firstName: true, lastName: true } },
@@ -164,7 +164,7 @@ export async function dealFormOptions() {
 
 /* ────────────────────────────── Historique ────────────────────────────── */
 
-export type ActivityGroup = "session" | "fleet" | "reservations" | "clients" | "deals" | "profile";
+export type ActivityGroup = "session" | "fleet" | "reservations" | "clients" | "deals" | "profile" | "agencies" | "exports";
 
 /**
  * Journal d'un gestionnaire : connexions, actions sur le parc et les réservations (audit_logs),
@@ -205,9 +205,10 @@ export async function activityLog(scope: { userId: string; managerId: string | n
              r.reference,
              COALESCE(NULLIF(trim(coalesce(cp.first_name, '') || ' ' || coalesce(cp.last_name, '')), ''), cu.name, cu.email,
                       NULLIF(trim(coalesce(ap_cp.first_name, '') || ' ' || coalesce(ap_cp.last_name, '')), ''), au.name,
-                      NULLIF(trim(lm.first_name || ' ' || lm.last_name), '')) AS deal_name,
+                      NULLIF(trim(lm.first_name || ' ' || lm.last_name), ''), ag.name, l.changes->>'title') AS deal_name,
              NULL AS from_type, NULL AS to_type,
-             COALESCE(l.changes->>'reason', l.changes->>'note') AS detail,
+             COALESCE(l.changes->>'reason', l.changes->>'note',
+                      CASE WHEN l.entity = 'export' THEN upper(l.changes->>'format') || ' · ' || (l.changes->>'rows') END) AS detail,
              l.changes->>'provider' AS provider,
              l.actor_id
       FROM audit_logs l
@@ -219,6 +220,7 @@ export async function activityLog(scope: { userId: string; managerId: string | n
       LEFT JOIN users au ON au.id = ap.client_id
       LEFT JOIN client_profiles ap_cp ON ap_cp.user_id = au.id
       LEFT JOIN managers lm ON l.entity = 'manager' AND lm.id::text = l.entity_id
+      LEFT JOIN agencies ag ON l.entity = 'agency' AND ag.id::text = l.entity_id
       WHERE (${byActor(sql.raw("l.actor_id"))}
              OR ${scope?.managerId ? sql`(l.entity = 'manager' AND l.entity_id = ${scope.managerId})` : sql`FALSE`})
         AND l.entity <> 'email_template'
@@ -245,6 +247,10 @@ export async function activityLog(scope: { userId: string; managerId: string | n
         ? "deals"
         : r.source === "profile" || r.entity === "manager"
           ? "profile"
+          : r.entity === "agency"
+            ? "agencies"
+            : r.entity === "export"
+              ? "exports"
           : r.entity === "session" || r.entity === "security"
             ? "session"
             : r.entity === "car"

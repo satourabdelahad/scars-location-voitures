@@ -10,6 +10,7 @@ import { Field, Textarea } from "@/components/ui/field";
 import { useRowPatches } from "@/components/data-table/use-row-patches";
 import { managerDisplayStatus, type ManagerDisplayStatus } from "@/lib/manager-status";
 import { bulkManagerAction } from "@/server/actions/managers";
+import { logExport } from "@/server/actions/audit";
 import { DataTable, type Column } from "@/components/data-table/data-table";
 import { ManagerActions } from "./manager-actions";
 import { ExportMenu } from "@/components/data-table/export-menu";
@@ -67,10 +68,11 @@ export function ManagerCardExport({ manager, size = "icon" }: { manager: Manager
     <ExportMenu
       size={size}
       label={t("exportCard")}
-      onExport={(f) =>
-        exportRecord(
+      onExport={async (f) => {
+        const title = `${t("profileCard")} : ${manager.firstName} ${manager.lastName}`;
+        await exportRecord(
           {
-            title: `${t("profileCard")} : ${manager.firstName} ${manager.lastName}`,
+            title,
             subtitle: new Date().toLocaleString(),
             fields: fields(manager),
             filename: `gestionnaire-${manager.lastName}-${manager.firstName}`.toLowerCase(),
@@ -78,8 +80,9 @@ export function ManagerCardExport({ manager, size = "icon" }: { manager: Manager
             labels: { field: tt("field"), value: tt("value") },
           },
           f,
-        )
-      }
+        );
+        void logExport({ kind: "record", key: "manager", title, format: f, rows: 1 });
+      }}
     />
   );
 }
@@ -187,7 +190,7 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
             <Link href={`/admin/managers/${m.id}?edit=1`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("edit")} title={c("edit")}>
               <Pencil className="size-4" />
             </Link>
-            <ManagerActions id={m.id} name={`${m.firstName} ${m.lastName}`} status={managerDisplayStatus(m)} compact onDone={(next) => patch(m.id, next)} />
+            <ManagerActions id={m.id} name={`${m.firstName} ${m.lastName}`} status={managerDisplayStatus(m)} canResendInvite={managerDisplayStatus(m) === "active" && !m.hasPassword} compact onDone={(next) => patch(m.id, next)} />
           </div>
         ),
       },
@@ -228,7 +231,8 @@ function ManagersBulkActions({
   const by = (s: ManagerDisplayStatus) => selected.filter((m) => managerDisplayStatus(m) === s);
   const active = by("active");
   const deactivated = by("deactivated");
-  const invited = by("pending");
+  // Invitation : comptes en attente, ou comptes actifs qui n'ont encore jamais choisi de mot de passe.
+  const invited = selected.filter((m) => managerDisplayStatus(m) === "pending" || (managerDisplayStatus(m) === "active" && !m.hasPassword));
 
   const run = (action: "deactivate" | "activate" | "resend", rows: ManagerRow[]) =>
     start(async () => {

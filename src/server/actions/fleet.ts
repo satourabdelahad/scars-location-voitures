@@ -70,6 +70,8 @@ export async function createCar(input: { data: unknown; images: unknown; manager
     const parsed = carSchema.safeParse(input.data);
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };
     const images = imagesSchema.parse(input.images ?? []);
+    // Photo principale obligatoire
+    if (!images.length) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
     const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
     const { descriptions, ...data } = parsed.data;
     const id = await db.transaction(async (tx) => {
@@ -98,6 +100,8 @@ export async function updateCar(id: string, input: { data: unknown; images: unkn
     const parsed = carSchema.safeParse(input.data);
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };
     const images = imagesSchema.parse(input.images ?? []);
+    // Photo principale obligatoire
+    if (!images.length) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
     const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
     const { descriptions, ...data } = parsed.data;
     const [current] = await db.select({ status: cars.status }).from(cars).where(eq(cars.id, id)).limit(1);

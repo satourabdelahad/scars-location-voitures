@@ -1,10 +1,7 @@
-import { setRequestLocale } from "next-intl/server";
-import { requireRole } from "@/server/guards";
-import { AchievementsPage } from "@/features/my/pages";
+import { redirect } from "@/i18n/navigation";
 
+/** Ancienne page du menu : c'est maintenant l'onglet de sa propre fiche. */
 export default async function Page({ params }: PageProps<"/[locale]/manager/achievements">) {
   const { locale } = await params;
-  setRequestLocale(locale);
-  const me = await requireRole(["manager"], "/manager/achievements");
-  return <AchievementsPage me={me} />;
+  redirect({ href: "/manager/profile?tab=rentals", locale });
 }

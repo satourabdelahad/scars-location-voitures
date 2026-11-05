@@ -1,7 +1,7 @@
 "use client";
 
 import { Popover } from "radix-ui";
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Columns3, RefreshCw, Search, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Columns3, RefreshCw, Search, X, ListChecks } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "@/i18n/navigation";
@@ -9,6 +9,7 @@ import { intlLocale, localeMeta, type Locale } from "@/i18n/config";
 import { exportTable, type ExportFormat } from "@/lib/export";
 import { cn } from "@/lib/utils";
 import { saveTablePreferences } from "@/server/actions/managers";
+import { logExport } from "@/server/actions/audit";
 import { ExportMenu } from "./export-menu";
 
 export type Column<T> = {
@@ -160,8 +161,9 @@ export function DataTable<T extends { id: string }>({
         },
         format,
       );
+      void logExport({ kind: "table", key: tableKey, title: exportTitle, format, rows: sorted.length });
     },
-    [exportTitle, exportFilename, sorted, orderedVisible, locale],
+    [exportTitle, exportFilename, sorted, orderedVisible, locale, tableKey],
   );
 
   const hasFilters = query || Object.values(filters).some(Boolean);
@@ -189,9 +191,19 @@ export function DataTable<T extends { id: string }>({
           </button>
         )}
         <div className="ms-auto flex flex-wrap items-center gap-2">
+          {bulkActions && selectedRows.length === 0 && (
+            // Toujours visible : indique que l'action groupée existe et comment l'utiliser.
+            <span className="inline-flex h-10 items-center gap-2 rounded-[10px] border border-dashed border-mist-2 px-3 text-sm font-medium text-ink-3">
+              <ListChecks className="size-4" />
+              {t("bulkHint")}
+            </span>
+          )}
           {bulkActions && selectedRows.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 rounded-[10px] bg-majorelle-soft px-2 py-1">
-              <span className="px-1 text-sm font-semibold text-majorelle">{t("selected", { count: selectedRows.length })}</span>
+              <span className="px-1 text-sm font-semibold text-majorelle">
+                <ListChecks className="me-1 inline size-4 align-[-3px]" />
+                {t("bulkLabel")} · {t("selected", { count: selectedRows.length })}
+              </span>
               {bulkActions(selectedRows, clearSelection)}
               <button type="button" onClick={clearSelection} aria-label={t("clearSelection")} title={t("clearSelection")} className="grid size-8 place-items-center rounded-lg text-majorelle hover:bg-paper">
                 <X className="size-4" />

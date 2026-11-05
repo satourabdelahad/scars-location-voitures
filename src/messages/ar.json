@@ -56,7 +56,8 @@
     "myAchievements": "إنجازاتي",
     "myReservations": "حجوزاتي",
     "myCars": "سياراتي",
-    "history": "السجل"
+    "history": "السجل",
+    "myDeals": "صفقاتي / عملائي المحتملون"
   },
   "Footer": {
     "tagline": "سيارات جاهزة للانطلاق في ست مدن مغربية، بسعر معلن لا يتغير عند الشباك.",
@@ -270,7 +271,8 @@
     "profile": "ملفي الشخصي",
     "security": "الأمان",
     "administration": "قوالب البريد الإلكتروني",
-    "clients": "العملاء"
+    "clients": "العملاء",
+    "agencies": "وكالاتي"
   },
   "Managers": {
     "title": "المسيّرون",
@@ -419,7 +421,8 @@
     "saveAsRuleHint": "تُسند إليه كل السيارات المطابقة، بما فيها التي تُضاف لاحقًا إلى الأسطول. السيارة المعطلة تخرج من قائمته.",
     "alreadyAssigned": "مسندة مسبقًا",
     "ruleMatches": "السيارات المطابقة: {count}",
-    "saveRule": "حفظ القاعدة"
+    "saveRule": "حفظ القاعدة",
+    "adminCarsHint": "{count, plural, =0 {لم تُضف أي سيارة بعد. يتابع المسؤول كل الأسطول.} other {أضفت {count} سيارة. يتابع المسؤول كل الأسطول.}}"
   },
   "Documents": {
     "cin_front": "البطاقة الوطنية (CINE) — الوجه",
@@ -461,7 +464,9 @@
     "clearSelection": "إلغاء التحديد",
     "refresh": "تحديث",
     "selectAll": "تحديد الكل",
-    "selectRow": "تحديد السطر"
+    "selectRow": "تحديد السطر",
+    "bulkHint": "إجراء جماعي: حدّد أسطرًا",
+    "bulkLabel": "إجراء جماعي"
   },
   "Fleet": {
     "title": "أسطول السيارات",
@@ -523,7 +528,7 @@
     "mainPhoto": "الصورة الرئيسية",
     "makeCoverShort": "رئيسية",
     "assignedManagers": "المسيّرون المرتبطون",
-    "assignedManagersHint": "يتلقون رسائل حجز هذه السيارة. إن لم يُحدَّد أحد: جميع المسيّرين.",
+    "assignedManagersHint": "يمكن للمسيّرين المحدَّدين كراء هذه السيارة ويتلقون رسائلها؛ ولا يمكن للآخرين. إن لم يُحدَّد أحد: يمكن للجميع كراؤها.",
     "noManagers": "لا يوجد مسيّر نشط.",
     "allManagers": "جميع المسيّرين",
     "someManagers": "{count, plural, one {مسيّر واحد مرتبط} other {# مسيّرين مرتبطين}}",
@@ -538,7 +543,31 @@
       "maintenance": "في الإصلاح",
       "deactivated": "معطَّلة"
     },
-    "managers": "المسيّرون"
+    "managers": "المسيّرون",
+    "tabStats": "الإحصائيات",
+    "tabInfos": "المعلومات",
+    "tabPricing": "التسعيرة",
+    "tabPhotos": "الصور",
+    "tabDescriptions": "الوصف المفصّل",
+    "tabManagers": "المسيّرون المرتبطون",
+    "tabHistory": "السجل",
+    "chooseBrandFirst": "اختر العلامة أولًا.",
+    "searchModel": "ابحث عن طراز…",
+    "chooseModel": "اختر طرازًا",
+    "noModel": "لم يتم العثور على أي طراز.",
+    "useModel": "استعمال «{model}»",
+    "photoRequired": "الصورة الرئيسية إلزامية.",
+    "noAgencyTitle": "لا توجد وكالة",
+    "noAgencyBody": "السيارة مرتبطة بوكالة. أضف وكالة أولًا من «وكالاتي».",
+    "addAgency": "إضافة وكالة",
+    "lastRental": "آخر كراء",
+    "neverRented": "لم تُكرَ قط",
+    "totalRevenue": "المداخيل التراكمية",
+    "city": "المدينة",
+    "statRentals": "الكراءات",
+    "statDays": "أيام الكراء",
+    "statAverage": "المعدل لكل كراء",
+    "statOccupancy": "نسبة الإشغال (12 شهرًا)"
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -664,7 +693,8 @@
     "captcha": "فشل التحقق من أنك لست روبوتًا. أعد تحميل الصفحة وحاول مجددًا.",
     "email_failed": "تعذّر إرسال البريد الإلكتروني (تحقق من النطاق في Resend).",
     "email_not_configured": "إرسال البريد الإلكتروني غير مُعدّ (RESEND_API_KEY).",
-    "no_client_email": "ليس للعميل عنوان بريد إلكتروني."
+    "no_client_email": "ليس للعميل عنوان بريد إلكتروني.",
+    "agency_has_cars": "لا تزال لهذه الوكالة سيارات في الخدمة: انقلها إلى وكالة أخرى أو عطّلها أولًا."
   },
   "About": {
     "title": "وكالة مغربية بسيارات في حالة جيدة",
@@ -757,7 +787,9 @@
       "reservations": "الحجوزات",
       "deals": "الصفقات",
       "profile": "الملف",
-      "clients": "العملاء"
+      "clients": "العملاء",
+      "agencies": "الوكالات",
+      "exports": "التصديرات"
     },
     "car_repair_start": "إرسال إلى الإصلاح: {car}",
     "car_repair_end": "إعادة إلى الخدمة: {car}",
@@ -778,7 +810,17 @@
     "security_unlock": "تم فك قفل الحساب",
     "manager_password_set": "غيّر المسؤول كلمة المرور: {name}",
     "manager_assign_rule": "حُفظت قاعدة الإسناد لـ {name}",
-    "manager_clear_rule": "حُذفت قاعدة الإسناد لـ {name}"
+    "manager_clear_rule": "حُذفت قاعدة الإسناد لـ {name}",
+    "agency_create": "أضيفت وكالة: {name}",
+    "agency_update": "عُدّلت وكالة: {name}",
+    "agency_deactivate": "عُطّلت وكالة: {name}",
+    "agency_reactivate": "أعيد تفعيل وكالة: {name}",
+    "export_table": "تصدير: {name}",
+    "export_record": "تصدير ملف: {name}",
+    "manager_bulk_deactivate": "إجراء جماعي: تعطيل {name} مسيّر",
+    "manager_bulk_activate": "إجراء جماعي: تفعيل {name} مسيّر",
+    "manager_bulk_resend": "إجراء جماعي: إعادة إرسال {name} دعوة",
+    "security_password_change": "تم تغيير كلمة المرور"
   },
   "Deals": {
     "title": "الصفقات / العملاء المحتملون",
@@ -1203,5 +1245,34 @@
     "search": "ابحث عن مدينة…",
     "choose": "اختر مدينة",
     "noResult": "لم يتم العثور على أي مدينة."
+  },
+  "Agencies": {
+    "title": "وكالاتي",
+    "subtitle": "لا تُحذف الوكالات أبدًا: عطّلها مع ذكر السبب.",
+    "new": "وكالة جديدة",
+    "createTitle": "وكالة جديدة",
+    "agency": "الوكالة",
+    "name": "اسم الوكالة",
+    "city": "المدينة",
+    "address": "العنوان",
+    "phone": "رقم الهاتف",
+    "whatsapp": "رقم واتساب",
+    "isAirport": "وكالة مطار",
+    "airport": "مطار",
+    "manager": "المسؤول",
+    "managerHint": "الشخص المسؤول عن الوكالة.",
+    "created": "تمت إضافة الوكالة.",
+    "updated": "تم حفظ الوكالة.",
+    "cars": "السيارات",
+    "updatedAt": "عُدّلت في",
+    "deactivate": "تعطيل",
+    "reactivate": "إعادة التفعيل",
+    "deactivateTitle": "تعطيل الوكالة {name}؟",
+    "reactivateTitle": "إعادة تفعيل الوكالة {name}؟",
+    "deactivateBody": "لن تظهر بعد الآن في الموقع ولا في الاستمارات.",
+    "reason": "السبب",
+    "deactivatedToast": "تم تعطيل الوكالة.",
+    "reactivatedToast": "أعيد تفعيل الوكالة.",
+    "carsCount": "{count} سيارة"
   }
 }

@@ -56,7 +56,8 @@
     "myAchievements": "내 실적",
     "myReservations": "내 예약",
     "myCars": "내 차량",
-    "history": "기록"
+    "history": "기록",
+    "myDeals": "내 거래 / 잠재 고객"
   },
   "Footer": {
     "tagline": "모로코 6개 도시에서 바로 출발할 수 있는 차량. 안내된 요금은 카운터에서도 바뀌지 않습니다.",
@@ -270,7 +271,8 @@
     "profile": "내 프로필",
     "security": "보안",
     "administration": "이메일 템플릿",
-    "clients": "고객"
+    "clients": "고객",
+    "agencies": "내 지점"
   },
   "Managers": {
     "title": "매니저",
@@ -419,7 +421,8 @@
     "saveAsRuleHint": "조건에 맞는 모든 차량이 배정되며, 나중에 추가되는 차량도 포함됩니다. 비활성화된 차량은 목록에서 빠집니다.",
     "alreadyAssigned": "이미 배정됨",
     "ruleMatches": "조건에 맞는 차량: {count}대",
-    "saveRule": "규칙 저장"
+    "saveRule": "규칙 저장",
+    "adminCarsHint": "{count, plural, =0 {아직 추가한 차량이 없습니다. 관리자는 전체 차량을 관리합니다.} other {내가 추가한 차량: {count}대. 관리자는 전체 차량을 관리합니다.}}"
   },
   "Documents": {
     "cin_front": "신분증(CINE) 앞면",
@@ -461,7 +464,9 @@
     "clearSelection": "선택 해제",
     "refresh": "새로고침",
     "selectAll": "모두 선택",
-    "selectRow": "행 선택"
+    "selectRow": "행 선택",
+    "bulkHint": "일괄 작업: 행을 선택하세요",
+    "bulkLabel": "일괄 작업"
   },
   "Fleet": {
     "title": "차량 관리",
@@ -523,7 +528,7 @@
     "mainPhoto": "대표 사진",
     "makeCoverShort": "대표",
     "assignedManagers": "담당 매니저",
-    "assignedManagersHint": "이 차량의 예약 이메일을 받습니다. 선택하지 않으면 모든 매니저.",
+    "assignedManagersHint": "선택한 매니저는 이 차량을 렌트하고 이메일을 받습니다. 나머지는 렌트할 수 없습니다. 아무도 선택하지 않으면 모든 매니저가 렌트할 수 있습니다.",
     "noManagers": "활성 매니저가 없습니다.",
     "allManagers": "모든 매니저",
     "someManagers": "{count, plural, other {담당 매니저 #명}}",
@@ -538,7 +543,31 @@
       "maintenance": "수리 중",
       "deactivated": "비활성"
     },
-    "managers": "매니저"
+    "managers": "매니저",
+    "tabStats": "통계",
+    "tabInfos": "정보",
+    "tabPricing": "요금",
+    "tabPhotos": "사진",
+    "tabDescriptions": "상세 설명",
+    "tabManagers": "담당 매니저",
+    "tabHistory": "기록",
+    "chooseBrandFirst": "먼저 브랜드를 선택하세요.",
+    "searchModel": "모델 검색…",
+    "chooseModel": "모델 선택",
+    "noModel": "모델을 찾을 수 없습니다.",
+    "useModel": "“{model}” 사용",
+    "photoRequired": "대표 사진은 필수입니다.",
+    "noAgencyTitle": "지점 없음",
+    "noAgencyBody": "차량은 지점에 속합니다. 먼저 “내 지점”에서 지점을 추가하세요.",
+    "addAgency": "지점 추가",
+    "lastRental": "최근 렌트",
+    "neverRented": "렌트 이력 없음",
+    "totalRevenue": "누적 수익",
+    "city": "도시",
+    "statRentals": "렌트 횟수",
+    "statDays": "렌트 일수",
+    "statAverage": "렌트당 평균",
+    "statOccupancy": "가동률(12개월)"
   },
   "Reservations": {
     "title": "예약",
@@ -664,7 +693,8 @@
     "captcha": "자동화 방지 확인에 실패했습니다. 페이지를 새로고침한 뒤 다시 시도하세요.",
     "email_failed": "이메일을 보낼 수 없습니다(Resend에서 도메인을 확인하세요).",
     "email_not_configured": "이메일 발송이 설정되지 않았습니다(RESEND_API_KEY).",
-    "no_client_email": "고객에게 이메일 주소가 없습니다."
+    "no_client_email": "고객에게 이메일 주소가 없습니다.",
+    "agency_has_cars": "이 지점에 아직 운행 중인 차량이 있습니다. 먼저 다른 지점으로 옮기거나 비활성화하세요."
   },
   "About": {
     "title": "잘 관리된 차량을 갖춘 모로코 렌터카",
@@ -757,7 +787,9 @@
       "reservations": "예약",
       "deals": "딜",
       "profile": "프로필",
-      "clients": "고객"
+      "clients": "고객",
+      "agencies": "지점",
+      "exports": "내보내기"
     },
     "car_repair_start": "수리 보냄: {car}",
     "car_repair_end": "운행 재개: {car}",
@@ -778,7 +810,17 @@
     "security_unlock": "계정 잠금 해제",
     "manager_password_set": "관리자가 비밀번호 변경: {name}",
     "manager_assign_rule": "{name}의 배정 규칙 저장",
-    "manager_clear_rule": "{name}의 배정 규칙 삭제"
+    "manager_clear_rule": "{name}의 배정 규칙 삭제",
+    "agency_create": "지점 추가: {name}",
+    "agency_update": "지점 수정: {name}",
+    "agency_deactivate": "지점 비활성화: {name}",
+    "agency_reactivate": "지점 재활성화: {name}",
+    "export_table": "내보내기: {name}",
+    "export_record": "기록 내보내기: {name}",
+    "manager_bulk_deactivate": "일괄 작업: 매니저 {name}명 비활성화",
+    "manager_bulk_activate": "일괄 작업: 매니저 {name}명 활성화",
+    "manager_bulk_resend": "일괄 작업: 초대 {name}건 재발송",
+    "security_password_change": "비밀번호 변경"
   },
   "Deals": {
     "title": "딜 / 잠재 고객",
@@ -1203,5 +1245,34 @@
     "search": "도시 검색…",
     "choose": "도시 선택",
     "noResult": "도시를 찾을 수 없습니다."
+  },
+  "Agencies": {
+    "title": "내 지점",
+    "subtitle": "지점은 삭제되지 않습니다. 사유를 입력해 비활성화하세요.",
+    "new": "새 지점",
+    "createTitle": "새 지점",
+    "agency": "지점",
+    "name": "지점 이름",
+    "city": "도시",
+    "address": "주소",
+    "phone": "전화번호",
+    "whatsapp": "WhatsApp 번호",
+    "isAirport": "공항 지점",
+    "airport": "공항",
+    "manager": "책임자",
+    "managerHint": "지점 책임자.",
+    "created": "지점을 추가했습니다.",
+    "updated": "지점을 저장했습니다.",
+    "cars": "차량",
+    "updatedAt": "수정일",
+    "deactivate": "비활성화",
+    "reactivate": "재활성화",
+    "deactivateTitle": "{name} 지점을 비활성화할까요?",
+    "reactivateTitle": "{name} 지점을 재활성화할까요?",
+    "deactivateBody": "웹사이트와 양식에 더 이상 표시되지 않습니다.",
+    "reason": "사유",
+    "deactivatedToast": "지점을 비활성화했습니다.",
+    "reactivatedToast": "지점을 재활성화했습니다.",
+    "carsCount": "{count}대"
   }
 }

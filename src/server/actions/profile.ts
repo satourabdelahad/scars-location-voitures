@@ -130,6 +130,7 @@ export async function changeMyPassword(input: { current: string; next: string; c
     if (!PASSWORD_RE.test(input.next ?? "")) return { ok: false, error: "validation", fieldErrors: { next: "passwordWeak" } };
     if (input.next !== input.confirm) return { ok: false, error: "validation", fieldErrors: { confirm: "passwordMismatch" } };
     await db.update(users).set({ passwordHash: await bcrypt.hash(input.next, 12) }).where(eq(users.id, me.id));
+    await db.insert(auditLogs).values({ actorId: me.id, entity: "security", entityId: me.id, action: "password_change" });
     return { ok: true };
   } catch (err) {
     return toActionError(err);

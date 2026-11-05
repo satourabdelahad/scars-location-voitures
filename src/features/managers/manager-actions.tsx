@@ -81,12 +81,24 @@ export function ManagerActions({
 
   return (
     <>
-      {canResendInvite && (
-        <Button variant="outline" onClick={resend}>
-          <MailPlus />
-          {t("resendInvite")}
-        </Button>
-      )}
+      {canResendInvite &&
+        (compact ? (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={resend}
+            aria-label={t("resendInvite")}
+            title={t("resendInvite")}
+            className="grid size-8 place-items-center rounded-lg text-majorelle hover:bg-majorelle-soft disabled:opacity-50"
+          >
+            {pending ? <Loader2 className="size-4 animate-spin" /> : <MailPlus className="size-4" />}
+          </button>
+        ) : (
+          <Button variant="outline" loading={pending} onClick={resend}>
+            <MailPlus />
+            {t("resendInvite")}
+          </Button>
+        ))}
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); setError(undefined); }}>
         <DialogTrigger asChild>
           {compact ? (

@@ -12,6 +12,7 @@ export async function BackofficeShell({ user, base, children }: { user: SessionU
   const t = await getTranslations("Back");
   const n = await getTranslations("Nav");
   const items: NavItem[] = [
+    { href: `${base}/agencies`, label: t("agencies"), icon: "agencies" },
     { href: base, label: t("dashboard"), icon: "dashboard", exact: true },
     ...(base === "/admin" ? [{ href: `${base}/managers`, label: t("managers"), icon: "managers" as const }] : []),
     { href: `${base}/clients`, label: t("clients"), icon: "clients" },
