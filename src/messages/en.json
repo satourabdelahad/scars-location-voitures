@@ -269,7 +269,7 @@
     "nothingToday": "Nothing scheduled today.",
     "profile": "My profile",
     "security": "Security",
-    "administration": "Administration",
+    "administration": "Email templates",
     "clients": "Customers"
   },
   "Managers": {
@@ -390,7 +390,36 @@
     "unselectShown": "Untick all",
     "noCarFound": "No car found.",
     "carsPicked": "{count, plural, =0 {No car ticked} one {# car ticked} other {# cars ticked}}",
-    "assign": "Assign"
+    "assign": "Assign",
+    "tabPassword": "Password",
+    "presence": "Presence",
+    "online": "Online",
+    "offline": "Offline",
+    "assignedCount": "Assigned cars",
+    "wholeFleet": "Whole fleet ({count})",
+    "carsCount": "{count, plural, one {# car} other {# cars}}",
+    "sharedOnly": "Shared cars",
+    "assignedCity": "Assigned city",
+    "lastDeal": "Last deal closed",
+    "noDealYet": "None yet",
+    "ruleCleared": "Rule removed: cars already assigned stay.",
+    "ruleActive": "Automatic rule:",
+    "ruleCount": "{count, plural, =0 {no car} one {# car} other {# cars}}",
+    "ruleClear": "Remove rule",
+    "byRule": "By rule",
+    "byBrand": "Assign by make",
+    "byCity": "Assign by city",
+    "searchBrand": "Search a make…",
+    "searchCity": "Search a city…",
+    "allBrands": "All makes",
+    "allCities": "All cities",
+    "clearChoice": "Clear choice",
+    "noOption": "No result",
+    "saveAsRule": "Save these criteria as a rule",
+    "saveAsRuleHint": "All matching cars are assigned to them, including those added to the fleet later. A deactivated car leaves their list.",
+    "alreadyAssigned": "Already assigned",
+    "ruleMatches": "{count, plural, =0 {No car matches} one {# car matches} other {# cars match}}",
+    "saveRule": "Save rule"
   },
   "Documents": {
     "cin_front": "National ID card (CINE), front",
@@ -693,7 +722,8 @@
     "tplBtnProcess": "Handle the booking",
     "tplBtnClientInvite": "Activate my account",
     "tplBtnCars": "See our cars",
-    "sentToClientNote": "Summary sent to the customer ({email})."
+    "sentToClientNote": "Summary sent to the customer ({email}).",
+    "tplBtnLogin": "Sign in"
   },
   "Activity": {
     "session_login": "Signed in",
@@ -745,7 +775,10 @@
     "manager_assign_cars": "Cars assigned to {name}",
     "manager_unassign_car": "Car removed from {name}",
     "client_invite": "Invitation sent to customer: {name}",
-    "security_unlock": "Account unlocked"
+    "security_unlock": "Account unlocked",
+    "manager_password_set": "Password changed by the administrator: {name}",
+    "manager_assign_rule": "Assignment rule saved for {name}",
+    "manager_clear_rule": "Assignment rule removed for {name}"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -885,7 +918,14 @@
     "passwordMismatch": "The two passwords don't match",
     "welcomeTitle": "Welcome to Dizy Cars!",
     "welcomeBody": "Your password is saved. Check and complete your details below, then save.",
-    "licenseNumber": "Driving licence number"
+    "licenseNumber": "Driving licence number",
+    "passwordSavedFor": "New password saved for {name}.",
+    "passwordEmailed": "An email with the new password was sent to the manager.",
+    "passwordNotEmailed": "Password saved, but the email could not be sent (check Resend).",
+    "setPasswordTitle": "Change password",
+    "setPasswordHint": "Choose {name}'s new password; they will receive it by email.",
+    "showPassword": "Show password",
+    "savePassword": "Save password"
   },
   "My": {
     "chartTitle": "Revenue by month",
@@ -944,7 +984,7 @@
     "cancel": "Cancel"
   },
   "Admin": {
-    "title": "Administration",
+    "title": "Email templates",
     "subtitle": "Templates for the emails the site sends automatically.",
     "templates": "Email templates",
     "customSince": "Edited on {date}",
@@ -986,6 +1026,11 @@
         "name": "Prospect follow-up",
         "when": "“Send to customer” button on a prospect",
         "recipients": "Sent to the customer linked to the prospect, signed by the sender."
+      },
+      "manager_password_set": {
+        "name": "New password",
+        "when": "When the administrator changes a manager's password",
+        "recipients": "Sent to the manager, with their new password."
       }
     },
     "vars": {
@@ -1040,7 +1085,11 @@
       "gestionnaire_telephone": "Sender phone",
       "gestionnaire_email": "Sender email",
       "lien_site": "Link to the cars",
-      "bouton_site": "Button to the cars"
+      "bouton_site": "Button to the cars",
+      "mot_de_passe": "New password",
+      "modifie_par": "Changed by",
+      "lien_connexion": "Sign-in link",
+      "bouton_connexion": "Sign-in button"
     },
     "language": "Language",
     "languageHint": "{language} template: each language has its own template. Recipients get the one in their language."

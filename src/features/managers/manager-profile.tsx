@@ -1,4 +1,4 @@
-import { CalendarClock, CarFront, Handshake, History, IdCard, MailWarning } from "lucide-react";
+import { CalendarClock, CarFront, Handshake, History, IdCard, KeyRound, MailWarning } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
@@ -7,9 +7,10 @@ import { ManagerAvatar } from "./manager-avatar";
 import { UnlockButton } from "@/features/security/unlock-button";
 import type { SessionUser } from "@/server/guards";
 import { managerRentalCounts, type ManagerDetail } from "@/server/queries/managers";
-import { dealFormOptions, managerActivity, managerDeals, managerRentals } from "@/server/queries/manager-profile";
+import { dealFormOptions, managerActivity, managerDeals, managerRentals, staffSummary } from "@/server/queries/manager-profile";
+import { StaffHeader } from "./staff-header";
 import { ManagerForm } from "./manager-form";
-import { PasswordForm } from "@/features/profile/profile-form";
+import { AdminSetPasswordForm, PasswordForm } from "@/features/profile/profile-form";
 import { ManagerActions } from "./manager-actions";
 import { ManagerCardExport } from "./managers-table";
 import { RentalsTab } from "./rentals-tab";
@@ -19,7 +20,7 @@ import { AssignedCarsTab } from "./assigned-cars-tab";
 import { listFleet } from "@/server/queries/fleet";
 import { managerDisplayStatus } from "@/lib/manager-status";
 
-export const PROFILE_TABS = ["infos", "cars", "rentals", "deals", "history"] as const;
+export const PROFILE_TABS = ["infos", "password", "cars", "rentals", "deals", "history"] as const;
 export type ProfileTab = (typeof PROFILE_TABS)[number];
 
 export function parseTab(v: string | string[] | undefined): ProfileTab {
@@ -51,9 +52,13 @@ export async function ManagerProfile({
   const locked = m.user.loginLockedUntil && m.user.loginLockedUntil > new Date() ? m.user.loginLockedUntil : null;
   const reservationsBase = isAdmin ? "/admin/reservations" : "/manager/reservations";
   const display = managerDisplayStatus(m);
+  const isSelf = viewer.id === m.userId;
+  const summary = await staffSummary(m.userId, m.id);
 
   const tabs: { id: ProfileTab; label: string; Icon: typeof IdCard }[] = [
     { id: "infos", label: t("tabInfo"), Icon: IdCard },
+    // Mot de passe : visible par le gestionnaire lui-même et par l'administrateur.
+    ...(isAdmin || isSelf ? [{ id: "password" as const, label: t("tabPassword"), Icon: KeyRound }] : []),
     { id: "cars", label: t("tabCars"), Icon: CarFront },
     { id: "rentals", label: t("tabRentals"), Icon: CalendarClock },
     { id: "deals", label: t("tabDeals"), Icon: Handshake },
@@ -79,13 +84,17 @@ export async function ManagerProfile({
   };
 
   let body: React.ReactNode;
-  if (tab === "cars") {
+  if (tab === "password" && (isAdmin || isSelf)) {
+    body = isSelf ? <PasswordForm hasPassword={m.user.hasPassword} /> : <AdminSetPasswordForm managerId={m.id} name={name} />;
+  } else if (tab === "cars") {
     const fleet = await listFleet();
     body = (
       <AssignedCarsTab
         managerId={m.id}
         assigned={fleet.filter((c) => c.managerIds.includes(m.id))}
-        candidates={fleet.filter((c) => c.status !== "deactivated" && !c.managerIds.includes(m.id))}
+        candidates={fleet.filter((c) => c.status !== "deactivated")}
+        rule={summary.rule}
+        ruleCarIds={summary.ruleCarIds}
         sharedCount={fleet.filter((c) => c.status !== "deactivated" && c.managerIds.length === 0).length}
         canEdit={isAdmin}
         fleetBase={isAdmin ? "/admin" : "/manager"}
@@ -114,7 +123,6 @@ export async function ManagerProfile({
           existingDocs={m.documents.map((d) => d.kind)}
           readOnly={readOnlyInfo}
         />
-        <PasswordForm hasPassword={m.user.hasPassword} />
       </div>
     );
   } else {
@@ -154,6 +162,8 @@ export async function ManagerProfile({
         </div>
         {isAdmin && <ManagerCardExport manager={await exportRow(m)} size="md" />}
       </div>
+
+      <StaffHeader summary={summary} email={m.user.email} phone={m.phone} whatsapp={m.whatsapp} locale={locale} />
 
       {locked && (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-danger/30 bg-danger-soft px-5 py-4">

@@ -26,7 +26,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <h1 className="display max-w-[11ch] text-[clamp(2.9rem,7.4vw,6.2rem)] text-ink">{t("heroTitle")}</h1>
             <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-ink-2">{t("heroSubtitle")}</p>
           </div>
-          <div className="relative z-10 -mb-[4.6%] hidden w-full max-w-[680px] justify-self-end lg:block" aria-hidden>
+          <div className="relative z-10 -mb-[4.6%] hidden w-full max-w-[400px] justify-self-end lg:block" aria-hidden>
             <Scenery className="absolute -inset-x-[30%] bottom-[7%] h-[62%] [mask-image:linear-gradient(90deg,transparent,#000_18%,#000_82%,transparent)]" />
             <DrivingCar category="suv_4x4" color="#4b3fd8" messages={[tc("hello"), tc("welcome"), tc("mission")]} className="car-arrive" />
           </div>

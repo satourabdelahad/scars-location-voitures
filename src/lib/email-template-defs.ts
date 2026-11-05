@@ -1,5 +1,5 @@
 /** Modèles d'email modifiables dans Administration. Partagé navigateur / serveur (pas de secrets ici). */
-export const TEMPLATE_KEYS = ["manager_invite", "client_invite", "car_created", "reservation_created", "prospect_followup"] as const;
+export const TEMPLATE_KEYS = ["manager_invite", "client_invite", "car_created", "reservation_created", "prospect_followup", "manager_password_set"] as const;
 export type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
 /** Variables disponibles par modèle, avec une valeur d'exemple pour l'aperçu. */
@@ -88,10 +88,21 @@ export const TEMPLATE_VARIABLES: Record<TemplateKey, { key: string; sample: stri
     { key: "bouton_site", sample: "[bouton]" },
     { key: "site", sample: "Dizy Cars" },
   ],
+  manager_password_set: [
+    { key: "civilite", sample: "Madame" },
+    { key: "prenom", sample: "Salma" },
+    { key: "nom", sample: "Bennani" },
+    { key: "email", sample: "salma@dizy-cars.com" },
+    { key: "mot_de_passe", sample: "Nouveau2026!" },
+    { key: "modifie_par", sample: "Hicham (Administrateur)" },
+    { key: "lien_connexion", sample: "https://dizy-cars.com/fr/login" },
+    { key: "bouton_connexion", sample: "[bouton]" },
+    { key: "site", sample: "Dizy Cars" },
+  ],
 };
 
 /** Variables qui insèrent un bloc HTML (bouton) au lieu d'un texte. */
-export const RAW_VARIABLES = new Set(["bouton_invitation", "bouton_voiture", "bouton_reservation", "bouton_site"]);
+export const RAW_VARIABLES = new Set(["bouton_invitation", "bouton_voiture", "bouton_reservation", "bouton_site", "bouton_connexion"]);
 
 
 /** Remplace les {{variables}} ; les valeurs texte sont échappées, les boutons sont insérés tels quels. */

@@ -42,6 +42,9 @@ const STYLE: Record<string, { icon: ReactNode; tone: string; badge: Tone }> = {
   profile_activated: { icon: <UserCheck />, tone: "bg-palm-soft text-palm", badge: "success" },
   manager_assign_cars: { icon: <CarFront />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
   manager_unassign_car: { icon: <CarFront />, tone: "bg-mist text-ink-2", badge: "neutral" },
+  manager_assign_rule: { icon: <CarFront />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  manager_clear_rule: { icon: <CarFront />, tone: "bg-mist text-ink-2", badge: "neutral" },
+  manager_password_set: { icon: <KeyRound />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
   security_unlock: { icon: <ShieldCheck />, tone: "bg-palm-soft text-palm", badge: "success" },
 };
 const fallbackStyle = { icon: <UserRound />, tone: "bg-mist text-ink-2", badge: "neutral" as Tone };

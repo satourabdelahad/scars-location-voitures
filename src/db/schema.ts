@@ -106,6 +106,8 @@ export const users = pgTable(
     phone: varchar("phone", { length: 32 }),
     preferredLocale: localeEnum("preferred_locale"),
     lastLoginAt: timestamp("last_login_at", { withTimezone: true, mode: "date" }),
+    /** Dernière activité (mise à jour au plus une fois par minute) : sert à afficher « En ligne » */
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true, mode: "date" }),
     /** Double authentification (TOTP). Secrets chiffrés en AES-256-GCM avec une clé dérivée d'AUTH_SECRET. */
     totpSecret: text("totp_secret"),
     totpPendingSecret: text("totp_pending_secret"),
@@ -602,10 +604,28 @@ export const carManagers = pgTable(
     managerId: uuid("manager_id")
       .notNull()
       .references(() => managers.id, { onDelete: "restrict" }),
+    /** manual = cochée à la main ; rule = ajoutée par la règle marque / ville du gestionnaire */
+    source: varchar("source", { length: 16 }).notNull().default("manual"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },
   (t) => [primaryKey({ columns: [t.carId, t.managerId] }), index("car_managers_manager_idx").on(t.managerId)],
 );
+
+/**
+ * Règle d'affectation d'un gestionnaire : marques et/ou villes (agence) choisies.
+ * Les voitures actives qui correspondent lui sont affectées automatiquement, y compris
+ * celles ajoutées plus tard ; une voiture désactivée est retirée. car_count = nombre de voitures affectées.
+ */
+export const managerCarRules = pgTable("manager_car_rules", {
+  managerId: uuid("manager_id")
+    .primaryKey()
+    .references(() => managers.id, { onDelete: "restrict" }),
+  brands: text("brands").array().notNull().default(sql`'{}'::text[]`),
+  cities: text("cities").array().notNull().default(sql`'{}'::text[]`),
+  carCount: integer("car_count").notNull().default(0),
+  updatedBy: uuid("updated_by").references(() => users.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+});
 
 /** Réglages modifiables par l'administrateur (sécurité…), une ligne par réglage. */
 export const appSettings = pgTable("app_settings", {

@@ -1,10 +1,11 @@
 import { setRequestLocale } from "next-intl/server";
 import { requireRole } from "@/server/guards";
-import { SelfProfilePage } from "@/features/profile/self-profile-page";
+import { AdminProfile, parseAdminTab } from "@/features/managers/admin-profile";
 
-export default async function AdminProfilePage({ params }: PageProps<"/[locale]/admin/profile">) {
-  const { locale } = await params;
+/** « Mon profil » de l'administrateur : même page que la fiche d'un gestionnaire. */
+export default async function AdminProfilePage({ params, searchParams }: PageProps<"/[locale]/admin/profile">) {
+  const [{ locale }, sp] = await Promise.all([params, searchParams]);
   setRequestLocale(locale);
   const me = await requireRole(["admin"], "/admin/profile");
-  return <SelfProfilePage me={me} />;
+  return <AdminProfile me={me} tab={parseAdminTab(sp.tab)} locale={locale} />;
 }

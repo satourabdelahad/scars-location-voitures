@@ -269,7 +269,7 @@
     "nothingToday": "Nada previsto para hoy.",
     "profile": "Mi perfil",
     "security": "Seguridad",
-    "administration": "Administración",
+    "administration": "Plantillas de correo",
     "clients": "Clientes"
   },
   "Managers": {
@@ -390,7 +390,36 @@
     "unselectShown": "Desmarcar todo",
     "noCarFound": "No se encontró ningún coche.",
     "carsPicked": "{count, plural, =0 {Ningún coche marcado} one {# coche marcado} other {# coches marcados}}",
-    "assign": "Asignar"
+    "assign": "Asignar",
+    "tabPassword": "Contraseña",
+    "presence": "Presencia",
+    "online": "En línea",
+    "offline": "Desconectado",
+    "assignedCount": "Coches asignados",
+    "wholeFleet": "Toda la flota ({count})",
+    "carsCount": "{count, plural, one {# coche} other {# coches}}",
+    "sharedOnly": "Coches compartidos",
+    "assignedCity": "Ciudad asignada",
+    "lastDeal": "Último trato cerrado",
+    "noDealYet": "Ninguno por ahora",
+    "ruleCleared": "Regla eliminada: los coches ya asignados se mantienen.",
+    "ruleActive": "Regla automática:",
+    "ruleCount": "{count, plural, =0 {ningún coche} one {# coche} other {# coches}}",
+    "ruleClear": "Eliminar la regla",
+    "byRule": "Por regla",
+    "byBrand": "Asignación por marca",
+    "byCity": "Asignación por ciudad",
+    "searchBrand": "Buscar una marca…",
+    "searchCity": "Buscar una ciudad…",
+    "allBrands": "Todas las marcas",
+    "allCities": "Todas las ciudades",
+    "clearChoice": "Borrar la selección",
+    "noOption": "Sin resultados",
+    "saveAsRule": "Guardar estos criterios como regla",
+    "saveAsRuleHint": "Se le asignan todos los coches que coinciden, también los que se añadan después a la flota. Un coche desactivado sale de su lista.",
+    "alreadyAssigned": "Ya asignado",
+    "ruleMatches": "{count, plural, =0 {Ningún coche coincide} one {# coche coincide} other {# coches coinciden}}",
+    "saveRule": "Guardar la regla"
   },
   "Documents": {
     "cin_front": "Documento de identidad (CINE), anverso",
@@ -693,7 +722,8 @@
     "tplBtnProcess": "Gestionar la reserva",
     "tplBtnClientInvite": "Activar mi cuenta",
     "tplBtnCars": "Ver nuestros coches",
-    "sentToClientNote": "Resumen enviado al cliente ({email})."
+    "sentToClientNote": "Resumen enviado al cliente ({email}).",
+    "tplBtnLogin": "Iniciar sesión"
   },
   "Activity": {
     "session_login": "Inicio de sesión",
@@ -745,7 +775,10 @@
     "manager_assign_cars": "Coches asignados a {name}",
     "manager_unassign_car": "Coche retirado a {name}",
     "client_invite": "Invitación enviada al cliente: {name}",
-    "security_unlock": "Cuenta desbloqueada"
+    "security_unlock": "Cuenta desbloqueada",
+    "manager_password_set": "Contraseña cambiada por el administrador: {name}",
+    "manager_assign_rule": "Regla de asignación guardada para {name}",
+    "manager_clear_rule": "Regla de asignación eliminada para {name}"
   },
   "Deals": {
     "title": "Deals / prospectos",
@@ -885,7 +918,14 @@
     "passwordMismatch": "Las dos contraseñas no coinciden",
     "welcomeTitle": "¡Bienvenido a Dizy Cars!",
     "welcomeBody": "Tu contraseña está guardada. Revisa y completa tus datos a continuación y guarda.",
-    "licenseNumber": "Número de permiso de conducir"
+    "licenseNumber": "Número de permiso de conducir",
+    "passwordSavedFor": "Nueva contraseña guardada para {name}.",
+    "passwordEmailed": "Se ha enviado al gestor un correo con la nueva contraseña.",
+    "passwordNotEmailed": "Contraseña guardada, pero no se pudo enviar el correo (revisa Resend).",
+    "setPasswordTitle": "Cambiar la contraseña",
+    "setPasswordHint": "Elige la nueva contraseña de {name}; la recibirá por correo.",
+    "showPassword": "Mostrar la contraseña",
+    "savePassword": "Guardar la contraseña"
   },
   "My": {
     "chartTitle": "Facturación por mes",
@@ -944,7 +984,7 @@
     "cancel": "Cancelar"
   },
   "Admin": {
-    "title": "Administración",
+    "title": "Plantillas de correo",
     "subtitle": "Plantillas de los emails que el sitio envía automáticamente.",
     "templates": "Plantillas de email",
     "customSince": "Modificada el {date}",
@@ -986,6 +1026,11 @@
         "name": "Seguimiento de prospección",
         "when": "Botón «Enviar al cliente» de un prospecto",
         "recipients": "Se envía al cliente vinculado al prospecto, firmado por quien lo envía."
+      },
+      "manager_password_set": {
+        "name": "Nueva contraseña",
+        "when": "Cuando el administrador cambia la contraseña de un gestor",
+        "recipients": "Se envía al gestor con su nueva contraseña."
       }
     },
     "vars": {
@@ -1040,7 +1085,11 @@
       "gestionnaire_telephone": "Teléfono del remitente",
       "gestionnaire_email": "Correo del remitente",
       "lien_site": "Enlace a los coches",
-      "bouton_site": "Botón a los coches"
+      "bouton_site": "Botón a los coches",
+      "mot_de_passe": "Nueva contraseña",
+      "modifie_par": "Modificado por",
+      "lien_connexion": "Enlace de acceso",
+      "bouton_connexion": "Botón de acceso"
     },
     "language": "Idioma",
     "languageHint": "Plantilla en {language}: cada idioma tiene su propia plantilla. El destinatario recibe la de su idioma."

@@ -1,5 +1,6 @@
 "use server";
 
+import { recountManagers, syncCarAssignments } from "@/server/car-assignments";
 import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -55,8 +56,12 @@ const managerIdsSchema = z.array(z.string().uuid()).max(100).default([]);
 
 /** Gestionnaires associés : on remplace la liste (vide = tous les gestionnaires). */
 async function writeManagers(tx: Parameters<Parameters<typeof db.transaction>[0]>[0], carId: string, ids: string[]) {
+  // On garde l'origine (manuelle ou règle marque / ville) des gestionnaires déjà associés.
+  const before = await tx.select({ managerId: carManagers.managerId, source: carManagers.source }).from(carManagers).where(eq(carManagers.carId, carId));
+  const sources = new Map(before.map((b) => [b.managerId, b.source]));
   await tx.delete(carManagers).where(eq(carManagers.carId, carId));
-  if (ids.length) await tx.insert(carManagers).values([...new Set(ids)].map((managerId) => ({ carId, managerId })));
+  if (ids.length) await tx.insert(carManagers).values([...new Set(ids)].map((managerId) => ({ carId, managerId, source: sources.get(managerId) ?? "manual" })));
+  await recountManagers([...before.map((b) => b.managerId), ...ids], tx);
 }
 
 export async function createCar(input: { data: unknown; images: unknown; managerIds?: unknown }): Promise<ActionResult<{ id: string }>> {
@@ -74,6 +79,8 @@ export async function createCar(input: { data: unknown; images: unknown; manager
         .returning({ id: cars.id });
       await writeChildren(tx, row.id, descriptions, images);
       await writeManagers(tx, row.id, managerIds);
+      // Règles marque / ville des gestionnaires : la nouvelle voiture rejoint leurs listes.
+      await syncCarAssignments(row.id, tx);
       await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: row.id, action: "create", changes: { ...data, managerIds } });
       return row.id;
     });
@@ -101,6 +108,7 @@ export async function updateCar(id: string, input: { data: unknown; images: unkn
       await tx.update(cars).set({ ...data, vin: data.vin || null, updatedBy: staff.id }).where(eq(cars.id, id));
       await writeChildren(tx, id, descriptions, images);
       await writeManagers(tx, id, managerIds);
+      await syncCarAssignments(id, tx);
       await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "update", changes: { ...data, managerIds } });
     });
     revalidatePath("/", "layout");
@@ -131,6 +139,8 @@ export async function deactivateCar(id: string, input: unknown): Promise<ActionR
         .set({ status: "cancelled", cancelledAt: new Date(), cancelReason: "car_unavailable" })
         .where(and(eq(reservations.carId, id), inArray(reservations.status, ["pending", "confirmed"]), gte(reservations.endDate, sql`CURRENT_DATE`)))
         .returning({ id: reservations.id });
+      // La voiture sort des listes de ses gestionnaires ; leurs nombres de voitures sont recalculés.
+      await syncCarAssignments(id, tx);
       await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "deactivate", changes: { ...parsed.data, cancelledReservations: rows.length } });
       return rows.map((r) => r.id);
     });

@@ -269,7 +269,7 @@
     "nothingToday": "오늘 예정된 일정이 없습니다.",
     "profile": "내 프로필",
     "security": "보안",
-    "administration": "관리",
+    "administration": "이메일 템플릿",
     "clients": "고객"
   },
   "Managers": {
@@ -390,7 +390,36 @@
     "unselectShown": "모두 해제",
     "noCarFound": "차량을 찾을 수 없습니다.",
     "carsPicked": "{count, plural, =0 {선택한 차량 없음} other {{count}대 선택됨}}",
-    "assign": "배정"
+    "assign": "배정",
+    "tabPassword": "비밀번호",
+    "presence": "접속 상태",
+    "online": "온라인",
+    "offline": "오프라인",
+    "assignedCount": "담당 차량",
+    "wholeFleet": "전체 차량 ({count}대)",
+    "carsCount": "{count}대",
+    "sharedOnly": "공유 차량",
+    "assignedCity": "담당 도시",
+    "lastDeal": "최근 성사 거래",
+    "noDealYet": "아직 없음",
+    "ruleCleared": "규칙을 삭제했습니다. 배정된 차량은 유지됩니다.",
+    "ruleActive": "자동 규칙:",
+    "ruleCount": "{count}대",
+    "ruleClear": "규칙 삭제",
+    "byRule": "규칙",
+    "byBrand": "브랜드별 배정",
+    "byCity": "도시별 배정",
+    "searchBrand": "브랜드 검색…",
+    "searchCity": "도시 검색…",
+    "allBrands": "모든 브랜드",
+    "allCities": "모든 도시",
+    "clearChoice": "선택 지우기",
+    "noOption": "결과 없음",
+    "saveAsRule": "이 조건을 규칙으로 저장",
+    "saveAsRuleHint": "조건에 맞는 모든 차량이 배정되며, 나중에 추가되는 차량도 포함됩니다. 비활성화된 차량은 목록에서 빠집니다.",
+    "alreadyAssigned": "이미 배정됨",
+    "ruleMatches": "조건에 맞는 차량: {count}대",
+    "saveRule": "규칙 저장"
   },
   "Documents": {
     "cin_front": "신분증(CINE) 앞면",
@@ -693,7 +722,8 @@
     "tplBtnProcess": "예약 처리하기",
     "tplBtnClientInvite": "내 계정 활성화",
     "tplBtnCars": "차량 보기",
-    "sentToClientNote": "고객에게 요약을 보냈습니다({email})."
+    "sentToClientNote": "고객에게 요약을 보냈습니다({email}).",
+    "tplBtnLogin": "로그인"
   },
   "Activity": {
     "session_login": "로그인",
@@ -745,7 +775,10 @@
     "manager_assign_cars": "{name}에게 차량 배정",
     "manager_unassign_car": "{name}에게서 차량 해제",
     "client_invite": "고객에게 초대 발송: {name}",
-    "security_unlock": "계정 잠금 해제"
+    "security_unlock": "계정 잠금 해제",
+    "manager_password_set": "관리자가 비밀번호 변경: {name}",
+    "manager_assign_rule": "{name}의 배정 규칙 저장",
+    "manager_clear_rule": "{name}의 배정 규칙 삭제"
   },
   "Deals": {
     "title": "딜 / 잠재 고객",
@@ -885,7 +918,14 @@
     "passwordMismatch": "두 비밀번호가 일치하지 않습니다",
     "welcomeTitle": "Dizy Cars에 오신 것을 환영합니다!",
     "welcomeBody": "비밀번호가 저장되었습니다. 아래 정보를 확인하고 입력한 뒤 저장하세요.",
-    "licenseNumber": "운전면허 번호"
+    "licenseNumber": "운전면허 번호",
+    "passwordSavedFor": "{name}의 새 비밀번호를 저장했습니다.",
+    "passwordEmailed": "새 비밀번호를 담은 이메일을 매니저에게 보냈습니다.",
+    "passwordNotEmailed": "비밀번호는 저장했지만 이메일을 보내지 못했습니다(Resend 확인).",
+    "setPasswordTitle": "비밀번호 변경",
+    "setPasswordHint": "{name}의 새 비밀번호를 정하세요. 이메일로 전달됩니다.",
+    "showPassword": "비밀번호 표시",
+    "savePassword": "비밀번호 저장"
   },
   "My": {
     "chartTitle": "월별 매출",
@@ -944,7 +984,7 @@
     "cancel": "취소"
   },
   "Admin": {
-    "title": "관리",
+    "title": "이메일 템플릿",
     "subtitle": "사이트가 자동으로 보내는 이메일 템플릿.",
     "templates": "이메일 템플릿",
     "customSince": "{date}에 수정",
@@ -986,6 +1026,11 @@
         "name": "잠재 고객 후속 연락",
         "when": "잠재 고객의 “고객에게 보내기” 버튼",
         "recipients": "잠재 고객과 연결된 고객에게 발송자 서명과 함께 발송됩니다."
+      },
+      "manager_password_set": {
+        "name": "새 비밀번호",
+        "when": "관리자가 매니저 비밀번호를 변경할 때",
+        "recipients": "새 비밀번호와 함께 매니저에게 발송됩니다."
       }
     },
     "vars": {
@@ -1040,7 +1085,11 @@
       "gestionnaire_telephone": "발송자 전화",
       "gestionnaire_email": "발송자 이메일",
       "lien_site": "차량 페이지 링크",
-      "bouton_site": "차량 페이지 버튼"
+      "bouton_site": "차량 페이지 버튼",
+      "mot_de_passe": "새 비밀번호",
+      "modifie_par": "변경자",
+      "lien_connexion": "로그인 링크",
+      "bouton_connexion": "로그인 버튼"
     },
     "language": "언어",
     "languageHint": "{language} 템플릿: 언어마다 템플릿이 따로 있으며, 받는 사람은 자신의 언어로 받습니다."

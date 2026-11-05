@@ -269,7 +269,7 @@
     "nothingToday": "Heute nichts geplant.",
     "profile": "Mein Profil",
     "security": "Sicherheit",
-    "administration": "Verwaltung",
+    "administration": "E-Mail-Vorlagen",
     "clients": "Kunden"
   },
   "Managers": {
@@ -390,7 +390,36 @@
     "unselectShown": "Alle abwählen",
     "noCarFound": "Kein Auto gefunden.",
     "carsPicked": "{count, plural, =0 {Kein Auto angehakt} one {# Auto angehakt} other {# Autos angehakt}}",
-    "assign": "Zuweisen"
+    "assign": "Zuweisen",
+    "tabPassword": "Passwort",
+    "presence": "Präsenz",
+    "online": "Online",
+    "offline": "Offline",
+    "assignedCount": "Zugewiesene Autos",
+    "wholeFleet": "Ganze Flotte ({count})",
+    "carsCount": "{count, plural, one {# Auto} other {# Autos}}",
+    "sharedOnly": "Gemeinsame Autos",
+    "assignedCity": "Zugewiesene Stadt",
+    "lastDeal": "Letzter Abschluss",
+    "noDealYet": "Noch keiner",
+    "ruleCleared": "Regel entfernt: bereits zugewiesene Autos bleiben.",
+    "ruleActive": "Automatische Regel:",
+    "ruleCount": "{count, plural, =0 {kein Auto} one {# Auto} other {# Autos}}",
+    "ruleClear": "Regel entfernen",
+    "byRule": "Per Regel",
+    "byBrand": "Zuweisung nach Marke",
+    "byCity": "Zuweisung nach Stadt",
+    "searchBrand": "Marke suchen…",
+    "searchCity": "Stadt suchen…",
+    "allBrands": "Alle Marken",
+    "allCities": "Alle Städte",
+    "clearChoice": "Auswahl löschen",
+    "noOption": "Kein Ergebnis",
+    "saveAsRule": "Diese Kriterien als Regel speichern",
+    "saveAsRuleHint": "Alle passenden Autos werden zugewiesen, auch später zur Flotte hinzugefügte. Ein deaktiviertes Auto fällt aus der Liste.",
+    "alreadyAssigned": "Bereits zugewiesen",
+    "ruleMatches": "{count, plural, =0 {Kein Auto passt} one {# Auto passt} other {# Autos passen}}",
+    "saveRule": "Regel speichern"
   },
   "Documents": {
     "cin_front": "Personalausweis (CINE), Vorderseite",
@@ -693,7 +722,8 @@
     "tplBtnProcess": "Buchung bearbeiten",
     "tplBtnClientInvite": "Mein Konto aktivieren",
     "tplBtnCars": "Unsere Autos ansehen",
-    "sentToClientNote": "Zusammenfassung an den Kunden gesendet ({email})."
+    "sentToClientNote": "Zusammenfassung an den Kunden gesendet ({email}).",
+    "tplBtnLogin": "Anmelden"
   },
   "Activity": {
     "session_login": "Anmeldung",
@@ -745,7 +775,10 @@
     "manager_assign_cars": "Autos {name} zugewiesen",
     "manager_unassign_car": "Auto von {name} entfernt",
     "client_invite": "Einladung an Kunden gesendet: {name}",
-    "security_unlock": "Konto entsperrt"
+    "security_unlock": "Konto entsperrt",
+    "manager_password_set": "Passwort vom Administrator geändert: {name}",
+    "manager_assign_rule": "Zuweisungsregel für {name} gespeichert",
+    "manager_clear_rule": "Zuweisungsregel für {name} entfernt"
   },
   "Deals": {
     "title": "Deals / Interessenten",
@@ -885,7 +918,14 @@
     "passwordMismatch": "Die beiden Passwörter stimmen nicht überein",
     "welcomeTitle": "Willkommen bei Dizy Cars!",
     "welcomeBody": "Ihr Passwort ist gespeichert. Prüfen und ergänzen Sie unten Ihre Angaben und speichern Sie.",
-    "licenseNumber": "Führerscheinnummer"
+    "licenseNumber": "Führerscheinnummer",
+    "passwordSavedFor": "Neues Passwort für {name} gespeichert.",
+    "passwordEmailed": "Eine E-Mail mit dem neuen Passwort wurde an den Manager gesendet.",
+    "passwordNotEmailed": "Passwort gespeichert, aber die E-Mail konnte nicht gesendet werden (Resend prüfen).",
+    "setPasswordTitle": "Passwort ändern",
+    "setPasswordHint": "Wählen Sie das neue Passwort von {name}; er erhält es per E-Mail.",
+    "showPassword": "Passwort anzeigen",
+    "savePassword": "Passwort speichern"
   },
   "My": {
     "chartTitle": "Umsatz pro Monat",
@@ -944,7 +984,7 @@
     "cancel": "Abbrechen"
   },
   "Admin": {
-    "title": "Verwaltung",
+    "title": "E-Mail-Vorlagen",
     "subtitle": "Vorlagen der E-Mails, die die Website automatisch versendet.",
     "templates": "E-Mail-Vorlagen",
     "customSince": "Geändert am {date}",
@@ -986,6 +1026,11 @@
         "name": "Nachfassen bei Interessenten",
         "when": "Schaltfläche „An Kunden senden“ eines Interessenten",
         "recipients": "An den mit dem Interessenten verknüpften Kunden gesendet, unterzeichnet vom Absender."
+      },
+      "manager_password_set": {
+        "name": "Neues Passwort",
+        "when": "Wenn der Administrator das Passwort eines Managers ändert",
+        "recipients": "An den Manager gesendet, mit seinem neuen Passwort."
       }
     },
     "vars": {
@@ -1040,7 +1085,11 @@
       "gestionnaire_telephone": "Telefon des Absenders",
       "gestionnaire_email": "E-Mail des Absenders",
       "lien_site": "Link zu den Autos",
-      "bouton_site": "Schaltfläche zu den Autos"
+      "bouton_site": "Schaltfläche zu den Autos",
+      "mot_de_passe": "Neues Passwort",
+      "modifie_par": "Geändert von",
+      "lien_connexion": "Anmeldelink",
+      "bouton_connexion": "Anmelde-Schaltfläche"
     },
     "language": "Sprache",
     "languageHint": "Vorlage auf {language}: Jede Sprache hat ihre eigene Vorlage. Empfänger erhalten die Vorlage ihrer Sprache."

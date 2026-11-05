@@ -396,3 +396,60 @@ export async function staffOptions() {
   `);
   return rows.rows.map((r) => ({ id: r.id, name: r.name ?? "—", role: r.role }));
 }
+
+/* ───────────────────────────── En-tête de fiche ───────────────────────────── */
+
+/** En ligne = activité dans les 5 dernières minutes (users.last_seen_at, mis à jour à chaque page). */
+export const ONLINE_WINDOW_MS = 5 * 60_000;
+
+/**
+ * Résumé affiché en haut de la fiche d'un gestionnaire ou de l'administrateur : présence,
+ * dernière connexion, voitures affectées et leurs villes, règle marque / ville, dernier deal conclu.
+ */
+export async function staffSummary(userId: string, managerId: string | null) {
+  const res = await db.execute<{
+    last_seen_at: string | null;
+    last_login_at: string | null;
+    car_count: number;
+    fleet_count: number;
+    cities: string[] | null;
+    rule_brands: string[] | null;
+    rule_cities: string[] | null;
+    rule_count: number | null;
+    rule_car_ids: string[] | null;
+    deal_name: string | null;
+    deal_at: string | null;
+  }>(sql`
+    SELECT u.last_seen_at, u.last_login_at,
+      (SELECT count(*)::int FROM car_managers cm WHERE cm.manager_id = ${managerId}) AS car_count,
+      (SELECT count(*)::int FROM cars c WHERE c.status <> 'deactivated') AS fleet_count,
+      (SELECT array_agg(DISTINCT a.city ORDER BY a.city) FROM car_managers cm
+         JOIN cars c ON c.id = cm.car_id JOIN agencies a ON a.id = c.agency_id WHERE cm.manager_id = ${managerId}) AS cities,
+      r.brands AS rule_brands, r.cities AS rule_cities, r.car_count AS rule_count,
+      (SELECT array_agg(cm.car_id::text) FROM car_managers cm WHERE cm.manager_id = ${managerId} AND cm.source = 'rule') AS rule_car_ids,
+      d.prospect_name AS deal_name, d.updated_at AS deal_at
+    FROM users u
+    LEFT JOIN manager_car_rules r ON r.manager_id = ${managerId}
+    LEFT JOIN LATERAL (
+      SELECT dd.prospect_name, dd.updated_at FROM deals dd
+      WHERE dd.type = 'rental' AND (dd.created_by = u.id OR (${managerId}::uuid IS NOT NULL AND dd.manager_id = ${managerId}))
+      ORDER BY dd.updated_at DESC LIMIT 1
+    ) d ON TRUE
+    WHERE u.id = ${userId}
+  `);
+  const r = res.rows[0];
+  const lastSeen = r?.last_seen_at ? new Date(r.last_seen_at) : null;
+  const ruleCities = r?.rule_cities ?? [];
+  return {
+    online: Boolean(lastSeen && Date.now() - lastSeen.getTime() < ONLINE_WINDOW_MS),
+    lastLoginAt: r?.last_login_at ? new Date(r.last_login_at).toISOString() : null,
+    carCount: r?.car_count ?? 0,
+    fleetCount: r?.fleet_count ?? 0,
+    /** Villes de la règle, sinon villes des agences des voitures affectées */
+    cities: ruleCities.length ? ruleCities : (r?.cities ?? []),
+    rule: r && (r.rule_brands?.length || ruleCities.length) ? { brands: r.rule_brands ?? [], cities: ruleCities, carCount: r.rule_count ?? 0 } : null,
+    ruleCarIds: r?.rule_car_ids ?? [],
+    lastDeal: r?.deal_name ? { name: r.deal_name, at: new Date(r.deal_at!).toISOString() } : null,
+  };
+}
+export type StaffSummary = Awaited<ReturnType<typeof staffSummary>>;

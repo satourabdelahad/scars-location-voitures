@@ -269,7 +269,7 @@
     "nothingToday": "Rien de prévu aujourd'hui.",
     "profile": "Mon profil",
     "security": "Sécurité",
-    "administration": "Administration",
+    "administration": "Templates des emails",
     "clients": "Clients"
   },
   "Managers": {
@@ -390,7 +390,36 @@
     "unselectShown": "Tout décocher",
     "noCarFound": "Aucune voiture trouvée.",
     "carsPicked": "{count, plural, =0 {Aucune voiture cochée} one {# voiture cochée} other {# voitures cochées}}",
-    "assign": "Affecter"
+    "assign": "Affecter",
+    "tabPassword": "Mot de passe",
+    "presence": "Présence",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "assignedCount": "Voitures affectées",
+    "wholeFleet": "Tout le parc ({count})",
+    "carsCount": "{count, plural, one {# voiture} other {# voitures}}",
+    "sharedOnly": "Voitures partagées",
+    "assignedCity": "Ville affectée",
+    "lastDeal": "Dernier deal conclu",
+    "noDealYet": "Aucun pour l'instant",
+    "ruleCleared": "Règle supprimée : les voitures déjà affectées restent.",
+    "ruleActive": "Règle automatique :",
+    "ruleCount": "{count, plural, =0 {aucune voiture} one {# voiture} other {# voitures}}",
+    "ruleClear": "Supprimer la règle",
+    "byRule": "Par règle",
+    "byBrand": "Affectation par marque",
+    "byCity": "Affectation par ville",
+    "searchBrand": "Rechercher une marque…",
+    "searchCity": "Rechercher une ville…",
+    "allBrands": "Toutes les marques",
+    "allCities": "Toutes les villes",
+    "clearChoice": "Effacer le choix",
+    "noOption": "Aucun résultat",
+    "saveAsRule": "Enregistrer ces critères comme règle",
+    "saveAsRuleHint": "Toutes les voitures qui correspondent lui sont affectées, et celles ajoutées plus tard au parc aussi. Une voiture désactivée sort de sa liste.",
+    "alreadyAssigned": "Déjà affectée",
+    "ruleMatches": "{count, plural, =0 {Aucune voiture ne correspond} one {# voiture correspond} other {# voitures correspondent}}",
+    "saveRule": "Enregistrer la règle"
   },
   "Documents": {
     "cin_front": "Carte d'identité (CINE) — recto",
@@ -693,7 +722,8 @@
     "tplBtnProcess": "Traiter la réservation",
     "tplBtnClientInvite": "Activer mon espace client",
     "tplBtnCars": "Voir nos voitures",
-    "sentToClientNote": "Récapitulatif envoyé au client ({email})."
+    "sentToClientNote": "Récapitulatif envoyé au client ({email}).",
+    "tplBtnLogin": "Me connecter"
   },
   "Activity": {
     "session_login": "Connexion",
@@ -745,7 +775,10 @@
     "manager_assign_cars": "Voitures affectées à {name}",
     "manager_unassign_car": "Voiture retirée à {name}",
     "client_invite": "Invitation envoyée au client : {name}",
-    "security_unlock": "Compte débloqué"
+    "security_unlock": "Compte débloqué",
+    "manager_password_set": "Mot de passe changé par l'administrateur : {name}",
+    "manager_assign_rule": "Règle d'affectation enregistrée pour {name}",
+    "manager_clear_rule": "Règle d'affectation supprimée pour {name}"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -885,7 +918,14 @@
     "passwordMismatch": "Les deux mots de passe ne correspondent pas",
     "welcomeTitle": "Bienvenue chez Dizy Cars !",
     "welcomeBody": "Votre mot de passe est enregistré. Vérifiez et complétez vos informations ci-dessous, puis enregistrez.",
-    "licenseNumber": "Numéro de permis"
+    "licenseNumber": "Numéro de permis",
+    "passwordSavedFor": "Nouveau mot de passe enregistré pour {name}.",
+    "passwordEmailed": "Un email avec le nouveau mot de passe a été envoyé au gestionnaire.",
+    "passwordNotEmailed": "Mot de passe enregistré, mais l'email n'a pas pu être envoyé (vérifiez Resend).",
+    "setPasswordTitle": "Changer le mot de passe",
+    "setPasswordHint": "Choisissez le nouveau mot de passe de {name} ; il le recevra par email.",
+    "showPassword": "Afficher le mot de passe",
+    "savePassword": "Enregistrer le mot de passe"
   },
   "My": {
     "chartTitle": "Chiffre d'affaires par mois",
@@ -944,7 +984,7 @@
     "cancel": "Annuler"
   },
   "Admin": {
-    "title": "Administration",
+    "title": "Templates des emails",
     "subtitle": "Modèles des emails envoyés automatiquement par le site.",
     "templates": "Modèles d'email",
     "customSince": "Modifié le {date}",
@@ -986,6 +1026,11 @@
         "name": "Suivi de prospection",
         "when": "Bouton « Envoyer au client » d'un prospect",
         "recipients": "Envoyé au client lié au prospect, signé par la personne qui l'envoie."
+      },
+      "manager_password_set": {
+        "name": "Nouveau mot de passe",
+        "when": "Quand l'administrateur change le mot de passe d'un gestionnaire",
+        "recipients": "Envoyé au gestionnaire, avec son nouveau mot de passe."
       }
     },
     "vars": {
@@ -1040,7 +1085,11 @@
       "gestionnaire_telephone": "Téléphone de l'expéditeur",
       "gestionnaire_email": "Email de l'expéditeur",
       "lien_site": "Lien vers les voitures",
-      "bouton_site": "Bouton vers les voitures"
+      "bouton_site": "Bouton vers les voitures",
+      "mot_de_passe": "Nouveau mot de passe",
+      "modifie_par": "Modifié par",
+      "lien_connexion": "Lien de connexion",
+      "bouton_connexion": "Bouton de connexion"
     },
     "language": "Langue",
     "languageHint": "Modèle en {language} : chaque langue a son propre modèle. Le destinataire reçoit celui de sa langue."

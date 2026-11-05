@@ -2,17 +2,19 @@
 
 import { and, eq, inArray, isNull, ne, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { db } from "@/db";
-import { auditLogs, carManagers, cars, managerDocuments, managerEvents, managers, tablePreferences, users, type DocumentKind } from "@/db/schema";
+import { auditLogs, carManagers, cars, managerCarRules, managerDocuments, managerEvents, managers, tablePreferences, users, type DocumentKind } from "@/db/schema";
 import { managerSchema } from "@/lib/validation";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
-import { notifyManagerInvite } from "@/server/notifications";
+import { notifyManagerInvite, notifyManagerPasswordSet } from "@/server/notifications";
+import bcrypt from "bcryptjs";
 import { issuePasswordToken } from "@/server/tokens";
 import { documentViewUrl, verifyUpload } from "@/server/uploads";
 import { resolvePhoto, type PhotoInput } from "@/server/photo";
 import { INVITATION_PENDING } from "@/lib/manager-status";
+import { applyManagerRule, recountManagers } from "@/server/car-assignments";
 
 const docSchema = z.object({ publicId: z.string().min(3).max(300), resourceType: z.enum(["image", "raw"]).default("image") });
 const docsSchema = z.object({
@@ -237,33 +239,75 @@ export async function bulkManagerAction(
 /**
  * Affecte des voitures à un gestionnaire (onglet « Voitures affectées »). Une voiture sans gestionnaire
  * est partagée par tous ; dès qu'elle est affectée, seuls ses gestionnaires la suivent.
+ * rule = true : les marques et villes choisies sont enregistrées comme règle ; toutes les voitures
+ * actives qui correspondent lui sont affectées, y compris celles ajoutées plus tard au parc.
  */
-export async function assignCarsToManager(managerId: string, carIds: string[]): Promise<ActionResult<{ added: number }>> {
+export async function assignCarsToManager(
+  managerId: string,
+  input: { carIds: string[]; brands?: string[]; cities?: string[]; rule?: boolean },
+): Promise<ActionResult<{ added: number }>> {
   try {
     const admin = await assertRole(["admin"]);
     const locale = await getLocale();
-    const ids = z.array(z.string().uuid()).min(1).max(500).safeParse(carIds);
-    if (!ids.success || !z.string().uuid().safeParse(managerId).success) return { ok: false, error: "validation" };
+    const p = z
+      .object({
+        carIds: z.array(z.string().uuid()).max(500),
+        brands: z.array(z.string().trim().min(1).max(80)).max(100).default([]),
+        cities: z.array(z.string().trim().min(1).max(120)).max(200).default([]),
+        rule: z.boolean().default(false),
+      })
+      .safeParse(input);
+    if (!p.success || !z.string().uuid().safeParse(managerId).success) return { ok: false, error: "validation" };
+    const { carIds, brands, cities, rule } = p.data;
+    if (rule ? !brands.length && !cities.length : !carIds.length) return { ok: false, error: "validation" };
     const m = await db.query.managers.findFirst({ where: eq(managers.id, managerId), columns: { id: true } });
     if (!m) return { ok: false, error: "not_found" };
-    const list = await db
-      .select({ id: cars.id, label: cars.brand, model: cars.model, plate: cars.plateNumber })
-      .from(cars)
-      .where(and(inArray(cars.id, ids.data), ne(cars.status, "deactivated")));
-    if (!list.length) return { ok: false, error: "validation" };
-    const inserted = await db
-      .insert(carManagers)
-      .values(list.map((c) => ({ carId: c.id, managerId })))
-      .onConflictDoNothing()
-      .returning({ carId: carManagers.carId });
-    if (inserted.length) {
-      const added = new Set(inserted.map((i) => i.carId));
-      const note = list.filter((c) => added.has(c.id)).map((c) => `${c.label} ${c.model} (${c.plate})`).join(", ");
-      await db.insert(auditLogs).values({ actorId: admin.id, entity: "manager", entityId: managerId, action: "assign_cars", changes: { note, carIds: [...added] } });
+
+    let addedIds: string[];
+    if (rule) {
+      addedIds = (await applyManagerRule(managerId, brands, cities, admin.id)).added;
+    } else {
+      const list = await db.select({ id: cars.id }).from(cars).where(and(inArray(cars.id, carIds), ne(cars.status, "deactivated")));
+      if (!list.length) return { ok: false, error: "validation" };
+      const inserted = await db
+        .insert(carManagers)
+        .values(list.map((c) => ({ carId: c.id, managerId, source: "manual" })))
+        .onConflictDoNothing()
+        .returning({ carId: carManagers.carId });
+      addedIds = inserted.map((i) => i.carId);
+      await recountManagers([managerId]);
+    }
+    const labels = addedIds.length
+      ? await db.select({ brand: cars.brand, model: cars.model, plate: cars.plateNumber }).from(cars).where(inArray(cars.id, addedIds))
+      : [];
+    const criteria = rule ? [brands.length ? brands.join(", ") : null, cities.length ? cities.join(", ") : null].filter(Boolean).join(" · ") : null;
+    if (addedIds.length || rule) {
+      await db.insert(auditLogs).values({
+        actorId: admin.id,
+        entity: "manager",
+        entityId: managerId,
+        action: rule ? "assign_rule" : "assign_cars",
+        changes: { note: [criteria, labels.map((c) => `${c.brand} ${c.model} (${c.plate})`).join(", ")].filter(Boolean).join(" → "), carIds: addedIds, brands, cities },
+      });
     }
     revalidatePath(`/${locale}/admin/managers`, "layout");
     revalidatePath(`/${locale}/admin/fleet`, "layout");
-    return { ok: true, data: { added: inserted.length } };
+    return { ok: true, data: { added: addedIds.length } };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+/** Supprime la règle marque / ville : les voitures déjà affectées restent, les nouvelles ne sont plus ajoutées. */
+export async function clearManagerRule(managerId: string): Promise<ActionResult> {
+  try {
+    const admin = await assertRole(["admin"]);
+    const locale = await getLocale();
+    await db.update(managerCarRules).set({ brands: [], cities: [], updatedBy: admin.id, updatedAt: new Date() }).where(eq(managerCarRules.managerId, managerId));
+    await db.update(carManagers).set({ source: "manual" }).where(eq(carManagers.managerId, managerId));
+    await db.insert(auditLogs).values({ actorId: admin.id, entity: "manager", entityId: managerId, action: "clear_rule" });
+    revalidatePath(`/${locale}/admin/managers`, "layout");
+    return { ok: true };
   } catch (err) {
     return toActionError(err);
   }
@@ -278,6 +322,7 @@ export async function unassignCarFromManager(managerId: string, carId: string): 
       .where(and(eq(carManagers.managerId, managerId), eq(carManagers.carId, carId)))
       .returning({ carId: carManagers.carId });
     if (!row) return { ok: false, error: "not_found" };
+    await recountManagers([managerId]);
     const [c] = await db.select({ brand: cars.brand, model: cars.model, plate: cars.plateNumber }).from(cars).where(eq(cars.id, carId));
     await db.insert(auditLogs).values({
       actorId: admin.id,
@@ -289,6 +334,44 @@ export async function unassignCarFromManager(managerId: string, carId: string): 
     revalidatePath(`/${locale}/admin/managers`, "layout");
     revalidatePath(`/${locale}/admin/fleet`, "layout");
     return { ok: true };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d).{10,200}$/;
+
+/**
+ * L'administrateur choisit un nouveau mot de passe pour un gestionnaire (onglet « Mot de passe »).
+ * Le gestionnaire reçoit un email avec ce mot de passe (modèle "Nouveau mot de passe").
+ * Un gestionnaire encore invité est activé du même coup.
+ */
+export async function adminSetManagerPassword(managerId: string, input: { next: string; confirm: string }): Promise<ActionResult<{ emailed: boolean }>> {
+  try {
+    const admin = await assertRole(["admin"]);
+    const locale = await getLocale();
+    if (!PASSWORD_RE.test(input.next ?? "")) return { ok: false, error: "validation", fieldErrors: { next: "passwordWeak" } };
+    if (input.next !== input.confirm) return { ok: false, error: "validation", fieldErrors: { confirm: "passwordMismatch" } };
+    const m = await db.query.managers.findFirst({ where: eq(managers.id, managerId), columns: { id: true, userId: true, status: true, deactivationReason: true } });
+    if (!m) return { ok: false, error: "not_found" };
+    if (m.status === "deactivated" && m.deactivationReason !== INVITATION_PENDING) return { ok: false, error: "invalid_transition" };
+    const hash = await bcrypt.hash(input.next, 12);
+    await db.transaction(async (tx) => {
+      await tx.update(users).set({ passwordHash: hash, loginLockedUntil: null }).where(eq(users.id, m.userId));
+      if (m.status === "deactivated") {
+        await tx.update(managers).set({ status: "active", deactivationReason: null, deactivatedAt: null }).where(eq(managers.id, m.id));
+        await tx.update(users).set({ status: "active" }).where(eq(users.id, m.userId));
+        await tx.insert(managerEvents).values({ managerId: m.id, event: "activated", actorId: admin.id });
+      }
+      await tx.insert(auditLogs).values({ actorId: admin.id, entity: "manager", entityId: m.id, action: "password_set" });
+    });
+    const tb = await getTranslations({ locale, namespace: "Back" });
+    const r = await notifyManagerPasswordSet(m.id, input.next, `${admin.name ?? admin.email ?? "Dizy Cars"} (${tb("roleAdmin")})`).catch((e) => {
+      console.error("[email] nouveau mot de passe", e);
+      return null;
+    });
+    revalidatePath(`/${locale}/admin/managers`, "layout");
+    return { ok: true, data: { emailed: Boolean(r?.sent) } };
   } catch (err) {
     return toActionError(err);
   }

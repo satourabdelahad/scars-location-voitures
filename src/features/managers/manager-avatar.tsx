@@ -19,10 +19,14 @@ export function ManagerAvatar({
 }) {
   return (
     <span
-      className={cn("grid shrink-0 place-items-center overflow-hidden rounded-full bg-ink font-bold text-chalk ring-2 ring-paper", SIZES[size], className)}
+      role="img"
+      aria-label={`${firstName} ${lastName}`}
+      className={cn("relative grid shrink-0 place-items-center overflow-hidden rounded-full bg-ink font-bold text-chalk ring-2 ring-paper", SIZES[size], className)}
       style={{ fontStretch: "120%" }}
     >
-      {photoUrl ? <img src={photoUrl} alt={`${firstName} ${lastName}`} className="size-full object-cover" loading="lazy" /> : initials(firstName, lastName)}
+      {/* Les initiales restent visibles derrière la photo, si elle ne se charge pas. */}
+      <span aria-hidden>{initials(firstName, lastName)}</span>
+      {photoUrl && <img src={photoUrl} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" />}
     </span>
   );
 }

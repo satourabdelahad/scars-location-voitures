@@ -266,6 +266,15 @@ const T: Record<Lang, Record<BaseKey, Tpl>> = {
 /** Invitation d'un client ajouté par l'équipe, et suivi d'un prospect envoyé au client. */
 const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
   fr: {
+    manager_password_set: {
+      subject: "Votre mot de passe {{site}} a été changé",
+      html: `<h2>Bonjour {{civilite}} {{prenom}} {{nom}},</h2>
+<p>{{modifie_par}} vient de changer le mot de passe de votre compte <strong>{{site}}</strong>.</p>
+<p>Identifiant : <strong>{{email}}</strong><br>Nouveau mot de passe : <strong>{{mot_de_passe}}</strong></p>
+<p>{{bouton_connexion}}</p>
+<p>Pour votre sécurité, choisissez un mot de passe personnel dès votre connexion, dans « Mon profil » → « Mot de passe », et supprimez cet email.</p>
+<p>L'équipe {{site}}</p>`,
+    },
     client_invite: {
       subject: "{{prenom}}, votre espace client {{site}} vous attend",
       html: `<h2>Bonjour {{civilite}} {{prenom}} {{nom}},</h2>
@@ -287,6 +296,15 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
     },
   },
   en: {
+    manager_password_set: {
+      subject: "Your {{site}} password has been changed",
+      html: `<h2>Hello {{prenom}} {{nom}},</h2>
+<p>{{modifie_par}} has just changed the password of your <strong>{{site}}</strong> account.</p>
+<p>Sign-in email: <strong>{{email}}</strong><br>New password: <strong>{{mot_de_passe}}</strong></p>
+<p>{{bouton_connexion}}</p>
+<p>For your security, choose your own password as soon as you sign in, in “My profile” → “Password”, and delete this email.</p>
+<p>The {{site}} team</p>`,
+    },
     client_invite: {
       subject: "{{prenom}}, your {{site}} customer account is ready",
       html: `<h2>Hello {{prenom}} {{nom}},</h2>
@@ -308,6 +326,15 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
     },
   },
   es: {
+    manager_password_set: {
+      subject: "Tu contraseña de {{site}} ha cambiado",
+      html: `<h2>Hola {{prenom}} {{nom}}:</h2>
+<p>{{modifie_par}} acaba de cambiar la contraseña de tu cuenta de <strong>{{site}}</strong>.</p>
+<p>Correo de acceso: <strong>{{email}}</strong><br>Nueva contraseña: <strong>{{mot_de_passe}}</strong></p>
+<p>{{bouton_connexion}}</p>
+<p>Por tu seguridad, elige tu propia contraseña al iniciar sesión, en «Mi perfil» → «Contraseña», y elimina este correo.</p>
+<p>El equipo de {{site}}</p>`,
+    },
     client_invite: {
       subject: "{{prenom}}, tu área de cliente de {{site}} te espera",
       html: `<h2>Hola {{prenom}} {{nom}}:</h2>
@@ -329,6 +356,15 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
     },
   },
   de: {
+    manager_password_set: {
+      subject: "Ihr {{site}}-Passwort wurde geändert",
+      html: `<h2>Guten Tag {{prenom}} {{nom}},</h2>
+<p>{{modifie_par}} hat soeben das Passwort Ihres <strong>{{site}}</strong>-Kontos geändert.</p>
+<p>Anmelde-E-Mail: <strong>{{email}}</strong><br>Neues Passwort: <strong>{{mot_de_passe}}</strong></p>
+<p>{{bouton_connexion}}</p>
+<p>Wählen Sie zu Ihrer Sicherheit nach der Anmeldung unter „Mein Profil“ → „Passwort“ ein eigenes Passwort und löschen Sie diese E-Mail.</p>
+<p>Ihr {{site}}-Team</p>`,
+    },
     client_invite: {
       subject: "{{prenom}}, Ihr Kundenkonto bei {{site}} ist bereit",
       html: `<h2>Guten Tag {{prenom}} {{nom}},</h2>
@@ -350,6 +386,15 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
     },
   },
   ar: {
+    manager_password_set: {
+      subject: "تم تغيير كلمة مرور حسابك في {{site}}",
+      html: rtl(`<h2>مرحبًا {{prenom}} {{nom}}،</h2>
+<p>قام {{modifie_par}} بتغيير كلمة مرور حسابك في <strong>{{site}}</strong>.</p>
+<p>بريد الدخول: <strong>{{email}}</strong><br>كلمة المرور الجديدة: <strong>{{mot_de_passe}}</strong></p>
+<p>{{bouton_connexion}}</p>
+<p>حفاظًا على أمانك، اختر كلمة مرور خاصة بك فور تسجيل الدخول من «ملفي» ← «كلمة المرور»، واحذف هذا البريد.</p>
+<p>فريق {{site}}</p>`),
+    },
     client_invite: {
       subject: "{{prenom}}، فضاء العميل الخاص بك في {{site}} جاهز",
       html: rtl(`<h2>مرحبًا {{prenom}} {{nom}}،</h2>
@@ -371,6 +416,15 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
     },
   },
   ary: {
+    manager_password_set: {
+      subject: "كلمة السر ديالك ف {{site}} تبدّلات",
+      html: rtl(`<h2>السلام {{prenom}} {{nom}}،</h2>
+<p>{{modifie_par}} بدّل كلمة السر ديال الحساب ديالك ف <strong>{{site}}</strong>.</p>
+<p>الإيميل باش تدخل: <strong>{{email}}</strong><br>كلمة السر الجديدة: <strong>{{mot_de_passe}}</strong></p>
+<p>{{bouton_connexion}}</p>
+<p>باش تبقى محمي، ختار كلمة سر ديالك منين تدخل، ف «البروفيل ديالي» ← «كلمة السر»، ومسح هاد الإيميل.</p>
+<p>الفريق ديال {{site}}</p>`),
+    },
     client_invite: {
       subject: "{{prenom}}، الفضاء ديالك ف {{site}} واجد",
       html: rtl(`<h2>السلام {{prenom}} {{nom}}،</h2>
@@ -392,6 +446,15 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
     },
   },
   ja: {
+    manager_password_set: {
+      subject: "{{site}}のパスワードが変更されました",
+      html: `<h2>{{nom}} {{prenom}} 様</h2>
+<p>{{modifie_par}}が<strong>{{site}}</strong>アカウントのパスワードを変更しました。</p>
+<p>ログイン用メール：<strong>{{email}}</strong><br>新しいパスワード：<strong>{{mot_de_passe}}</strong></p>
+<p>{{bouton_connexion}}</p>
+<p>安全のため、ログイン後すぐに「プロフィール」→「パスワード」でご自身のパスワードに変更し、このメールを削除してください。</p>
+<p>{{site}}チーム</p>`,
+    },
     client_invite: {
       subject: "{{prenom}}様、{{site}}のお客様アカウントの準備ができました",
       html: `<h2>{{nom}} {{prenom}} 様</h2>
@@ -413,6 +476,15 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
     },
   },
   zh: {
+    manager_password_set: {
+      subject: "您的 {{site}} 密码已更改",
+      html: `<h2>{{nom}}{{prenom}}，您好：</h2>
+<p>{{modifie_par}} 刚刚更改了您 <strong>{{site}}</strong> 账户的密码。</p>
+<p>登录邮箱：<strong>{{email}}</strong><br>新密码：<strong>{{mot_de_passe}}</strong></p>
+<p>{{bouton_connexion}}</p>
+<p>为了您的安全，请在登录后立即在“我的资料”→“密码”中设置您自己的密码，并删除此邮件。</p>
+<p>{{site}} 团队</p>`,
+    },
     client_invite: {
       subject: "{{prenom}}，您的 {{site}} 客户账户已准备就绪",
       html: `<h2>{{nom}}{{prenom}}，您好：</h2>
@@ -434,6 +506,15 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
     },
   },
   ko: {
+    manager_password_set: {
+      subject: "{{site}} 비밀번호가 변경되었습니다",
+      html: `<h2>{{nom}}{{prenom}} 님, 안녕하세요.</h2>
+<p>{{modifie_par}} 님이 <strong>{{site}}</strong> 계정의 비밀번호를 변경했습니다.</p>
+<p>로그인 이메일: <strong>{{email}}</strong><br>새 비밀번호: <strong>{{mot_de_passe}}</strong></p>
+<p>{{bouton_connexion}}</p>
+<p>보안을 위해 로그인 후 바로 “내 프로필” → “비밀번호”에서 직접 비밀번호를 설정하고 이 이메일을 삭제하세요.</p>
+<p>{{site}} 팀 드림</p>`,
+    },
     client_invite: {
       subject: "{{prenom}} 님, {{site}} 고객 계정이 준비되었습니다",
       html: `<h2>{{nom}}{{prenom}} 님, 안녕하세요.</h2>
@@ -458,5 +539,5 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
 
 export function defaultTemplate(key: TemplateKey, locale: string): Tpl {
   const l: Lang = locale in T ? (locale as Lang) : "fr";
-  return key === "client_invite" || key === "prospect_followup" ? T2[l][key] : T[l][key];
+  return key === "client_invite" || key === "prospect_followup" || key === "manager_password_set" ? T2[l][key] : T[l][key];
 }

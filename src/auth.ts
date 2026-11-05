@@ -7,7 +7,7 @@ import Facebook from "next-auth/providers/facebook";
 import Twitter from "next-auth/providers/twitter";
 import TikTok from "next-auth/providers/tiktok";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, lt, or } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { accounts, auditLogs, sessions, users, verificationTokens, type Role } from "@/db/schema";
@@ -187,6 +187,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const sec = await getSecuritySettings();
       const limit = row.role === "client" ? sec.clientSessionDays * 86_400_000 : sec.staffSessionHours * 3_600_000;
       if (Date.now() - (token.authAt as number) > limit) return null;
+      // Présence (« En ligne ») : au plus une écriture par minute, sans bloquer la page.
+      if (row.role !== "client")
+        void db
+          .update(users)
+          .set({ lastSeenAt: new Date() })
+          .where(and(eq(users.id, id), or(isNull(users.lastSeenAt), lt(users.lastSeenAt, new Date(Date.now() - 60_000)))))
+          .catch(() => {});
       token.sub = id;
       token.role = row.role;
       token.name = row.name;
@@ -213,6 +220,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signOut(message) {
       const userId = "token" in message ? message.token?.sub : "session" in message ? message.session?.userId : undefined;
       if (!userId) return;
+      await db.update(users).set({ lastSeenAt: null }).where(eq(users.id, userId)).catch(() => {});
       await db
         .insert(auditLogs)
         .values({ actorId: userId, entity: "session", entityId: userId, action: "logout" })

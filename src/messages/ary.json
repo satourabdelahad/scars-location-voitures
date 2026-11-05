@@ -269,7 +269,7 @@
     "nothingToday": "والو مبرمج اليوم.",
     "profile": "الفيشة ديالي",
     "security": "الأمان",
-    "administration": "الإدارة",
+    "administration": "قوالب الإيميلات",
     "clients": "الكليان"
   },
   "Managers": {
@@ -390,7 +390,36 @@
     "unselectShown": "حيّد العلامة على كولشي",
     "noCarFound": "ما لقينا حتى طوموبيل.",
     "carsPicked": "{count, plural, =0 {حتى طوموبيل ما معلّمة} other {{count} طوموبيلات معلّمين}}",
-    "assign": "كلّف"
+    "assign": "كلّف",
+    "tabPassword": "كلمة السر",
+    "presence": "الحضور",
+    "online": "متصل دابا",
+    "offline": "ماشي متصل",
+    "assignedCount": "الطوموبيلات المكلّف بيهم",
+    "wholeFleet": "الطوموبيلات كاملين ({count})",
+    "carsCount": "{count} طوموبيلات",
+    "sharedOnly": "طوموبيلات مشتركة",
+    "assignedCity": "المدينة المكلّف بيها",
+    "lastDeal": "آخر صفقة تسالات",
+    "noDealYet": "والو حتى لدابا",
+    "ruleCleared": "القاعدة تحيّدات: الطوموبيلات اللي تكلّف بيهم باقين.",
+    "ruleActive": "قاعدة أوتوماتيكية:",
+    "ruleCount": "{count} طوموبيلات",
+    "ruleClear": "حيّد القاعدة",
+    "byRule": "بالقاعدة",
+    "byBrand": "التكليف حسب الماركة",
+    "byCity": "التكليف حسب المدينة",
+    "searchBrand": "قلّب على ماركة…",
+    "searchCity": "قلّب على مدينة…",
+    "allBrands": "كاع الماركات",
+    "allCities": "كاع المدن",
+    "clearChoice": "مسح الاختيار",
+    "noOption": "والو",
+    "saveAsRule": "سجّل هاد المعايير كقاعدة",
+    "saveAsRuleHint": "كاع الطوموبيلات اللي كيتوافقو كيتكلّف بيهم، حتى اللي غادي يتزادو من بعد. الطوموبيل اللي توقّفات كتخرج من اللائحة ديالو.",
+    "alreadyAssigned": "مكلّف بيها من قبل",
+    "ruleMatches": "الطوموبيلات اللي كيتوافقو: {count}",
+    "saveRule": "سجّل القاعدة"
   },
   "Documents": {
     "cin_front": "لاكارط ناسيونال (CINE) — القدّام",
@@ -693,7 +722,8 @@
     "tplBtnProcess": "عالج الحجز",
     "tplBtnClientInvite": "فعّل الحساب ديالي",
     "tplBtnCars": "شوف الطوموبيلات ديالنا",
-    "sentToClientNote": "الملخص تصيفط للكليان ({email})."
+    "sentToClientNote": "الملخص تصيفط للكليان ({email}).",
+    "tplBtnLogin": "دخل"
   },
   "Activity": {
     "session_login": "دخول",
@@ -745,7 +775,10 @@
     "manager_assign_cars": "طوموبيلات تكلّف بيهم {name}",
     "manager_unassign_car": "طوموبيل تحيّدات من عند {name}",
     "client_invite": "تصيفطات الدعوة للكليان: {name}",
-    "security_unlock": "الحساب تحلّ"
+    "security_unlock": "الحساب تحلّ",
+    "manager_password_set": "المسؤول بدّل كلمة السر: {name}",
+    "manager_assign_rule": "قاعدة التكليف تسجّلات ل {name}",
+    "manager_clear_rule": "قاعدة التكليف تحيّدات ل {name}"
   },
   "Deals": {
     "title": "الصفقات / الزبناء المحتملين",
@@ -885,7 +918,14 @@
     "passwordMismatch": "جوج كلمات السر ماشي بحال بحال",
     "welcomeTitle": "مرحبا بيك ف Dizy Cars!",
     "welcomeBody": "كلمة السر تسجّلات. شوف المعلومات ديالك لتحت وكمّلهم، ومن بعد سجّل.",
-    "licenseNumber": "نمرة البيرمي"
+    "licenseNumber": "نمرة البيرمي",
+    "passwordSavedFor": "كلمة السر الجديدة تسجّلات ل {name}.",
+    "passwordEmailed": "تصيفط إيميل فيه كلمة السر الجديدة للمسيّر.",
+    "passwordNotEmailed": "كلمة السر تسجّلات، ولكن الإيميل ما تصيفطش (شوف Resend).",
+    "setPasswordTitle": "بدّل كلمة السر",
+    "setPasswordHint": "ختار كلمة السر الجديدة ديال {name}؛ غادي توصلو ف الإيميل.",
+    "showPassword": "بيّن كلمة السر",
+    "savePassword": "سجّل كلمة السر"
   },
   "My": {
     "chartTitle": "المداخيل فكل شهر",
@@ -944,7 +984,7 @@
     "cancel": "إلغاء"
   },
   "Admin": {
-    "title": "الإدارة",
+    "title": "قوالب الإيميلات",
     "subtitle": "القوالب ديال الإيميلات اللي كيصيفط السيت بوحدو.",
     "templates": "قوالب الإيميل",
     "customSince": "تبدل في {date}",
@@ -986,6 +1026,11 @@
         "name": "تتبّع البروسبي",
         "when": "البوطونة «صيفط للكليان» ف شي بروسبي",
         "recipients": "كتمشي للكليان المربوط بالبروسبي، بالسمية ديال اللي صيفطها."
+      },
+      "manager_password_set": {
+        "name": "كلمة سر جديدة",
+        "when": "منين المسؤول كيبدّل كلمة السر ديال شي مسيّر",
+        "recipients": "كتمشي للمسيّر مع كلمة السر الجديدة."
       }
     },
     "vars": {
@@ -1040,7 +1085,11 @@
       "gestionnaire_telephone": "تيليفون اللي صيفط",
       "gestionnaire_email": "إيميل اللي صيفط",
       "lien_site": "اللّيان ديال الطوموبيلات",
-      "bouton_site": "البوطونة ديال الطوموبيلات"
+      "bouton_site": "البوطونة ديال الطوموبيلات",
+      "mot_de_passe": "كلمة السر الجديدة",
+      "modifie_par": "بدّلها",
+      "lien_connexion": "اللّيان باش يدخل",
+      "bouton_connexion": "البوطونة باش يدخل"
     },
     "language": "اللغة",
     "languageHint": "قالب بـ{language}: كل لغة عندها القالب ديالها. كل واحد كيوصلو القالب بلغتو."

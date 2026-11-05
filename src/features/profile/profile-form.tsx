@@ -11,6 +11,7 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { useRouter } from "@/i18n/navigation";
 import { ACCEPT_IMAGES, uploadFile } from "@/lib/upload-client";
 import { changeMyPassword, updateMyProfile } from "@/server/actions/profile";
+import { adminSetManagerPassword } from "@/server/actions/managers";
 import { ManagerAvatar } from "@/features/managers/manager-avatar";
 import type { Role } from "@/db/schema";
 
@@ -50,6 +51,7 @@ export function ProfileForm({
   readOnly = [],
   hasPassword,
   welcome = false,
+  withPassword = true,
 }: {
   role: Role;
   initial: Partial<Values>;
@@ -60,6 +62,8 @@ export function ProfileForm({
   hasPassword: boolean;
   /** Première visite après l'invitation : bandeau d'accueil, formulaire à compléter */
   welcome?: boolean;
+  /** Formulaire de mot de passe sous les informations (sinon, onglet séparé) */
+  withPassword?: boolean;
 }) {
   const t = useTranslations("Profile");
   const tm = useTranslations("Managers");
@@ -260,7 +264,7 @@ export function ProfileForm({
         )}
       </form>
 
-      <PasswordForm hasPassword={hasPassword} />
+      {withPassword && <PasswordForm hasPassword={hasPassword} />}
     </div>
   );
 }
@@ -315,5 +319,63 @@ export function PasswordForm({ hasPassword }: { hasPassword: boolean }) {
           </div>
         </Card>
       </form>
+  );
+}
+
+/**
+ * L'administrateur définit le mot de passe d'un gestionnaire (onglet « Mot de passe » de sa fiche).
+ * Le gestionnaire est prévenu par email avec son nouveau mot de passe.
+ */
+export function AdminSetPasswordForm({ managerId, name }: { managerId: string; name: string }) {
+  const t = useTranslations("Profile");
+  const te = useTranslations("Errors");
+  const ta = useTranslations("Auth");
+  const router = useRouter();
+  const [pw, setPw] = useState({ next: "", confirm: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [show, setShow] = useState(false);
+  const [pending, start] = useTransition();
+  const msg = (code?: string) => (code ? (["passwordWeak", "passwordMismatch"].includes(code) ? t(code as "passwordWeak") : te(code as "required")) : undefined);
+
+  function save(ev: React.FormEvent) {
+    ev.preventDefault();
+    setErrors({});
+    if (pw.next !== pw.confirm) return setErrors({ confirm: "passwordMismatch" });
+    start(async () => {
+      const r = await adminSetManagerPassword(managerId, pw);
+      if (r.ok) {
+        toast.success(t("passwordSavedFor", { name }));
+        if (r.data?.emailed) toast.success(t("passwordEmailed"));
+        else toast.warning(t("passwordNotEmailed"));
+        setPw({ next: "", confirm: "" });
+        router.refresh();
+      } else if (r.fieldErrors) setErrors(r.fieldErrors);
+      else toast.error(te(r.error as "unknown"));
+    });
+  }
+
+  return (
+    <form onSubmit={save} noValidate className="rounded-2xl border border-mist bg-paper p-6 sm:p-8">
+      <Card title={t("setPasswordTitle")} hint={`${t("setPasswordHint", { name })} ${ta("errors.passwordWeak")}`}>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field label={t("newPassword")} required error={msg(errors.next)}>
+            {(p) => <Input {...p} type={show ? "text" : "password"} autoComplete="new-password" value={pw.next} onChange={(x) => setPw((s) => ({ ...s, next: x.target.value }))} />}
+          </Field>
+          <Field label={t("confirmPassword")} required error={msg(errors.confirm)}>
+            {(p) => <Input {...p} type={show ? "text" : "password"} autoComplete="new-password" value={pw.confirm} onChange={(x) => setPw((s) => ({ ...s, confirm: x.target.value }))} />}
+          </Field>
+        </div>
+        <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-sm text-ink-2">
+          <input type="checkbox" className="size-4 accent-[var(--majorelle)]" checked={show} onChange={(e) => setShow(e.target.checked)} />
+          {t("showPassword")}
+        </label>
+        <div className="mt-6 flex justify-end">
+          <Button type="submit" loading={pending} disabled={!pw.next || !pw.confirm}>
+            <KeyRound />
+            {t("savePassword")}
+          </Button>
+        </div>
+      </Card>
+    </form>
   );
 }

@@ -269,7 +269,7 @@
     "nothingToday": "لا شيء مبرمج اليوم.",
     "profile": "ملفي الشخصي",
     "security": "الأمان",
-    "administration": "الإدارة",
+    "administration": "قوالب البريد الإلكتروني",
     "clients": "العملاء"
   },
   "Managers": {
@@ -390,7 +390,36 @@
     "unselectShown": "إلغاء تحديد الكل",
     "noCarFound": "لم يتم العثور على أي سيارة.",
     "carsPicked": "{count, plural, =0 {لم تُحدَّد أي سيارة} other {تم تحديد {count} سيارة}}",
-    "assign": "إسناد"
+    "assign": "إسناد",
+    "tabPassword": "كلمة المرور",
+    "presence": "الحضور",
+    "online": "متصل الآن",
+    "offline": "غير متصل",
+    "assignedCount": "السيارات المسندة",
+    "wholeFleet": "كل الأسطول ({count})",
+    "carsCount": "{count} سيارة",
+    "sharedOnly": "سيارات مشتركة",
+    "assignedCity": "المدينة المسندة",
+    "lastDeal": "آخر صفقة مُبرمة",
+    "noDealYet": "لا شيء بعد",
+    "ruleCleared": "تم حذف القاعدة: تبقى السيارات المسندة.",
+    "ruleActive": "قاعدة تلقائية:",
+    "ruleCount": "{count} سيارة",
+    "ruleClear": "حذف القاعدة",
+    "byRule": "بالقاعدة",
+    "byBrand": "الإسناد حسب العلامة",
+    "byCity": "الإسناد حسب المدينة",
+    "searchBrand": "ابحث عن علامة…",
+    "searchCity": "ابحث عن مدينة…",
+    "allBrands": "كل العلامات",
+    "allCities": "كل المدن",
+    "clearChoice": "مسح الاختيار",
+    "noOption": "لا نتيجة",
+    "saveAsRule": "حفظ هذه المعايير كقاعدة",
+    "saveAsRuleHint": "تُسند إليه كل السيارات المطابقة، بما فيها التي تُضاف لاحقًا إلى الأسطول. السيارة المعطلة تخرج من قائمته.",
+    "alreadyAssigned": "مسندة مسبقًا",
+    "ruleMatches": "السيارات المطابقة: {count}",
+    "saveRule": "حفظ القاعدة"
   },
   "Documents": {
     "cin_front": "البطاقة الوطنية (CINE) — الوجه",
@@ -693,7 +722,8 @@
     "tplBtnProcess": "معالجة الحجز",
     "tplBtnClientInvite": "تفعيل حسابي",
     "tplBtnCars": "اكتشف سياراتنا",
-    "sentToClientNote": "تم إرسال الملخص إلى العميل ({email})."
+    "sentToClientNote": "تم إرسال الملخص إلى العميل ({email}).",
+    "tplBtnLogin": "تسجيل الدخول"
   },
   "Activity": {
     "session_login": "تسجيل الدخول",
@@ -745,7 +775,10 @@
     "manager_assign_cars": "سيارات مسندة إلى {name}",
     "manager_unassign_car": "سيارة مسحوبة من {name}",
     "client_invite": "دعوة مرسلة إلى العميل: {name}",
-    "security_unlock": "تم فك قفل الحساب"
+    "security_unlock": "تم فك قفل الحساب",
+    "manager_password_set": "غيّر المسؤول كلمة المرور: {name}",
+    "manager_assign_rule": "حُفظت قاعدة الإسناد لـ {name}",
+    "manager_clear_rule": "حُذفت قاعدة الإسناد لـ {name}"
   },
   "Deals": {
     "title": "الصفقات / العملاء المحتملون",
@@ -885,7 +918,14 @@
     "passwordMismatch": "كلمتا المرور غير متطابقتين",
     "welcomeTitle": "مرحبًا بك في Dizy Cars!",
     "welcomeBody": "تم حفظ كلمة المرور. راجع معلوماتك أدناه وأكملها ثم احفظها.",
-    "licenseNumber": "رقم رخصة السياقة"
+    "licenseNumber": "رقم رخصة السياقة",
+    "passwordSavedFor": "تم حفظ كلمة المرور الجديدة لـ {name}.",
+    "passwordEmailed": "تم إرسال بريد بكلمة المرور الجديدة إلى المسيّر.",
+    "passwordNotEmailed": "تم حفظ كلمة المرور، لكن تعذّر إرسال البريد (تحقق من Resend).",
+    "setPasswordTitle": "تغيير كلمة المرور",
+    "setPasswordHint": "اختر كلمة المرور الجديدة لـ {name}؛ سيتلقاها عبر البريد.",
+    "showPassword": "إظهار كلمة المرور",
+    "savePassword": "حفظ كلمة المرور"
   },
   "My": {
     "chartTitle": "رقم المعاملات حسب الشهر",
@@ -944,7 +984,7 @@
     "cancel": "إلغاء"
   },
   "Admin": {
-    "title": "الإدارة",
+    "title": "قوالب البريد الإلكتروني",
     "subtitle": "قوالب الرسائل التي يرسلها الموقع تلقائيًا.",
     "templates": "قوالب البريد",
     "customSince": "عُدّل في {date}",
@@ -986,6 +1026,11 @@
         "name": "متابعة التنقيب",
         "when": "زر «إرسال إلى العميل» في عميل محتمل",
         "recipients": "تُرسل إلى العميل المرتبط بالعميل المحتمل، بتوقيع المرسِل."
+      },
+      "manager_password_set": {
+        "name": "كلمة مرور جديدة",
+        "when": "عندما يغيّر المسؤول كلمة مرور مسيّر",
+        "recipients": "تُرسل إلى المسيّر مع كلمة المرور الجديدة."
       }
     },
     "vars": {
@@ -1040,7 +1085,11 @@
       "gestionnaire_telephone": "هاتف المرسِل",
       "gestionnaire_email": "بريد المرسِل",
       "lien_site": "رابط السيارات",
-      "bouton_site": "زر السيارات"
+      "bouton_site": "زر السيارات",
+      "mot_de_passe": "كلمة المرور الجديدة",
+      "modifie_par": "غيّرها",
+      "lien_connexion": "رابط الدخول",
+      "bouton_connexion": "زر الدخول"
     },
     "language": "اللغة",
     "languageHint": "قالب بـ{language}: لكل لغة قالبها. يتلقى المستلم القالب بلغته."

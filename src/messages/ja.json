@@ -269,7 +269,7 @@
     "nothingToday": "本日の予定はありません。",
     "profile": "マイプロフィール",
     "security": "セキュリティ",
-    "administration": "管理",
+    "administration": "メールテンプレート",
     "clients": "顧客"
   },
   "Managers": {
@@ -390,7 +390,36 @@
     "unselectShown": "すべて外す",
     "noCarFound": "車両が見つかりません。",
     "carsPicked": "{count, plural, =0 {チェックした車両なし} other {{count}台をチェック}}",
-    "assign": "割り当てる"
+    "assign": "割り当てる",
+    "tabPassword": "パスワード",
+    "presence": "在席状況",
+    "online": "オンライン",
+    "offline": "オフライン",
+    "assignedCount": "担当車両",
+    "wholeFleet": "全車両（{count}台）",
+    "carsCount": "{count}台",
+    "sharedOnly": "共有車両",
+    "assignedCity": "担当都市",
+    "lastDeal": "最後の成約",
+    "noDealYet": "まだありません",
+    "ruleCleared": "ルールを削除しました。割り当て済みの車両はそのままです。",
+    "ruleActive": "自動ルール：",
+    "ruleCount": "{count}台",
+    "ruleClear": "ルールを削除",
+    "byRule": "ルール",
+    "byBrand": "メーカー別の割り当て",
+    "byCity": "都市別の割り当て",
+    "searchBrand": "メーカーを検索…",
+    "searchCity": "都市を検索…",
+    "allBrands": "すべてのメーカー",
+    "allCities": "すべての都市",
+    "clearChoice": "選択をクリア",
+    "noOption": "該当なし",
+    "saveAsRule": "この条件をルールとして保存",
+    "saveAsRuleHint": "条件に合う車両がすべて割り当てられ、今後追加される車両も含まれます。無効化された車両はリストから外れます。",
+    "alreadyAssigned": "割り当て済み",
+    "ruleMatches": "該当車両：{count}台",
+    "saveRule": "ルールを保存"
   },
   "Documents": {
     "cin_front": "身分証明書（CINE）表面",
@@ -693,7 +722,8 @@
     "tplBtnProcess": "予約を処理する",
     "tplBtnClientInvite": "アカウントを有効化",
     "tplBtnCars": "車両を見る",
-    "sentToClientNote": "顧客に概要を送信しました（{email}）。"
+    "sentToClientNote": "顧客に概要を送信しました（{email}）。",
+    "tplBtnLogin": "ログイン"
   },
   "Activity": {
     "session_login": "ログイン",
@@ -745,7 +775,10 @@
     "manager_assign_cars": "{name}に車両を割り当て",
     "manager_unassign_car": "{name}から車両を外す",
     "client_invite": "顧客に招待を送信：{name}",
-    "security_unlock": "アカウントのロック解除"
+    "security_unlock": "アカウントのロック解除",
+    "manager_password_set": "管理者がパスワードを変更：{name}",
+    "manager_assign_rule": "{name}の割り当てルールを保存",
+    "manager_clear_rule": "{name}の割り当てルールを削除"
   },
   "Deals": {
     "title": "商談 / 見込み客",
@@ -885,7 +918,14 @@
     "passwordMismatch": "2つのパスワードが一致しません",
     "welcomeTitle": "Dizy Carsへようこそ！",
     "welcomeBody": "パスワードを保存しました。下の情報を確認・入力して保存してください。",
-    "licenseNumber": "運転免許証番号"
+    "licenseNumber": "運転免許証番号",
+    "passwordSavedFor": "{name}の新しいパスワードを保存しました。",
+    "passwordEmailed": "新しいパスワードをマネージャーにメールで送信しました。",
+    "passwordNotEmailed": "パスワードは保存しましたが、メールを送信できませんでした（Resendを確認してください）。",
+    "setPasswordTitle": "パスワードを変更",
+    "setPasswordHint": "{name}の新しいパスワードを設定してください。メールで通知されます。",
+    "showPassword": "パスワードを表示",
+    "savePassword": "パスワードを保存"
   },
   "My": {
     "chartTitle": "月別売上",
@@ -944,7 +984,7 @@
     "cancel": "キャンセル"
   },
   "Admin": {
-    "title": "管理",
+    "title": "メールテンプレート",
     "subtitle": "サイトが自動送信するメールのテンプレート。",
     "templates": "メールテンプレート",
     "customSince": "{date} に変更",
@@ -986,6 +1026,11 @@
         "name": "見込み客フォローアップ",
         "when": "見込み客の「顧客に送信」ボタン",
         "recipients": "見込み客に紐づく顧客に、送信者の署名付きで送信。"
+      },
+      "manager_password_set": {
+        "name": "新しいパスワード",
+        "when": "管理者がマネージャーのパスワードを変更したとき",
+        "recipients": "新しいパスワードを記載してマネージャーに送信。"
       }
     },
     "vars": {
@@ -1040,7 +1085,11 @@
       "gestionnaire_telephone": "送信者の電話",
       "gestionnaire_email": "送信者のメール",
       "lien_site": "車両ページへのリンク",
-      "bouton_site": "車両ページへのボタン"
+      "bouton_site": "車両ページへのボタン",
+      "mot_de_passe": "新しいパスワード",
+      "modifie_par": "変更者",
+      "lien_connexion": "ログインリンク",
+      "bouton_connexion": "ログインボタン"
     },
     "language": "言語",
     "languageHint": "{language} のテンプレート：言語ごとにテンプレートがあり、受信者には自分の言語のものが届きます。"

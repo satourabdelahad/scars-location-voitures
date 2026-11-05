@@ -100,6 +100,30 @@ export async function notifyClientInvite(clientId: string, token: string, actorN
   ]);
 }
 
+/** Nouveau mot de passe choisi par l'administrateur : envoyé au gestionnaire (modèle "Nouveau mot de passe"). */
+export async function notifyManagerPasswordSet(managerId: string, password: string, actorLabel: string) {
+  const m = await db.query.managers.findFirst({ where: eq(managers.id, managerId), with: { user: { columns: { email: true, preferredLocale: true } } } });
+  if (!m?.user.email) return { sent: 0, failed: 0, skipped: 1 };
+  const { e, m: tm, locale } = await tr(m.user.preferredLocale);
+  const link = `${APP_BASE_URL}/${locale}/login`;
+  return sendTemplate("manager_password_set", [
+    {
+      to: m.user.email,
+      locale,
+      vars: {
+        civilite: e(`civility.${m.civility}`),
+        prenom: m.firstName,
+        nom: m.lastName,
+        email: m.user.email,
+        mot_de_passe: password,
+        modifie_par: actorLabel,
+        lien_connexion: link,
+        bouton_connexion: emailButton(tm("tplBtnLogin"), link),
+      },
+    },
+  ]);
+}
+
 /** Nouvelle voiture : prévient l'administrateur et tous les gestionnaires actifs, chacun dans sa langue. */
 export async function notifyCarCreated(carId: string, actorName: string) {
   const car = await db.query.cars.findFirst({ where: (c, { eq: q }) => q(c.id, carId), with: { agency: true } });

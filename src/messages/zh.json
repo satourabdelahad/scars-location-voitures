@@ -269,7 +269,7 @@
     "nothingToday": "今天没有安排。",
     "profile": "我的档案",
     "security": "安全",
-    "administration": "管理",
+    "administration": "邮件模板",
     "clients": "客户"
   },
   "Managers": {
@@ -390,7 +390,36 @@
     "unselectShown": "全部取消",
     "noCarFound": "未找到车辆。",
     "carsPicked": "{count, plural, =0 {未勾选车辆} other {已勾选 {count} 辆}}",
-    "assign": "分配"
+    "assign": "分配",
+    "tabPassword": "密码",
+    "presence": "在线状态",
+    "online": "在线",
+    "offline": "离线",
+    "assignedCount": "负责车辆",
+    "wholeFleet": "全部车辆（{count} 辆）",
+    "carsCount": "{count} 辆",
+    "sharedOnly": "共享车辆",
+    "assignedCity": "负责城市",
+    "lastDeal": "最近成交",
+    "noDealYet": "暂无",
+    "ruleCleared": "规则已删除：已分配的车辆保留。",
+    "ruleActive": "自动规则：",
+    "ruleCount": "{count} 辆",
+    "ruleClear": "删除规则",
+    "byRule": "规则",
+    "byBrand": "按品牌分配",
+    "byCity": "按城市分配",
+    "searchBrand": "搜索品牌…",
+    "searchCity": "搜索城市…",
+    "allBrands": "全部品牌",
+    "allCities": "全部城市",
+    "clearChoice": "清除选择",
+    "noOption": "无结果",
+    "saveAsRule": "将这些条件保存为规则",
+    "saveAsRuleHint": "所有符合条件的车辆都会分配给他，包括以后加入车队的车辆。停用的车辆会从列表中移除。",
+    "alreadyAssigned": "已分配",
+    "ruleMatches": "符合条件：{count} 辆",
+    "saveRule": "保存规则"
   },
   "Documents": {
     "cin_front": "身份证（CINE）正面",
@@ -693,7 +722,8 @@
     "tplBtnProcess": "处理预订",
     "tplBtnClientInvite": "激活我的账户",
     "tplBtnCars": "查看我们的车辆",
-    "sentToClientNote": "已向客户发送摘要（{email}）。"
+    "sentToClientNote": "已向客户发送摘要（{email}）。",
+    "tplBtnLogin": "登录"
   },
   "Activity": {
     "session_login": "登录",
@@ -745,7 +775,10 @@
     "manager_assign_cars": "为 {name} 分配车辆",
     "manager_unassign_car": "从 {name} 移除车辆",
     "client_invite": "已向客户发送邀请：{name}",
-    "security_unlock": "账户已解锁"
+    "security_unlock": "账户已解锁",
+    "manager_password_set": "管理员更改了密码：{name}",
+    "manager_assign_rule": "已保存 {name} 的分配规则",
+    "manager_clear_rule": "已删除 {name} 的分配规则"
   },
   "Deals": {
     "title": "商机 / 潜在客户",
@@ -885,7 +918,14 @@
     "passwordMismatch": "两次输入的密码不一致",
     "welcomeTitle": "欢迎来到 Dizy Cars！",
     "welcomeBody": "密码已保存。请核对并补充下方信息，然后保存。",
-    "licenseNumber": "驾照号码"
+    "licenseNumber": "驾照号码",
+    "passwordSavedFor": "已为 {name} 保存新密码。",
+    "passwordEmailed": "已通过邮件将新密码发送给经理。",
+    "passwordNotEmailed": "密码已保存，但邮件发送失败（请检查 Resend）。",
+    "setPasswordTitle": "更改密码",
+    "setPasswordHint": "为 {name} 设置新密码，他将通过邮件收到。",
+    "showPassword": "显示密码",
+    "savePassword": "保存密码"
   },
   "My": {
     "chartTitle": "每月营业额",
@@ -944,7 +984,7 @@
     "cancel": "取消"
   },
   "Admin": {
-    "title": "管理",
+    "title": "邮件模板",
     "subtitle": "网站自动发送的邮件模板。",
     "templates": "邮件模板",
     "customSince": "修改于 {date}",
@@ -986,6 +1026,11 @@
         "name": "潜在客户跟进",
         "when": "潜在客户的“发送给客户”按钮",
         "recipients": "发送给与潜在客户关联的客户，由发送人署名。"
+      },
+      "manager_password_set": {
+        "name": "新密码",
+        "when": "管理员更改经理密码时",
+        "recipients": "发送给经理，附带新密码。"
       }
     },
     "vars": {
@@ -1040,7 +1085,11 @@
       "gestionnaire_telephone": "发送人电话",
       "gestionnaire_email": "发送人邮箱",
       "lien_site": "车辆页面链接",
-      "bouton_site": "车辆页面按钮"
+      "bouton_site": "车辆页面按钮",
+      "mot_de_passe": "新密码",
+      "modifie_par": "修改人",
+      "lien_connexion": "登录链接",
+      "bouton_connexion": "登录按钮"
     },
     "language": "语言",
     "languageHint": "{language}模板：每种语言都有自己的模板，收件人会收到其语言的版本。"
