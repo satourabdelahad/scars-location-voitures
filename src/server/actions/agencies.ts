@@ -5,7 +5,7 @@ import { getLocale } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
-import { agencies, auditLogs, cars } from "@/db/schema";
+import { agencies, auditLogs, cars, managers, users } from "@/db/schema";
 import { agencySchema } from "@/lib/validation";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
 
@@ -27,17 +27,31 @@ const slugify = (s: string) =>
     .replace(/^-|-$/g, "")
     .slice(0, 50);
 
-/** Nouvelle agence (administrateur et gestionnaires). */
+/** Coordonnées du responsable, recopiées depuis son compte gestionnaire. */
+async function responsible(managerId: string) {
+  const [m] = await db
+    .select({ civility: managers.civility, first: managers.firstName, last: managers.lastName, phone: managers.phone, email: users.email })
+    .from(managers)
+    .innerJoin(users, eq(users.id, managers.userId))
+    .where(eq(managers.id, managerId))
+    .limit(1);
+  if (!m) return null;
+  return { managerId, managerCivility: m.civility, managerFirstName: m.first, managerLastName: m.last, managerEmail: m.email, managerPhone: m.phone };
+}
+
+/** Nouvelle agence : réservé à l'administrateur. */
 export async function createAgency(input: unknown): Promise<ActionResult<{ id: number }>> {
   try {
-    const staff = await assertRole(["admin", "manager"]);
+    const staff = await assertRole(["admin"]);
     const p = agencySchema.safeParse(input);
     if (!p.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(p.error) };
+    const resp = await responsible(p.data.managerId);
+    if (!resp) return { ok: false, error: "validation", fieldErrors: { managerId: "required" } };
     const base = slugify(`${p.data.city}-${p.data.name}`) || "agence";
     const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(agencies).where(sql`${agencies.slug} LIKE ${base + "%"}`);
     const [row] = await db
       .insert(agencies)
-      .values({ ...p.data, slug: n ? `${base}-${n + 1}` : base, createdBy: staff.id, updatedBy: staff.id })
+      .values({ ...p.data, ...resp, slug: n ? `${base}-${n + 1}` : base, createdBy: staff.id, updatedBy: staff.id })
       .returning({ id: agencies.id });
     await db.insert(auditLogs).values({ actorId: staff.id, entity: "agency", entityId: String(row.id), action: "create", changes: { name: p.data.name, city: p.data.city } });
     revalidatePath(`/${await getLocale()}`, "layout");
@@ -49,10 +63,12 @@ export async function createAgency(input: unknown): Promise<ActionResult<{ id: n
 
 export async function updateAgency(id: number, input: unknown): Promise<ActionResult> {
   try {
-    const staff = await assertRole(["admin", "manager"]);
+    const staff = await assertRole(["admin"]);
     const p = agencySchema.safeParse(input);
     if (!p.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(p.error) };
-    const [row] = await db.update(agencies).set({ ...p.data, updatedBy: staff.id }).where(eq(agencies.id, id)).returning({ id: agencies.id });
+    const resp = await responsible(p.data.managerId);
+    if (!resp) return { ok: false, error: "validation", fieldErrors: { managerId: "required" } };
+    const [row] = await db.update(agencies).set({ ...p.data, ...resp, updatedBy: staff.id }).where(eq(agencies.id, id)).returning({ id: agencies.id });
     if (!row) return { ok: false, error: "not_found" };
     await db.insert(auditLogs).values({ actorId: staff.id, entity: "agency", entityId: String(id), action: "update", changes: p.data });
     revalidatePath(`/${await getLocale()}`, "layout");

@@ -78,6 +78,13 @@
       "when": 1793900539780,
       "tag": "0010_agencies_contacts",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793905889934,
+      "tag": "0011_admin_profile_views",
+      "breakpoints": true
     }
   ]
 }

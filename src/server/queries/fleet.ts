@@ -27,6 +27,7 @@ export async function listFleet() {
       deactivationReason: cars.deactivationReason,
       city: agencies.city,
       agencyName: agencies.name,
+      agencyId: cars.agencyId,
       cover: sql<string | null>`(SELECT ci.url FROM ${carImages} ci WHERE ci.car_id = ${cars.id} ORDER BY ci.position LIMIT 1)`,
       reservationsCount: sql<number>`(SELECT count(*)::int FROM reservations r WHERE r.car_id = ${cars.id} AND r.status IN ('confirmed','ongoing','completed'))`,
       onRoad: sql<boolean>`EXISTS (SELECT 1 FROM reservations r WHERE r.car_id = ${cars.id}

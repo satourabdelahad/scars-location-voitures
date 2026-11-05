@@ -2,7 +2,15 @@
 
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { Ban, Building2, Power, UserPlus, Wrench } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Field, Select, Textarea } from "@/components/ui/field";
+import { useRowPatches } from "@/components/data-table/use-row-patches";
+import { bulkFleetAction } from "@/server/actions/fleet";
+import { cn } from "@/lib/utils";
 import { CarArt } from "@/components/car-art";
 import { DataTable, type Column } from "@/components/data-table/data-table";
 import { Badge } from "@/components/ui/misc";
@@ -12,7 +20,27 @@ import { formatDate, formatMoney } from "@/lib/utils";
 import type { FleetRow } from "@/server/queries/fleet";
 import { CAR_STATES, carState, STATE_TONE } from "@/lib/car-state";
 
-export function FleetTable({ rows, base, prefs, tableKey = "fleet" }: { rows: FleetRow[]; base: string; prefs: { visibleColumns: string[]; pageSize: number } | null; tableKey?: string }) {
+type BulkOptions = { agencies: { id: number; city: string; name: string }[]; managers: { id: string; name: string; city: string }[]; canAssign: boolean };
+
+export function FleetTable({
+  rows: serverRows,
+  base,
+  prefs,
+  tableKey = "fleet",
+  bulk,
+}: {
+  rows: FleetRow[];
+  base: string;
+  prefs: { visibleColumns: string[]; pageSize: number } | null;
+  tableKey?: string;
+  /** Actions groupées (page Parc automobile) */
+  bulk?: BulkOptions;
+}) {
+  const [rows, patch] = useRowPatches(serverRows);
+  const agencyOptions = useMemo(
+    () => [...new Set(serverRows.map((r) => `${r.city}, ${r.agencyName}`))].sort((a, b) => a.localeCompare(b, "fr")).map((v) => ({ value: v, label: v })),
+    [serverRows],
+  );
   const t = useTranslations("Fleet");
   const e = useTranslations("Enums");
   const ts = useTranslations("Status");
@@ -63,7 +91,8 @@ export function FleetTable({ rows, base, prefs, tableKey = "fleet" }: { rows: Fl
             <Badge tone="neutral">{t("allManagers")}</Badge>
           ),
       },
-      { id: "city", header: t("agency"), text: (r) => `${r.city}, ${r.agencyName}`, filter: { type: "text" } },
+      // Agence de rattachement : filtre par liste de choix
+      { id: "city", header: t("agency"), text: (r) => `${r.city}, ${r.agencyName}`, filter: { type: "select", options: agencyOptions } },
       { id: "mileage", header: t("mileage"), text: (r) => `${r.mileage.toLocaleString(locale)} km`, sortValue: (r) => r.mileage, align: "end", defaultHidden: true },
       { id: "dailyPrice", header: t("dailyPrice"), text: (r) => formatMoney(r.dailyPrice, locale), sortValue: (r) => r.dailyPrice, align: "end", filter: { type: "text" } },
       { id: "purchaseCity", header: t("purchaseCity"), text: (r) => r.purchaseCity ?? "", filter: { type: "text" }, defaultHidden: true },
@@ -92,7 +121,7 @@ export function FleetTable({ rows, base, prefs, tableKey = "fleet" }: { rows: Fl
         },
       },
     ],
-    [t, e, ts, c, locale, base],
+    [t, e, ts, c, locale, base, agencyOptions],
   );
 
   return (
@@ -105,6 +134,164 @@ export function FleetTable({ rows, base, prefs, tableKey = "fleet" }: { rows: Fl
       exportFilename="parc-automobile"
       rowClassName={(r) => (r.status === "deactivated" ? "opacity-55" : undefined)}
       onRowClick={(r) => router.push(`${base}/fleet/${r.id}`)}
+      bulkActions={
+        bulk
+          ? (selected, clear) => (
+              <FleetBulkActions
+                selected={selected}
+                options={bulk}
+                onDone={(ids, next) => {
+                  if (next) patch(ids, next);
+                  clear();
+                }}
+              />
+            )
+          : undefined
+      }
     />
+  );
+}
+
+const REASONS = ["stolen", "sold", "totaled", "accident", "end_of_lease", "other"] as const;
+type BulkAction = "deactivate" | "activate" | "repair" | "assign" | "agency";
+
+/** Actions groupées du parc : désactiver, remettre en service, mettre en réparation, affecter, rattacher à une agence. */
+function FleetBulkActions({ selected, options, onDone }: { selected: FleetRow[]; options: BulkOptions; onDone: (ids: string[], next: Partial<FleetRow> | null) => void }) {
+  const t = useTranslations("Fleet");
+  const tc = useTranslations("Common");
+  const te = useTranslations("Errors");
+  const e = useTranslations("Enums");
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [dialog, setDialog] = useState<BulkAction | null>(null);
+  const [reason, setReason] = useState<(typeof REASONS)[number]>("sold");
+  const [note, setNote] = useState("");
+  const [managerIds, setManagerIds] = useState<string[]>([]);
+  const [agencyId, setAgencyId] = useState("");
+  const live = selected.filter((r) => r.status !== "deactivated");
+  const inRepair = selected.filter((r) => r.status === "maintenance");
+  const active = selected.filter((r) => r.status === "active");
+
+  const run = (action: BulkAction, rows: FleetRow[]) =>
+    start(async () => {
+      const r = await bulkFleetAction(
+        rows.map((x) => x.id),
+        action,
+        action === "deactivate" ? { reason, note } : action === "assign" ? { managerIds } : action === "agency" ? { agencyId: Number(agencyId) } : {},
+      );
+      if (!r.ok) return void toast.error(te(r.error as "unknown"));
+      const { done, skipped } = r.data!;
+      toast.success(t(`bulkDone.${action}`, { count: done.length }));
+      if (skipped) toast.warning(t("bulkSkipped", { count: skipped }));
+      const agency = options.agencies.find((a) => String(a.id) === agencyId);
+      onDone(
+        done,
+        action === "deactivate"
+          ? { status: "deactivated", deactivationReason: reason }
+          : action === "activate"
+            ? { status: "active" }
+            : action === "repair"
+              ? { status: "maintenance" }
+              : action === "agency" && agency
+                ? { agencyId: agency.id, city: agency.city, agencyName: agency.name }
+                : action === "assign"
+                  ? { managerNames: [...new Set([...(rows[0]?.managerNames ?? []), ...options.managers.filter((m) => managerIds.includes(m.id)).map((m) => m.name)])] }
+                  : null,
+      );
+      setDialog(null);
+      setNote("");
+      setManagerIds([]);
+      router.refresh();
+    });
+
+  return (
+    <>
+      <Button size="sm" variant="dangerOutline" disabled={pending || live.length === 0} onClick={() => setDialog("deactivate")}>
+        <Ban />
+        {t("deactivate")} {live.length > 0 && `(${live.length})`}
+      </Button>
+      <Button size="sm" variant="success" disabled={pending || inRepair.length === 0} onClick={() => run("activate", inRepair)}>
+        <Power />
+        {t("bulkActivate")} {inRepair.length > 0 && `(${inRepair.length})`}
+      </Button>
+      <Button size="sm" variant="outline" disabled={pending || active.length === 0} onClick={() => run("repair", active)}>
+        <Wrench />
+        {t("bulkRepair")} {active.length > 0 && `(${active.length})`}
+      </Button>
+      {options.canAssign && (
+        <Button size="sm" variant="outline" disabled={pending || live.length === 0} onClick={() => setDialog("assign")}>
+          <UserPlus />
+          {t("bulkAssign")}
+        </Button>
+      )}
+      <Button size="sm" variant="outline" disabled={pending || live.length === 0} onClick={() => setDialog("agency")}>
+        <Building2 />
+        {t("bulkAgency")}
+      </Button>
+
+      <Dialog open={dialog !== null} onOpenChange={(o) => !o && setDialog(null)}>
+        <DialogContent
+          title={dialog === "deactivate" ? t("bulkDeactivateTitle", { count: live.length }) : dialog === "assign" ? t("bulkAssignTitle", { count: live.length }) : t("bulkAgencyTitle", { count: live.length })}
+          description={dialog === "deactivate" ? t("deactivateBody") : undefined}
+          closeLabel={tc("close")}
+        >
+          <p className="mb-3 text-sm text-ink-2">{live.map((r) => `${r.brand} ${r.model} (${r.plateNumber})`).join(", ")}</p>
+          {dialog === "deactivate" && (
+            <div className="space-y-4">
+              <Field label={t("deactivationReason")} required>
+                {(p) => (
+                  <Select {...p} value={reason} onChange={(x) => setReason(x.target.value as (typeof REASONS)[number])}>
+                    {REASONS.map((r) => <option key={r} value={r}>{e(`carDeactivation.${r}`)}</option>)}
+                  </Select>
+                )}
+              </Field>
+              <Field label={t("deactivationNote")} optionalLabel={tc("optional")}>
+                {(p) => <Textarea {...p} rows={3} value={note} onChange={(x) => setNote(x.target.value)} />}
+              </Field>
+            </div>
+          )}
+          {dialog === "assign" && (
+            <div className="scroll-thin max-h-72 space-y-1 overflow-y-auto">
+              {options.managers.map((m) => {
+                const on = managerIds.includes(m.id);
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => setManagerIds((ids) => (on ? ids.filter((x) => x !== m.id) : [...ids, m.id]))}
+                    className={cn("flex w-full items-center justify-between rounded-xl border px-3 py-2 text-start text-sm", on ? "border-majorelle bg-majorelle-soft font-semibold text-majorelle" : "border-mist hover:bg-chalk")}
+                  >
+                    {m.name}
+                    <span className="text-xs text-ink-3">{m.city}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {dialog === "agency" && (
+            <Field label={t("agency")} required>
+              {(p) => (
+                <Select {...p} value={agencyId} onChange={(x) => setAgencyId(x.target.value)}>
+                  <option value="">—</option>
+                  {options.agencies.map((a) => <option key={a.id} value={a.id}>{a.city} : {a.name}</option>)}
+                </Select>
+              )}
+            </Field>
+          )}
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setDialog(null)}>{tc("cancel")}</Button>
+            <Button
+              variant={dialog === "deactivate" ? "danger" : "primary"}
+              loading={pending}
+              disabled={(dialog === "assign" && managerIds.length === 0) || (dialog === "agency" && !agencyId)}
+              onClick={() => dialog && run(dialog, live)}
+            >
+              {tc("confirm")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

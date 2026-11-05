@@ -21,6 +21,7 @@ import { CarForm } from "./car-form";
 import { DeactivateCarButton } from "./deactivate-car";
 import { RepairButton } from "./repair-button";
 import { CAR_STATES, carState, STATE_TONE } from "@/lib/car-state";
+import type { CarView } from "@/lib/car-views";
 
 type Base = "/admin" | "/manager";
 
@@ -46,7 +47,12 @@ export async function FleetListPage({ base, userId }: { base: Base; userId: stri
           </Panel>
         ))}
       </div>
-      <FleetTable rows={rows} base={base} prefs={prefs ? { visibleColumns: prefs.visibleColumns, pageSize: prefs.pageSize } : null} />
+      <FleetTable
+        rows={rows}
+        base={base}
+        prefs={prefs ? { visibleColumns: prefs.visibleColumns, pageSize: prefs.pageSize } : null}
+        bulk={{ agencies: await allAgencies(), managers: await managerOptions(), canAssign: base === "/admin" }}
+      />
     </>
   );
 }
@@ -64,8 +70,8 @@ export async function NewCarPage({ base }: { base: Base }) {
           <EmptyState
             icon={<Building2 />}
             title={t("noAgencyTitle")}
-            body={t("noAgencyBody")}
-            action={<Button asChild><Link href={`${base}/agencies/new`}><Plus />{t("addAgency")}</Link></Button>}
+            body={base === "/admin" ? t("noAgencyBody") : t("noAgencyBodyManager")}
+            action={base === "/admin" ? <Button asChild><Link href={`${base}/agencies/new`}><Plus />{t("addAgency")}</Link></Button> : undefined}
           />
         </Panel>
       ) : (
@@ -89,7 +95,7 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
   const row = fleet.find((f) => f.id === car.id);
   const header = (actions?: React.ReactNode) => (
     <CarHeader
-      car={{ brand: car.brand, model: car.model, year: car.year, plateNumber: car.plateNumber, category: car.category, colorHex: car.colorHex, dailyPrice: car.dailyPrice, status: car.status, cover: car.images[0]?.url ?? null, city: car.agency.city, agency: car.agency.name }}
+      car={{ brand: car.brand, model: car.model, year: car.year, plateNumber: car.plateNumber, category: car.category, colorHex: car.colorHex, dailyPrice: car.dailyPrice, mileage: car.mileage, status: car.status, cover: car.images[0]?.url ?? null, city: car.agency.city, agency: car.agency.name }}
       summary={summary}
       onRoad={row?.onRoad ?? false}
       locale={locale}
@@ -151,7 +157,7 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
             purchasePrice: car.purchasePrice ?? "",
             descriptions: Object.fromEntries(car.translations.map((tr) => [tr.locale, tr.description])),
           }}
-          initialImages={car.images.map((i) => ({ publicId: i.publicId, url: i.url, width: i.width, height: i.height }))}
+          initialImages={car.images.map((i, n) => ({ publicId: i.publicId, url: i.url, width: i.width, height: i.height, view: (i.view === "other" && n === 0 ? "main" : i.view) as CarView }))}
         />
       </>
     );

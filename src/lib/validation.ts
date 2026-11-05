@@ -37,6 +37,8 @@ export const managerSchema = z.object({
   contractType: z.enum(["cdi", "cdd", "freelance"], { message: "required" }),
 });
 export type ManagerInput = z.infer<typeof managerSchema>;
+/** Fiche de l'administrateur : mêmes informations qu'un gestionnaire, sans contrat. */
+export const adminProfileSchema = managerSchema.omit({ workStartDate: true, contractType: true });
 
 export const LOCALE_CODES = ["fr", "ary", "ar", "en", "es", "de", "ja", "zh", "ko"] as const;
 
@@ -123,10 +125,7 @@ export const agencySchema = z.object({
   phone,
   whatsapp: phone,
   isAirport: z.boolean().default(false),
-  managerCivility: z.enum(["male", "female"], { error: "required" }),
-  managerLastName: z.string().trim().min(1, "required").max(120),
-  managerFirstName: z.string().trim().min(1, "required").max(120),
-  managerEmail: z.string().trim().toLowerCase().email("email"),
-  managerPhone: phone,
+  /** Responsable : un compte gestionnaire existant */
+  managerId: z.string({ error: "required" }).uuid("required"),
 });
 export type AgencyInput = z.infer<typeof agencySchema>;

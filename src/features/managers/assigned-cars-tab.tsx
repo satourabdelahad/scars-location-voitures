@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Building2, CarFront, Check, Plus, Search, Sparkles, Tag, Unlink, X } from "lucide-react";
+import { Building2, CarFront, Store, Check, Plus, Search, Sparkles, Tag, Unlink, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").to
  * plus le rappel des voitures partagées (sans gestionnaire = tous). L'administrateur peut
  * affecter plusieurs voitures d'un coup et en retirer.
  */
-export type CarRule = { brands: string[]; cities: string[]; carCount: number };
+export type CarRule = { brands: string[]; cities: string[]; agencies?: number[]; carCount: number };
 
 export function AssignedCarsTab({
   managerId,
@@ -56,7 +56,11 @@ export function AssignedCarsTab({
   const [removed, setRemoved] = useState<Set<string>>(new Set());
   const [pending, start] = useTransition();
   const rows = assigned.filter((r) => !removed.has(r.id));
-  const hasRule = Boolean(rule && (rule.brands.length || rule.cities.length));
+  const hasRule = Boolean(rule && (rule.brands.length || rule.cities.length || rule.agencies?.length));
+  const agencyLabel = (id: number) => {
+    const c = candidates.find((x) => x.agencyId === id);
+    return c ? `${c.city}, ${c.agencyName}` : `#${id}`;
+  };
 
   const removeRule = () =>
     start(async () => {
@@ -98,6 +102,7 @@ export function AssignedCarsTab({
           <span className="text-sm font-semibold text-ink">{t("ruleActive")}</span>
           {rule.brands.map((b) => <Badge key={`b-${b}`} tone="info">{b}</Badge>)}
           {rule.cities.map((c) => <Badge key={`c-${c}`} tone="dark">{c}</Badge>)}
+          {(rule.agencies ?? []).map((a) => <Badge key={`a-${a}`} tone="success">{agencyLabel(a)}</Badge>)}
           <span className="text-xs text-ink-3">{t("ruleCount", { count: rule.carCount })}</span>
           {canEdit && (
             <button type="button" disabled={pending} onClick={removeRule} className="ms-auto inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-ink-3 hover:bg-paper hover:text-ink">
@@ -179,11 +184,12 @@ function AssignDialog({
   const [q, setQ] = useState("");
   const [brands, setBrands] = useState<string[]>(rule?.brands ?? []);
   const [cities, setCities] = useState<string[]>(rule?.cities ?? []);
-  const [asRule, setAsRule] = useState(Boolean(rule && (rule.brands.length || rule.cities.length)));
+  const [agencyIds, setAgencyIds] = useState<string[]>((rule?.agencies ?? []).map(String));
+  const [asRule, setAsRule] = useState(Boolean(rule && (rule.brands.length || rule.cities.length || rule.agencies?.length)));
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [pending, start] = useTransition();
   const assigned = useMemo(() => new Set(assignedIds), [assignedIds]);
-  const hasCriteria = brands.length > 0 || cities.length > 0;
+  const hasCriteria = brands.length > 0 || cities.length > 0 || agencyIds.length > 0;
   const ruleOn = asRule && hasCriteria;
 
   const count = (key: "brand" | "city") => {
@@ -193,6 +199,17 @@ function AssignDialog({
   };
   const brandOptions = useMemo(() => count("brand"), [candidates]); // eslint-disable-line react-hooks/exhaustive-deps
   const cityOptions = useMemo(() => count("city"), [candidates]); // eslint-disable-line react-hooks/exhaustive-deps
+  const agencyOptions = useMemo(() => {
+    const m = new Map<string, { value: string; label: string; count: number }>();
+    for (const c of candidates) {
+      const k = String(c.agencyId);
+      const cur = m.get(k) ?? { value: k, label: `${c.city}, ${c.agencyName}`, count: 0 };
+      cur.count++;
+      m.set(k, cur);
+    }
+    return [...m.values()].sort((a, b) => a.label.localeCompare(b.label, "fr"));
+  }, [candidates]);
+  const inAgency = (c: FleetRow) => !agencyIds.length || agencyIds.includes(String(c.agencyId));
 
   // Filtre : marques ET villes choisies (un critère vide = tous), puis recherche libre.
   const list = useMemo(() => {
@@ -201,12 +218,15 @@ function AssignDialog({
       (c) =>
         (!brands.length || brands.includes(c.brand)) &&
         (!cities.length || cities.includes(c.city)) &&
+        inAgency(c) &&
         (!n || norm(`${c.brand} ${c.model} ${c.year} ${c.plateNumber} ${c.city}`).includes(n)),
     );
-  }, [q, brands, cities, candidates]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q, brands, cities, agencyIds, candidates]);
   const matching = useMemo(
-    () => candidates.filter((c) => (!brands.length || brands.includes(c.brand)) && (!cities.length || cities.includes(c.city))),
-    [brands, cities, candidates],
+    () => candidates.filter((c) => (!brands.length || brands.includes(c.brand)) && (!cities.length || cities.includes(c.city)) && inAgency(c)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [brands, cities, agencyIds, candidates],
   );
   const selectable = list.filter((c) => !assigned.has(c.id));
   const allShown = selectable.length > 0 && selectable.every((c) => picked.has(c.id));
@@ -223,7 +243,7 @@ function AssignDialog({
 
   const save = () =>
     start(async () => {
-      const r = await assignCarsToManager(managerId, { carIds: [...picked], brands, cities, rule: ruleOn });
+      const r = await assignCarsToManager(managerId, { carIds: [...picked], brands, cities, agencies: agencyIds.map(Number), rule: ruleOn });
       if (r.ok) {
         toast.success(t("carsAssigned", { count: r.data!.added }));
         router.refresh();
@@ -234,7 +254,7 @@ function AssignDialog({
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent title={t("assignCars")} description={t("assignCarsBody")} closeLabel={tc("close")} className="max-h-[calc(100dvh-32px)] max-w-3xl overflow-y-auto">
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-3">
           <MultiSelect
             label={t("byBrand")}
             icon={<Tag />}
@@ -261,6 +281,20 @@ function AssignDialog({
             }}
             searchPlaceholder={t("searchCity")}
             allLabel={t("allCities")}
+            clearLabel={t("clearChoice")}
+            emptyLabel={t("noOption")}
+          />
+          <MultiSelect
+            label={t("byAgency")}
+            icon={<Store />}
+            options={agencyOptions}
+            value={agencyIds}
+            onChange={(v) => {
+              if (!hasCriteria && v.length) setAsRule(true);
+              setAgencyIds(v);
+            }}
+            searchPlaceholder={t("searchAgency")}
+            allLabel={t("allAgencies")}
             clearLabel={t("clearChoice")}
             emptyLabel={t("noOption")}
           />

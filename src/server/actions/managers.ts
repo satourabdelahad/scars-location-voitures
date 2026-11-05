@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getLocale, getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { db } from "@/db";
-import { auditLogs, carManagers, cars, managerCarRules, managerDocuments, managerEvents, managers, tablePreferences, users, type DocumentKind } from "@/db/schema";
+import { agencies as agenciesTable, auditLogs, carManagers, cars, managerCarRules, managerDocuments, managerEvents, managers, tablePreferences, users, type DocumentKind } from "@/db/schema";
 import { managerSchema } from "@/lib/validation";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { notifyManagerInvite, notifyManagerPasswordSet } from "@/server/notifications";
@@ -260,7 +260,7 @@ export async function bulkManagerAction(
  */
 export async function assignCarsToManager(
   managerId: string,
-  input: { carIds: string[]; brands?: string[]; cities?: string[]; rule?: boolean },
+  input: { carIds: string[]; brands?: string[]; cities?: string[]; agencies?: number[]; rule?: boolean },
 ): Promise<ActionResult<{ added: number }>> {
   try {
     const admin = await assertRole(["admin"]);
@@ -270,18 +270,19 @@ export async function assignCarsToManager(
         carIds: z.array(z.string().uuid()).max(500),
         brands: z.array(z.string().trim().min(1).max(80)).max(100).default([]),
         cities: z.array(z.string().trim().min(1).max(120)).max(200).default([]),
+        agencies: z.array(z.number().int().positive()).max(200).default([]),
         rule: z.boolean().default(false),
       })
       .safeParse(input);
     if (!p.success || !z.string().uuid().safeParse(managerId).success) return { ok: false, error: "validation" };
-    const { carIds, brands, cities, rule } = p.data;
-    if (rule ? !brands.length && !cities.length : !carIds.length) return { ok: false, error: "validation" };
+    const { carIds, brands, cities, agencies: agencyIds, rule } = p.data;
+    if (rule ? !brands.length && !cities.length && !agencyIds.length : !carIds.length) return { ok: false, error: "validation" };
     const m = await db.query.managers.findFirst({ where: eq(managers.id, managerId), columns: { id: true } });
     if (!m) return { ok: false, error: "not_found" };
 
     let addedIds: string[];
     if (rule) {
-      addedIds = (await applyManagerRule(managerId, brands, cities, admin.id)).added;
+      addedIds = (await applyManagerRule(managerId, brands, cities, admin.id, db, agencyIds)).added;
     } else {
       const list = await db.select({ id: cars.id }).from(cars).where(and(inArray(cars.id, carIds), ne(cars.status, "deactivated")));
       if (!list.length) return { ok: false, error: "validation" };
@@ -296,14 +297,17 @@ export async function assignCarsToManager(
     const labels = addedIds.length
       ? await db.select({ brand: cars.brand, model: cars.model, plate: cars.plateNumber }).from(cars).where(inArray(cars.id, addedIds))
       : [];
-    const criteria = rule ? [brands.length ? brands.join(", ") : null, cities.length ? cities.join(", ") : null].filter(Boolean).join(" · ") : null;
+    const agencyNames = agencyIds.length ? (await db.select({ name: agenciesTable.name, city: agenciesTable.city }).from(agenciesTable).where(inArray(agenciesTable.id, agencyIds))).map((a) => `${a.city}, ${a.name}`) : [];
+    const criteria = rule
+      ? [brands.length ? brands.join(", ") : null, cities.length ? cities.join(", ") : null, agencyNames.length ? agencyNames.join(", ") : null].filter(Boolean).join(" · ")
+      : null;
     if (addedIds.length || rule) {
       await db.insert(auditLogs).values({
         actorId: admin.id,
         entity: "manager",
         entityId: managerId,
         action: rule ? "assign_rule" : "assign_cars",
-        changes: { note: [criteria, labels.map((c) => `${c.brand} ${c.model} (${c.plate})`).join(", ")].filter(Boolean).join(" → "), carIds: addedIds, brands, cities },
+        changes: { note: [criteria, labels.map((c) => `${c.brand} ${c.model} (${c.plate})`).join(", ")].filter(Boolean).join(" → "), carIds: addedIds, brands, cities, agencies: agencyIds },
       });
     }
     revalidatePath(`/${locale}/admin/managers`, "layout");
@@ -319,7 +323,7 @@ export async function clearManagerRule(managerId: string): Promise<ActionResult>
   try {
     const admin = await assertRole(["admin"]);
     const locale = await getLocale();
-    await db.update(managerCarRules).set({ brands: [], cities: [], updatedBy: admin.id, updatedAt: new Date() }).where(eq(managerCarRules.managerId, managerId));
+    await db.update(managerCarRules).set({ brands: [], cities: [], agencies: [], updatedBy: admin.id, updatedAt: new Date() }).where(eq(managerCarRules.managerId, managerId));
     await db.update(carManagers).set({ source: "manual" }).where(eq(carManagers.managerId, managerId));
     await db.insert(auditLogs).values({ actorId: admin.id, entity: "manager", entityId: managerId, action: "clear_rule" });
     revalidatePath(`/${locale}/admin/managers`, "layout");

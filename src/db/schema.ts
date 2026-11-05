@@ -203,7 +203,8 @@ export const agencies = pgTable("agencies", {
   whatsapp: varchar("whatsapp", { length: 32 }),
   isAirport: boolean("is_airport").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
-  /** Responsable de l'agence */
+  /** Responsable de l'agence : un compte gestionnaire (ses coordonnées sont recopiées ci-dessous) */
+  managerId: uuid("manager_id"),
   managerCivility: civilityEnum("manager_civility"),
   managerLastName: varchar("manager_last_name", { length: 120 }),
   managerFirstName: varchar("manager_first_name", { length: 120 }),
@@ -369,6 +370,8 @@ export const carImages = pgTable(
     width: integer("width"),
     height: integer("height"),
     position: smallint("position").notNull().default(0),
+    /** Vue : main (photo principale), front, back, left, right, top, interior, dashboard, trunk, other */
+    view: varchar("view", { length: 16 }).notNull().default("other"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },
   (t) => [index("car_images_car_idx").on(t.carId, t.position)],
@@ -621,6 +624,21 @@ export const carManagers = pgTable(
   (t) => [primaryKey({ columns: [t.carId, t.managerId] }), index("car_managers_manager_idx").on(t.managerId)],
 );
 
+/** Informations personnelles de l'administrateur (même fiche que les gestionnaires, sans contrat ni pièces). */
+export const adminProfiles = pgTable("admin_profiles", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "restrict" }),
+  civility: civilityEnum("civility"),
+  firstName: varchar("first_name", { length: 120 }),
+  lastName: varchar("last_name", { length: 120 }),
+  whatsapp: varchar("whatsapp", { length: 32 }),
+  city: varchar("city", { length: 120 }),
+  birthDate: date("birth_date", { mode: "string" }),
+  maritalStatus: maritalStatusEnum("marital_status"),
+  ...timestamps,
+});
+
 /**
  * Règle d'affectation d'un gestionnaire : marques et/ou villes (agence) choisies.
  * Les voitures actives qui correspondent lui sont affectées automatiquement, y compris
@@ -632,6 +650,8 @@ export const managerCarRules = pgTable("manager_car_rules", {
     .references(() => managers.id, { onDelete: "restrict" }),
   brands: text("brands").array().notNull().default(sql`'{}'::text[]`),
   cities: text("cities").array().notNull().default(sql`'{}'::text[]`),
+  /** Agences de rattachement choisies (identifiants) */
+  agencies: integer("agencies").array().notNull().default(sql`'{}'::integer[]`),
   carCount: integer("car_count").notNull().default(0),
   updatedBy: uuid("updated_by").references(() => users.id),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),

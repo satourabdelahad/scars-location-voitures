@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { DocumentLink } from "./manager-actions";
 import type { DocumentKind } from "@/db/schema";
 import { ACCEPT_DOCS, ACCEPT_IMAGES, uploadFile } from "@/lib/upload-client";
+import { updateAdminProfile } from "@/server/actions/profile";
 import { createManager, updateManager } from "@/server/actions/managers";
 import { cn } from "@/lib/utils";
 import { ManagerAvatar } from "./manager-avatar";
@@ -76,6 +77,7 @@ export function ManagerForm({
   canOpenDocs = false,
   statusActions,
   lockedFields = [],
+  variant = "manager",
 }: {
   managerId?: string;
   initial?: Partial<ManagerFormValues>;
@@ -92,6 +94,8 @@ export function ManagerForm({
   statusActions?: ReactNode;
   /** Champs toujours en lecture seule (ex. le gestionnaire sur sa fiche : date de début, contrat) */
   lockedFields?: (keyof ManagerFormValues)[];
+  /** admin : fiche de l'administrateur (sans contrat ni pièces d'identité) */
+  variant?: "manager" | "admin";
 }) {
   const t = useTranslations("Managers");
   const td = useTranslations("Documents");
@@ -176,10 +180,15 @@ export function ManagerForm({
     const documents = Object.fromEntries(Object.entries(docs).map(([k, d]) => [k, { publicId: d!.publicId, resourceType: d!.resourceType }]));
     start(async () => {
       const photoArg = photo === undefined ? undefined : photo && { publicId: photo.publicId };
-      const res = managerId ? await updateManager(managerId, { data, documents, photo: photoArg }) : await createManager({ data, documents, photo: photoArg });
+      const res =
+        variant === "admin"
+          ? await updateAdminProfile({ data, photo: photoArg })
+          : managerId
+            ? await updateManager(managerId, { data, documents, photo: photoArg })
+            : await createManager({ data, documents, photo: photoArg });
       if (res.ok) {
-        toast.success(managerId ? t("updated") : t("created"));
-        if (managerId) {
+        toast.success(managerId || variant === "admin" ? t("updated") : t("created"));
+        if (managerId || variant === "admin") {
           // Enregistré : retour en mode consultation, avec les données relues depuis la base.
           setDocs({});
           setPhoto(undefined);
@@ -319,6 +328,8 @@ export function ManagerForm({
         <Field label={t("city")} required={!locked} error={err("city")}>{(p) => <CityCombobox {...p} disabled={locked} value={v.city} onChange={(c) => set("city", c)} />}</Field>
       </Section>
 
+      {variant === "manager" && (
+      <>
       <Section title={t("employment")}>
         <Field label={t("workStartDate")} required={!locked && !lockedFields.includes("workStartDate")} hint={!locked && lockedFields.includes("workStartDate") ? t("adminOnly") : undefined} error={err("workStartDate")}>{(p) => <Input {...p} disabled={locked || lockedFields.includes("workStartDate")} type="date" value={v.workStartDate} onChange={(x) => set("workStartDate", x.target.value)} />}</Field>
         <Field label={t("contractType")} required={!locked && !lockedFields.includes("contractType")} hint={!locked && lockedFields.includes("contractType") ? t("adminOnly") : undefined} error={err("contractType")}>
@@ -368,6 +379,9 @@ export function ManagerForm({
           );
         })}
       </Section>
+
+      </>
+      )}
 
       {readOnly && (
         <Section title={t("tracking")}>

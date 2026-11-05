@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { DataTable, type Column } from "@/components/data-table/data-table";
@@ -73,8 +73,8 @@ export function AgenciesTable({ rows: serverRows, base, isAdmin, prefs }: { rows
         align: "end",
         cell: (a) => (
           <div className="flex items-center justify-end gap-1">
-            <Link href={`${base}/agencies/${a.agencyId}`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("edit")} title={c("edit")}>
-              <Pencil className="size-4" />
+            <Link href={`${base}/agencies/${a.agencyId}${isAdmin ? "?tab=infos" : ""}`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={isAdmin ? c("edit") : c("view")} title={isAdmin ? c("edit") : c("view")}>
+              {isAdmin ? <Pencil className="size-4" /> : <Eye className="size-4" />}
             </Link>
             {isAdmin && <AgencyStatusButton id={a.agencyId} name={a.name} active={a.isActive} compact onDone={(isActive) => patch(a.id, { isActive })} />}
           </div>

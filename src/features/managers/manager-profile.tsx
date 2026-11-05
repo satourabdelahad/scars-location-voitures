@@ -37,7 +37,7 @@ export async function ManagerProfile({
   manager: m,
   viewer,
   basePath,
-  tab,
+  tab: requestedTab,
   edit,
   locale,
 }: {
@@ -55,6 +55,8 @@ export async function ManagerProfile({
   const reservationsBase = isAdmin ? "/admin/reservations" : "/manager/reservations";
   const display = managerDisplayStatus(m);
   const isSelf = viewer.id === m.userId;
+  // Un gestionnaire qui consulte la fiche d'un collègue : lecture seule, informations et voitures uniquement.
+  const peer = !isAdmin && !isSelf;
   const summary = await staffSummary(m.userId, m.id);
 
   const tabs: { id: ProfileTab; label: string; Icon: typeof IdCard }[] = [
@@ -62,10 +64,15 @@ export async function ManagerProfile({
     // Mot de passe : visible par le gestionnaire lui-même et par l'administrateur.
     ...(isAdmin || isSelf ? [{ id: "password" as const, label: t("tabPassword"), Icon: KeyRound }] : []),
     { id: "cars", label: t("tabCars"), Icon: CarFront },
-    { id: "rentals", label: t("tabRentals"), Icon: CalendarClock },
-    { id: "deals", label: t("tabDeals"), Icon: Handshake },
-    { id: "history", label: t("tabHistory"), Icon: History },
+    ...(peer
+      ? []
+      : [
+          { id: "rentals" as const, label: t("tabRentals"), Icon: CalendarClock },
+          { id: "deals" as const, label: t("tabDeals"), Icon: Handshake },
+          { id: "history" as const, label: t("tabHistory"), Icon: History },
+        ]),
   ];
+  const tab: ProfileTab = peer && !["infos", "cars"].includes(requestedTab) ? "infos" : requestedTab;
 
   const formInitial = {
     civility: m.civility,
@@ -121,6 +128,19 @@ export async function ManagerProfile({
     );
   } else if (tab === "history") {
     body = <HistoryTab rows={await managerActivity(m.userId, m.id)} />;
+  } else if (peer) {
+    body = (
+      <ManagerForm
+        managerId={m.id}
+        initialPhotoUrl={m.photoUrl}
+        initialMode="view"
+        canEdit={false}
+        canOpenDocs={false}
+        initial={formInitial}
+        existingDocs={m.documents.map((d) => d.kind)}
+        readOnly={readOnlyInfo}
+      />
+    );
   } else if (!isAdmin) {
     // Le gestionnaire sur sa propre fiche : même formulaire que l'administrateur (consultation puis « Modifier »),
     // sauf la date de début et le type de contrat, réservés à l'administrateur.
@@ -160,7 +180,7 @@ export async function ManagerProfile({
 
   return (
     <>
-      {isAdmin && <Link href="/admin/managers" className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>}
+      {(isAdmin || peer) && <Link href={isAdmin ? "/admin/managers" : "/manager/managers"} className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>}
       <div className="mt-3 mb-6 flex flex-wrap items-center gap-4">
         <ManagerAvatar photoUrl={m.photoUrl} firstName={m.firstName} lastName={m.lastName} size="md" />
         <div className="min-w-[min(100%,14rem)] flex-1">

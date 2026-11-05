@@ -87,7 +87,18 @@ export function ManagerCardExport({ manager, size = "icon" }: { manager: Manager
   );
 }
 
-export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[]; prefs: { visibleColumns: string[]; pageSize: number } | null }) {
+/** readOnly : consultation par un gestionnaire (pas d'action, pas de sélection). */
+export function ManagersTable({
+  rows: serverRows,
+  prefs,
+  base = "/admin",
+  readOnly = false,
+}: {
+  rows: ManagerRow[];
+  prefs: { visibleColumns: string[]; pageSize: number } | null;
+  base?: string;
+  readOnly?: boolean;
+}) {
   const t = useTranslations("Managers");
   const e = useTranslations("Enums");
   const c = useTranslations("Common");
@@ -113,7 +124,7 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
         text: () => "",
         isAction: true,
         cell: (m) => (
-          <Link href={`/admin/managers/${m.id}`} aria-label={`${m.firstName} ${m.lastName}`} className="block w-fit">
+          <Link href={`${base}/managers/${m.id}`} aria-label={`${m.firstName} ${m.lastName}`} className="block w-fit">
             <ManagerAvatar photoUrl={m.photoUrl} firstName={m.firstName} lastName={m.lastName} />
           </Link>
         ),
@@ -130,7 +141,7 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
         text: (m) => m.lastName,
         filter: { type: "text" },
         cell: (m) => (
-          <Link href={`/admin/managers/${m.id}`} className="font-semibold text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.lastName}</Link>
+          <Link href={`${base}/managers/${m.id}`} className="font-semibold text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.lastName}</Link>
         ),
       },
       {
@@ -139,7 +150,7 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
         text: (m) => m.firstName,
         filter: { type: "text" },
         cell: (m) => (
-          <Link href={`/admin/managers/${m.id}`} className="font-medium text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.firstName}</Link>
+          <Link href={`${base}/managers/${m.id}`} className="font-medium text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.firstName}</Link>
         ),
       },
       { id: "email", header: t("email"), text: (m) => m.email, filter: { type: "text" }, cell: (m) => <a href={`mailto:${m.email}`} className="hover:text-majorelle" dir="ltr">{m.email}</a> },
@@ -184,19 +195,23 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
         cell: (m) => (
           <div className="flex items-center justify-end gap-1">
             <ManagerCardExport manager={m} />
-            <Link href={`/admin/managers/${m.id}`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("view")} title={c("view")}>
+            <Link href={`${base}/managers/${m.id}`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("view")} title={c("view")}>
               <Eye className="size-4" />
             </Link>
-            <Link href={`/admin/managers/${m.id}?edit=1`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("edit")} title={c("edit")}>
-              <Pencil className="size-4" />
-            </Link>
-            <ManagerActions id={m.id} name={`${m.firstName} ${m.lastName}`} status={managerDisplayStatus(m)} canResendInvite={managerDisplayStatus(m) === "active" && !m.hasPassword} compact onDone={(next) => patch(m.id, next)} />
+            {!readOnly && (
+              <>
+                <Link href={`${base}/managers/${m.id}?edit=1`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("edit")} title={c("edit")}>
+                  <Pencil className="size-4" />
+                </Link>
+                <ManagerActions id={m.id} name={`${m.firstName} ${m.lastName}`} status={managerDisplayStatus(m)} canResendInvite={managerDisplayStatus(m) === "active" && !m.hasPassword} compact onDone={(next) => patch(m.id, next)} />
+              </>
+            )}
           </div>
         ),
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t, e, c, locale, patch]);
+  }, [t, e, c, locale, patch, base, readOnly]);
 
   return (
     <DataTable
@@ -207,8 +222,8 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
       exportTitle={t("title")}
       exportFilename="gestionnaires"
       rowClassName={(m) => (managerDisplayStatus(m) === "deactivated" ? "opacity-60" : undefined)}
-      onRowClick={(m) => router.push(`/admin/managers/${m.id}`)}
-      bulkActions={(selected, clear) => <ManagersBulkActions selected={selected} onDone={(ids, next) => { if (next) patch(ids, next); clear(); }} />}
+      onRowClick={(m) => router.push(`${base}/managers/${m.id}`)}
+      bulkActions={readOnly ? undefined : (selected, clear) => <ManagersBulkActions selected={selected} onDone={(ids, next) => { if (next) patch(ids, next); clear(); }} />}
     />
   );
 }

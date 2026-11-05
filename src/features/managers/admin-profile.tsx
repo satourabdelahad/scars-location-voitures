@@ -4,8 +4,9 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
 import { db } from "@/db";
-import { users } from "@/db/schema";
-import { cn } from "@/lib/utils";
+import { adminProfiles, users } from "@/db/schema";
+import { cn, formatDateTime } from "@/lib/utils";
+import { ManagerForm } from "./manager-form";
 import type { SessionUser } from "@/server/guards";
 import { activityLog, dealFormOptions, listDeals, managerRentals, staffSummary } from "@/server/queries/manager-profile";
 import { listFleet } from "@/server/queries/fleet";
@@ -13,7 +14,7 @@ import { FleetTable } from "@/features/fleet/fleet-table";
 import { DealsTab } from "./deals-tab";
 import { RentalsChart } from "@/features/my/rentals-chart";
 import { AppointmentsSection } from "@/features/my/pages";
-import { PasswordForm, ProfileForm } from "@/features/profile/profile-form";
+import { PasswordForm } from "@/features/profile/profile-form";
 import { ManagerAvatar } from "./manager-avatar";
 import { StaffHeader } from "./staff-header";
 import { RentalsTab } from "./rentals-tab";
@@ -28,19 +29,22 @@ export const parseAdminTab = (v: unknown): AdminProfileTab => (ADMIN_PROFILE_TAB
  * (en-tête, résumé, onglets Informations, Mot de passe, Réalisations, Historique).
  */
 export async function AdminProfile({ me, tab, locale }: { me: SessionUser; tab: AdminProfileTab; locale: string }) {
-  const [[u], summary, t, c, tb] = await Promise.all([
+  const [[u], [ap], summary, t, c, tb] = await Promise.all([
     db
-      .select({ name: users.name, email: users.email, phone: users.phone, image: users.image, hash: users.passwordHash, status: users.status })
+      .select({ name: users.name, email: users.email, phone: users.phone, image: users.image, hash: users.passwordHash, status: users.status, lastLoginAt: users.lastLoginAt, updatedAt: users.updatedAt })
       .from(users)
       .where(eq(users.id, me.id))
       .limit(1),
+    db.select().from(adminProfiles).where(eq(adminProfiles.userId, me.id)).limit(1),
     staffSummary(me.id, null),
     getTranslations("Managers"),
     getTranslations("Common"),
     getTranslations("Back"),
   ]);
-  const name = u?.name ?? u?.email ?? "—";
-  const [first, ...rest] = name.split(" ");
+  const [first0, ...rest0] = (u?.name ?? "").split(" ");
+  const firstName = ap?.firstName ?? first0 ?? "";
+  const lastName = ap?.lastName ?? rest0.join(" ");
+  const name = `${firstName} ${lastName}`.trim() || u?.email || "—";
   const basePath = "/admin/profile";
 
   const tabs = [
@@ -82,31 +86,44 @@ export async function AdminProfile({ me, tab, locale }: { me: SessionUser; tab: 
   }
   else if (tab === "history") body = <HistoryTab rows={await activityLog({ userId: me.id, managerId: null })} tableKey="admin-self-history" />;
   else
+    // Même fiche que les gestionnaires (consultation puis « Modifier »), sans contrat ni pièces d'identité.
     body = (
-      <ProfileForm
-        role="admin"
-        displayName={name}
-        photoUrl={u?.image ?? null}
-        hasPassword={Boolean(u?.hash)}
-        withPassword={false}
-        initial={{ name: u?.name ?? "", email: u?.email ?? "", phone: u?.phone ?? "" }}
+      <ManagerForm
+        variant="admin"
+        managerId={me.id}
+        initialPhotoUrl={u?.image ?? null}
+        initialMode="view"
+        canEdit
+        initial={{
+          civility: ap?.civility ?? "",
+          lastName,
+          firstName,
+          email: u?.email ?? "",
+          phone: u?.phone ?? "",
+          whatsapp: ap?.whatsapp ?? "",
+          city: ap?.city ?? "",
+          birthDate: ap?.birthDate ?? "",
+          maritalStatus: ap?.maritalStatus ?? "",
+        }}
+        readOnly={{ lastLogin: u?.lastLoginAt ? formatDateTime(u.lastLoginAt, locale) : c("never"), adminUpdatedAt: formatDateTime(u?.updatedAt ?? null, locale) }}
       />
     );
 
   return (
     <>
       <div className="mb-6 flex flex-wrap items-center gap-4">
-        <ManagerAvatar photoUrl={u?.image ?? null} firstName={first || "?"} lastName={rest.join(" ")} size="md" />
+        <ManagerAvatar photoUrl={u?.image ?? null} firstName={firstName || "?"} lastName={lastName} size="md" />
         <div className="min-w-[min(100%,14rem)] flex-1">
           <h1 className="display-md text-2xl text-ink sm:text-3xl">{name}</h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <Badge tone={u?.status === "active" ? "success" : "neutral"} dot>{u?.status === "active" ? c("active") : c("deactivated")}</Badge>
             <Badge tone="dark">{tb("roleAdmin")}</Badge>
+            {ap?.city && <span className="text-sm text-ink-3">{ap.city}</span>}
           </div>
         </div>
       </div>
 
-      <StaffHeader summary={summary} email={u?.email ?? null} phone={u?.phone ?? null} whatsapp={null} locale={locale} isAdminProfile />
+      <StaffHeader summary={summary} email={u?.email ?? null} phone={u?.phone ?? null} whatsapp={ap?.whatsapp ?? null} locale={locale} isAdminProfile />
 
       <nav aria-label={t("tabInfo")} className="scroll-thin mb-6 flex gap-1 overflow-x-auto border-b border-mist">
         {tabs.map(({ id, label, Icon }) => (

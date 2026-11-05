@@ -26,7 +26,8 @@ export function HelloBubble({ messages, className, style }: { messages: string[]
           key={i}
           className="hello-swap block rounded-2xl bg-paper px-3.5 py-2 text-center text-[15px] leading-snug font-bold text-ink shadow-[0_10px_30px_-10px_rgba(20,26,46,.45)] ring-1 ring-mist"
         >
-          {messages[i]}
+          {/* Espace insécable avant « ! ? : ; » : la ponctuation ne passe jamais seule à la ligne. */}
+          {messages[i].replace(/\s+([!?:;»])/g, "\u00a0$1").replace(/«\s+/g, "«\u00a0")}
         </span>
         <span aria-hidden className="absolute -bottom-1.5 start-1/2 size-3 -translate-x-1/2 rotate-45 bg-paper ring-1 ring-mist [clip-path:polygon(100%_0,100%_100%,0_100%)] rtl:translate-x-1/2" />
       </span>

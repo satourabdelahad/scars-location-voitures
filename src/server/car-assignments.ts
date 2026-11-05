@@ -8,12 +8,16 @@ type Db = typeof db | Tx;
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").trim().toLowerCase();
 
-/** Une voiture correspond à la règle si sa marque ET sa ville font partie des choix (un critère vide = tous). */
-export function matchesRule(rule: { brands: string[]; cities: string[] }, car: { brand: string; city: string }) {
-  if (!rule.brands.length && !rule.cities.length) return false;
+type Rule = { brands: string[]; cities: string[]; agencies?: number[] };
+
+/** Une voiture correspond à la règle si sa marque, sa ville ET son agence font partie des choix (un critère vide = tous). */
+export function matchesRule(rule: Rule, car: { brand: string; city: string; agencyId: number }) {
+  const agencies = rule.agencies ?? [];
+  if (!rule.brands.length && !rule.cities.length && !agencies.length) return false;
   const okBrand = !rule.brands.length || rule.brands.some((b) => norm(b) === norm(car.brand));
   const okCity = !rule.cities.length || rule.cities.some((c) => norm(c) === norm(car.city));
-  return okBrand && okCity;
+  const okAgency = !agencies.length || agencies.includes(car.agencyId);
+  return okBrand && okCity && okAgency;
 }
 
 /** Recalcule et enregistre le nombre de voitures affectées à chaque gestionnaire indiqué. */
@@ -33,7 +37,7 @@ export async function recountManagers(ids: string[], q: Db = db) {
  */
 export async function syncCarAssignments(carId: string, q: Db = db) {
   const [car] = await q
-    .select({ brand: cars.brand, status: cars.status, city: agencies.city })
+    .select({ brand: cars.brand, status: cars.status, city: agencies.city, agencyId: cars.agencyId })
     .from(cars)
     .innerJoin(agencies, eq(agencies.id, cars.agencyId))
     .where(eq(cars.id, carId))
@@ -70,17 +74,17 @@ export async function syncCarAssignments(carId: string, q: Db = db) {
  * toutes les voitures actives qui correspondent lui sont affectées, celles ajoutées par
  * l'ancienne règle et qui ne correspondent plus sont retirées. Les affectations manuelles restent.
  */
-export async function applyManagerRule(managerId: string, brands: string[], cities: string[], actorId: string, q: Db = db) {
+export async function applyManagerRule(managerId: string, brands: string[], cities: string[], actorId: string, q: Db = db, agencyIds: number[] = []) {
   await q
     .insert(managerCarRules)
-    .values({ managerId, brands, cities, updatedBy: actorId })
-    .onConflictDoUpdate({ target: managerCarRules.managerId, set: { brands, cities, updatedBy: actorId, updatedAt: new Date() } });
+    .values({ managerId, brands, cities, agencies: agencyIds, updatedBy: actorId })
+    .onConflictDoUpdate({ target: managerCarRules.managerId, set: { brands, cities, agencies: agencyIds, updatedBy: actorId, updatedAt: new Date() } });
   const active = await q
-    .select({ id: cars.id, brand: cars.brand, city: agencies.city })
+    .select({ id: cars.id, brand: cars.brand, city: agencies.city, agencyId: cars.agencyId })
     .from(cars)
     .innerJoin(agencies, eq(agencies.id, cars.agencyId))
     .where(ne(cars.status, "deactivated"));
-  const wanted = active.filter((c) => matchesRule({ brands, cities }, c)).map((c) => c.id);
+  const wanted = active.filter((c) => matchesRule({ brands, cities, agencies: agencyIds }, c)).map((c) => c.id);
   const ruleLinks = await q
     .select({ carId: carManagers.carId })
     .from(carManagers)

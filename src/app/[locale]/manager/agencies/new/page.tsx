@@ -1,10 +1,7 @@
-import { setRequestLocale } from "next-intl/server";
-import { requireRole } from "@/server/guards";
-import { NewAgencyPage } from "@/features/agencies/pages";
+import { redirect } from "@/i18n/navigation";
 
+/** Seul l'administrateur crée les agences : un gestionnaire revient à la liste. */
 export default async function Page({ params }: PageProps<"/[locale]/manager/agencies/new">) {
   const { locale } = await params;
-  setRequestLocale(locale);
-  await requireRole(["manager"], "/manager/agencies");
-  return <NewAgencyPage base="/manager" />;
+  redirect({ href: "/manager/agencies", locale });
 }

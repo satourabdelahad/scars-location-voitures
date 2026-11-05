@@ -421,6 +421,7 @@ export async function staffSummary(userId: string, managerId: string | null) {
     cities: string[] | null;
     rule_brands: string[] | null;
     rule_cities: string[] | null;
+    rule_agencies: number[] | null;
     rule_count: number | null;
     rule_car_ids: string[] | null;
     deal_name: string | null;
@@ -431,7 +432,7 @@ export async function staffSummary(userId: string, managerId: string | null) {
       (SELECT count(*)::int FROM cars c WHERE c.status <> 'deactivated') AS fleet_count,
       (SELECT array_agg(DISTINCT a.city ORDER BY a.city) FROM car_managers cm
          JOIN cars c ON c.id = cm.car_id JOIN agencies a ON a.id = c.agency_id WHERE cm.manager_id = ${managerId}) AS cities,
-      r.brands AS rule_brands, r.cities AS rule_cities, r.car_count AS rule_count,
+      r.brands AS rule_brands, r.cities AS rule_cities, r.agencies AS rule_agencies, r.car_count AS rule_count,
       (SELECT array_agg(cm.car_id::text) FROM car_managers cm WHERE cm.manager_id = ${managerId} AND cm.source = 'rule') AS rule_car_ids,
       d.prospect_name AS deal_name, d.updated_at AS deal_at
     FROM users u
@@ -453,7 +454,10 @@ export async function staffSummary(userId: string, managerId: string | null) {
     fleetCount: r?.fleet_count ?? 0,
     /** Villes de la règle, sinon villes des agences des voitures affectées */
     cities: ruleCities.length ? ruleCities : (r?.cities ?? []),
-    rule: r && (r.rule_brands?.length || ruleCities.length) ? { brands: r.rule_brands ?? [], cities: ruleCities, carCount: r.rule_count ?? 0 } : null,
+    rule:
+      r && (r.rule_brands?.length || ruleCities.length || r.rule_agencies?.length)
+        ? { brands: r.rule_brands ?? [], cities: ruleCities, agencies: r.rule_agencies ?? [], carCount: r.rule_count ?? 0 }
+        : null,
     ruleCarIds: r?.rule_car_ids ?? [],
     lastDeal: r?.deal_name ? { name: r.deal_name, at: new Date(r.deal_at!).toISOString() } : null,
   };

@@ -32,7 +32,7 @@ export async function CarHeader({
   locale,
   actions,
 }: {
-  car: { brand: string; model: string; year: number; plateNumber: string; category: CarCategory; colorHex: string; dailyPrice: number; status: string; cover: string | null; city: string; agency: string };
+  car: { brand: string; model: string; year: number; plateNumber: string; category: CarCategory; colorHex: string; dailyPrice: number; mileage: number; status: string; cover: string | null; city: string; agency: string };
   summary: CarSummary;
   onRoad: boolean;
   locale: string;
@@ -57,7 +57,7 @@ export async function CarHeader({
         </div>
         {actions}
       </div>
-      <div className="mb-6 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-6 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
         <Item icon={<CalendarCheck />} label={t("lastRental")}>
           {s.last ? (
             <>
@@ -68,6 +68,7 @@ export async function CarHeader({
           )}
         </Item>
         <Item icon={<BadgeDollarSign />} label={t("dailyPrice")}>{formatMoney(car.dailyPrice, locale)}</Item>
+        <Item icon={<Gauge />} label={t("mileage")}>{car.mileage.toLocaleString(locale)} km</Item>
         <Item icon={<TrendingUp />} label={t("totalRevenue")}>{formatMoney(s.revenue, locale)}</Item>
         <Item icon={<MapPin />} label={t("city")}>
           {car.city} <span className="font-normal text-ink-3">· {car.agency}</span>

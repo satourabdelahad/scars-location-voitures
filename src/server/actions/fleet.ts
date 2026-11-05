@@ -12,10 +12,26 @@ import { assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { verifyUpload } from "@/server/uploads";
 import { sendReservationEmail } from "@/server/email";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { CAR_VIEWS } from "@/lib/car-views";
 
 const imagesSchema = z
-  .array(z.object({ publicId: z.string().min(3).max(300), url: z.string().max(600), width: z.number().nullable().optional(), height: z.number().nullable().optional() }))
-  .max(12);
+  .array(
+    z.object({
+      publicId: z.string().min(3).max(300),
+      url: z.string().max(600),
+      width: z.number().nullable().optional(),
+      height: z.number().nullable().optional(),
+      /** Vue de la photo : principale (obligatoire), avant, arrière, côtés, dessus, intérieur… */
+      view: z.enum(CAR_VIEWS).default("other"),
+    }),
+  )
+  .max(20)
+  // Une seule photo par vue (sauf « autres »), photo principale en premier.
+  .transform((list) => {
+    const seen = new Set<string>();
+    const kept = list.filter((i) => i.view === "other" || (!seen.has(i.view) && (seen.add(i.view), true)));
+    return kept.sort((a, b) => CAR_VIEWS.indexOf(a.view) - CAR_VIEWS.indexOf(b.view));
+  });
 
 function fieldErrors(issues: z.core.$ZodIssue[]) {
   const out: Record<string, string> = {};
@@ -44,10 +60,10 @@ async function writeChildren(tx: Tx, carId: string, descriptions: Record<string,
   for (const [position, img] of images.entries()) {
     const k = known.get(img.publicId);
     if (k) {
-      if (k.position !== position) await tx.update(carImages).set({ position }).where(eq(carImages.id, k.id));
+      if (k.position !== position || k.view !== img.view) await tx.update(carImages).set({ position, view: img.view }).where(eq(carImages.id, k.id));
     } else {
       const v = await verifyUpload(img.publicId, "car");
-      await tx.insert(carImages).values({ carId, publicId: v.publicId, url: v.url, width: v.width, height: v.height, position });
+      await tx.insert(carImages).values({ carId, publicId: v.publicId, url: v.url, width: v.width, height: v.height, position, view: img.view });
     }
   }
 }
@@ -71,7 +87,7 @@ export async function createCar(input: { data: unknown; images: unknown; manager
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };
     const images = imagesSchema.parse(input.images ?? []);
     // Photo principale obligatoire
-    if (!images.length) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
+    if (!images.some((i) => i.view === "main")) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
     const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
     const { descriptions, ...data } = parsed.data;
     const id = await db.transaction(async (tx) => {
@@ -101,7 +117,7 @@ export async function updateCar(id: string, input: { data: unknown; images: unkn
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };
     const images = imagesSchema.parse(input.images ?? []);
     // Photo principale obligatoire
-    if (!images.length) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
+    if (!images.some((i) => i.view === "main")) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
     const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
     const { descriptions, ...data } = parsed.data;
     const [current] = await db.select({ status: cars.status }).from(cars).where(eq(cars.id, id)).limit(1);
@@ -183,6 +199,64 @@ export async function setCarMaintenance(id: string, inRepair: boolean): Promise<
     await db.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: inRepair ? "repair_start" : "repair_end" });
     revalidatePath("/", "layout");
     return { ok: true };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+/**
+ * Action groupée du parc : désactiver (motif), remettre en service, mettre en réparation,
+ * affecter à des gestionnaires ou rattacher à une agence. Chaque voiture est traitée séparément ;
+ * celles où l'action ne s'applique pas sont ignorées.
+ */
+export async function bulkFleetAction(
+  ids: string[],
+  action: "deactivate" | "activate" | "repair" | "assign" | "agency",
+  payload: { reason?: string; note?: string; managerIds?: string[]; agencyId?: number } = {},
+): Promise<ActionResult<{ done: string[]; skipped: number }>> {
+  try {
+    const staff = await assertRole(["admin", "manager"]);
+    const list = z.array(z.string().uuid()).min(1).max(300).safeParse(ids);
+    if (!list.success) return { ok: false, error: "validation" };
+    const done: string[] = [];
+    if (action === "assign" || action === "agency") {
+      if (action === "assign" && staff.role !== "admin") return { ok: false, error: "forbidden" };
+      const live = await db.select({ id: cars.id }).from(cars).where(and(inArray(cars.id, list.data), sql`${cars.status} <> 'deactivated'`));
+      const carIds = live.map((c) => c.id);
+      if (action === "assign") {
+        const managerIds = z.array(z.string().uuid()).min(1).max(100).safeParse(payload.managerIds);
+        if (!managerIds.success) return { ok: false, error: "validation" };
+        if (carIds.length)
+          await db
+            .insert(carManagers)
+            .values(carIds.flatMap((carId) => managerIds.data.map((managerId) => ({ carId, managerId, source: "manual" }))))
+            .onConflictDoNothing();
+        await recountManagers(managerIds.data);
+      } else {
+        const agencyId = z.number().int().positive().safeParse(payload.agencyId);
+        if (!agencyId.success) return { ok: false, error: "validation" };
+        if (carIds.length) await db.update(cars).set({ agencyId: agencyId.data, updatedBy: staff.id }).where(inArray(cars.id, carIds));
+        for (const id of carIds) await syncCarAssignments(id);
+      }
+      done.push(...carIds);
+    } else {
+      for (const id of list.data) {
+        const r =
+          action === "deactivate"
+            ? await deactivateCar(id, { reason: payload.reason, note: payload.note })
+            : await setCarMaintenance(id, action === "repair");
+        if (r.ok) done.push(id);
+      }
+    }
+    await db.insert(auditLogs).values({
+      actorId: staff.id,
+      entity: "car",
+      entityId: "bulk",
+      action: `bulk_${action}`,
+      changes: { title: String(done.length), done, skipped: list.data.length - done.length, ...payload },
+    });
+    revalidatePath("/", "layout");
+    return { ok: true, data: { done, skipped: list.data.length - done.length } };
   } catch (err) {
     return toActionError(err);
   }
