@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge, DefinitionList, EmptyState, PageHeader, Panel } from "@/components/ui/misc";
 import { allAgencies, carSummary, getFleetCar, listFleet, managerOptions } from "@/server/queries/fleet";
 import { managerRentals } from "@/server/queries/manager-profile";
+import { currentAgencyScope } from "@/server/agency-scope";
 import { CarHeader, CarStats } from "./car-header";
 import { RentalsTab } from "@/features/managers/rentals-tab";
 import { RentalsChart } from "@/features/my/rentals-chart";
@@ -28,10 +29,13 @@ type Base = "/admin" | "/manager";
 
 export async function FleetListPage({ base, userId }: { base: Base; userId: string }) {
   const t = await getTranslations("Fleet");
-  const [rows, [prefs]] = await Promise.all([
+  const [all, [prefs], scope] = await Promise.all([
     listFleet(),
     db.select().from(tablePreferences).where(and(eq(tablePreferences.userId, userId), eq(tablePreferences.tableKey, "fleet"))),
+    currentAgencyScope(),
   ]);
+  // Gestionnaire rattaché à des agences : seulement les voitures de son périmètre.
+  const rows = scope ? all.filter((r) => scope.includes(r.agencyId)) : all;
   const stats = CAR_STATES.map((s) => ({ label: t(`state.${s}`), value: rows.filter((r) => carState(r) === s).length, tone: STATE_TONE[s] }));
   return (
     <>
@@ -93,6 +97,8 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
     listFleet(),
   ]);
   const name = `${car.brand} ${car.model}`;
+  const scope = await currentAgencyScope();
+  const outOfScope = Boolean(scope && !scope.includes(car.agencyId));
   const row = fleet.find((f) => f.id === car.id);
   const header = (actions?: React.ReactNode) => (
     <CarHeader
@@ -115,6 +121,12 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
     return (
       <>
         <Link href={`${base}/fleet`} className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>
+        {outOfScope && (
+          <div className="mt-3 flex items-center gap-2 rounded-2xl border border-danger/30 bg-danger-soft px-5 py-3 text-sm font-medium text-ink">
+            <Lock className="size-4 shrink-0 text-danger" />
+            {t("outOfScopeBanner")}
+          </div>
+        )}
         {car.status === "maintenance" && (
           <div className="mt-3 flex items-center gap-2 rounded-2xl border border-saffron/50 bg-saffron/10 px-5 py-3 text-sm font-medium text-ink">
             {t("inRepairBanner")}

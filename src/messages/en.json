@@ -698,7 +698,8 @@
     "promoSaved": "Promotion saved",
     "promoRemoved": "Promotion removed",
     "promoPreview": "Daily price: {before} → {after}",
-    "promoNoEnd": "no end date"
+    "promoNoEnd": "no end date",
+    "outOfScopeBanner": "This car is outside your scope: you can view it but not change it."
   },
   "Reservations": {
     "title": "Bookings",
@@ -831,7 +832,8 @@
     "validation_reserved": "Only the administrator and the head of the pick-up branch can validate this booking.",
     "admin_protected": "The administrator account cannot be deactivated or receive an invitation.",
     "contact_unavailable": "Your message could not be sent right now. Write to us on WhatsApp or call us.",
-    "url": "Invalid web address"
+    "url": "Invalid web address",
+    "out_of_scope": "Not allowed: this car or agency is outside your scope."
   },
   "About": {
     "title": "A Moroccan agency with well-kept cars",
@@ -1502,7 +1504,21 @@
     "instagramUrl": "Instagram page",
     "linkedinUrl": "LinkedIn page",
     "xUrl": "X (Twitter) page",
-    "adminBadge": "Administrator"
+    "adminBadge": "Administrator",
+    "responsibles": "Manager(s) in charge",
+    "noResponsible": "No one in charge",
+    "bulkActivated": "{count, plural, one {# agency reactivated} other {# agencies reactivated}}",
+    "bulkDeactivated": "{count, plural, one {# agency deactivated} other {# agencies deactivated}}",
+    "bulkSkipped": "{count, plural, one {# agency skipped (cars still in service)} other {# agencies skipped (cars still in service)}}",
+    "bulkDeactivateTitle": "{count, plural, one {Deactivate # agency} other {Deactivate # agencies}}",
+    "pickerAll": "All",
+    "pickerSelected": "Selected ({count})",
+    "responsiblesSaved": "People in charge saved",
+    "managersSaved": "Managers saved",
+    "responsiblesHint": "Tick 0, 1 or several people in charge. They validate the agency's bookings and are automatically members.",
+    "membersHint": "Tick the managers attached to this agency. A manager attached to agencies can only act on those agencies' cars.",
+    "membersLockedHint": "People in charge and the administrator always belong to the agency.",
+    "tabResponsibles": "{count, plural, =0 {In charge} one {In charge} other {In charge (#)}}"
   },
   "Marketing": {
     "title": "Email Marketing",

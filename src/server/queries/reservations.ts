@@ -26,8 +26,8 @@ export async function listReservationsForStaff() {
       plate: cars.plateNumber,
       pickup: agencies.city,
       handledBy: handler.name,
-      /** Utilisateur responsable de l'agence de départ : il valide la réservation (avec l'administrateur) */
-      responsibleUserId: sql<string | null>`(SELECT m.user_id FROM managers m WHERE m.id = ${agencies.managerId})`,
+      /** Utilisateurs responsables de l'agence de départ : ils valident la réservation (avec l'administrateur) */
+      responsibleUserIds: sql<string[]>`coalesce((SELECT array_agg(m.user_id) FROM manager_agencies ma JOIN managers m ON m.id = ma.manager_id WHERE ma.agency_id = ${agencies.id} AND ma.is_responsible), '{}')`,
     })
     .from(reservations)
     .innerJoin(users, eq(users.id, reservations.clientId))
@@ -130,8 +130,8 @@ export async function canValidateReservation(user: { id: string; role: string },
   const res = await db.execute<{ ok: boolean }>(sql`
     SELECT EXISTS (
       SELECT 1 FROM reservations r
-      JOIN agencies a ON a.id = r.pickup_agency_id
-      JOIN managers m ON m.id = a.manager_id
+      JOIN manager_agencies ma ON ma.agency_id = r.pickup_agency_id AND ma.is_responsible
+      JOIN managers m ON m.id = ma.manager_id
       WHERE r.id = ${reservationId} AND m.user_id = ${user.id}
     ) AS ok`);
   return Boolean(res.rows[0]?.ok);

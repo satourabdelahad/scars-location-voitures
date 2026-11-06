@@ -12,6 +12,7 @@ import { formatDate } from "@/lib/utils";
 import { APP_BASE_URL, emailButton, sendTemplate } from "@/server/email";
 import { staffName } from "@/server/queries/clients";
 import { ActionError, assertRole, toActionError, type ActionResult } from "@/server/guards";
+import { assertCarsInScope } from "@/server/agency-scope";
 import { canViewManager } from "@/server/queries/manager-profile";
 
 const optionalText = (max: number) =>
@@ -121,6 +122,8 @@ export async function createDeal(scope: { managerId?: string | null; clientId?: 
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };
     const contact = await clientContact(parsed.data.clientId);
     if (!contact) return { ok: false, error: "validation", fieldErrors: { clientId: "required" } };
+    // Deal sur une voiture : elle doit être dans le périmètre (agences) du gestionnaire.
+    if (parsed.data.carId) await assertCarsInScope(viewer, [parsed.data.carId]);
     const id = await db.transaction(async (tx) => {
       const [row] = await tx
         .insert(deals)
@@ -145,6 +148,8 @@ export async function updateDeal(dealId: string, input: unknown): Promise<Action
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };
     const contact = await clientContact(parsed.data.clientId);
     if (!contact) return { ok: false, error: "validation", fieldErrors: { clientId: "required" } };
+    // Deal sur une voiture : elle doit être dans le périmètre (agences) du gestionnaire.
+    if (parsed.data.carId) await assertCarsInScope(viewer, [parsed.data.carId]);
     await db.transaction(async (tx) => {
       await tx.update(deals).set({ ...toRow(parsed.data), ...contact, updatedBy: viewer.id }).where(eq(deals.id, dealId));
       if (parsed.data.type !== current.type) {

@@ -1,6 +1,7 @@
 import "server-only";
 import { asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
+import { currentAgencyScope } from "@/server/agency-scope";
 import { agencies, carImages, carTranslations, cars, users } from "@/db/schema";
 
 /** Parc complet pour l'équipe (y compris les voitures désactivées). */
@@ -70,12 +71,17 @@ export async function getFleetCar(id: string) {
 export type FleetCar = NonNullable<Awaited<ReturnType<typeof getFleetCar>>>;
 
 /** Agences actives (formulaires : voiture, rendez-vous). */
+/** Agences actives proposées dans le parc ; un gestionnaire rattaché à des agences ne voit que les siennes. */
 export async function allAgencies() {
-  return db
-    .select({ id: agencies.id, city: agencies.city, name: agencies.name })
-    .from(agencies)
-    .where(eq(agencies.isActive, true))
-    .orderBy(asc(agencies.city), desc(agencies.isAirport));
+  const [rows, scope] = await Promise.all([
+    db
+      .select({ id: agencies.id, city: agencies.city, name: agencies.name })
+      .from(agencies)
+      .where(eq(agencies.isActive, true))
+      .orderBy(asc(agencies.city), desc(agencies.isAirport)),
+    currentAgencyScope(),
+  ]);
+  return scope ? rows.filter((a) => scope.includes(a.id)) : rows;
 }
 
 /** Gestionnaires actifs, pour l'association aux voitures. */

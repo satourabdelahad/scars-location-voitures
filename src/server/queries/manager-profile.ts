@@ -1,6 +1,7 @@
 import "server-only";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
+import { currentAgencyScope } from "@/server/agency-scope";
 import { cars, dealEvents, deals, managers, promotions } from "@/db/schema";
 import type { SessionUser } from "@/server/guards";
 
@@ -144,9 +145,9 @@ export const managerDeals = (managerId: string) => listDeals({ managerId });
 
 /** Listes pour les menus du formulaire de deal. */
 export async function dealFormOptions() {
-  const [carRows, promoRows] = await Promise.all([
+  const [carRows, promoRows, scope] = await Promise.all([
     db
-      .select({ id: cars.id, brand: cars.brand, model: cars.model, plate: cars.plateNumber })
+      .select({ id: cars.id, brand: cars.brand, model: cars.model, plate: cars.plateNumber, agencyId: cars.agencyId })
       .from(cars)
       .where(eq(cars.status, "active"))
       .orderBy(asc(cars.brand), asc(cars.model)),
@@ -155,9 +156,11 @@ export async function dealFormOptions() {
       .from(promotions)
       .where(and(eq(promotions.isActive, true)))
       .orderBy(asc(promotions.code)),
+    currentAgencyScope(),
   ]);
   return {
-    cars: carRows.map((c) => ({ id: c.id, label: `${c.brand} ${c.model} (${c.plate})` })),
+    // Gestionnaire rattaché à des agences : seulement les voitures de son périmètre.
+    cars: carRows.filter((c) => !scope || scope.includes(c.agencyId)).map((c) => ({ id: c.id, label: `${c.brand} ${c.model} (${c.plate})` })),
     promotions: promoRows,
   };
 }

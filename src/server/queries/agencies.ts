@@ -2,6 +2,9 @@ import "server-only";
 import { sql } from "drizzle-orm";
 import { db } from "@/db";
 
+/** Responsable d'agence (0, 1 ou plusieurs par agence). */
+export type Responsible = { id: string; civility: "male" | "female"; firstName: string; lastName: string; phone: string; email: string | null; photoUrl: string | null; active: boolean };
+
 /** Agences pour « Mes agences » (actives et désactivées), avec le nombre de voitures rattachées. */
 export async function listAgencies() {
   const res = await db.execute<{
@@ -13,12 +16,7 @@ export async function listAgencies() {
     whatsapp: string | null;
     is_airport: boolean;
     is_active: boolean;
-    manager_id: string | null;
-    manager_civility: "male" | "female" | null;
-    manager_last_name: string | null;
-    manager_first_name: string | null;
-    manager_email: string | null;
-    manager_phone: string | null;
+    responsibles: Responsible[] | null;
     deactivation_reason: string | null;
     website_url: string | null;
     facebook_url: string | null;
@@ -29,7 +27,11 @@ export async function listAgencies() {
     updated_at: string;
   }>(sql`
     SELECT a.id, a.name, a.city, a.address, a.phone, a.whatsapp, a.is_airport, a.is_active,
-           a.manager_id, a.manager_civility, a.manager_last_name, a.manager_first_name, a.manager_email, a.manager_phone,
+           (SELECT json_agg(json_build_object('id', m.id, 'civility', m.civility, 'firstName', m.first_name, 'lastName', m.last_name,
+                                     'phone', m.phone, 'email', u.email, 'photoUrl', m.photo_url, 'active', m.status = 'active')
+                    ORDER BY m.last_name, m.first_name)
+              FROM manager_agencies ma JOIN managers m ON m.id = ma.manager_id JOIN users u ON u.id = m.user_id
+             WHERE ma.agency_id = a.id AND ma.is_responsible) AS responsibles,
            a.deactivation_reason, a.updated_at, a.website_url, a.facebook_url, a.instagram_url, a.linkedin_url, a.x_url,
            (SELECT count(*)::int FROM cars c WHERE c.agency_id = a.id AND c.status <> 'deactivated') AS cars
     FROM agencies a
@@ -45,12 +47,7 @@ export async function listAgencies() {
     whatsapp: r.whatsapp,
     isAirport: r.is_airport,
     isActive: r.is_active,
-    managerId: r.manager_id,
-    managerCivility: r.manager_civility,
-    managerLastName: r.manager_last_name,
-    managerFirstName: r.manager_first_name,
-    managerEmail: r.manager_email,
-    managerPhone: r.manager_phone,
+    responsibles: r.responsibles ?? [],
     deactivationReason: r.deactivation_reason,
     websiteUrl: r.website_url,
     facebookUrl: r.facebook_url,
@@ -102,21 +99,19 @@ export async function agencyStats(id: number) {
 export async function agencyManagers(id: number) {
   const res = await db.execute<{ id: string; first_name: string; last_name: string; photo_url: string | null; city: string; phone: string; email: string | null; status: string; responsible: boolean; member: boolean; is_admin: boolean; by_rule: boolean; cars: number }>(sql`
     SELECT m.id, m.first_name, m.last_name, m.photo_url, m.city, m.phone, u.email, m.status,
-           (a.manager_id = m.id) AS responsible,
+           EXISTS (SELECT 1 FROM manager_agencies ma WHERE ma.manager_id = m.id AND ma.agency_id = ${id} AND ma.is_responsible) AS responsible,
            (u.role = 'admin' OR EXISTS (SELECT 1 FROM manager_agencies ma WHERE ma.manager_id = m.id AND ma.agency_id = ${id})) AS member,
            (u.role = 'admin') AS is_admin,
            (${id} = ANY(coalesce(r.agencies, '{}'))) AS by_rule,
            (SELECT count(*)::int FROM car_managers cm JOIN cars c ON c.id = cm.car_id WHERE cm.manager_id = m.id AND c.agency_id = ${id}) AS cars
     FROM managers m
     JOIN users u ON u.id = m.user_id
-    JOIN agencies a ON a.id = ${id}
     LEFT JOIN manager_car_rules r ON r.manager_id = m.id
-    WHERE a.manager_id = m.id
-       OR u.role = 'admin'
+    WHERE u.role = 'admin'
        OR EXISTS (SELECT 1 FROM manager_agencies ma WHERE ma.manager_id = m.id AND ma.agency_id = ${id})
        OR ${id} = ANY(coalesce(r.agencies, '{}'))
        OR EXISTS (SELECT 1 FROM car_managers cm JOIN cars c ON c.id = cm.car_id WHERE cm.manager_id = m.id AND c.agency_id = ${id})
-    ORDER BY (a.manager_id = m.id) DESC, m.last_name, m.first_name
+    ORDER BY responsible DESC, is_admin DESC, m.last_name, m.first_name
   `);
   return res.rows.map((r) => ({
     id: r.id,
@@ -137,12 +132,12 @@ export async function agencyManagers(id: number) {
 
 /** Gestionnaires proposés comme responsable d'agence. */
 export async function managerChoices() {
-  const res = await db.execute<{ id: string; first_name: string; last_name: string; civility: "male" | "female"; email: string | null; phone: string; photo_url: string | null; status: string }>(sql`
-    SELECT m.id, m.first_name, m.last_name, m.civility, u.email, m.phone, m.photo_url, m.status
+  const res = await db.execute<{ id: string; first_name: string; last_name: string; civility: "male" | "female"; email: string | null; phone: string; photo_url: string | null; status: string; is_admin: boolean }>(sql`
+    SELECT m.id, m.first_name, m.last_name, m.civility, u.email, m.phone, m.photo_url, m.status, (u.role = 'admin') AS is_admin
     FROM managers m JOIN users u ON u.id = m.user_id
-    ORDER BY m.last_name, m.first_name
+    ORDER BY (u.role = 'admin') DESC, m.last_name, m.first_name
   `);
-  return res.rows.map((r) => ({ id: r.id, firstName: r.first_name, lastName: r.last_name, civility: r.civility, email: r.email, phone: r.phone, photoUrl: r.photo_url, active: r.status === "active" }));
+  return res.rows.map((r) => ({ id: r.id, firstName: r.first_name, lastName: r.last_name, civility: r.civility, email: r.email, phone: r.phone, photoUrl: r.photo_url, active: r.status === "active", isAdmin: r.is_admin }));
 }
 
 /** Agences d'un gestionnaire : celles dont il est responsable et celles où il est rattaché. */
@@ -150,8 +145,10 @@ export async function managerAgencyLinks(managerId: string) {
   const res = await db.execute<{ id: number; name: string; city: string; is_active: boolean; is_airport: boolean; responsible: boolean; member: boolean; cars: number; head: string | null }>(sql`
     SELECT a.id, a.name, a.city, a.is_active, a.is_airport,
            (SELECT count(*)::int FROM cars c WHERE c.agency_id = a.id AND c.status <> 'deactivated') AS cars,
-           NULLIF(trim(coalesce(a.manager_first_name, '') || ' ' || coalesce(a.manager_last_name, '')), '') AS head,
-           (a.manager_id = ${managerId}) AS responsible,
+           (SELECT string_agg(m2.first_name || ' ' || m2.last_name, ', ' ORDER BY m2.last_name)
+              FROM manager_agencies ma2 JOIN managers m2 ON m2.id = ma2.manager_id
+             WHERE ma2.agency_id = a.id AND ma2.is_responsible) AS head,
+           EXISTS (SELECT 1 FROM manager_agencies ma WHERE ma.manager_id = ${managerId} AND ma.agency_id = a.id AND ma.is_responsible) AS responsible,
            (EXISTS (SELECT 1 FROM managers m JOIN users u ON u.id = m.user_id WHERE m.id = ${managerId} AND u.role = 'admin')
              OR EXISTS (SELECT 1 FROM manager_agencies ma WHERE ma.manager_id = ${managerId} AND ma.agency_id = a.id)) AS member
     FROM agencies a

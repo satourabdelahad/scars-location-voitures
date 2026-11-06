@@ -20,7 +20,8 @@ export type Column<T> = {
   /** Texte utilisé pour la recherche, les filtres et les exports */
   text: (row: T) => string;
   cell?: (row: T) => ReactNode;
-  filter?: { type: "text" } | { type: "select"; options: { value: string; label: string }[] };
+  /** combobox : saisie libre avec suggestions (valeurs distinctes de la colonne si options est omis) */
+  filter?: { type: "text" } | { type: "select"; options: { value: string; label: string }[] } | { type: "combobox"; options?: string[] };
   align?: "start" | "end" | "center";
   /** Colonne d'action : jamais exportée, jamais masquable */
   isAction?: boolean;
@@ -321,6 +322,20 @@ export function DataTable<T extends { id: string }>({
                       <option value="">—</option>
                       {c.filter.options.map((o) => <option key={o.value} value={o.label}>{o.label}</option>)}
                     </select>
+                  ) : c.filter?.type === "combobox" ? (
+                    <>
+                      <input
+                        list={`dt-${tableKey}-${c.id}`}
+                        value={filters[c.id] ?? ""}
+                        onChange={(e) => { setFilters((f) => ({ ...f, [c.id]: e.target.value })); setPage(0); }}
+                        placeholder={t("filterColumn")}
+                        aria-label={`${t("filterColumn")} ${c.header}`}
+                        className="h-8 w-full min-w-24 rounded-lg border border-mist-2 bg-paper px-2 text-[13px] text-ink outline-none placeholder:text-ink-3/70 focus:border-majorelle"
+                      />
+                      <datalist id={`dt-${tableKey}-${c.id}`}>
+                        {(c.filter.options ?? [...new Set(data.map((r) => c.text(r)).filter(Boolean))].sort((x, y) => collator.compare(x, y))).map((o) => <option key={o} value={o} />)}
+                      </datalist>
+                    </>
                   ) : c.filter?.type === "text" ? (
                     <input
                       value={filters[c.id] ?? ""}

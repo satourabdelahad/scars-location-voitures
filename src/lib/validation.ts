@@ -157,7 +157,5 @@ export const agencySchema = z.object({
   instagramUrl: optionalUrl,
   linkedinUrl: optionalUrl,
   xUrl: optionalUrl,
-  /** Responsable : un compte gestionnaire existant */
-  managerId: z.string({ error: "required" }).uuid("required"),
 });
 export type AgencyInput = z.infer<typeof agencySchema>;

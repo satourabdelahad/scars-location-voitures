@@ -10,6 +10,7 @@ import { notifyCarCreated, notifyCarsJoinedAgency } from "@/server/notifications
 import { carDeactivationSchema, carSchema, LOCALE_CODES } from "@/lib/validation";
 import { actorLabel, assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { verifyUpload } from "@/server/uploads";
+import { assertAgencyInScope, assertCarsInScope } from "@/server/agency-scope";
 import { sendReservationEmail } from "@/server/email";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { CAR_VIEWS } from "@/lib/car-views";
@@ -90,6 +91,8 @@ export async function createCar(input: { data: unknown; images: unknown; manager
     if (!images.some((i) => i.view === "main")) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
     const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
     const { descriptions, ...data } = parsed.data;
+    // Gestionnaire rattaché à des agences : seulement des voitures de son périmètre.
+    await assertAgencyInScope(staff, data.agencyId);
     const id = await db.transaction(async (tx) => {
       const [row] = await tx
         .insert(cars)
@@ -126,6 +129,8 @@ export async function updateCar(id: string, input: { data: unknown; images: unkn
     if (!current) return { ok: false, error: "not_found" };
     // Contrôle applicatif ; la base le garantit aussi par un trigger.
     if (current.status === "deactivated") return { ok: false, error: "car_frozen" };
+    await assertCarsInScope(staff, [id]);
+    await assertAgencyInScope(staff, data.agencyId);
     await db.transaction(async (tx) => {
       await tx.update(cars).set({ ...data, vin: data.vin || null, updatedBy: staff.id }).where(eq(cars.id, id));
       await writeChildren(tx, id, descriptions, images);
@@ -151,6 +156,7 @@ export async function deactivateCar(id: string, input: unknown): Promise<ActionR
     const staff = await assertRole(["admin", "manager"]);
     const parsed = carDeactivationSchema.safeParse(input);
     if (!parsed.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(parsed.error.issues) };
+    await assertCarsInScope(staff, [id]);
     const cancelled = await db.transaction(async (tx) => {
       const [row] = await tx
         .update(cars)
@@ -194,6 +200,7 @@ export async function deactivateCar(id: string, input: unknown): Promise<ActionR
 export async function setCarMaintenance(id: string, inRepair: boolean): Promise<ActionResult> {
   try {
     const staff = await assertRole(["admin", "manager"]);
+    await assertCarsInScope(staff, [id]);
     const [row] = await db
       .update(cars)
       .set({ status: inRepair ? "maintenance" : "active", updatedBy: staff.id })
@@ -222,6 +229,9 @@ export async function bulkFleetAction(
     const staff = await assertRole(["admin", "manager"]);
     const list = z.array(z.string().uuid()).min(1).max(300).safeParse(ids);
     if (!list.success) return { ok: false, error: "validation" };
+    // Toutes les voitures sélectionnées doivent être dans le périmètre du gestionnaire.
+    await assertCarsInScope(staff, list.data);
+    if (action === "agency" && typeof payload.agencyId === "number") await assertAgencyInScope(staff, payload.agencyId);
     const done: string[] = [];
     if (action === "promo") {
       // Promotion en % sur les voitures sélectionnées (les voitures désactivées sont figées et ignorées).
@@ -307,6 +317,7 @@ export async function setCarPromotion(id: string, input: unknown): Promise<Actio
     const [current] = await db.select({ status: cars.status }).from(cars).where(eq(cars.id, id)).limit(1);
     if (!current) return { ok: false, error: "not_found" };
     if (current.status === "deactivated") return { ok: false, error: "car_frozen" };
+    await assertCarsInScope(staff, [id]);
     const v = p.data ?? { percent: null, startsOn: null, endsOn: null };
     await db.update(cars).set({ promoPercent: v.percent, promoStartsOn: v.startsOn, promoEndsOn: v.endsOn, updatedBy: staff.id }).where(eq(cars.id, id));
     await db.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "promo", changes: { ...v, note: promoNote(input) } });

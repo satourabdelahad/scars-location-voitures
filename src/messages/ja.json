@@ -698,7 +698,8 @@
     "promoSaved": "キャンペーンを保存しました",
     "promoRemoved": "キャンペーンを解除しました",
     "promoPreview": "1日料金：{before} → {after}",
-    "promoNoEnd": "終了日なし"
+    "promoNoEnd": "終了日なし",
+    "outOfScopeBanner": "この車両は担当範囲外です。閲覧はできますが変更はできません。"
   },
   "Reservations": {
     "title": "予約",
@@ -831,7 +832,8 @@
     "validation_reserved": "この予約を承認できるのは、管理者と出発店舗の責任者のみです。",
     "admin_protected": "管理者アカウントは無効化や招待の送信ができません。",
     "contact_unavailable": "現在メッセージを送信できません。WhatsAppまたはお電話でご連絡ください。",
-    "url": "無効なURLです"
+    "url": "無効なURLです",
+    "out_of_scope": "操作できません：この車両または店舗は担当範囲外です。"
   },
   "About": {
     "title": "整備の行き届いた車を、モロッコから",
@@ -1502,7 +1504,21 @@
     "instagramUrl": "Instagramページ",
     "linkedinUrl": "LinkedInページ",
     "xUrl": "X（Twitter）ページ",
-    "adminBadge": "管理者"
+    "adminBadge": "管理者",
+    "responsibles": "責任者",
+    "noResponsible": "責任者なし",
+    "bulkActivated": "{count}件の店舗を再開しました",
+    "bulkDeactivated": "{count}件の店舗を無効にしました",
+    "bulkSkipped": "{count}件の店舗はスキップされました（稼働中の車両あり）",
+    "bulkDeactivateTitle": "{count}件の店舗を無効にする",
+    "pickerAll": "すべて",
+    "pickerSelected": "選択中（{count}）",
+    "responsiblesSaved": "責任者を保存しました",
+    "managersSaved": "担当者を保存しました",
+    "responsiblesHint": "責任者を0人、1人、または複数選択してください。店舗の予約を承認し、自動的にメンバーになります。",
+    "membersHint": "この店舗に所属する担当者を選択してください。店舗に所属する担当者は、その店舗の車両のみ操作できます。",
+    "membersLockedHint": "責任者と管理者は常に店舗に所属します。",
+    "tabResponsibles": "{count, plural, =0 {責任者} one {責任者} other {責任者（#）}}"
   },
   "Marketing": {
     "title": "メールマーケティング",

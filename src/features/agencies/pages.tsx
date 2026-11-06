@@ -16,6 +16,7 @@ import { ManagerAvatar } from "@/features/managers/manager-avatar";
 import { AgenciesTable } from "./agencies-table";
 import { AgencyForm } from "./agency-form";
 import { AgencyStatusButton } from "./agency-status";
+import { ManagerPicker, type PickerPerson } from "./manager-picker";
 
 type Base = "/admin" | "/manager";
 const TABS = ["stats", "infos", "manager", "managers", "cars"] as const;
@@ -43,12 +44,12 @@ export async function AgenciesListPage({ base, me }: { base: Base; me: SessionUs
 
 /** Nouvelle agence (administrateur). */
 export async function NewAgencyPage({ base }: { base: Base }) {
-  const [t, managers] = await Promise.all([getTranslations("Agencies"), managerChoices()]);
+  const t = await getTranslations("Agencies");
   return (
     <>
       <Link href={`${base}/agencies`} className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>
       <div className="mt-3"><PageHeader title={t("createTitle")} /></div>
-      <AgencyForm base={base} managers={managers} />
+      <AgencyForm base={base} />
     </>
   );
 }
@@ -79,7 +80,7 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
   const tabs = [
     { id: "stats" as const, label: t("tabStats"), Icon: BarChart3 },
     { id: "infos" as const, label: t("tabInfos"), Icon: IdCard },
-    { id: "manager" as const, label: t("tabManager"), Icon: UserRoundCog },
+    { id: "manager" as const, label: t("tabResponsibles", { count: a.responsibles.length }), Icon: UserRoundCog },
     { id: "managers" as const, label: t("tabManagers", { count: linked.length }), Icon: UsersRound },
     { id: "cars" as const, label: t("tabCars", { count: stats.cars }), Icon: CarFront },
   ];
@@ -95,22 +96,66 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
     instagramUrl: a.instagramUrl ?? "",
     linkedinUrl: a.linkedinUrl ?? "",
     xUrl: a.xUrl ?? "",
-    managerId: a.managerId ?? "",
   };
 
+  // Personnes proposées dans les onglets Responsable(s) et Gestionnaires.
+  const info = new Map(linked.map((m) => [m.id, m]));
+  const people = (badges: (id: string) => PickerPerson["badges"]) =>
+    managers.map((m) => ({ ...m, badges: badges(m.id) }));
+  const responsibleIds = a.responsibles.map((r) => r.id);
+  const memberIds = linked.filter((m) => m.member && !m.isAdmin).map((m) => m.id);
+  const adminIds = managers.filter((m) => m.isAdmin).map((m) => m.id);
+
   let body: React.ReactNode;
-  if (tab === "infos" || tab === "manager") {
+  if (tab === "infos") {
     body = (
       <AgencyForm
-        key={tab}
         base={base}
         agencyId={a.agencyId}
-        section={tab}
-        managers={managers}
         readOnly={!isAdmin || !a.isActive}
-        actions={isAdmin && tab === "infos" ? <AgencyStatusButton id={a.agencyId} name={a.name} active={a.isActive} /> : undefined}
+        actions={isAdmin ? <AgencyStatusButton id={a.agencyId} name={a.name} active={a.isActive} /> : undefined}
         initial={initial}
       />
+    );
+  } else if (tab === "manager") {
+    body = (
+      <>
+        <p className="mb-3 text-sm text-ink-3">{t("responsiblesHint")}</p>
+        <ManagerPicker
+          key="responsible"
+          agencyId={a.agencyId}
+          kind="responsible"
+          base={base}
+          readOnly={!isAdmin || !a.isActive}
+          initial={responsibleIds}
+          people={people((id) => (managers.find((m) => m.id === id)?.isAdmin ? [{ label: t("adminBadge"), tone: "dark" }] : []))}
+        />
+      </>
+    );
+  } else if (tab === "managers" && isAdmin) {
+    body = (
+      <>
+        <p className="mb-3 text-sm text-ink-3">{t("membersHint")}</p>
+        <ManagerPicker
+          key="member"
+          agencyId={a.agencyId}
+          kind="member"
+          base={base}
+          readOnly={!a.isActive}
+          initial={memberIds.filter((id) => !responsibleIds.includes(id))}
+          locked={[...responsibleIds, ...adminIds]}
+          lockedHint={t("membersLockedHint")}
+          people={people((id) => {
+            const m = info.get(id);
+            const out: NonNullable<PickerPerson["badges"]> = [];
+            if (responsibleIds.includes(id)) out.push({ label: t("responsible"), tone: "dark" });
+            if (adminIds.includes(id)) out.push({ label: t("adminBadge"), tone: "dark" });
+            if (m?.byRule) out.push({ label: tm("byRule"), tone: "info" });
+            if (m && m.cars > 0) out.push({ label: tm("carsCount", { count: m.cars }), tone: "neutral" });
+            return out;
+          })}
+        />
+      </>
     );
   } else if (tab === "managers") {
     body = linked.length ? (
@@ -137,7 +182,6 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
     ) : (
       <Panel><EmptyState icon={<UsersRound />} title={t("noManagers")} body={t("noManagersBody")} /></Panel>
     );
-    if (isAdmin) body = <><p className="mb-3 text-sm text-ink-3">{t("addManagerHint")}</p>{body}</>;
   } else if (tab === "cars") {
     const fleet = (await listFleet()).filter((f) => f.agencyId === a.agencyId);
     body = <FleetTable rows={fleet} base={base} prefs={null} tableKey="agency-cars" />;

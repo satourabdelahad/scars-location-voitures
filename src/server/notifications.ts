@@ -210,14 +210,15 @@ export async function notifyReservationCreated(reservationId: string) {
   await sendTemplate("reservation_created", recipients);
 }
 
-/** Gestionnaires actifs d'une agence : son responsable et les gestionnaires qui y sont rattachés. */
+/** Gestionnaires actifs d'une agence : ses responsables et les gestionnaires qui y sont rattachés. */
 export async function agencyStaff(agencyId: number) {
   const [agency] = await db.select().from(agencies).where(eq(agencies.id, agencyId)).limit(1);
   if (!agency) return { agency: null, staff: [] as { managerId: string; email: string; first: string; locale: string | null }[] };
   const members = await db.select({ id: managerAgencies.managerId }).from(managerAgencies).where(eq(managerAgencies.agencyId, agencyId));
   // L'administrateur appartient à toutes les agences.
   const admins = await db.select({ id: managers.id }).from(managers).innerJoin(users, eq(users.id, managers.userId)).where(eq(users.role, "admin"));
-  const ids = [...new Set([...(agency.managerId ? [agency.managerId] : []), ...members.map((m) => m.id), ...admins.map((m) => m.id)])];
+  // Les responsables sont des membres (manager_agencies.is_responsible).
+  const ids = [...new Set([...members.map((m) => m.id), ...admins.map((m) => m.id)])];
   const rows = ids.length
     ? await db
         .select({ managerId: managers.id, email: users.email, first: managers.firstName, locale: users.preferredLocale })
