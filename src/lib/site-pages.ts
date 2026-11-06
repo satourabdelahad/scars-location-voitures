@@ -1,6 +1,8 @@
 /** Textes du site public modifiables dans le back office (Site public). */
-export const ABOUT_SECTIONS = ["who", "history", "mission", "vision"] as const;
-export const SITE_PAGES = ["about_who", "about_history", "about_mission", "about_vision", "terms", "privacy"] as const;
+/** Sections de la page À propos : présentation, mission, vision et services. */
+export const ABOUT_SECTIONS = ["who", "mission", "vision", "services"] as const;
+export const SITE_PAGES = ["about_who", "about_history", "about_mission", "about_vision", "about_services", "terms", "privacy", "topbar_note"] as const;
+export const SOCIALS = ["facebook", "instagram", "x", "tiktok"] as const;
 export type SitePage = (typeof SITE_PAGES)[number];
 
 /**
@@ -42,4 +44,15 @@ export function parseBlocks(text: string): Block[] {
     flush();
   }
   return out;
+}
+
+/** Services (À propos) : chaque « ## Titre » suivi de son texte devient une carte. */
+export function parseCards(text: string) {
+  const cards: { title: string; body: Block[] }[] = [];
+  for (const b of parseBlocks(text)) {
+    if (b.type === "h") cards.push({ title: b.text, body: [] });
+    else if (cards.length) cards[cards.length - 1].body.push(b);
+    else cards.push({ title: "", body: [b] });
+  }
+  return cards;
 }

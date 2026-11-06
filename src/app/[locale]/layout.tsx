@@ -17,7 +17,10 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Meta" });
   const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const recaptchaKey = process.env.RECAPTCHA_KEY || process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
   return {
+    // Clé publique reCAPTCHA lue au moment de la requête (pas besoin de rebuild après un changement de .env).
+    ...(recaptchaKey ? { other: { "recaptcha-site-key": recaptchaKey } } : {}),
     metadataBase: new URL(base),
     title: { default: t("title"), template: `%s · Dizy Cars` },
     description: t("description"),
@@ -43,12 +46,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 
   return (
     <html lang={locale === "ary" ? "ar-MA" : locale} dir={meta.dir} data-theme={theme} suppressHydrationWarning>
-      <head>
-        {/* Clé publique reCAPTCHA lue au moment de la requête (pas besoin de rebuild après un changement de .env). */}
-        {(process.env.RECAPTCHA_KEY || process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) && (
-          <meta name="recaptcha-site-key" content={process.env.RECAPTCHA_KEY || process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY} />
-        )}
-      </head>
       <body className="min-h-dvh">
         <NextIntlClientProvider>
           <TopLoader />

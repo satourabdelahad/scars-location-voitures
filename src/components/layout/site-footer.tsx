@@ -21,6 +21,7 @@ export async function SiteFooter() {
           <p className="mb-3 text-sm font-bold text-white">{t("explore")}</p>
           <ul className="space-y-2 text-sm">
             <li><Link className="hover:text-white" href="/cars">{n("cars")}</Link></li>
+            <li><Link className="hover:text-white" href="/reservation">{n("booking")}</Link></li>
             {multiAgency && <li><Link className="hover:text-white" href="/agencies">{n("agencies")}</Link></li>}
             <li><Link className="hover:text-white" href="/about">{n("about")}</Link></li>
           </ul>

@@ -36,8 +36,8 @@
     "mission": "我们的使命：满足您的租车需求。"
   },
   "Nav": {
-    "cars": "车辆",
-    "agencies": "门店",
+    "cars": "我们的车辆",
+    "agencies": "我们的门店",
     "about": "关于我们",
     "contact": "联系我们",
     "login": "登录",
@@ -57,7 +57,8 @@
     "myReservations": "我的预订",
     "myCars": "我的车辆",
     "history": "历史记录",
-    "myDeals": "我的商机 / 潜在客户"
+    "myDeals": "我的商机 / 潜在客户",
+    "booking": "预订"
   },
   "Footer": {
     "tagline": "摩洛哥六座城市随时可出发的车辆，标价在柜台也不会改变。",
@@ -845,7 +846,18 @@
     "value3Body": "每个门店都有 WhatsApp 号码，租车期间全天候在线。",
     "section_history": "发展历程",
     "section_mission": "使命",
-    "section_vision": "愿景"
+    "section_vision": "愿景",
+    "eyebrow": "关于 Dizy Cars",
+    "benefit1": "所见即所付",
+    "benefit2": "新款且保养良好的车辆",
+    "benefit3": "全天候 24 小时协助",
+    "benefit4": "特马拉、拉巴特及机场免费送车",
+    "ctaCars": "选择车辆",
+    "ctaWhatsapp": "通过 WhatsApp 联系",
+    "section_services": "我们的服务",
+    "servicesSubtitle": "从机场到还钥匙，安心租车所需的一切。",
+    "ctaTitle": "准备出发了吗？",
+    "ctaBody": "在线选车或致电我们，24 小时应答。"
   },
   "Contact": {
     "title": "联系我们",
@@ -1559,9 +1571,31 @@
     "about_vision": "愿景",
     "usingDefault": "正在显示默认文字：可编辑以自定义。",
     "restoreDefault": "恢复默认文字",
-    "formatHint": "格式：空行分隔段落，“## 标题”为小标题，“- 项目”为列表。"
+    "formatHint": "格式：空行分隔段落，“## 标题”为小标题，“- 项目”为列表。",
+    "about_services": "服务",
+    "socialTitle": "社交媒体",
+    "social_facebook": "Facebook 主页",
+    "social_instagram": "Instagram 主页",
+    "social_x": "X（Twitter）主页",
+    "social_tiktok": "TikTok 主页",
+    "topBarNote": "顶部栏文字",
+    "topBarNoteLabel": "显示在顶部栏左侧，“24 小时 · 全年无休”旁边"
   },
   "TopBar": {
-    "always": "全年无休 · 24 小时"
+    "always": "24 小时 · 全年无休"
+  },
+  "ReservationPage": {
+    "title": "预订",
+    "subtitle": "选择日期和城市：我们为您显示可租车辆及价格。",
+    "myBookings": "我的预订",
+    "byWhatsapp": "通过 WhatsApp 预订",
+    "step1": "日期",
+    "step1Body": "填写取车和还车的日期与时间。",
+    "step2": "车辆",
+    "step2Body": "比较可租车辆及其全包价格。",
+    "step3": "您的信息",
+    "step3Body": "登录或只填写姓名、城市和电话。",
+    "step4": "取车",
+    "step4Body": "门店确认后，您到店取车或由我们送车。"
   }
 }

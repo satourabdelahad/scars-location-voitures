@@ -10,6 +10,14 @@ import { SITE_PAGES, type SitePage } from "@/lib/site-pages";
  * coordonnées de contact et textes des pages (À propos, Conditions de location, Confidentialité),
  * un texte par langue. Une langue non renseignée affiche le texte par défaut.
  */
+const socialUrl = z.preprocess(
+  (v) => {
+    if (typeof v !== "string" || !v.trim()) return "";
+    const t = v.trim();
+    return /^https?:\/\//i.test(t) ? t : `https://${t}`;
+  },
+  z.union([z.literal(""), z.string().url("url").max(300)]),
+).default("");
 const localized = z.record(z.string(), z.string().max(20000)).default({});
 export const siteSettingsSchema = z.object({
   contact: z
@@ -18,8 +26,13 @@ export const siteSettingsSchema = z.object({
       email: z.union([z.literal(""), z.string().trim().toLowerCase().email("email").max(255)]).default(""),
       phone: z.string().trim().max(32).default(""),
       whatsapp: z.string().trim().max(32).default(""),
+      // Réseaux sociaux affichés dans le bandeau du site
+      facebook: socialUrl,
+      instagram: socialUrl,
+      x: socialUrl,
+      tiktok: socialUrl,
     })
-    .default({ address: "", email: "", phone: "", whatsapp: "" }),
+    .default({ address: "", email: "", phone: "", whatsapp: "", facebook: "", instagram: "", x: "", tiktok: "" }),
   pages: z.partialRecord(z.enum(SITE_PAGES), localized).default({}),
 });
 export type SiteSettings = z.infer<typeof siteSettingsSchema>;

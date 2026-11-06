@@ -36,8 +36,8 @@
     "mission": "Unsere Mission: Ihre Wünsche rund um die Automiete zu erfüllen."
   },
   "Nav": {
-    "cars": "Autos",
-    "agencies": "Filialen",
+    "cars": "Unsere Fahrzeuge",
+    "agencies": "Unsere Filialen",
     "about": "Über uns",
     "contact": "Kontakt",
     "login": "Anmelden",
@@ -57,7 +57,8 @@
     "myReservations": "Meine Buchungen",
     "myCars": "Meine Autos",
     "history": "Verlauf",
-    "myDeals": "Meine Deals / Interessenten"
+    "myDeals": "Meine Deals / Interessenten",
+    "booking": "Buchung"
   },
   "Footer": {
     "tagline": "Abfahrbereite Autos in sechs marokkanischen Städten, zu einem Preis, der sich am Schalter nicht ändert.",
@@ -845,7 +846,18 @@
     "value3Body": "Eine WhatsApp-Nummer pro Filiale, Tag und Nacht während Ihrer Miete erreichbar.",
     "section_history": "Geschichte",
     "section_mission": "Mission",
-    "section_vision": "Vision"
+    "section_vision": "Vision",
+    "eyebrow": "Über Dizy Cars",
+    "benefit1": "Angezeigter Preis = bezahlter Preis",
+    "benefit2": "Neue, gepflegte Fahrzeuge",
+    "benefit3": "Hilfe rund um die Uhr",
+    "benefit4": "Kostenlose Lieferung in Témara, Rabat und zum Flughafen",
+    "ctaCars": "Fahrzeug wählen",
+    "ctaWhatsapp": "Per WhatsApp schreiben",
+    "section_services": "Unsere Leistungen",
+    "servicesSubtitle": "Alles für eine entspannte Miete, vom Flughafen bis zur Schlüsselrückgabe.",
+    "ctaTitle": "Bereit für die Fahrt?",
+    "ctaBody": "Wählen Sie Ihr Fahrzeug online oder rufen Sie uns an, wir sind rund um die Uhr erreichbar."
   },
   "Contact": {
     "title": "Kontakt",
@@ -1559,9 +1571,31 @@
     "about_vision": "Vision",
     "usingDefault": "Standardtext wird angezeigt: Bearbeiten Sie ihn, um ihn anzupassen.",
     "restoreDefault": "Standardtext wiederherstellen",
-    "formatHint": "Formatierung: Eine Leerzeile trennt Absätze, „## Titel“ erzeugt eine Zwischenüberschrift, „- Punkt“ eine Liste."
+    "formatHint": "Formatierung: Eine Leerzeile trennt Absätze, „## Titel“ erzeugt eine Zwischenüberschrift, „- Punkt“ eine Liste.",
+    "about_services": "Leistungen",
+    "socialTitle": "Soziale Netzwerke",
+    "social_facebook": "Facebook-Seite",
+    "social_instagram": "Instagram-Seite",
+    "social_x": "X-(Twitter-)Seite",
+    "social_tiktok": "TikTok-Seite",
+    "topBarNote": "Satz der oberen Leiste",
+    "topBarNoteLabel": "Links in der oberen Leiste neben „Rund um die Uhr geöffnet“"
   },
   "TopBar": {
-    "always": "7 Tage die Woche · rund um die Uhr"
+    "always": "Rund um die Uhr geöffnet · 7 Tage"
+  },
+  "ReservationPage": {
+    "title": "Buchung",
+    "subtitle": "Wählen Sie Daten und Stadt: Wir zeigen Ihnen die verfügbaren Fahrzeuge und ihren Preis.",
+    "myBookings": "Meine Buchungen",
+    "byWhatsapp": "Per WhatsApp buchen",
+    "step1": "Ihre Daten",
+    "step1Body": "Geben Sie Tag und Uhrzeit von Abholung und Rückgabe an.",
+    "step2": "Ihr Fahrzeug",
+    "step2Body": "Vergleichen Sie die verfügbaren Fahrzeuge und ihren Komplettpreis.",
+    "step3": "Ihre Angaben",
+    "step3Body": "Melden Sie sich an oder geben Sie das Nötigste an: Name, Stadt und Telefon.",
+    "step4": "Die Schlüssel",
+    "step4Body": "Die Filiale bestätigt, dann holen Sie das Fahrzeug ab oder wir liefern es."
   }
 }

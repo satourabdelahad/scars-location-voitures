@@ -1,7 +1,7 @@
-import type { SitePage } from "./site-pages";
+import type { BaseText } from "./site-page-defaults";
 
 /** Textes par défaut des pages du site public : espagnol, allemand, arabe, darija, japonais, chinois, coréen. */
-export const OTHER: Record<string, Record<SitePage, string>> = {
+export const OTHER: Record<string, Record<BaseText, string>> = {
   es: {
     about_who: `Dizy Cars es una empresa marroquí de alquiler de coches. Ofrecemos coches recientes y bien cuidados, del urbano al 4x4, con un precio que no cambia en el mostrador.
 

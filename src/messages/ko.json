@@ -36,8 +36,8 @@
     "mission": "저희의 사명은 고객님의 렌터카 요구를 만족시키는 것입니다."
   },
   "Nav": {
-    "cars": "차량",
-    "agencies": "지점",
+    "cars": "차량 보기",
+    "agencies": "지점 안내",
     "about": "회사 소개",
     "contact": "문의",
     "login": "로그인",
@@ -57,7 +57,8 @@
     "myReservations": "내 예약",
     "myCars": "내 차량",
     "history": "기록",
-    "myDeals": "내 거래 / 잠재 고객"
+    "myDeals": "내 거래 / 잠재 고객",
+    "booking": "예약"
   },
   "Footer": {
     "tagline": "모로코 6개 도시에서 바로 출발할 수 있는 차량. 안내된 요금은 카운터에서도 바뀌지 않습니다.",
@@ -845,7 +846,18 @@
     "value3Body": "지점마다 WhatsApp 번호가 있어 대여 기간 내내 밤낮없이 연락할 수 있습니다.",
     "section_history": "연혁",
     "section_mission": "미션",
-    "section_vision": "비전"
+    "section_vision": "비전",
+    "eyebrow": "Dizy Cars 소개",
+    "benefit1": "표시 가격이 결제 가격",
+    "benefit2": "새롭고 잘 관리된 차량",
+    "benefit3": "24시간 연중무휴 지원",
+    "benefit4": "테마라·라바트·공항 무료 배송",
+    "ctaCars": "차량 선택",
+    "ctaWhatsapp": "WhatsApp으로 문의",
+    "section_services": "서비스",
+    "servicesSubtitle": "공항에서 열쇠 반납까지, 편안한 렌트를 위한 모든 것.",
+    "ctaTitle": "출발할 준비가 되셨나요?",
+    "ctaBody": "온라인으로 차량을 고르거나 전화 주세요. 24시간 응답합니다."
   },
   "Contact": {
     "title": "문의하기",
@@ -1559,9 +1571,31 @@
     "about_vision": "비전",
     "usingDefault": "기본 문구가 표시되고 있습니다. 수정해 맞춤 설정하세요.",
     "restoreDefault": "기본 문구로 되돌리기",
-    "formatHint": "서식: 빈 줄로 문단을 나누고, ‘## 제목’은 소제목, ‘- 항목’은 목록이 됩니다."
+    "formatHint": "서식: 빈 줄로 문단을 나누고, ‘## 제목’은 소제목, ‘- 항목’은 목록이 됩니다.",
+    "about_services": "서비스",
+    "socialTitle": "SNS",
+    "social_facebook": "Facebook 페이지",
+    "social_instagram": "Instagram 페이지",
+    "social_x": "X(Twitter) 페이지",
+    "social_tiktok": "TikTok 페이지",
+    "topBarNote": "상단 바 문구",
+    "topBarNoteLabel": "상단 바 왼쪽 ‘연중무휴 · 24시간 영업’ 옆에 표시"
   },
   "TopBar": {
-    "always": "연중무휴 · 24시간"
+    "always": "연중무휴 · 24시간 영업"
+  },
+  "ReservationPage": {
+    "title": "예약",
+    "subtitle": "날짜와 도시를 고르면 이용 가능한 차량과 가격을 보여 드립니다.",
+    "myBookings": "내 예약",
+    "byWhatsapp": "WhatsApp으로 예약",
+    "step1": "날짜",
+    "step1Body": "인수와 반납 날짜와 시간을 입력합니다.",
+    "step2": "차량",
+    "step2Body": "이용 가능한 차량과 모든 비용이 포함된 가격을 비교합니다.",
+    "step3": "고객 정보",
+    "step3Body": "로그인하거나 이름, 도시, 전화번호만 입력합니다.",
+    "step4": "열쇠 받기",
+    "step4Body": "지점이 확정하면 차량을 인수하거나 배송받습니다."
   }
 }

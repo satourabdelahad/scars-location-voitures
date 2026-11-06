@@ -36,8 +36,8 @@
     "mission": "Our mission: meeting your car rental needs."
   },
   "Nav": {
-    "cars": "Cars",
-    "agencies": "Branches",
+    "cars": "Our cars",
+    "agencies": "Our branches",
     "about": "About",
     "contact": "Contact",
     "login": "Sign in",
@@ -57,7 +57,8 @@
     "myReservations": "My bookings",
     "myCars": "My cars",
     "history": "History",
-    "myDeals": "My deals / prospects"
+    "myDeals": "My deals / prospects",
+    "booking": "Booking"
   },
   "Footer": {
     "tagline": "Cars ready to go in six Moroccan cities, at a quoted price that doesn't change at the counter.",
@@ -845,7 +846,18 @@
     "value3Body": "A WhatsApp number for each branch, reachable day and night during your rental.",
     "section_history": "Our story",
     "section_mission": "Mission",
-    "section_vision": "Vision"
+    "section_vision": "Vision",
+    "eyebrow": "About Dizy Cars",
+    "benefit1": "The price you see is the price you pay",
+    "benefit2": "Recent, well-maintained cars",
+    "benefit3": "24/7 assistance",
+    "benefit4": "Free delivery in Témara, Rabat and at the airport",
+    "ctaCars": "Choose a car",
+    "ctaWhatsapp": "Write to us on WhatsApp",
+    "section_services": "Our services",
+    "servicesSubtitle": "Everything you need for a stress-free rental, from the airport to the return of the keys.",
+    "ctaTitle": "Ready to hit the road?",
+    "ctaBody": "Choose your car online or call us, we answer 24/7."
   },
   "Contact": {
     "title": "Contact us",
@@ -1559,9 +1571,31 @@
     "about_vision": "Vision",
     "usingDefault": "Default text shown: edit it to customise it.",
     "restoreDefault": "Restore the default text",
-    "formatHint": "Formatting: a blank line separates paragraphs, “## Title” makes a heading, “- item” a list."
+    "formatHint": "Formatting: a blank line separates paragraphs, “## Title” makes a heading, “- item” a list.",
+    "about_services": "Services",
+    "socialTitle": "Social media",
+    "social_facebook": "Facebook page",
+    "social_instagram": "Instagram page",
+    "social_x": "X (Twitter) page",
+    "social_tiktok": "TikTok page",
+    "topBarNote": "Top bar sentence",
+    "topBarNoteLabel": "Shown on the left of the top bar, next to “Open 24/7”"
   },
   "TopBar": {
-    "always": "7 days a week · 24/7"
+    "always": "Open 24/7"
+  },
+  "ReservationPage": {
+    "title": "Booking",
+    "subtitle": "Choose your dates and city: we show you the available cars and their price.",
+    "myBookings": "My bookings",
+    "byWhatsapp": "Book on WhatsApp",
+    "step1": "Your dates",
+    "step1Body": "Enter the pick-up and return day and time.",
+    "step2": "Your car",
+    "step2Body": "Compare the available cars and their all-inclusive price.",
+    "step3": "Your details",
+    "step3Body": "Sign in or leave the minimum: name, city and phone.",
+    "step4": "The keys",
+    "step4Body": "The branch confirms, then you collect the car or we deliver it to you."
   }
 }

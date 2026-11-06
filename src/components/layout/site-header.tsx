@@ -15,6 +15,7 @@ export async function SiteHeader() {
   // « Agences » seulement s'il y en a plusieurs ; sinon tout est sur la page Contact.
   const links = [
     { href: "/cars", label: t("cars") },
+    { href: "/reservation", label: t("booking") },
     ...(multiAgency ? [{ href: "/agencies", label: t("agencies") }] : []),
     { href: "/about", label: t("about") },
     { href: "/contact", label: t("contact") },

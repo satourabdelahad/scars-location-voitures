@@ -37,7 +37,7 @@
   },
   "Nav": {
     "cars": "車両一覧",
-    "agencies": "店舗",
+    "agencies": "店舗一覧",
     "about": "会社案内",
     "contact": "お問い合わせ",
     "login": "ログイン",
@@ -57,7 +57,8 @@
     "myReservations": "予約一覧",
     "myCars": "担当車両",
     "history": "履歴",
-    "myDeals": "自分の商談・見込み客"
+    "myDeals": "自分の商談・見込み客",
+    "booking": "予約"
   },
   "Footer": {
     "tagline": "モロッコ6都市ですぐに出発できる車を。表示価格はカウンターでも変わりません。",
@@ -845,7 +846,18 @@
     "value3Body": "店舗ごとのWhatsApp番号で、レンタル中は昼夜を問わず対応します。",
     "section_history": "沿革",
     "section_mission": "ミッション",
-    "section_vision": "ビジョン"
+    "section_vision": "ビジョン",
+    "eyebrow": "Dizy Carsについて",
+    "benefit1": "表示価格がお支払い価格",
+    "benefit2": "新しく手入れの行き届いた車両",
+    "benefit3": "24時間365日のサポート",
+    "benefit4": "テマラ・ラバト・空港への無料配車",
+    "ctaCars": "車を選ぶ",
+    "ctaWhatsapp": "WhatsAppで問い合わせる",
+    "section_services": "サービス",
+    "servicesSubtitle": "空港から鍵の返却まで、安心してレンタルするためのすべて。",
+    "ctaTitle": "さあ、出発しましょう",
+    "ctaBody": "オンラインで車を選ぶか、お電話ください。24時間対応しています。"
   },
   "Contact": {
     "title": "お問い合わせ",
@@ -1559,9 +1571,31 @@
     "about_vision": "ビジョン",
     "usingDefault": "デフォルトの文章を表示中：編集してカスタマイズできます。",
     "restoreDefault": "デフォルトの文章に戻す",
-    "formatHint": "書式：空行で段落を区切り、「## 見出し」で小見出し、「- 項目」でリストになります。"
+    "formatHint": "書式：空行で段落を区切り、「## 見出し」で小見出し、「- 項目」でリストになります。",
+    "about_services": "サービス",
+    "socialTitle": "SNS",
+    "social_facebook": "Facebookページ",
+    "social_instagram": "Instagramページ",
+    "social_x": "X（Twitter）ページ",
+    "social_tiktok": "TikTokページ",
+    "topBarNote": "上部バーの文言",
+    "topBarNoteLabel": "上部バーの左、「年中無休・24時間営業」の横に表示"
   },
   "TopBar": {
-    "always": "年中無休・24時間"
+    "always": "年中無休・24時間営業"
+  },
+  "ReservationPage": {
+    "title": "予約",
+    "subtitle": "日程と都市を選ぶと、空いている車両と料金を表示します。",
+    "myBookings": "予約一覧",
+    "byWhatsapp": "WhatsAppで予約",
+    "step1": "日程",
+    "step1Body": "出発と返却の日時を入力します。",
+    "step2": "車両",
+    "step2Body": "空いている車両と込み込み料金を比較します。",
+    "step3": "お客様情報",
+    "step3Body": "ログインするか、名前・都市・電話番号だけを入力します。",
+    "step4": "鍵の受け取り",
+    "step4Body": "店舗が確定した後、車を受け取るか配車をお待ちください。"
   }
 }

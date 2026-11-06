@@ -113,7 +113,6 @@ Sans `RESEND_API_KEY`, rien n'est envoyé : le terminal affiche chaque destinata
 
 ```
 drizzle/                    migrations SQL (dont 0001_integrity_rules.sql : triggers et contraintes)
-scripts/seed.ts             données initiales et démo
 scripts/check-i18n.mjs      contrôle des traductions
 src/
   app/[locale]/(site)/      pages publiques, connexion, réservation, espace client
