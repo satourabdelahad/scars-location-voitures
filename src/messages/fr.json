@@ -36,8 +36,8 @@
     "mission": "Notre mission : satisfaire votre besoin en location de voiture."
   },
   "Nav": {
-    "cars": "Voitures",
-    "agencies": "Agences",
+    "cars": "Nos voitures",
+    "agencies": "Nos agences",
     "about": "À propos",
     "contact": "Contact",
     "login": "Se connecter",
@@ -57,7 +57,8 @@
     "myReservations": "Mes réservations",
     "myCars": "Mes voitures",
     "history": "Historique",
-    "myDeals": "Mes Deals / Prospects"
+    "myDeals": "Mes Deals / Prospects",
+    "booking": "Réservation"
   },
   "Footer": {
     "tagline": "Des voitures prêtes à partir dans six villes du Maroc, avec un prix annoncé qui ne change pas au comptoir.",
@@ -845,7 +846,18 @@
     "value3Body": "Un numéro WhatsApp par agence, joignable jour et nuit pendant votre location.",
     "section_history": "Historique",
     "section_mission": "Mission",
-    "section_vision": "Vision"
+    "section_vision": "Vision",
+    "eyebrow": "À propos de Dizy Cars",
+    "benefit1": "Prix affiché = prix payé",
+    "benefit2": "Voitures récentes et entretenues",
+    "benefit3": "Assistance 24h/24 et 7j/7",
+    "benefit4": "Livraison gratuite à Témara, Rabat et à l'aéroport",
+    "ctaCars": "Choisir une voiture",
+    "ctaWhatsapp": "Nous écrire sur WhatsApp",
+    "section_services": "Nos services",
+    "servicesSubtitle": "Tout ce qu'il faut pour louer sereinement, de l'aéroport jusqu'au retour des clés.",
+    "ctaTitle": "Prêt à prendre la route ?",
+    "ctaBody": "Choisissez votre voiture en ligne ou appelez-nous, nous répondons 24h/24."
   },
   "Contact": {
     "title": "Nous contacter",
@@ -1559,9 +1571,31 @@
     "about_vision": "Vision",
     "usingDefault": "Texte par défaut affiché : modifiez-le pour le personnaliser.",
     "restoreDefault": "Rétablir le texte par défaut",
-    "formatHint": "Mise en forme : une ligne vide sépare les paragraphes, « ## Titre » crée un intertitre, « - élément » une liste."
+    "formatHint": "Mise en forme : une ligne vide sépare les paragraphes, « ## Titre » crée un intertitre, « - élément » une liste.",
+    "about_services": "Services",
+    "socialTitle": "Réseaux sociaux",
+    "social_facebook": "Page Facebook",
+    "social_instagram": "Page Instagram",
+    "social_x": "Page X (Twitter)",
+    "social_tiktok": "Page TikTok",
+    "topBarNote": "Phrase du bandeau",
+    "topBarNoteLabel": "Affichée à gauche du bandeau, à côté de « Ouvert 24h/24 · 7j/7 »"
   },
   "TopBar": {
-    "always": "7j/7 · 24h/24"
+    "always": "Ouvert 24h/24 · 7j/7"
+  },
+  "ReservationPage": {
+    "title": "Réservation",
+    "subtitle": "Choisissez vos dates et votre ville : nous vous montrons les voitures disponibles et leur prix.",
+    "myBookings": "Mes réservations",
+    "byWhatsapp": "Réserver sur WhatsApp",
+    "step1": "Vos dates",
+    "step1Body": "Indiquez le jour et l'heure du départ et du retour.",
+    "step2": "Votre voiture",
+    "step2Body": "Comparez les voitures disponibles et leur prix tout compris.",
+    "step3": "Vos coordonnées",
+    "step3Body": "Connectez-vous ou laissez le minimum : nom, ville et téléphone.",
+    "step4": "Les clés",
+    "step4Body": "L'agence confirme, puis vous récupérez la voiture ou nous vous la livrons."
   }
 }

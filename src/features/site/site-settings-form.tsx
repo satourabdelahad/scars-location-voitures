@@ -5,17 +5,19 @@ import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Field, Input, Select, Textarea } from "@/components/ui/field";
+import { Field, Input, Textarea } from "@/components/ui/field";
 import { Panel } from "@/components/ui/misc";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useRouter } from "@/i18n/navigation";
 import { localeMeta, locales } from "@/i18n/config";
-import { ABOUT_SECTIONS, type SitePage } from "@/lib/site-pages";
+import { ABOUT_SECTIONS, SOCIALS, type SitePage } from "@/lib/site-pages";
+import { Flag } from "@/components/flags";
+import type { Locale } from "@/i18n/config";
 import { cn } from "@/lib/utils";
 import { updateSiteSettings } from "@/server/actions/site";
 
 type Settings = {
-  contact: { address: string; email: string; phone: string; whatsapp: string };
+  contact: { address: string; email: string; phone: string; whatsapp: string; facebook: string; instagram: string; x: string; tiktok: string };
   pages: Partial<Record<SitePage, Record<string, string>>>;
 };
 type Tab = "contact" | "about" | "terms" | "privacy";
@@ -74,6 +76,30 @@ export function SiteSettingsForm({ initial, defaults, uiLocale }: { initial: Set
     </Field>
   );
 
+  const langPicker = (
+    <div className="flex flex-wrap items-center gap-1.5">
+      <span className="me-1 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-2">
+        <Globe className="size-4 text-ink-3" />
+        {t("language")}
+      </span>
+      {locales.map((l) => (
+        <button
+          key={l}
+          type="button"
+          onClick={() => setLang(l)}
+          aria-pressed={lang === l}
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold",
+            lang === l ? "border-majorelle bg-majorelle-soft text-majorelle" : "border-mist text-ink-2 hover:bg-chalk",
+          )}
+        >
+          <Flag locale={l as Locale} className="h-3.5 w-5 rounded-[3px]" />
+          {localeMeta[l].label}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div>
       <div role="tablist" className="scroll-thin -mx-1 mb-5 flex gap-1 overflow-x-auto border-b border-mist px-1">
@@ -113,6 +139,17 @@ export function SiteSettingsForm({ initial, defaults, uiLocale }: { initial: Set
             <Field label={t("whatsapp")}>
               {(p) => <PhoneInput {...p} value={v.contact.whatsapp} onChange={(x) => setContact("whatsapp", x)} />}
             </Field>
+            <h3 className="mt-2 text-sm font-bold text-ink sm:col-span-2">{t("socialTitle")}</h3>
+            {SOCIALS.map((k) => (
+              <Field key={k} label={t(`social_${k}`)} error={errors[`contact.${k}`] ? te("url") : undefined}>
+                {(p) => <Input {...p} type="url" dir="ltr" inputMode="url" placeholder={`https://${k === "x" ? "x" : k}.com/…`} value={v.contact[k]} onChange={(e) => setContact(k, e.target.value)} />}
+              </Field>
+            ))}
+            <h3 className="mt-2 text-sm font-bold text-ink sm:col-span-2">{t("topBarNote")}</h3>
+            <div className="grid gap-3 sm:col-span-2">
+              {langPicker}
+              {editor("topbar_note", t("topBarNoteLabel"), 2)}
+            </div>
             <ul className="flex flex-wrap items-center gap-4 rounded-xl bg-chalk px-4 py-3 text-xs text-ink-2 sm:col-span-2">
               <li className="font-semibold text-ink-3">{t("topBarPreview")}</li>
               {v.contact.email && <li className="inline-flex items-center gap-1.5"><Mail className="size-3.5" />{v.contact.email}</li>}
@@ -122,19 +159,11 @@ export function SiteSettingsForm({ initial, defaults, uiLocale }: { initial: Set
           </div>
         ) : (
           <div className="grid max-w-3xl gap-5">
-            <div className="flex flex-wrap items-end justify-between gap-3">
+            <div className="grid gap-3">
               <p className="max-w-xl text-sm text-ink-3">{t("textsHint")}</p>
-              <label className="flex items-center gap-2 text-sm font-semibold text-ink-2">
-                <Globe className="size-4 text-ink-3" />
-                {t("language")}
-                <Select value={lang} onChange={(e) => setLang(e.target.value)} className="h-10 w-44">
-                  {locales.map((l) => (
-                    <option key={l} value={l}>{localeMeta[l].label}</option>
-                  ))}
-                </Select>
-              </label>
+              {langPicker}
             </div>
-            {tab === "about" && ABOUT_SECTIONS.map((s) => editor(`about_${s}` as SitePage, t(`about_${s}`), 6))}
+            {tab === "about" && ABOUT_SECTIONS.map((s) => editor(`about_${s}` as SitePage, t(`about_${s}`), s === "services" ? 16 : 6))}
             {tab === "terms" && editor("terms", t("tabTerms"), 22)}
             {tab === "privacy" && editor("privacy", t("tabPrivacy"), 22)}
             <p className="text-xs text-ink-3">{t("formatHint")}</p>

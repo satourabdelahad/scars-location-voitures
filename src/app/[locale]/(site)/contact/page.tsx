@@ -2,6 +2,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyCard } from "@/components/agency-card";
+import { SocialLinks } from "@/components/social-links";
 import { ContactForm } from "@/features/public/contact-form";
 import { Link } from "@/i18n/navigation";
 import { publicSite, waLink } from "@/server/public-site";
@@ -16,7 +17,8 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Contact");
-  const { contact, agencies, multiAgency } = await publicSite();
+  const { contact, agencies, multiAgency, settings } = await publicSite();
+  const social = { facebook: settings.contact.facebook, instagram: settings.contact.instagram, x: settings.contact.x, tiktok: settings.contact.tiktok };
   const items = [
     contact.address && { icon: <MapPin />, label: t("address"), value: contact.address, href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}` },
     contact.email && { icon: <Mail />, label: t("email"), value: contact.email, href: `mailto:${contact.email}` },
@@ -43,6 +45,7 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
               </li>
             ))}
           </ul>
+          <SocialLinks links={social} />
           {contact.address && (
             <iframe
               title={t("mapTitle")}

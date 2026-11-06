@@ -1,11 +1,13 @@
 import type { SitePage } from "./site-pages";
+export type BaseText = Exclude<SitePage, "about_services" | "topbar_note">;
 import { OTHER } from "./site-page-defaults-i18n";
+import { EXTRA } from "./site-page-defaults-extra";
 
 /**
  * Textes par défaut des pages du site public, dans les 9 langues du site, à adapter
  * dans le back office (Site public). Un texte saisi pour une langue remplace celui-ci.
  */
-const FR: Record<SitePage, string> = {
+const FR: Record<BaseText, string> = {
   about_who: `Dizy Cars est une agence de location de voitures marocaine. Nous mettons à votre disposition des voitures récentes et bien entretenues, de la citadine au 4x4, avec un prix annoncé qui ne change pas au comptoir.
 
 Notre équipe vous accueille en agence et à l'aéroport, et vous répond en français, en arabe, en darija, en anglais et en espagnol.`,
@@ -56,7 +58,7 @@ Conformément à la loi marocaine n° 09-08 relative à la protection des person
 Le site utilise des cookies nécessaires à son fonctionnement (connexion, langue, réservation). Aucun cookie publicitaire n'est déposé.`,
 };
 
-const EN: Record<SitePage, string> = {
+const EN: Record<BaseText, string> = {
   about_who: `Dizy Cars is a Moroccan car rental company. We offer recent, well-maintained cars, from city cars to 4x4s, at a price that does not change at the counter.
 
 Our team welcomes you at our branches and at the airport, in French, Arabic, Darija, English and Spanish.`,
@@ -107,8 +109,9 @@ Under Moroccan law 09-08 on the protection of individuals with regard to the pro
 The site uses cookies needed for it to work (sign-in, language, booking). No advertising cookies are set.`,
 };
 
-const ALL: Record<string, Record<SitePage, string>> = { fr: FR, en: EN, ...OTHER };
+const ALL: Record<string, Record<BaseText, string>> = { fr: FR, en: EN, ...OTHER };
 
 export function defaultPageText(page: SitePage, locale: string) {
+  if (page === "about_services" || page === "topbar_note") return (EXTRA[locale] ?? EXTRA.fr)[page];
   return (ALL[locale] ?? FR)[page];
 }

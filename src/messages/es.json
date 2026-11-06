@@ -36,8 +36,8 @@
     "mission": "Nuestra misión: satisfacer tus necesidades de alquiler de coche."
   },
   "Nav": {
-    "cars": "Coches",
-    "agencies": "Oficinas",
+    "cars": "Nuestros coches",
+    "agencies": "Nuestras agencias",
     "about": "Quiénes somos",
     "contact": "Contacto",
     "login": "Iniciar sesión",
@@ -57,7 +57,8 @@
     "myReservations": "Mis reservas",
     "myCars": "Mis coches",
     "history": "Historial",
-    "myDeals": "Mis tratos / prospectos"
+    "myDeals": "Mis tratos / prospectos",
+    "booking": "Reserva"
   },
   "Footer": {
     "tagline": "Coches listos para salir en seis ciudades de Marruecos, con un precio anunciado que no cambia en el mostrador.",
@@ -845,7 +846,18 @@
     "value3Body": "Un número de WhatsApp por oficina, disponible día y noche durante tu alquiler.",
     "section_history": "Historia",
     "section_mission": "Misión",
-    "section_vision": "Visión"
+    "section_vision": "Visión",
+    "eyebrow": "Sobre Dizy Cars",
+    "benefit1": "El precio que ve es el que paga",
+    "benefit2": "Coches recientes y bien cuidados",
+    "benefit3": "Asistencia 24 h, 7 días",
+    "benefit4": "Entrega gratuita en Témara, Rabat y en el aeropuerto",
+    "ctaCars": "Elegir un coche",
+    "ctaWhatsapp": "Escríbanos por WhatsApp",
+    "section_services": "Nuestros servicios",
+    "servicesSubtitle": "Todo lo necesario para alquilar con tranquilidad, del aeropuerto a la devolución de las llaves.",
+    "ctaTitle": "¿Listo para salir a la carretera?",
+    "ctaBody": "Elija su coche en línea o llámenos, respondemos 24 h."
   },
   "Contact": {
     "title": "Contacto",
@@ -1559,9 +1571,31 @@
     "about_vision": "Visión",
     "usingDefault": "Se muestra el texto por defecto: edítelo para personalizarlo.",
     "restoreDefault": "Restablecer el texto por defecto",
-    "formatHint": "Formato: una línea vacía separa párrafos, «## Título» crea un subtítulo, «- elemento» una lista."
+    "formatHint": "Formato: una línea vacía separa párrafos, «## Título» crea un subtítulo, «- elemento» una lista.",
+    "about_services": "Servicios",
+    "socialTitle": "Redes sociales",
+    "social_facebook": "Página de Facebook",
+    "social_instagram": "Página de Instagram",
+    "social_x": "Página de X (Twitter)",
+    "social_tiktok": "Página de TikTok",
+    "topBarNote": "Frase de la barra superior",
+    "topBarNoteLabel": "Se muestra a la izquierda, junto a «Abierto 24 h · 7 días»"
   },
   "TopBar": {
-    "always": "7 días a la semana · 24 h"
+    "always": "Abierto 24 h · 7 días"
+  },
+  "ReservationPage": {
+    "title": "Reserva",
+    "subtitle": "Elija sus fechas y su ciudad: le mostramos los coches disponibles y su precio.",
+    "myBookings": "Mis reservas",
+    "byWhatsapp": "Reservar por WhatsApp",
+    "step1": "Sus fechas",
+    "step1Body": "Indique el día y la hora de recogida y de devolución.",
+    "step2": "Su coche",
+    "step2Body": "Compare los coches disponibles y su precio todo incluido.",
+    "step3": "Sus datos",
+    "step3Body": "Inicie sesión o deje lo mínimo: nombre, ciudad y teléfono.",
+    "step4": "Las llaves",
+    "step4Body": "La agencia confirma y usted recoge el coche o se lo entregamos."
   }
 }
