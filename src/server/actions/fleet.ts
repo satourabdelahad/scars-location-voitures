@@ -6,9 +6,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
 import { auditLogs, carImages, carManagers, carTranslations, cars, reservations } from "@/db/schema";
-import { notifyCarCreated } from "@/server/notifications";
+import { notifyCarCreated, notifyCarsJoinedAgency } from "@/server/notifications";
 import { carDeactivationSchema, carSchema, LOCALE_CODES } from "@/lib/validation";
-import { assertRole, toActionError, type ActionResult } from "@/server/guards";
+import { actorLabel, assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { verifyUpload } from "@/server/uploads";
 import { sendReservationEmail } from "@/server/email";
 import { formatDate, formatMoney } from "@/lib/utils";
@@ -103,6 +103,8 @@ export async function createCar(input: { data: unknown; images: unknown; manager
       return row.id;
     });
     await notifyCarCreated(id, staff.name ?? staff.email ?? "—").catch((e) => console.error("[email] nouvelle voiture", e));
+    // Les gestionnaires de l'agence sont prévenus de la voiture associée à leur agence.
+    await notifyCarsJoinedAgency([id], data.agencyId, await actorLabel(staff), staff.email).catch((e) => console.error("[email] voiture associée à une agence", e));
     revalidatePath("/", "layout");
     return { ok: true, data: { id } };
   } catch (err) {
@@ -120,7 +122,7 @@ export async function updateCar(id: string, input: { data: unknown; images: unkn
     if (!images.some((i) => i.view === "main")) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
     const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
     const { descriptions, ...data } = parsed.data;
-    const [current] = await db.select({ status: cars.status }).from(cars).where(eq(cars.id, id)).limit(1);
+    const [current] = await db.select({ status: cars.status, agencyId: cars.agencyId }).from(cars).where(eq(cars.id, id)).limit(1);
     if (!current) return { ok: false, error: "not_found" };
     // Contrôle applicatif ; la base le garantit aussi par un trigger.
     if (current.status === "deactivated") return { ok: false, error: "car_frozen" };
@@ -131,6 +133,8 @@ export async function updateCar(id: string, input: { data: unknown; images: unkn
       await syncCarAssignments(id, tx);
       await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "update", changes: { ...data, managerIds } });
     });
+    if (current.agencyId !== data.agencyId)
+      await notifyCarsJoinedAgency([id], data.agencyId, await actorLabel(staff), staff.email).catch((e) => console.error("[email] voiture associée à une agence", e));
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (err) {
@@ -211,15 +215,26 @@ export async function setCarMaintenance(id: string, inRepair: boolean): Promise<
  */
 export async function bulkFleetAction(
   ids: string[],
-  action: "deactivate" | "activate" | "repair" | "assign" | "agency",
-  payload: { reason?: string; note?: string; managerIds?: string[]; agencyId?: number } = {},
+  action: "deactivate" | "activate" | "repair" | "assign" | "agency" | "promo",
+  payload: { reason?: string; note?: string; managerIds?: string[]; agencyId?: number; promo?: unknown } = {},
 ): Promise<ActionResult<{ done: string[]; skipped: number }>> {
   try {
     const staff = await assertRole(["admin", "manager"]);
     const list = z.array(z.string().uuid()).min(1).max(300).safeParse(ids);
     if (!list.success) return { ok: false, error: "validation" };
     const done: string[] = [];
-    if (action === "assign" || action === "agency") {
+    if (action === "promo") {
+      // Promotion en % sur les voitures sélectionnées (les voitures désactivées sont figées et ignorées).
+      const promo = promoSchema.safeParse(payload.promo ?? null);
+      if (!promo.success) return { ok: false, error: "validation" };
+      const values = promo.data ?? { percent: null, startsOn: null, endsOn: null };
+      const rows = await db
+        .update(cars)
+        .set({ promoPercent: values.percent, promoStartsOn: values.startsOn, promoEndsOn: values.endsOn, updatedBy: staff.id })
+        .where(and(inArray(cars.id, list.data), sql`${cars.status} <> 'deactivated'`))
+        .returning({ id: cars.id });
+      done.push(...rows.map((r) => r.id));
+    } else if (action === "assign" || action === "agency") {
       if (action === "assign" && staff.role !== "admin") return { ok: false, error: "forbidden" };
       const live = await db.select({ id: cars.id }).from(cars).where(and(inArray(cars.id, list.data), sql`${cars.status} <> 'deactivated'`));
       const carIds = live.map((c) => c.id);
@@ -235,8 +250,13 @@ export async function bulkFleetAction(
       } else {
         const agencyId = z.number().int().positive().safeParse(payload.agencyId);
         if (!agencyId.success) return { ok: false, error: "validation" };
+        // Seules les voitures qui changent vraiment d'agence déclenchent l'email aux gestionnaires de l'agence.
+        const moving = carIds.length
+          ? (await db.select({ id: cars.id }).from(cars).where(and(inArray(cars.id, carIds), sql`${cars.agencyId} <> ${agencyId.data}`))).map((c) => c.id)
+          : [];
         if (carIds.length) await db.update(cars).set({ agencyId: agencyId.data, updatedBy: staff.id }).where(inArray(cars.id, carIds));
         for (const id of carIds) await syncCarAssignments(id);
+        await notifyCarsJoinedAgency(moving, agencyId.data, await actorLabel(staff), staff.email).catch((e) => console.error("[email] voitures associées à une agence", e));
       }
       done.push(...carIds);
     } else {
@@ -253,10 +273,45 @@ export async function bulkFleetAction(
       entity: "car",
       entityId: "bulk",
       action: `bulk_${action}`,
-      changes: { title: String(done.length), done, skipped: list.data.length - done.length, ...payload },
+      changes: { title: String(done.length), done, skipped: list.data.length - done.length, ...payload, ...(action === "promo" ? { note: promoNote(payload.promo) } : {}) },
     });
     revalidatePath("/", "layout");
     return { ok: true, data: { done, skipped: list.data.length - done.length } };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+/** Promotion d'une voiture : remise en % (1 à 90), dates de début et de fin facultatives ; null = retirer. */
+const promoSchema = z
+  .object({
+    percent: z.coerce.number().int().min(1).max(90),
+    startsOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional().transform((v) => v || null),
+    endsOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional().transform((v) => v || null),
+  })
+  .refine((p) => !p.startsOn || !p.endsOn || p.endsOn >= p.startsOn, { message: "dateOrder", path: ["endsOn"] })
+  .nullable();
+
+function promoNote(raw: unknown) {
+  const p = promoSchema.safeParse(raw ?? null);
+  if (!p.success || !p.data) return "—";
+  return `-${p.data.percent} %${p.data.startsOn ? ` · ${p.data.startsOn}` : ""}${p.data.endsOn ? ` → ${p.data.endsOn}` : ""}`;
+}
+
+/** Onglet « Promotion » de la fiche voiture. */
+export async function setCarPromotion(id: string, input: unknown): Promise<ActionResult> {
+  try {
+    const staff = await assertRole(["admin", "manager"]);
+    const p = promoSchema.safeParse(input ?? null);
+    if (!p.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(p.error.issues) };
+    const [current] = await db.select({ status: cars.status }).from(cars).where(eq(cars.id, id)).limit(1);
+    if (!current) return { ok: false, error: "not_found" };
+    if (current.status === "deactivated") return { ok: false, error: "car_frozen" };
+    const v = p.data ?? { percent: null, startsOn: null, endsOn: null };
+    await db.update(cars).set({ promoPercent: v.percent, promoStartsOn: v.startsOn, promoEndsOn: v.endsOn, updatedBy: staff.id }).where(eq(cars.id, id));
+    await db.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "promo", changes: { ...v, note: promoNote(input) } });
+    revalidatePath("/", "layout");
+    return { ok: true };
   } catch (err) {
     return toActionError(err);
   }

@@ -2,12 +2,14 @@
 
 import { CheckCircle2, TicketPercent, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { CarArt } from "@/components/car-art";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { PhoneInput } from "@/components/ui/phone-input";
+import { CityCombobox } from "@/components/ui/city-combobox";
+import { activePromoPercent, promoPrice } from "@/lib/car-promo";
 import { Link } from "@/i18n/navigation";
 import type { CarCategory } from "@/db/schema";
 import { formatDate, formatMoney, rentalDays, todayISO } from "@/lib/utils";
@@ -15,15 +17,32 @@ import { checkPromoCode, createReservation } from "@/server/actions/reservations
 import { getRecaptchaToken, RecaptchaScript } from "@/components/recaptcha/recaptcha";
 
 type Props = {
-  car: { id: string; name: string; category: CarCategory; colorHex: string; dailyPrice: number; deposit: number; agencyId: number; cover: string | null };
+  car: {
+    id: string;
+    name: string;
+    category: CarCategory;
+    colorHex: string;
+    dailyPrice: number;
+    promoPercent: number | null;
+    promoStartsOn: string | null;
+    promoEndsOn: string | null;
+    deposit: number;
+    agencyId: number;
+    cover: string | null;
+  };
   agencies: { id: number; label: string }[];
   extras: { id: number; code: string; pricePerDay: number }[];
   booked: { start: string; end: string }[];
-  defaults: { startDate: string; endDate: string; driverFirstName: string; driverLastName: string };
+  defaults: { startDate: string; endDate: string; driverFirstName: string; driverLastName: string; driverPhone: string };
+  /** Code de réduction attribué au client (campagne) : appliqué automatiquement */
+  suggestedPromo?: string;
+  /** Pas encore identifié : connexion sociale / mot de passe, ou le minimum pour créer sa fiche */
+  guest: boolean;
+  identify?: ReactNode;
   locale: string;
 };
 
-export function BookingForm({ car, agencies, extras, booked, defaults, locale }: Props) {
+export function BookingForm({ car, agencies, extras, booked, defaults, suggestedPromo, guest, identify, locale }: Props) {
   const t = useTranslations("Booking");
   const tx = useTranslations("Extras");
   const te = useTranslations("Errors");
@@ -31,7 +50,9 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
   const tcars = useTranslations("Cars");
   const [pending, start] = useTransition();
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [done, setDone] = useState<string | null>(null);
+  const [done, setDone] = useState<{ reference: string; guest: boolean; invited: boolean } | null>(null);
+  const [g, setG] = useState({ lastName: "", firstName: "", city: "", email: "", phone: "", whatsapp: "" });
+  const setGuest = <K extends keyof typeof g>(k: K, value: string) => setG((x) => ({ ...x, [k]: value }));
   const [v, setV] = useState({
     startDate: defaults.startDate,
     endDate: defaults.endDate,
@@ -40,7 +61,7 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
     extras: [] as number[],
     driverFirstName: defaults.driverFirstName,
     driverLastName: defaults.driverLastName,
-    driverPhone: "",
+    driverPhone: defaults.driverPhone,
     driverLicenseNumber: "",
     driverBirthDate: "",
     flightNumber: "",
@@ -49,7 +70,10 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
 
   const days = Math.max(0, rentalDays(v.startDate, v.endDate));
   const extrasTotal = extras.filter((x) => v.extras.includes(x.id)).reduce((s, x) => s + x.pricePerDay * days, 0);
-  const rental = car.dailyPrice * days;
+  // Promotion de la voiture en cours au premier jour de la location.
+  const carPromo = activePromoPercent(car, v.startDate);
+  const dayPrice = promoPrice(car.dailyPrice, carPromo);
+  const rental = dayPrice * days;
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<{ code: string; label: string; discount: number } | null>(null);
   const [promoError, setPromoError] = useState(false);
@@ -73,6 +97,14 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
     setV(next);
     if (promo && (k === "startDate" || k === "endDate" || k === "extras")) applyPromo(promo.code, next);
   };
+  // Code reçu par email : appliqué une fois au chargement.
+  const autoApplied = useRef(false);
+  useEffect(() => {
+    if (autoApplied.current || !suggestedPromo) return;
+    autoApplied.current = true;
+    setPromoInput(suggestedPromo);
+    applyPromo(suggestedPromo);
+  }, [suggestedPromo]); // eslint-disable-line react-hooks/exhaustive-deps
   const conflict = useMemo(() => booked.some((b) => b.start < v.endDate && b.end > v.startDate), [booked, v.startDate, v.endDate]);
 
   function err(k: string) {
@@ -80,18 +112,28 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
     if (!code) return undefined;
     return code === "minAge21" ? t("minAge") : te(code as "required");
   }
+  function gerr(k: string) {
+    const code = errors[`guest.${k}`];
+    return code ? te(code as "required") : undefined;
+  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     setErrors({});
+    // Sans compte : le conducteur est, par défaut, la personne qui réserve.
+    const payload = guest ? { ...v, driverFirstName: g.firstName, driverLastName: g.lastName, driverPhone: g.phone } : v;
     start(async () => {
-      const res = await createReservation({ ...v, carId: car.id, promoCode: promo?.code }, await getRecaptchaToken("booking"));
+      const res = await createReservation({ ...payload, carId: car.id, promoCode: promo?.code }, await getRecaptchaToken("booking"), guest ? g : undefined);
       if (res.ok) {
-        setDone(res.data!.reference);
+        setDone(res.data!);
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
-        if (res.fieldErrors) setErrors(res.fieldErrors);
-        toast.error(te(res.error as "unknown"));
+        const fe = { ...(res.fieldErrors ?? {}) };
+        // Conducteur = client : les erreurs de nom / téléphone s'affichent sur les champs du client.
+        if (guest) for (const [a, b] of [["driverFirstName", "firstName"], ["driverLastName", "lastName"], ["driverPhone", "phone"]]) if (fe[a] && !fe[`guest.${b}`]) fe[`guest.${b}`] = fe[a];
+        setErrors(fe);
+        toast.error(res.error === "account_exists" ? t("accountExists") : te(res.error as "unknown"));
+        if (Object.keys(fe).some((k) => k.startsWith("guest.")) || res.error === "account_exists") document.getElementById("identify")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     });
   }
@@ -101,8 +143,15 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
       <div className="mt-8 flex flex-col items-center rounded-[26px] border border-mist bg-paper px-6 py-14 text-center">
         <span className="grid size-16 place-items-center rounded-full bg-palm-soft text-palm"><CheckCircle2 className="size-8" /></span>
         <h2 className="display-md mt-5 text-3xl text-ink">{t("successTitle")}</h2>
-        <p className="mt-3 max-w-md text-ink-2">{t("successBody", { ref: done })}</p>
-        <Button asChild className="mt-8" size="lg"><Link href="/account">{t("goToReservations")}</Link></Button>
+        <p className="mt-3 max-w-md text-ink-2">{t("successBody", { ref: done.reference })}</p>
+        {done.guest ? (
+          <>
+            <p className="mt-3 max-w-md text-sm text-ink-3">{done.invited ? t("guestInvited") : t("guestCallback", { phone: g.phone })}</p>
+            <Button asChild className="mt-8" size="lg"><Link href="/cars">{t("backToCars")}</Link></Button>
+          </>
+        ) : (
+          <Button asChild className="mt-8" size="lg"><Link href="/account">{t("goToReservations")}</Link></Button>
+        )}
       </div>
     );
   }
@@ -111,6 +160,39 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
     <form onSubmit={submit} className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]" noValidate>
       <RecaptchaScript />
       <div className="space-y-8">
+        {guest && (
+          <fieldset id="identify" className="scroll-mt-24 rounded-[22px] border border-mist bg-paper p-6">
+            <legend className="sr-only">{t("stepIdentity")}</legend>
+            <h2 className="text-lg font-bold text-ink">{t("stepIdentity")}</h2>
+            <p className="mt-1 mb-5 text-sm text-ink-3">{t("identityHint")}</p>
+            {identify}
+            <div className="my-6 flex items-center gap-4 text-xs font-medium text-ink-3">
+              <span className="h-px flex-1 bg-mist-2" />
+              {t("orNoAccount")}
+              <span className="h-px flex-1 bg-mist-2" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label={t("guestLastName")} required error={gerr("lastName")}>
+                {(p) => <Input {...p} autoComplete="family-name" value={g.lastName} onChange={(e) => setGuest("lastName", e.target.value)} />}
+              </Field>
+              <Field label={t("guestFirstName")} required error={gerr("firstName")}>
+                {(p) => <Input {...p} autoComplete="given-name" value={g.firstName} onChange={(e) => setGuest("firstName", e.target.value)} />}
+              </Field>
+              <Field label={t("guestCity")} required error={gerr("city")}>
+                {(p) => <CityCombobox {...p} value={g.city} onChange={(c) => setGuest("city", c)} />}
+              </Field>
+              <Field label={t("guestEmail")} optionalLabel={tc("optional")} error={gerr("email")} hint={t("guestEmailHint")}>
+                {(p) => <Input {...p} type="email" dir="ltr" autoComplete="email" value={g.email} onChange={(e) => setGuest("email", e.target.value)} />}
+              </Field>
+              <Field label={t("guestPhone")} required error={gerr("phone")}>
+                {(p) => <PhoneInput {...p} value={g.phone} onChange={(x) => setGuest("phone", x)} />}
+              </Field>
+              <Field label={t("guestWhatsapp")} optionalLabel={tc("optional")} error={gerr("whatsapp")}>
+                {(p) => <PhoneInput {...p} value={g.whatsapp} onChange={(x) => setGuest("whatsapp", x)} />}
+              </Field>
+            </div>
+          </fieldset>
+        )}
         <fieldset className="rounded-[22px] border border-mist bg-paper p-6">
           <legend className="sr-only">{t("stepDates")}</legend>
           <h2 className="mb-5 text-lg font-bold text-ink">{t("stepDates")}</h2>
@@ -158,21 +240,26 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
 
         <fieldset className="rounded-[22px] border border-mist bg-paper p-6">
           <legend className="sr-only">{t("stepDriver")}</legend>
-          <h2 className="mb-5 text-lg font-bold text-ink">{t("stepDriver")}</h2>
+          <h2 className="text-lg font-bold text-ink">{t("stepDriver")}</h2>
+          <p className="mt-1 mb-5 text-sm text-ink-3">{t("driverOptionalHint")}</p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t("driverFirstName")} required error={err("driverFirstName")}>
-              {(p) => <Input {...p} autoComplete="given-name" value={v.driverFirstName} onChange={(e) => set("driverFirstName", e.target.value)} />}
-            </Field>
-            <Field label={t("driverLastName")} required error={err("driverLastName")}>
-              {(p) => <Input {...p} autoComplete="family-name" value={v.driverLastName} onChange={(e) => set("driverLastName", e.target.value)} />}
-            </Field>
-            <Field label={t("driverPhone")} required error={err("driverPhone")}>
-              {(p) => <PhoneInput {...p} value={v.driverPhone} onChange={(x) => set("driverPhone", x)} />}
-            </Field>
-            <Field label={t("driverBirthDate")} required error={err("driverBirthDate")}>
+            {!guest && (
+              <>
+                <Field label={t("driverFirstName")} required error={err("driverFirstName")}>
+                  {(p) => <Input {...p} autoComplete="given-name" value={v.driverFirstName} onChange={(e) => set("driverFirstName", e.target.value)} />}
+                </Field>
+                <Field label={t("driverLastName")} required error={err("driverLastName")}>
+                  {(p) => <Input {...p} autoComplete="family-name" value={v.driverLastName} onChange={(e) => set("driverLastName", e.target.value)} />}
+                </Field>
+                <Field label={t("driverPhone")} required error={err("driverPhone")} className="sm:col-span-2">
+                  {(p) => <PhoneInput {...p} value={v.driverPhone} onChange={(x) => set("driverPhone", x)} />}
+                </Field>
+              </>
+            )}
+            <Field label={t("driverBirthDate")} optionalLabel={tc("optional")} error={err("driverBirthDate")}>
               {(p) => <Input {...p} type="date" autoComplete="bday" value={v.driverBirthDate} onChange={(e) => set("driverBirthDate", e.target.value)} />}
             </Field>
-            <Field label={t("driverLicense")} required error={err("driverLicenseNumber")}>
+            <Field label={t("driverLicense")} optionalLabel={tc("optional")} error={err("driverLicenseNumber")}>
               {(p) => <Input {...p} dir="ltr" value={v.driverLicenseNumber} onChange={(e) => set("driverLicenseNumber", e.target.value)} />}
             </Field>
             <Field label={t("flightNumber")} optionalLabel={tc("optional")}>
@@ -194,6 +281,12 @@ export function BookingForm({ car, agencies, extras, booked, defaults, locale }:
           <p className="mt-1 text-sm text-ink-3">{car.name}</p>
           <p className="mt-1 text-sm text-ink-3">{formatDate(v.startDate, locale)} – {formatDate(v.endDate, locale)}</p>
           <dl className="mt-5 space-y-2.5 text-sm tabular">
+            {carPromo && (
+              <div className="flex justify-between text-saffron-ink">
+                <dt>{t("carPromo", { percent: carPromo })}</dt>
+                <dd className="font-semibold"><span className="me-1.5 font-normal text-ink-3 line-through">{formatMoney(car.dailyPrice, locale)}</span>{formatMoney(dayPrice, locale)} {tc("perDay")}</dd>
+              </div>
+            )}
             <div className="flex justify-between"><dt className="text-ink-2">{t("rental")} ({tc("days", { count: days })})</dt><dd className="font-semibold text-ink">{formatMoney(rental, locale)}</dd></div>
             <div className="flex justify-between"><dt className="text-ink-2">{t("extrasTotal")}</dt><dd className="font-semibold text-ink">{formatMoney(extrasTotal, locale)}</dd></div>
             {promo && (

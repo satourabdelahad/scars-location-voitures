@@ -5,7 +5,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { CarArt } from "@/components/car-art";
 import { getBookedRanges, getPublicCar } from "@/server/queries/cars";
-import { formatDate, formatMoney } from "@/lib/utils";
+import { formatDate, formatMoney, todayISO } from "@/lib/utils";
+import { activePromoPercent, promoPrice } from "@/lib/car-promo";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/cars/[id]">) {
   const { locale, id } = await params;
@@ -25,6 +26,7 @@ export default async function CarPage({ params, searchParams }: PageProps<"/[loc
   const end = typeof sp.end === "string" ? sp.end : undefined;
   const hasDates = Boolean(start && end && end > start);
   const conflict = hasDates && booked.some((b) => b.start < end! && b.end > start!);
+  const promo = activePromoPercent(car, hasDates ? start! : todayISO());
   const bookHref = `/book/${car.id}${hasDates ? `?start=${start}&end=${end}` : ""}`;
 
   const specs = [
@@ -84,9 +86,15 @@ export default async function CarPage({ params, searchParams }: PageProps<"/[loc
             {car.agency.city}, {car.agency.name}
           </p>
           <p className="mt-6 tabular">
-            <span className="text-4xl font-extrabold text-ink" style={{ fontStretch: "115%" }}>{formatMoney(car.dailyPrice, locale)}</span>
+            {promo && <span className="me-2 text-lg text-ink-3 line-through">{formatMoney(car.dailyPrice, locale)}</span>}
+            <span className={`text-4xl font-extrabold ${promo ? "text-saffron-ink" : "text-ink"}`} style={{ fontStretch: "115%" }}>{formatMoney(promoPrice(car.dailyPrice, promo), locale)}</span>
             <span className="ms-1.5 text-ink-3">{c("perDay")}</span>
           </p>
+          {promo && (
+            <p className="mt-2 inline-flex rounded-full bg-saffron px-3 py-1 text-xs font-extrabold text-[#141a2e]">
+              -{promo} %{car.promoEndsOn ? ` · ${t("promoUntil", { date: formatDate(car.promoEndsOn, locale) })}` : ""}
+            </p>
+          )}
           <dl className="mt-5 space-y-2 border-t border-mist pt-5 text-sm">
             <div className="flex justify-between"><dt className="text-ink-3">{t("year")}</dt><dd className="font-semibold text-ink">{car.year}</dd></div>
             <div className="flex justify-between"><dt className="text-ink-3">{t("deposit")}</dt><dd className="font-semibold text-ink">{formatMoney(car.deposit, locale)}</dd></div>

@@ -36,7 +36,9 @@ export function MultiSelect({
     return n ? options.filter((o) => norm(o.label).includes(n)) : options;
   }, [q, options]);
   const toggle = (v: string) => onChange(value.includes(v) ? value.filter((x) => x !== v) : [...value, v]);
-  const summary = value.length === 0 ? allLabel : value.length <= 2 ? value.join(", ") : `${value.slice(0, 2).join(", ")} +${value.length - 2}`;
+  // Résumé avec les libellés (les valeurs peuvent être des identifiants, ex. agences).
+  const names = value.map((v) => options.find((o) => o.value === v)?.label ?? v);
+  const summary = names.length === 0 ? allLabel : names.length <= 2 ? names.join(", ") : `${names.slice(0, 2).join(", ")} +${names.length - 2}`;
 
   return (
     <div className="min-w-0">

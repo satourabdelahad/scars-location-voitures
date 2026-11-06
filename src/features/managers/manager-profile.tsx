@@ -17,6 +17,8 @@ import { RentalsTab } from "./rentals-tab";
 import { DealsTab } from "./deals-tab";
 import { HistoryTab } from "./history-tab";
 import { AssignedCarsTab } from "./assigned-cars-tab";
+import { ManagerAgencies } from "./manager-agencies";
+import { managerAgencyLinks } from "@/server/queries/agencies";
 import { RentalsChart } from "@/features/my/rentals-chart";
 import { AppointmentsSection } from "@/features/my/pages";
 import { listFleet } from "@/server/queries/fleet";
@@ -96,8 +98,10 @@ export async function ManagerProfile({
   if (tab === "password" && (isAdmin || isSelf)) {
     body = isSelf ? <PasswordForm hasPassword={m.user.hasPassword} /> : <AdminSetPasswordForm managerId={m.id} name={name} />;
   } else if (tab === "cars") {
-    const fleet = await listFleet();
+    const [fleet, links] = await Promise.all([listFleet(), managerAgencyLinks(m.id)]);
     body = (
+      <>
+      <ManagerAgencies managerId={m.id} links={links} canEdit={isAdmin} base={isAdmin ? "/admin" : "/manager"} />
       <AssignedCarsTab
         managerId={m.id}
         assigned={fleet.filter((c) => c.managerIds.includes(m.id))}
@@ -108,6 +112,7 @@ export async function ManagerProfile({
         canEdit={isAdmin}
         fleetBase={isAdmin ? "/admin" : "/manager"}
       />
+      </>
     );
   } else if (tab === "rentals") {
     const rentals = await managerRentals(m.userId);

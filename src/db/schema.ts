@@ -318,6 +318,10 @@ export const cars = pgTable(
     dailyPrice: numeric("daily_price", { precision: 10, scale: 2, mode: "number" }).notNull(),
     deposit: numeric("deposit", { precision: 10, scale: 2, mode: "number" }).notNull().default(0),
     airConditioning: boolean("air_conditioning").notNull().default(true),
+    /** Promotion de la voiture : remise en % sur le prix par jour, éventuellement limitée à une période */
+    promoPercent: smallint("promo_percent"),
+    promoStartsOn: date("promo_starts_on", { mode: "string" }),
+    promoEndsOn: date("promo_ends_on", { mode: "string" }),
     /** Données d'achat : visibles uniquement par l'équipe, jamais sur le site public */
     purchaseCity: varchar("purchase_city", { length: 120 }),
     purchaseDate: date("purchase_date", { mode: "string" }),
@@ -338,6 +342,8 @@ export const cars = pgTable(
     check("cars_year_chk", sql`${t.year} BETWEEN 1990 AND 2100`),
     check("cars_price_chk", sql`${t.dailyPrice} > 0`),
     check("cars_seats_chk", sql`${t.seats} BETWEEN 1 AND 20`),
+    check("cars_promo_chk", sql`${t.promoPercent} IS NULL OR ${t.promoPercent} BETWEEN 1 AND 90`),
+    check("cars_promo_dates_chk", sql`${t.promoStartsOn} IS NULL OR ${t.promoEndsOn} IS NULL OR ${t.promoEndsOn} >= ${t.promoStartsOn}`),
     check("cars_purchase_price_chk", sql`${t.purchasePrice} IS NULL OR ${t.purchasePrice} >= 0`),
     check(
       "cars_deactivation_chk",
@@ -399,6 +405,9 @@ export const promotions = pgTable(
     startsOn: date("starts_on", { mode: "string" }),
     endsOn: date("ends_on", { mode: "string" }),
     isActive: boolean("is_active").notNull().default(true),
+    /** Réservée aux clients à qui le code a été attribué (campagne d'email marketing) */
+    restricted: boolean("restricted").notNull().default(false),
+    createdBy: uuid("created_by"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },
   (t) => [
@@ -428,6 +437,8 @@ export const reservations = pgTable(
     endDate: date("end_date", { mode: "string" }).notNull(),
     days: smallint("days").notNull(),
     dailyPrice: numeric("daily_price", { precision: 10, scale: 2, mode: "number" }).notNull(),
+    /** Promotion de la voiture appliquée au prix par jour (en %), au moment de la réservation */
+    carPromoPercent: smallint("car_promo_percent"),
     extrasTotal: numeric("extras_total", { precision: 10, scale: 2, mode: "number" }).notNull().default(0),
     promotionId: integer("promotion_id").references(() => promotions.id),
     discountAmount: numeric("discount_amount", { precision: 10, scale: 2, mode: "number" }).notNull().default(0),
@@ -437,8 +448,9 @@ export const reservations = pgTable(
     driverFirstName: varchar("driver_first_name", { length: 120 }).notNull(),
     driverLastName: varchar("driver_last_name", { length: 120 }).notNull(),
     driverPhone: varchar("driver_phone", { length: 32 }).notNull(),
-    driverLicenseNumber: varchar("driver_license_number", { length: 64 }).notNull(),
-    driverBirthDate: date("driver_birth_date", { mode: "string" }).notNull(),
+    /** Permis et date de naissance : facultatifs à la réservation, vérifiés à l'agence */
+    driverLicenseNumber: varchar("driver_license_number", { length: 64 }),
+    driverBirthDate: date("driver_birth_date", { mode: "string" }),
     flightNumber: varchar("flight_number", { length: 16 }),
     clientNote: text("client_note"),
     internalNote: text("internal_note"),
@@ -656,6 +668,76 @@ export const managerCarRules = pgTable("manager_car_rules", {
   updatedBy: uuid("updated_by").references(() => users.id),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
 });
+
+/** Agences d'un gestionnaire (en plus de l'agence dont il est le responsable). */
+export const managerAgencies = pgTable(
+  "manager_agencies",
+  {
+    managerId: uuid("manager_id")
+      .notNull()
+      .references(() => managers.id, { onDelete: "restrict" }),
+    agencyId: integer("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "restrict" }),
+    createdBy: uuid("created_by").references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.managerId, t.agencyId] }), index("manager_agencies_agency_idx").on(t.agencyId)],
+);
+
+/** Campagne d'email marketing : un code de réduction envoyé aux clients filtrés. */
+export const marketingCampaigns = pgTable("marketing_campaigns", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 160 }).notNull(),
+  message: text("message"),
+  promotionId: integer("promotion_id")
+    .notNull()
+    .references(() => promotions.id),
+  /** Filtres utilisés (villes, jours loués…) pour retrouver la cible */
+  filters: jsonb("filters").$type<{ cities: string[]; minDays: number | null; maxDays: number | null; search?: string }>().notNull(),
+  recipientCount: integer("recipient_count").notNull().default(0),
+  sentCount: integer("sent_count").notNull().default(0),
+  failedCount: integer("failed_count").notNull().default(0),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+});
+
+/** Destinataires d'une campagne : le lien de l'email (jeton) attribue le code au client quand il clique. */
+export const marketingRecipients = pgTable(
+  "marketing_recipients",
+  {
+    campaignId: integer("campaign_id")
+      .notNull()
+      .references(() => marketingCampaigns.id, { onDelete: "restrict" }),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    token: varchar("token", { length: 64 }).notNull().unique(),
+    email: varchar("email", { length: 255 }).notNull(),
+    sentAt: timestamp("sent_at", { withTimezone: true, mode: "date" }),
+    failed: boolean("failed").notNull().default(false),
+    clickedAt: timestamp("clicked_at", { withTimezone: true, mode: "date" }),
+  },
+  (t) => [primaryKey({ columns: [t.campaignId, t.clientId] }), index("marketing_recipients_client_idx").on(t.clientId)],
+);
+
+/** Codes de réduction attribués à un client (au clic sur l'email de la campagne). */
+export const clientPromotions = pgTable(
+  "client_promotions",
+  {
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    promotionId: integer("promotion_id")
+      .notNull()
+      .references(() => promotions.id, { onDelete: "restrict" }),
+    campaignId: integer("campaign_id").references(() => marketingCampaigns.id),
+    assignedAt: timestamp("assigned_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    usedAt: timestamp("used_at", { withTimezone: true, mode: "date" }),
+    reservationId: uuid("reservation_id").references(() => reservations.id),
+  },
+  (t) => [primaryKey({ columns: [t.clientId, t.promotionId] })],
+);
 
 /** Réglages modifiables par l'administrateur (sécurité…), une ligne par réglage. */
 export const appSettings = pgTable("app_settings", {

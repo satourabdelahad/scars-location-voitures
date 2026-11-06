@@ -92,7 +92,15 @@
     "trust3": "48時間前までキャンセル無料",
     "ctaTitle": "家族旅行や出張のご相談は？",
     "ctaBody": "WhatsAppでメッセージをどうぞ。ご希望の言語で担当者がお答えします。",
-    "ctaButton": "WhatsAppで相談する"
+    "ctaButton": "WhatsAppで相談する",
+    "browseBy": "車両を探す",
+    "by_category": "ボディタイプ",
+    "by_city": "都市",
+    "by_agency": "店舗",
+    "availableOnly": "今すぐ利用可能（{count}）",
+    "allFilter": "すべて",
+    "noCarsHere": "現在この条件の車両はありません。",
+    "seeAllFiltered": "これらの車両をすべて見る"
   },
   "Cars": {
     "title": "車両一覧",
@@ -128,7 +136,13 @@
     "unavailable": "この日程はすでに予約済みです",
     "available": "この日程で予約可能です",
     "description": "説明",
-    "similar": "似ている車"
+    "similar": "似ている車",
+    "busyUntil": "{date}までレンタル中",
+    "availableNow": "空車",
+    "promoUntil": "{date}まで",
+    "anyAgency": "すべての店舗",
+    "availableNowFilter": "本日空車",
+    "promoActivated": "割引コードが有効になりました。予約に自動で適用されます。"
   },
   "Booking": {
     "title": "{car}を予約",
@@ -163,7 +177,26 @@
     "promoApply": "適用",
     "promoInvalid": "このコードはこのレンタルには使えません。",
     "discount": "割引",
-    "promoRemove": "コードを削除"
+    "promoRemove": "コードを削除",
+    "staffCannotBook": "予約は顧客アカウントで行います。予約するにはチーム画面からログアウトしてください。",
+    "stepIdentity": "お客様情報",
+    "identityHint": "ワンクリックでログイン、または最小限の情報でアカウントなしで予約できます。",
+    "haveAccount": "すでにご利用の方",
+    "loginWithPassword": "メールアドレスとパスワードでログイン",
+    "orNoAccount": "またはアカウントなしで予約",
+    "guestLastName": "姓",
+    "guestFirstName": "名",
+    "guestCity": "都市",
+    "guestEmail": "メール",
+    "guestEmailHint": "確認メールの受信と予約の確認に使います。",
+    "guestPhone": "電話番号",
+    "guestWhatsapp": "WhatsApp",
+    "driverOptionalHint": "任意：免許証は店舗でご提示いただけます。",
+    "carPromo": "キャンペーン -{percent}%",
+    "accountExists": "この情報のアカウントがすでにあります。ログインして予約してください。",
+    "guestInvited": "パスワード設定とオンラインでの予約確認のためのメールをお送りしました。",
+    "guestCallback": "確認のため、{phone} にお電話いたします。",
+    "backToCars": "ほかの車両を見る"
   },
   "Extras": {
     "child_seat": "チャイルドシート",
@@ -272,7 +305,8 @@
     "security": "セキュリティ",
     "administration": "メールテンプレート",
     "clients": "顧客",
-    "agencies": "店舗一覧"
+    "agencies": "店舗一覧",
+    "marketing": "メールマーケティング"
   },
   "Managers": {
     "title": "マネージャー",
@@ -426,7 +460,18 @@
     "readOnlySubtitle": "閲覧のみ：マネージャーの管理は管理者のみ可能です。",
     "byAgency": "店舗別の割り当て",
     "searchAgency": "店舗を検索…",
-    "allAgencies": "すべての店舗"
+    "allAgencies": "すべての店舗",
+    "save": "保存",
+    "agenciesTitle": "担当店舗",
+    "agenciesHint": "マネージャーを1つ以上の店舗に配属します。追加した店舗のマネージャーにメールで通知されます。",
+    "agenciesHintReadOnly": "このマネージャーが責任者または配属されている店舗。",
+    "noAgencyChosen": "店舗なし",
+    "noAgencyLinked": "まだ店舗はありません。",
+    "agencyResponsible": "責任者",
+    "agencyInactive": "無効",
+    "responsibleNote": "店舗の責任者は店舗ページ（責任者タブ）で変更します。",
+    "agenciesSaved": "店舗を保存しました",
+    "agenciesSavedMailed": "店舗を保存しました：{count, plural, other {#名のマネージャー}}にメールで通知"
   },
   "Documents": {
     "cin_front": "身分証明書（CINE）表面",
@@ -607,8 +652,31 @@
       "activate": "{count}台を稼働に戻しました",
       "repair": "{count}台を修理中にしました",
       "assign": "{count}台を割り当てました",
-      "agency": "{count}台を店舗に紐づけました"
-    }
+      "agency": "{count}台を店舗に紐づけました",
+      "promo": "{count, plural, other {#台のキャンペーンを更新しました}}"
+    },
+    "promoColumn": "キャンペーン",
+    "promoState": {
+      "active": "実施中",
+      "scheduled": "予定",
+      "ended": "終了",
+      "none": "なし"
+    },
+    "bulkPromo": "キャンペーンを追加",
+    "bulkPromoTitle": "{count, plural, other {#台にキャンペーン}}",
+    "promoApplyOption": "キャンペーンを適用",
+    "promoRemove": "キャンペーンを解除",
+    "promoPercent": "割引（%）",
+    "promoStartsOn": "開始",
+    "promoEndsOn": "終了",
+    "promoHint": "割引は期間中に開始するレンタルの1日料金に、サイトと予約の両方で適用されます。日付がない場合は解除するまで有効です。",
+    "tabPromotion": "キャンペーン",
+    "promoTabHint": "この車両の1日料金に対する割引率。",
+    "promoPercentError": "1〜90%の割引を入力してください。",
+    "promoSaved": "キャンペーンを保存しました",
+    "promoRemoved": "キャンペーンを解除しました",
+    "promoPreview": "1日料金：{before} → {after}",
+    "promoNoEnd": "終了日なし"
   },
   "Reservations": {
     "title": "予約",
@@ -794,7 +862,9 @@
     "tplBtnClientInvite": "アカウントを有効化",
     "tplBtnCars": "車両を見る",
     "sentToClientNote": "顧客に概要を送信しました（{email}）。",
-    "tplBtnLogin": "ログイン"
+    "tplBtnLogin": "ログイン",
+    "tplBtnAgency": "店舗を見る",
+    "tplBtnPromo": "割引を利用する"
   },
   "Activity": {
     "session_login": "ログイン",
@@ -867,7 +937,11 @@
     "car_bulk_repair": "一括操作：{name}台を修理中に",
     "car_bulk_assign": "一括操作：{name}台を割り当て",
     "car_bulk_agency": "一括操作：{name}台を店舗に紐づけ",
-    "security_profile_update": "プロフィールを更新"
+    "security_profile_update": "プロフィールを更新",
+    "manager_agencies": "担当店舗を変更：{name}",
+    "car_promo": "キャンペーンを変更：{car}",
+    "car_bulk_promo": "一括操作：{name}台にキャンペーン",
+    "marketing_send": "メールキャンペーンを送信：{name}"
   },
   "Deals": {
     "title": "商談 / 見込み客",
@@ -1120,6 +1194,21 @@
         "name": "新しいパスワード",
         "when": "管理者がマネージャーのパスワードを変更したとき",
         "recipients": "新しいパスワードを記載してマネージャーに送信。"
+      },
+      "car_agency_assigned": {
+        "name": "車両を店舗に追加",
+        "when": "1台以上の車両が店舗に追加されたとき",
+        "recipients": "店舗の全マネージャー（責任者と配属マネージャー）に送信。"
+      },
+      "manager_agency_joined": {
+        "name": "店舗の新しいマネージャー",
+        "when": "マネージャーが1つ以上の店舗に配属されたとき",
+        "recipients": "該当する各店舗のマネージャーに送信。"
+      },
+      "marketing_promotion": {
+        "name": "メールマーケティング：割引コード",
+        "when": "メールマーケティングからキャンペーンを送信したとき",
+        "recipients": "絞り込んだ顧客に送信。ボタンでコードが顧客に付与されます。"
       }
     },
     "vars": {
@@ -1345,6 +1434,52 @@
     "managerMissing": "一覧にいない場合は、先に新しいマネージャーとして追加してから、ここで選択してください。",
     "addManager": "マネージャーを追加",
     "fixInfosTab": "先に「基本情報」タブ（電話、WhatsAppなど）を入力してください。",
-    "fixManagerTab": "先に「責任者」タブで責任者を選択してください。"
+    "fixManagerTab": "先に「責任者」タブで責任者を選択してください。",
+    "memberBadge": "配属",
+    "addManagerHint": "この店舗にマネージャーを配属するには、そのプロフィールの「割り当てと車両」タブを開きます。"
+  },
+  "Marketing": {
+    "title": "メールマーケティング",
+    "subtitle": "都市とレンタル日数で選んだ顧客に割引コードを送信します。",
+    "audienceTitle": "対象顧客",
+    "audienceHint": "メールアドレスのある有効な顧客。チェックを外すと除外されます。",
+    "cities": "都市",
+    "noCity": "都市未登録",
+    "minDays": "レンタル日数（最小）",
+    "maxDays": "レンタル日数（最大）",
+    "search": "顧客を検索（名前、メール、都市）",
+    "recipientsCount": "{total}人中{count, plural, other {#人}}",
+    "includeAll": "すべて選択し直す",
+    "noMatch": "条件に合う顧客はいません。",
+    "daysRented": "{count, plural, =0 {レンタルなし} other {#日レンタル}}",
+    "composeTitle": "割引コード",
+    "composeHint": "このキャンペーン用に、受信者専用の固有コードが作成されます。",
+    "campaignName": "キャンペーン名",
+    "campaignNameHint": "コードの先頭にも使われます（例：WINTER-7KQ2）。",
+    "campaignNamePlaceholder": "冬 2026",
+    "percent": "割引（%）",
+    "endsOn": "有効期限",
+    "minRental": "最低日数",
+    "message": "メッセージ",
+    "messageHint": "メール本文に挿入されます。その他の文面はメールテンプレートで編集します。",
+    "howItWorks": "顧客がメールのボタンを押すと、コードがアカウントに付与され、次回の予約に自動で適用されます。",
+    "preview": "プレビュー",
+    "previewHint": "架空の顧客によるインターフェース言語での例です。各顧客は自分の言語でメールを受け取ります。",
+    "send": "{count, plural, =0 {送信} other {#人に送信}}",
+    "confirmTitle": "{count, plural, other {#人にキャンペーンを送信しますか？}}",
+    "confirmBody": "{percent}%割引、{date}まで有効、{days}日以上のレンタルが対象。",
+    "noRecipients": "受信者がいません。条件を広げてください。",
+    "sent": "{count, plural, other {#人にメールを送信しました}}（コード {code}）",
+    "skipped": "{count, plural, other {#件のメールは未送信：メール送信が未設定です}}",
+    "failed": "{count, plural, other {#件のメールが失敗しました}}",
+    "historyTitle": "送信済みキャンペーン",
+    "noCampaign": "キャンペーンはまだありません",
+    "noCampaignBody": "送信したキャンペーンがクリック数と予約数とともにここに表示されます。",
+    "colDate": "日付",
+    "colCode": "コード",
+    "colSent": "送信",
+    "colClicked": "有効化されたコード",
+    "colUsed": "使用済み",
+    "colAuthor": "送信者"
   }
 }

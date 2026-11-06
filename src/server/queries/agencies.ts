@@ -86,13 +86,14 @@ export async function agencyStats(id: number) {
 }
 
 /**
- * Gestionnaires liés à une agence : son responsable, ceux affectés à ses voitures
+ * Gestionnaires liés à une agence : son responsable, ceux rattachés à l'agence, ceux affectés à ses voitures
  * et ceux dont la règle d'affectation vise cette agence.
  */
 export async function agencyManagers(id: number) {
-  const res = await db.execute<{ id: string; first_name: string; last_name: string; photo_url: string | null; city: string; phone: string; email: string | null; status: string; responsible: boolean; by_rule: boolean; cars: number }>(sql`
+  const res = await db.execute<{ id: string; first_name: string; last_name: string; photo_url: string | null; city: string; phone: string; email: string | null; status: string; responsible: boolean; member: boolean; by_rule: boolean; cars: number }>(sql`
     SELECT m.id, m.first_name, m.last_name, m.photo_url, m.city, m.phone, u.email, m.status,
            (a.manager_id = m.id) AS responsible,
+           EXISTS (SELECT 1 FROM manager_agencies ma WHERE ma.manager_id = m.id AND ma.agency_id = ${id}) AS member,
            (${id} = ANY(coalesce(r.agencies, '{}'))) AS by_rule,
            (SELECT count(*)::int FROM car_managers cm JOIN cars c ON c.id = cm.car_id WHERE cm.manager_id = m.id AND c.agency_id = ${id}) AS cars
     FROM managers m
@@ -100,6 +101,7 @@ export async function agencyManagers(id: number) {
     JOIN agencies a ON a.id = ${id}
     LEFT JOIN manager_car_rules r ON r.manager_id = m.id
     WHERE a.manager_id = m.id
+       OR EXISTS (SELECT 1 FROM manager_agencies ma WHERE ma.manager_id = m.id AND ma.agency_id = ${id})
        OR ${id} = ANY(coalesce(r.agencies, '{}'))
        OR EXISTS (SELECT 1 FROM car_managers cm JOIN cars c ON c.id = cm.car_id WHERE cm.manager_id = m.id AND c.agency_id = ${id})
     ORDER BY (a.manager_id = m.id) DESC, m.last_name, m.first_name
@@ -114,6 +116,7 @@ export async function agencyManagers(id: number) {
     email: r.email,
     active: r.status === "active",
     responsible: r.responsible,
+    member: r.member,
     byRule: r.by_rule,
     cars: r.cars,
   }));
@@ -127,4 +130,16 @@ export async function managerChoices() {
     ORDER BY m.last_name, m.first_name
   `);
   return res.rows.map((r) => ({ id: r.id, firstName: r.first_name, lastName: r.last_name, civility: r.civility, email: r.email, phone: r.phone, photoUrl: r.photo_url, active: r.status === "active" }));
+}
+
+/** Agences d'un gestionnaire : celles dont il est responsable et celles où il est rattaché. */
+export async function managerAgencyLinks(managerId: string) {
+  const res = await db.execute<{ id: number; name: string; city: string; is_active: boolean; responsible: boolean; member: boolean }>(sql`
+    SELECT a.id, a.name, a.city, a.is_active,
+           (a.manager_id = ${managerId}) AS responsible,
+           EXISTS (SELECT 1 FROM manager_agencies ma WHERE ma.manager_id = ${managerId} AND ma.agency_id = a.id) AS member
+    FROM agencies a
+    ORDER BY a.city, a.name
+  `);
+  return res.rows.map((r) => ({ id: r.id, label: `${r.city}, ${r.name}`, active: r.is_active, responsible: Boolean(r.responsible), member: r.member }));
 }

@@ -2,7 +2,7 @@ import "server-only";
 import { and, eq, inArray } from "drizzle-orm";
 import { createTranslator } from "next-intl";
 import { db } from "@/db";
-import { carManagers, clientProfiles, managers, reservations, users } from "@/db/schema";
+import { agencies, carManagers, cars, clientProfiles, managerAgencies, managers, marketingCampaigns, marketingRecipients, promotions, reservations, users } from "@/db/schema";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { APP_BASE_URL, emailButton, sendTemplate } from "@/server/email";
 import { isLocale, type Locale } from "@/i18n/config";
@@ -208,4 +208,166 @@ export async function notifyReservationCreated(reservationId: string) {
     recipients.push({ to: s.email, locale: v.l, vars: { ...v.vars, destinataire: s.name, lien_reservation: link, bouton_reservation: emailButton(v.m("tplBtnProcess"), link) } });
   }
   await sendTemplate("reservation_created", recipients);
+}
+
+/** Gestionnaires actifs d'une agence : son responsable et les gestionnaires qui y sont rattachés. */
+export async function agencyStaff(agencyId: number) {
+  const [agency] = await db.select().from(agencies).where(eq(agencies.id, agencyId)).limit(1);
+  if (!agency) return { agency: null, staff: [] as { managerId: string; email: string; first: string; locale: string | null }[] };
+  const members = await db.select({ id: managerAgencies.managerId }).from(managerAgencies).where(eq(managerAgencies.agencyId, agencyId));
+  const ids = [...new Set([...(agency.managerId ? [agency.managerId] : []), ...members.map((m) => m.id)])];
+  const rows = ids.length
+    ? await db
+        .select({ managerId: managers.id, email: users.email, first: managers.firstName, locale: users.preferredLocale })
+        .from(managers)
+        .innerJoin(users, eq(users.id, managers.userId))
+        .where(and(inArray(managers.id, ids), eq(managers.status, "active"), eq(users.status, "active")))
+    : [];
+  return { agency, staff: rows.filter((r) => r.email).map((r) => ({ ...r, email: r.email! })) };
+}
+
+/** Voiture(s) associée(s) à une agence : tous les gestionnaires de l'agence sont prévenus (modèle « Voiture associée à une agence »). */
+export async function notifyCarsJoinedAgency(carIds: string[], agencyId: number, actorLabel: string, exceptUserEmail?: string | null) {
+  if (!carIds.length) return { sent: 0, failed: 0, skipped: 0 };
+  const { agency, staff } = await agencyStaff(agencyId);
+  if (!agency) return { sent: 0, failed: 0, skipped: 0 };
+  const list = await db.select({ brand: cars.brand, model: cars.model, plate: cars.plateNumber }).from(cars).where(inArray(cars.id, carIds));
+  const label = list.map((c) => `${c.brand} ${c.model} (${c.plate})`).join(", ");
+  const recipients = [];
+  for (const s of staff) {
+    if (exceptUserEmail && s.email.toLowerCase() === exceptUserEmail.toLowerCase()) continue;
+    const { m, locale } = await tr(s.locale);
+    const link = `${APP_BASE_URL}/${locale}/manager/agencies/${agency.id}?tab=cars`;
+    recipients.push({
+      to: s.email,
+      locale,
+      vars: {
+        destinataire: s.first,
+        agence: `${agency.city}, ${agency.name}`,
+        nombre_voitures: String(list.length),
+        voitures: label,
+        ajoute_par: actorLabel,
+        lien_agence: link,
+        bouton_agence: emailButton(m("tplBtnAgency"), link),
+      },
+    });
+  }
+  return sendTemplate("car_agency_assigned", recipients);
+}
+
+/** Gestionnaire rattaché à une ou plusieurs agences : les gestionnaires de chacune sont prévenus (modèle « Nouveau gestionnaire d'agence »). */
+export async function notifyManagerJoinedAgencies(managerId: string, agencyIds: number[], actorLabel: string) {
+  const out = { sent: 0, failed: 0, skipped: 0 };
+  const [mgr] = await db
+    .select({ civility: managers.civility, first: managers.firstName, last: managers.lastName, phone: managers.phone, email: users.email })
+    .from(managers)
+    .innerJoin(users, eq(users.id, managers.userId))
+    .where(eq(managers.id, managerId))
+    .limit(1);
+  if (!mgr) return out;
+  for (const agencyId of agencyIds) {
+    const { agency, staff } = await agencyStaff(agencyId);
+    if (!agency) continue;
+    const recipients = [];
+    for (const s of staff) {
+      if (s.managerId === managerId) continue;
+      const { e, m, locale } = await tr(s.locale);
+      const link = `${APP_BASE_URL}/${locale}/manager/agencies/${agency.id}?tab=managers`;
+      recipients.push({
+        to: s.email,
+        locale,
+        vars: {
+          destinataire: s.first,
+          civilite: e(`civility.${mgr.civility}`),
+          prenom: mgr.first,
+          nom: mgr.last,
+          email: mgr.email ?? "",
+          telephone: mgr.phone,
+          agence: `${agency.city}, ${agency.name}`,
+          ajoute_par: actorLabel,
+          lien_agence: link,
+          bouton_agence: emailButton(m("tplBtnAgency"), link),
+        },
+      });
+    }
+    const r = await sendTemplate("manager_agency_joined", recipients);
+    out.sent += r.sent;
+    out.failed += r.failed;
+    out.skipped += r.skipped;
+  }
+  return out;
+}
+
+/** Variables de l'email marketing pour un destinataire (aussi utilisées par l'aperçu). */
+export async function marketingVars(
+  r: { civility: "male" | "female" | null; first: string; last: string; locale: string | null },
+  c: { message: string | null; code: string; percent: number; endsOn: string | null; minDays: number },
+  link: string,
+) {
+  const { e, m, date, locale } = await tr(r.locale);
+  return {
+    locale,
+    vars: {
+      civilite: r.civility ? e(`civility.${r.civility}`) : "",
+      prenom: r.first,
+      nom: r.last,
+      message: c.message ?? "",
+      code_promo: c.code,
+      remise: `${c.percent} %`,
+      date_fin: c.endsOn ? date(c.endsOn) : "—",
+      jours_min: String(c.minDays),
+      lien_promo: link,
+      bouton_promo: emailButton(m("tplBtnPromo"), link),
+    },
+  };
+}
+
+/**
+ * Envoie la campagne à ses destinataires (modèle « Email marketing : code de réduction »), chacun dans sa langue.
+ * Le bouton de l'email ouvre /api/promo/<jeton> : le code est alors attribué au client.
+ */
+export async function sendMarketingCampaign(campaignId: number) {
+  const [c] = await db
+    .select({ id: marketingCampaigns.id, message: marketingCampaigns.message, code: promotions.code, value: promotions.value, endsOn: promotions.endsOn, minDays: promotions.minDays })
+    .from(marketingCampaigns)
+    .innerJoin(promotions, eq(promotions.id, marketingCampaigns.promotionId))
+    .where(eq(marketingCampaigns.id, campaignId))
+    .limit(1);
+  if (!c) return { sent: 0, failed: 0, skipped: 0 };
+  const list = await db
+    .select({
+      clientId: marketingRecipients.clientId,
+      token: marketingRecipients.token,
+      email: marketingRecipients.email,
+      locale: users.preferredLocale,
+      civility: clientProfiles.civility,
+      first: clientProfiles.firstName,
+      last: clientProfiles.lastName,
+      name: users.name,
+    })
+    .from(marketingRecipients)
+    .innerJoin(users, eq(users.id, marketingRecipients.clientId))
+    .leftJoin(clientProfiles, eq(clientProfiles.userId, users.id))
+    .where(eq(marketingRecipients.campaignId, campaignId));
+  const out = { sent: 0, failed: 0, skipped: 0 };
+  for (const r of list) {
+    const [first, ...rest] = (r.name ?? "").split(" ");
+    const loc = isLocale(r.locale ?? "") ? r.locale! : "fr";
+    const link = `${APP_BASE_URL}/api/promo/${r.token}?l=${loc}`;
+    const { locale, vars } = await marketingVars(
+      { civility: r.civility, first: r.first ?? first ?? "", last: r.last ?? rest.join(" "), locale: r.locale },
+      { message: c.message, code: c.code, percent: c.value, endsOn: c.endsOn, minDays: c.minDays },
+      link,
+    );
+    const res = await sendTemplate("marketing_promotion", [{ to: r.email, locale, vars }]).catch(() => ({ sent: 0, failed: 1, skipped: 0 }));
+    out.sent += res.sent;
+    out.failed += res.failed;
+    out.skipped += res.skipped;
+    await db
+      .update(marketingRecipients)
+      .set(res.sent ? { sentAt: new Date() } : { failed: res.failed > 0 })
+      .where(and(eq(marketingRecipients.campaignId, campaignId), eq(marketingRecipients.clientId, r.clientId)));
+  }
+  await db.update(marketingCampaigns).set({ sentCount: out.sent, failedCount: out.failed }).where(eq(marketingCampaigns.id, campaignId));
+  return out;
 }

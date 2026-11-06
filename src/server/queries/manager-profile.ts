@@ -255,7 +255,7 @@ export async function activityLog(scope: { userId: string; managerId: string | n
             ? "session"
             : r.entity === "car"
               ? "fleet"
-              : r.entity === "client" || r.entity === "appointment"
+              : r.entity === "client" || r.entity === "appointment" || r.entity === "marketing"
                 ? "clients"
                 : "reservations";
     const kind = r.source === "audit" ? `${r.entity}_${r.action}` : r.source === "deal" ? `deal_${r.action}` : `profile_${r.action}`;

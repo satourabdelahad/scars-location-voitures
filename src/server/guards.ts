@@ -56,3 +56,10 @@ export function toActionError(err: unknown): { ok: false; error: string } {
   console.error(err);
   return { ok: false, error: "unknown" };
 }
+
+/** « Hicham (Administrateur) » : auteur d'une action, tel qu'il apparaît dans les emails. */
+export async function actorLabel(user: SessionUser) {
+  const { getTranslations } = await import("next-intl/server");
+  const tb = await getTranslations({ locale: await getLocale(), namespace: "Back" });
+  return `${user.name ?? user.email ?? "Dizy Cars"} (${tb(user.role === "admin" ? "roleAdmin" : "roleManager")})`;
+}

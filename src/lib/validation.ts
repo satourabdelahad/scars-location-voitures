@@ -79,6 +79,8 @@ export const carDeactivationSchema = z.object({
   note: z.string().trim().max(1000).optional(),
 });
 
+const emptyToNullR = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
+
 export const reservationSchema = z
   .object({
     carId: z.string().uuid(),
@@ -90,14 +92,29 @@ export const reservationSchema = z
     driverFirstName: required(),
     driverLastName: required(),
     driverPhone: phone,
-    driverLicenseNumber: required(64),
-    driverBirthDate: isoDate.refine((d) => yearsBetween(d) >= 21, "minAge21"),
+    // Facultatifs à la réservation (présentés à l'agence au départ)
+    driverLicenseNumber: z.preprocess(emptyToNullR, z.string().trim().max(64).nullable()).default(null),
+    driverBirthDate: z.preprocess(emptyToNullR, isoDate.refine((d) => yearsBetween(d) >= 21, "minAge21").nullable()).default(null),
     flightNumber: z.string().trim().max(16).optional(),
     clientNote: z.string().trim().max(1000).optional(),
     promoCode: z.string().trim().max(32).optional(),
   })
   .refine((r) => r.endDate > r.startDate, { path: ["endDate"], message: "dateOrder" });
 export type ReservationInput = z.infer<typeof reservationSchema>;
+
+/**
+ * Nouveau client sans compte, au moment de réserver : le minimum demandé.
+ * Nom, prénom, ville et téléphone obligatoires ; email et WhatsApp facultatifs.
+ */
+export const guestClientSchema = z.object({
+  lastName: z.string().trim().min(2, "required").max(120),
+  firstName: z.string().trim().min(2, "required").max(120),
+  city: z.string().trim().min(2, "required").max(120),
+  email: z.preprocess(emptyToNullR, z.string().trim().toLowerCase().email("email").max(255).nullable()),
+  phone,
+  whatsapp: z.preprocess(emptyToNullR, phone.nullable()),
+});
+export type GuestClientInput = z.infer<typeof guestClientSchema>;
 
 const emptyToNull = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
 

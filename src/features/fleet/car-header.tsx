@@ -6,7 +6,8 @@ import { CarArt } from "@/components/car-art";
 import { Badge, Panel } from "@/components/ui/misc";
 import type { CarCategory } from "@/db/schema";
 import { carState, STATE_TONE } from "@/lib/car-state";
-import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
+import { formatDate, formatDateTime, formatMoney, todayISO } from "@/lib/utils";
+import { activePromoPercent, promoPrice } from "@/lib/car-promo";
 import type { CarSummary } from "@/server/queries/fleet";
 
 function Item({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
@@ -32,7 +33,7 @@ export async function CarHeader({
   locale,
   actions,
 }: {
-  car: { brand: string; model: string; year: number; plateNumber: string; category: CarCategory; colorHex: string; dailyPrice: number; mileage: number; status: string; cover: string | null; city: string; agency: string };
+  car: { brand: string; model: string; year: number; plateNumber: string; category: CarCategory; colorHex: string; dailyPrice: number; promoPercent?: number | null; promoStartsOn?: string | null; promoEndsOn?: string | null; mileage: number; status: string; cover: string | null; city: string; agency: string };
   summary: CarSummary;
   onRoad: boolean;
   locale: string;
@@ -40,6 +41,7 @@ export async function CarHeader({
 }) {
   const t = await getTranslations("Fleet");
   const state = carState({ status: car.status, onRoad });
+  const promo = activePromoPercent({ promoPercent: car.promoPercent ?? null, promoStartsOn: car.promoStartsOn ?? null, promoEndsOn: car.promoEndsOn ?? null }, todayISO());
   return (
     <>
       <div className="mt-3 mb-5 flex flex-wrap items-center gap-4">
@@ -67,7 +69,15 @@ export async function CarHeader({
             <span className="font-normal text-ink-3">{t("neverRented")}</span>
           )}
         </Item>
-        <Item icon={<BadgeDollarSign />} label={t("dailyPrice")}>{formatMoney(car.dailyPrice, locale)}</Item>
+        <Item icon={<BadgeDollarSign />} label={t("dailyPrice")}>
+          {promo ? (
+            <>
+              {formatMoney(promoPrice(car.dailyPrice, promo), locale)} <span className="text-saffron-ink">-{promo} %</span>
+            </>
+          ) : (
+            formatMoney(car.dailyPrice, locale)
+          )}
+        </Item>
         <Item icon={<Gauge />} label={t("mileage")}>{car.mileage.toLocaleString(locale)} km</Item>
         <Item icon={<TrendingUp />} label={t("totalRevenue")}>{formatMoney(s.revenue, locale)}</Item>
         <Item icon={<MapPin />} label={t("city")}>

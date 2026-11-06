@@ -92,7 +92,15 @@
     "trust3": "Annulation gratuite jusqu'à 48 h avant",
     "ctaTitle": "Un voyage en famille, un déplacement pro ?",
     "ctaBody": "Écrivez-nous sur WhatsApp, un conseiller vous répond dans votre langue.",
-    "ctaButton": "Écrire sur WhatsApp"
+    "ctaButton": "Écrire sur WhatsApp",
+    "browseBy": "Parcourir le parc",
+    "by_category": "Carrosserie",
+    "by_city": "Ville",
+    "by_agency": "Agence",
+    "availableOnly": "Disponibles maintenant ({count})",
+    "allFilter": "Toutes",
+    "noCarsHere": "Aucune voiture pour ce choix pour le moment.",
+    "seeAllFiltered": "Voir toutes ces voitures"
   },
   "Cars": {
     "title": "Nos voitures",
@@ -128,7 +136,13 @@
     "unavailable": "Déjà réservée sur ces dates",
     "available": "Disponible sur ces dates",
     "description": "Description",
-    "similar": "Voitures similaires"
+    "similar": "Voitures similaires",
+    "busyUntil": "Louée jusqu'au {date}",
+    "availableNow": "Disponible",
+    "promoUntil": "jusqu'au {date}",
+    "anyAgency": "Toutes les agences",
+    "availableNowFilter": "Disponibles aujourd'hui",
+    "promoActivated": "Votre code de réduction est activé : il sera appliqué automatiquement à votre réservation."
   },
   "Booking": {
     "title": "Réserver {car}",
@@ -163,7 +177,26 @@
     "promoApply": "Appliquer",
     "promoInvalid": "Ce code n'est pas valable pour cette location.",
     "discount": "Remise",
-    "promoRemove": "Retirer le code"
+    "promoRemove": "Retirer le code",
+    "staffCannotBook": "Les réservations se font avec un compte client. Déconnectez-vous de l'espace de l'équipe pour réserver.",
+    "stepIdentity": "Vos coordonnées",
+    "identityHint": "Connectez-vous en un clic, ou réservez sans compte avec le minimum d'informations.",
+    "haveAccount": "Déjà client ?",
+    "loginWithPassword": "Se connecter avec mon email et mon mot de passe",
+    "orNoAccount": "ou réservez sans compte",
+    "guestLastName": "Nom",
+    "guestFirstName": "Prénom",
+    "guestCity": "Ville",
+    "guestEmail": "Email",
+    "guestEmailHint": "Pour recevoir la confirmation et suivre votre réservation.",
+    "guestPhone": "Téléphone",
+    "guestWhatsapp": "WhatsApp",
+    "driverOptionalHint": "Facultatif : vous pourrez présenter votre permis à l'agence.",
+    "carPromo": "Promotion -{percent} %",
+    "accountExists": "Un compte existe déjà avec ces coordonnées : connectez-vous pour réserver.",
+    "guestInvited": "Un email vous a été envoyé pour choisir votre mot de passe et suivre votre réservation en ligne.",
+    "guestCallback": "Notre équipe vous contactera au {phone} pour confirmer.",
+    "backToCars": "Voir d'autres voitures"
   },
   "Extras": {
     "child_seat": "Siège enfant",
@@ -272,7 +305,8 @@
     "security": "Sécurité",
     "administration": "Templates des emails",
     "clients": "Clients",
-    "agencies": "Mes agences"
+    "agencies": "Mes agences",
+    "marketing": "Email Marketing"
   },
   "Managers": {
     "title": "Gestionnaires",
@@ -426,7 +460,18 @@
     "readOnlySubtitle": "Consultation seule : seul l'administrateur gère les gestionnaires.",
     "byAgency": "Affectation par agence",
     "searchAgency": "Rechercher une agence…",
-    "allAgencies": "Toutes les agences"
+    "allAgencies": "Toutes les agences",
+    "save": "Enregistrer",
+    "agenciesTitle": "Agences du gestionnaire",
+    "agenciesHint": "Rattachez le gestionnaire à une ou plusieurs agences. Les gestionnaires des agences ajoutées sont prévenus par email.",
+    "agenciesHintReadOnly": "Agences dont le gestionnaire est responsable ou auxquelles il est rattaché.",
+    "noAgencyChosen": "Aucune agence",
+    "noAgencyLinked": "Aucune agence pour le moment.",
+    "agencyResponsible": "Responsable",
+    "agencyInactive": "Désactivée",
+    "responsibleNote": "Le responsable d'une agence se change dans la fiche de l'agence (onglet Responsable).",
+    "agenciesSaved": "Agences enregistrées",
+    "agenciesSavedMailed": "Agences enregistrées : {count, plural, one {# gestionnaire prévenu} other {# gestionnaires prévenus}} par email"
   },
   "Documents": {
     "cin_front": "Carte d'identité (CINE) — recto",
@@ -607,8 +652,31 @@
       "activate": "{count, plural, one {# voiture remise en service} other {# voitures remises en service}}",
       "repair": "{count, plural, one {# voiture en réparation} other {# voitures en réparation}}",
       "assign": "{count, plural, one {# voiture affectée} other {# voitures affectées}}",
-      "agency": "{count, plural, one {# voiture rattachée à l'agence} other {# voitures rattachées à l'agence}}"
-    }
+      "agency": "{count, plural, one {# voiture rattachée à l'agence} other {# voitures rattachées à l'agence}}",
+      "promo": "{count, plural, one {Promotion mise à jour sur # voiture} other {Promotion mise à jour sur # voitures}}"
+    },
+    "promoColumn": "Promotion",
+    "promoState": {
+      "active": "en cours",
+      "scheduled": "à venir",
+      "ended": "terminée",
+      "none": "aucune"
+    },
+    "bulkPromo": "Ajouter une promotion",
+    "bulkPromoTitle": "{count, plural, one {Promotion sur # voiture} other {Promotion sur # voitures}}",
+    "promoApplyOption": "Appliquer une promotion",
+    "promoRemove": "Retirer la promotion",
+    "promoPercent": "Remise (%)",
+    "promoStartsOn": "Début",
+    "promoEndsOn": "Fin",
+    "promoHint": "La remise s'applique au prix par jour, sur le site et à la réservation, pour les locations qui commencent pendant la période. Sans date, elle reste active jusqu'à son retrait.",
+    "tabPromotion": "Promotion",
+    "promoTabHint": "Remise en pourcentage sur le prix par jour de cette voiture.",
+    "promoPercentError": "Indiquez une remise entre 1 et 90 %.",
+    "promoSaved": "Promotion enregistrée",
+    "promoRemoved": "Promotion retirée",
+    "promoPreview": "Prix par jour : {before} → {after}",
+    "promoNoEnd": "sans date de fin"
   },
   "Reservations": {
     "title": "Réservations",
@@ -794,7 +862,9 @@
     "tplBtnClientInvite": "Activer mon espace client",
     "tplBtnCars": "Voir nos voitures",
     "sentToClientNote": "Récapitulatif envoyé au client ({email}).",
-    "tplBtnLogin": "Me connecter"
+    "tplBtnLogin": "Me connecter",
+    "tplBtnAgency": "Voir l'agence",
+    "tplBtnPromo": "Profiter de ma réduction"
   },
   "Activity": {
     "session_login": "Connexion",
@@ -867,7 +937,11 @@
     "car_bulk_repair": "Action groupée : {name} voiture(s) en réparation",
     "car_bulk_assign": "Action groupée : {name} voiture(s) affectée(s)",
     "car_bulk_agency": "Action groupée : {name} voiture(s) rattachée(s) à une agence",
-    "security_profile_update": "Fiche modifiée"
+    "security_profile_update": "Fiche modifiée",
+    "manager_agencies": "Agences du gestionnaire modifiées : {name}",
+    "car_promo": "Promotion modifiée : {car}",
+    "car_bulk_promo": "Action groupée : promotion sur {name} voiture(s)",
+    "marketing_send": "Campagne email envoyée : {name}"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -1120,6 +1194,21 @@
         "name": "Nouveau mot de passe",
         "when": "Quand l'administrateur change le mot de passe d'un gestionnaire",
         "recipients": "Envoyé au gestionnaire, avec son nouveau mot de passe."
+      },
+      "car_agency_assigned": {
+        "name": "Voiture associée à une agence",
+        "when": "Quand une ou plusieurs voitures sont associées à une agence",
+        "recipients": "Envoyé à tous les gestionnaires de l'agence (responsable et gestionnaires rattachés)."
+      },
+      "manager_agency_joined": {
+        "name": "Nouveau gestionnaire d'agence",
+        "when": "Quand un gestionnaire est rattaché à une ou plusieurs agences",
+        "recipients": "Envoyé aux gestionnaires de chaque agence concernée."
+      },
+      "marketing_promotion": {
+        "name": "Email marketing : code de réduction",
+        "when": "Quand une campagne est envoyée depuis Email Marketing",
+        "recipients": "Envoyé aux clients filtrés ; le bouton attribue le code au client."
       }
     },
     "vars": {
@@ -1345,6 +1434,52 @@
     "managerMissing": "Le responsable n'est pas dans la liste ? Ajoutez-le d'abord comme nouveau gestionnaire, puis revenez le choisir ici.",
     "addManager": "Ajouter un gestionnaire",
     "fixInfosTab": "Complétez d'abord l'onglet « Informations » (téléphone, WhatsApp…).",
-    "fixManagerTab": "Choisissez d'abord le responsable dans l'onglet « Responsable »."
+    "fixManagerTab": "Choisissez d'abord le responsable dans l'onglet « Responsable ».",
+    "memberBadge": "Rattaché",
+    "addManagerHint": "Pour rattacher un gestionnaire à cette agence, ouvrez sa fiche, onglet « Affectation et voitures »."
+  },
+  "Marketing": {
+    "title": "Email Marketing",
+    "subtitle": "Envoyez un code de réduction aux clients choisis par ville et par nombre de jours loués.",
+    "audienceTitle": "Clients ciblés",
+    "audienceHint": "Clients actifs avec une adresse email. Décochez un client pour l'exclure.",
+    "cities": "Villes",
+    "noCity": "Ville non renseignée",
+    "minDays": "Jours loués (min.)",
+    "maxDays": "Jours loués (max.)",
+    "search": "Rechercher un client (nom, email, ville)",
+    "recipientsCount": "{count, plural, one {# destinataire} other {# destinataires}} sur {total}",
+    "includeAll": "Tout recocher",
+    "noMatch": "Aucun client ne correspond à ces filtres.",
+    "daysRented": "{count, plural, =0 {Aucune location} one {# jour loué} other {# jours loués}}",
+    "composeTitle": "Code de réduction",
+    "composeHint": "Un code unique est créé pour cette campagne, réservé aux destinataires.",
+    "campaignName": "Nom de la campagne",
+    "campaignNameHint": "Sert aussi de début au code (ex. HIVER-7KQ2).",
+    "campaignNamePlaceholder": "Hiver 2026",
+    "percent": "Réduction (%)",
+    "endsOn": "Valable jusqu'au",
+    "minRental": "Durée min. (jours)",
+    "message": "Message",
+    "messageHint": "Inséré dans le corps de l'email. Le reste du texte se modifie dans Templates des emails.",
+    "howItWorks": "Quand le client clique sur le bouton de l'email, le code est attribué à son compte et appliqué automatiquement à sa prochaine réservation.",
+    "preview": "Aperçu",
+    "previewHint": "Exemple avec un client fictif, dans la langue de l'interface. Chaque client reçoit l'email dans sa langue.",
+    "send": "{count, plural, =0 {Envoyer} one {Envoyer à # client} other {Envoyer à # clients}}",
+    "confirmTitle": "{count, plural, one {Envoyer la campagne à # client ?} other {Envoyer la campagne à # clients ?}}",
+    "confirmBody": "Réduction de {percent} %, valable jusqu'au {date}, pour une location d'au moins {days} jour(s).",
+    "noRecipients": "Aucun destinataire : élargissez les filtres.",
+    "sent": "{count, plural, one {Email envoyé à # client} other {Emails envoyés à # clients}} (code {code})",
+    "skipped": "{count, plural, one {# email non envoyé : envoi d'emails non configuré} other {# emails non envoyés : envoi d'emails non configuré}}",
+    "failed": "{count, plural, one {# email en échec} other {# emails en échec}}",
+    "historyTitle": "Campagnes envoyées",
+    "noCampaign": "Aucune campagne pour le moment",
+    "noCampaignBody": "Les campagnes envoyées apparaîtront ici avec leurs clics et leurs réservations.",
+    "colDate": "Date",
+    "colCode": "Code",
+    "colSent": "Envoyés",
+    "colClicked": "Codes activés",
+    "colUsed": "Utilisés",
+    "colAuthor": "Envoyé par"
   }
 }

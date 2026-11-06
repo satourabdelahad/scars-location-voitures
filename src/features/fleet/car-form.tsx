@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { BarChart3, Building2, Camera, Check, FileText, History, ImagePlus, Info, Star, Tag, Trash2, UsersRound } from "lucide-react";
+import { BarChart3, Building2, Camera, Check, FileText, History, ImagePlus, Info, Percent, Star, Tag, Trash2, UsersRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
@@ -84,7 +84,7 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
   );
 }
 
-export type CarTab = "stats" | "infos" | "pricing" | "photos" | "descriptions" | "agency" | "managers" | "history";
+export type CarTab = "stats" | "infos" | "pricing" | "promotion" | "photos" | "descriptions" | "agency" | "managers" | "history";
 /** Onglet où se trouve chaque champ, pour ouvrir le bon onglet en cas d'erreur. */
 const FIELD_TAB: Record<string, CarTab> = { dailyPrice: "pricing", deposit: "pricing", images: "photos", descriptions: "descriptions", agencyId: "agency" };
 
@@ -98,6 +98,7 @@ export function CarForm({
   initialManagerIds = [],
   stats,
   history,
+  promotion,
 }: {
   base: string;
   carId?: string;
@@ -111,6 +112,8 @@ export function CarForm({
   stats?: ReactNode;
   /** Onglet « Historique » des locations (voiture existante) */
   history?: ReactNode;
+  /** Onglet « Promotion » (voiture existante) : enregistré à part */
+  promotion?: ReactNode;
 }) {
   const t = useTranslations("Fleet");
   const te = useTranslations("Errors");
@@ -127,6 +130,7 @@ export function CarForm({
     ...(stats ? [{ id: "stats" as const, label: t("tabStats"), Icon: BarChart3 }] : []),
     { id: "infos", label: t("tabInfos"), Icon: Info },
     { id: "pricing", label: t("tabPricing"), Icon: Tag },
+    ...(promotion ? [{ id: "promotion" as const, label: t("tabPromotion"), Icon: Percent }] : []),
     { id: "photos", label: t("tabPhotos"), Icon: ImagePlus },
     { id: "descriptions", label: t("tabDescriptions"), Icon: FileText },
     { id: "agency", label: t("tabAgency"), Icon: Building2 },
@@ -204,7 +208,7 @@ export function CarForm({
     });
   }
 
-  const formTab = tab !== "stats" && tab !== "history";
+  const formTab = tab !== "stats" && tab !== "history" && tab !== "promotion";
   return (
     <>
     <nav aria-label={t("title")} className="scroll-thin mb-6 flex gap-1 overflow-x-auto border-b border-mist">
@@ -230,6 +234,7 @@ export function CarForm({
     </nav>
     {tab === "stats" && stats}
     {tab === "history" && history}
+    {tab === "promotion" && promotion}
     <form onSubmit={submit} noValidate className={cn("rounded-2xl border border-mist bg-paper p-6 sm:p-8", !formTab && "hidden")}>
       <div className={tab === "infos" ? undefined : "hidden"}>
       <Section title={t("general")}>

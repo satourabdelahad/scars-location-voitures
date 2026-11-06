@@ -119,6 +119,7 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
                 <span className="block truncate text-xs text-ink-3" dir="ltr">{m.email ?? m.phone}</span>
                 <span className="mt-1 flex flex-wrap gap-1">
                   {m.responsible && <Badge tone="dark">{t("responsible")}</Badge>}
+                  {m.member && !m.responsible && <Badge tone="success">{t("memberBadge")}</Badge>}
                   {m.byRule && <Badge tone="info">{tm("byRule")}</Badge>}
                   {m.cars > 0 && <Badge tone="neutral">{tm("carsCount", { count: m.cars })}</Badge>}
                 </span>
@@ -130,6 +131,7 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
     ) : (
       <Panel><EmptyState icon={<UsersRound />} title={t("noManagers")} body={t("noManagersBody")} /></Panel>
     );
+    if (isAdmin) body = <><p className="mb-3 text-sm text-ink-3">{t("addManagerHint")}</p>{body}</>;
   } else if (tab === "cars") {
     const fleet = (await listFleet()).filter((f) => f.agencyId === a.agencyId);
     body = <FleetTable rows={fleet} base={base} prefs={null} tableKey="agency-cars" />;

@@ -5,10 +5,10 @@ import { revalidatePath } from "next/cache";
 import { getLocale, getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { db } from "@/db";
-import { agencies as agenciesTable, auditLogs, carManagers, cars, managerCarRules, managerDocuments, managerEvents, managers, tablePreferences, users, type DocumentKind } from "@/db/schema";
+import { agencies as agenciesTable, auditLogs, managerAgencies, carManagers, cars, managerCarRules, managerDocuments, managerEvents, managers, tablePreferences, users, type DocumentKind } from "@/db/schema";
 import { managerSchema } from "@/lib/validation";
-import { assertRole, toActionError, type ActionResult } from "@/server/guards";
-import { notifyManagerInvite, notifyManagerPasswordSet } from "@/server/notifications";
+import { actorLabel, assertRole, toActionError, type ActionResult } from "@/server/guards";
+import { notifyManagerInvite, notifyManagerJoinedAgencies, notifyManagerPasswordSet } from "@/server/notifications";
 import bcrypt from "bcryptjs";
 import { issuePasswordToken } from "@/server/tokens";
 import { documentViewUrl, verifyUpload } from "@/server/uploads";
@@ -436,6 +436,47 @@ export async function saveTablePreferences(tableKey: string, visibleColumns: str
         set: { visibleColumns: cols, pageSize: size, updatedAt: new Date() },
       });
     return { ok: true };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+/**
+ * Rattache un gestionnaire à une ou plusieurs agences (administrateur). Les gestionnaires des
+ * agences ajoutées sont prévenus par email (modèle « Nouveau gestionnaire d'agence »).
+ */
+export async function setManagerAgencies(managerId: string, agencyIds: number[]): Promise<ActionResult<{ added: number; removed: number; emailed: number }>> {
+  try {
+    const admin = await assertRole(["admin"]);
+    const ids = z.array(z.number().int().positive()).max(200).safeParse(agencyIds);
+    if (!z.string().uuid().safeParse(managerId).success || !ids.success) return { ok: false, error: "validation" };
+    const [m] = await db.select({ id: managers.id, status: managers.status }).from(managers).where(eq(managers.id, managerId)).limit(1);
+    if (!m) return { ok: false, error: "not_found" };
+    const wanted = [...new Set(ids.data)];
+    const valid = wanted.length ? (await db.select({ id: agenciesTable.id }).from(agenciesTable).where(inArray(agenciesTable.id, wanted))).map((a) => a.id) : [];
+    const before = (await db.select({ id: managerAgencies.agencyId }).from(managerAgencies).where(eq(managerAgencies.managerId, managerId))).map((r) => r.id);
+    const added = valid.filter((id) => !before.includes(id));
+    const removed = before.filter((id) => !valid.includes(id));
+    await db.transaction(async (tx) => {
+      if (removed.length) await tx.delete(managerAgencies).where(and(eq(managerAgencies.managerId, managerId), inArray(managerAgencies.agencyId, removed)));
+      if (added.length) await tx.insert(managerAgencies).values(added.map((agencyId) => ({ managerId, agencyId, createdBy: admin.id }))).onConflictDoNothing();
+      const names = async (list: number[]) =>
+        list.length ? (await tx.select({ city: agenciesTable.city, name: agenciesTable.name }).from(agenciesTable).where(inArray(agenciesTable.id, list))).map((a) => `${a.city}, ${a.name}`) : [];
+      const plus = await names(added);
+      const minus = await names(removed);
+      const note = [...plus.map((n) => `+ ${n}`), ...minus.map((n) => `− ${n}`)].join(" · ") || null;
+      await tx.insert(auditLogs).values({ actorId: admin.id, entity: "manager", entityId: managerId, action: "agencies", changes: { added: plus, removed: minus, note } });
+    });
+    let emailed = 0;
+    if (added.length && m.status === "active") {
+      const r = await notifyManagerJoinedAgencies(managerId, added, await actorLabel(admin)).catch((e) => {
+        console.error("[email] gestionnaire rattaché à une agence", e);
+        return null;
+      });
+      emailed = r?.sent ?? 0;
+    }
+    revalidatePath("/", "layout");
+    return { ok: true, data: { added: added.length, removed: removed.length, emailed } };
   } catch (err) {
     return toActionError(err);
   }

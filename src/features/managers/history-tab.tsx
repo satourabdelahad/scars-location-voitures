@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, Building2, CalendarPlus, Download, ListChecks, CarFront, CheckCircle2, Handshake, KeyRound, LogIn, LogOut, Pencil, PlusCircle, Power, ShieldCheck, StickyNote, Undo2, UserCheck, UserPlus, UserRound, Wrench, XCircle } from "lucide-react";
+import { Ban, Building2, CalendarPlus, Download, ListChecks, CarFront, CheckCircle2, Handshake, KeyRound, LogIn, LogOut, Mail, Pencil, PlusCircle, Power, ShieldCheck, StickyNote, Undo2, UserCheck, UserPlus, UserRound, Wrench, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, type ReactNode } from "react";
 import { DataTable, type Column } from "@/components/data-table/data-table";
@@ -43,6 +43,10 @@ const STYLE: Record<string, { icon: ReactNode; tone: string; badge: Tone }> = {
   manager_assign_cars: { icon: <CarFront />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
   manager_unassign_car: { icon: <CarFront />, tone: "bg-mist text-ink-2", badge: "neutral" },
   manager_assign_rule: { icon: <CarFront />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  manager_agencies: { icon: <Building2 />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  car_bulk_promo: { icon: <ListChecks />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
+  car_promo: { icon: <CarFront />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
+  marketing_send: { icon: <Mail />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
   manager_clear_rule: { icon: <CarFront />, tone: "bg-mist text-ink-2", badge: "neutral" },
   agency_create: { icon: <Building2 />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
   agency_update: { icon: <Pencil />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },

@@ -92,7 +92,15 @@
     "trust3": "إلغاء مجاني حتى 48 ساعة قبل الموعد",
     "ctaTitle": "رحلة عائلية أو سفر عمل؟",
     "ctaBody": "راسلنا عبر واتساب، وسيجيبك مستشار بلغتك.",
-    "ctaButton": "راسلنا عبر واتساب"
+    "ctaButton": "راسلنا عبر واتساب",
+    "browseBy": "تصفح الأسطول",
+    "by_category": "الهيكل",
+    "by_city": "المدينة",
+    "by_agency": "الوكالة",
+    "availableOnly": "المتاحة الآن ({count})",
+    "allFilter": "الكل",
+    "noCarsHere": "لا توجد سيارة لهذا الاختيار حاليًا.",
+    "seeAllFiltered": "عرض كل هذه السيارات"
   },
   "Cars": {
     "title": "سياراتنا",
@@ -128,7 +136,13 @@
     "unavailable": "محجوزة مسبقًا في هذه التواريخ",
     "available": "متوفرة في هذه التواريخ",
     "description": "الوصف",
-    "similar": "سيارات مشابهة"
+    "similar": "سيارات مشابهة",
+    "busyUntil": "مكتراة حتى {date}",
+    "availableNow": "متاحة",
+    "promoUntil": "حتى {date}",
+    "anyAgency": "جميع الوكالات",
+    "availableNowFilter": "المتاحة اليوم",
+    "promoActivated": "تم تفعيل رمز التخفيض: سيُطبَّق تلقائيًا على حجزك."
   },
   "Booking": {
     "title": "حجز {car}",
@@ -163,7 +177,26 @@
     "promoApply": "تطبيق",
     "promoInvalid": "هذا الرمز غير صالح لهذا الإيجار.",
     "discount": "الخصم",
-    "promoRemove": "إزالة الرمز"
+    "promoRemove": "إزالة الرمز",
+    "staffCannotBook": "تتم الحجوزات بحساب عميل. سجّل الخروج من فضاء الفريق للحجز.",
+    "stepIdentity": "بياناتك",
+    "identityHint": "سجّل الدخول بنقرة واحدة، أو احجز بدون حساب بأقل قدر من المعلومات.",
+    "haveAccount": "هل أنت عميل لدينا؟",
+    "loginWithPassword": "تسجيل الدخول ببريدي وكلمة المرور",
+    "orNoAccount": "أو احجز بدون حساب",
+    "guestLastName": "الاسم العائلي",
+    "guestFirstName": "الاسم الشخصي",
+    "guestCity": "المدينة",
+    "guestEmail": "البريد الإلكتروني",
+    "guestEmailHint": "لتلقي التأكيد ومتابعة حجزك.",
+    "guestPhone": "الهاتف",
+    "guestWhatsapp": "واتساب",
+    "driverOptionalHint": "اختياري: يمكنك تقديم رخصتك في الوكالة.",
+    "carPromo": "عرض -{percent} %",
+    "accountExists": "يوجد حساب بهذه البيانات: سجّل الدخول للحجز.",
+    "guestInvited": "أرسلنا إليك بريدًا لاختيار كلمة المرور ومتابعة حجزك عبر الإنترنت.",
+    "guestCallback": "سيتصل بك فريقنا على {phone} للتأكيد.",
+    "backToCars": "عرض سيارات أخرى"
   },
   "Extras": {
     "child_seat": "مقعد أطفال",
@@ -272,7 +305,8 @@
     "security": "الأمان",
     "administration": "قوالب البريد الإلكتروني",
     "clients": "العملاء",
-    "agencies": "وكالاتي"
+    "agencies": "وكالاتي",
+    "marketing": "التسويق بالبريد"
   },
   "Managers": {
     "title": "المسيّرون",
@@ -426,7 +460,18 @@
     "readOnlySubtitle": "للاطلاع فقط: المسؤول وحده يدير المسيّرين.",
     "byAgency": "الإسناد حسب الوكالة",
     "searchAgency": "ابحث عن وكالة…",
-    "allAgencies": "كل الوكالات"
+    "allAgencies": "كل الوكالات",
+    "save": "حفظ",
+    "agenciesTitle": "وكالات المسيّر",
+    "agenciesHint": "ألحق المسيّر بوكالة أو أكثر. يتلقى مسيّرو الوكالات المضافة إشعارًا بالبريد الإلكتروني.",
+    "agenciesHintReadOnly": "الوكالات التي يتولى المسيّر مسؤوليتها أو الملحق بها.",
+    "noAgencyChosen": "لا توجد وكالة",
+    "noAgencyLinked": "لا توجد وكالة حاليًا.",
+    "agencyResponsible": "المسؤول",
+    "agencyInactive": "معطّلة",
+    "responsibleNote": "يُغيَّر مسؤول الوكالة من صفحة الوكالة (تبويب المسؤول).",
+    "agenciesSaved": "تم حفظ الوكالات",
+    "agenciesSavedMailed": "تم حفظ الوكالات: {count, plural, one {إشعار مسيّر واحد} other {إشعار # مسيّرين}} بالبريد الإلكتروني"
   },
   "Documents": {
     "cin_front": "البطاقة الوطنية (CINE) — الوجه",
@@ -607,8 +652,31 @@
       "activate": "أعيدت {count} سيارة إلى الخدمة",
       "repair": "{count} سيارة في الإصلاح",
       "assign": "تم إسناد {count} سيارة",
-      "agency": "رُبطت {count} سيارة بالوكالة"
-    }
+      "agency": "رُبطت {count} سيارة بالوكالة",
+      "promo": "{count, plural, one {تحديث العرض على سيارة واحدة} other {تحديث العرض على # سيارات}}"
+    },
+    "promoColumn": "العرض",
+    "promoState": {
+      "active": "جارٍ",
+      "scheduled": "قادم",
+      "ended": "منتهٍ",
+      "none": "لا يوجد"
+    },
+    "bulkPromo": "إضافة عرض",
+    "bulkPromoTitle": "{count, plural, one {عرض على سيارة واحدة} other {عرض على # سيارات}}",
+    "promoApplyOption": "تطبيق عرض",
+    "promoRemove": "إزالة العرض",
+    "promoPercent": "التخفيض (%)",
+    "promoStartsOn": "البداية",
+    "promoEndsOn": "النهاية",
+    "promoHint": "يُطبَّق التخفيض على السعر اليومي، في الموقع وعند الحجز، للكراءات التي تبدأ خلال الفترة. بدون تاريخ، يبقى ساريًا حتى إزالته.",
+    "tabPromotion": "العرض",
+    "promoTabHint": "تخفيض بالنسبة المئوية على السعر اليومي لهذه السيارة.",
+    "promoPercentError": "أدخل تخفيضًا بين 1 و90 %.",
+    "promoSaved": "تم حفظ العرض",
+    "promoRemoved": "تمت إزالة العرض",
+    "promoPreview": "السعر اليومي: {before} ← {after}",
+    "promoNoEnd": "بدون تاريخ نهاية"
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -794,7 +862,9 @@
     "tplBtnClientInvite": "تفعيل حسابي",
     "tplBtnCars": "اكتشف سياراتنا",
     "sentToClientNote": "تم إرسال الملخص إلى العميل ({email}).",
-    "tplBtnLogin": "تسجيل الدخول"
+    "tplBtnLogin": "تسجيل الدخول",
+    "tplBtnAgency": "عرض الوكالة",
+    "tplBtnPromo": "الاستفادة من التخفيض"
   },
   "Activity": {
     "session_login": "تسجيل الدخول",
@@ -867,7 +937,11 @@
     "car_bulk_repair": "إجراء جماعي: {name} سيارة في الإصلاح",
     "car_bulk_assign": "إجراء جماعي: إسناد {name} سيارة",
     "car_bulk_agency": "إجراء جماعي: ربط {name} سيارة بوكالة",
-    "security_profile_update": "عُدّل الملف"
+    "security_profile_update": "عُدّل الملف",
+    "manager_agencies": "تعديل وكالات المسيّر: {name}",
+    "car_promo": "تعديل العرض: {car}",
+    "car_bulk_promo": "إجراء جماعي: عرض على {name} سيارة",
+    "marketing_send": "إرسال حملة بريدية: {name}"
   },
   "Deals": {
     "title": "الصفقات / العملاء المحتملون",
@@ -1120,6 +1194,21 @@
         "name": "كلمة مرور جديدة",
         "when": "عندما يغيّر المسؤول كلمة مرور مسيّر",
         "recipients": "تُرسل إلى المسيّر مع كلمة المرور الجديدة."
+      },
+      "car_agency_assigned": {
+        "name": "ربط سيارة بوكالة",
+        "when": "عند ربط سيارة أو أكثر بوكالة",
+        "recipients": "يُرسل إلى جميع مسيّري الوكالة (المسؤول والمسيّرون الملحقون)."
+      },
+      "manager_agency_joined": {
+        "name": "مسيّر جديد في الوكالة",
+        "when": "عند إلحاق مسيّر بوكالة أو أكثر",
+        "recipients": "يُرسل إلى مسيّري كل وكالة معنية."
+      },
+      "marketing_promotion": {
+        "name": "التسويق بالبريد: رمز تخفيض",
+        "when": "عند إرسال حملة من التسويق بالبريد الإلكتروني",
+        "recipients": "يُرسل إلى العملاء المختارين؛ والزر يمنح الرمز للعميل."
       }
     },
     "vars": {
@@ -1345,6 +1434,52 @@
     "managerMissing": "ليس في القائمة؟ أضفه أولًا كمسيّر جديد ثم عد لاختياره هنا.",
     "addManager": "إضافة مسيّر",
     "fixInfosTab": "أكمل أولًا تبويب «المعلومات» (الهاتف، واتساب…).",
-    "fixManagerTab": "اختر المسؤول أولًا من تبويب «المسؤول»."
+    "fixManagerTab": "اختر المسؤول أولًا من تبويب «المسؤول».",
+    "memberBadge": "ملحق",
+    "addManagerHint": "لإلحاق مسيّر بهذه الوكالة، افتح ملفه، تبويب «التعيين والسيارات»."
+  },
+  "Marketing": {
+    "title": "التسويق بالبريد الإلكتروني",
+    "subtitle": "أرسل رمز تخفيض إلى العملاء المختارين حسب المدينة وعدد أيام الكراء.",
+    "audienceTitle": "العملاء المستهدفون",
+    "audienceHint": "عملاء نشطون لديهم بريد إلكتروني. ألغِ تحديد عميل لاستبعاده.",
+    "cities": "المدن",
+    "noCity": "مدينة غير محددة",
+    "minDays": "أيام الكراء (الحد الأدنى)",
+    "maxDays": "أيام الكراء (الحد الأقصى)",
+    "search": "ابحث عن عميل (الاسم، البريد، المدينة)",
+    "recipientsCount": "{count, plural, one {مستلم واحد} other {# مستلمين}} من {total}",
+    "includeAll": "إعادة تحديد الكل",
+    "noMatch": "لا يوجد عميل يطابق هذه المرشحات.",
+    "daysRented": "{count, plural, =0 {لا كراء} one {يوم كراء واحد} other {# أيام كراء}}",
+    "composeTitle": "رمز التخفيض",
+    "composeHint": "يُنشأ رمز فريد لهذه الحملة، مخصص لمستلميها.",
+    "campaignName": "اسم الحملة",
+    "campaignNameHint": "يُستعمل أيضًا كبداية للرمز (مثال: WINTER-7KQ2).",
+    "campaignNamePlaceholder": "شتاء 2026",
+    "percent": "التخفيض (%)",
+    "endsOn": "صالح حتى",
+    "minRental": "المدة الدنيا (أيام)",
+    "message": "الرسالة",
+    "messageHint": "تُدرج في نص البريد. يُعدَّل باقي النص في قوالب البريد الإلكتروني.",
+    "howItWorks": "عندما يضغط العميل على زر البريد، يُضاف الرمز إلى حسابه ويُطبَّق تلقائيًا على حجزه القادم.",
+    "preview": "معاينة",
+    "previewHint": "مثال بعميل افتراضي، بلغة الواجهة. يتلقى كل عميل البريد بلغته.",
+    "send": "{count, plural, =0 {إرسال} one {إرسال إلى عميل واحد} other {إرسال إلى # عملاء}}",
+    "confirmTitle": "{count, plural, one {إرسال الحملة إلى عميل واحد؟} other {إرسال الحملة إلى # عملاء؟}}",
+    "confirmBody": "تخفيض {percent} %، صالح حتى {date}، لكراء لا يقل عن {days} يوم.",
+    "noRecipients": "لا يوجد مستلم: وسّع المرشحات.",
+    "sent": "{count, plural, one {أُرسل البريد إلى عميل واحد} other {أُرسلت الرسائل إلى # عملاء}} (الرمز {code})",
+    "skipped": "{count, plural, one {لم يُرسل بريد واحد: الإرسال غير مُعدّ} other {لم تُرسل # رسائل: الإرسال غير مُعدّ}}",
+    "failed": "{count, plural, one {فشل إرسال بريد واحد} other {فشل إرسال # رسائل}}",
+    "historyTitle": "الحملات المرسلة",
+    "noCampaign": "لا توجد حملة حاليًا",
+    "noCampaignBody": "ستظهر الحملات المرسلة هنا مع النقرات والحجوزات.",
+    "colDate": "التاريخ",
+    "colCode": "الرمز",
+    "colSent": "المرسلة",
+    "colClicked": "الرموز المفعّلة",
+    "colUsed": "المستعملة",
+    "colAuthor": "أرسلها"
   }
 }

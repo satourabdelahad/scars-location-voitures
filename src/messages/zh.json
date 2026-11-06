@@ -92,7 +92,15 @@
     "trust3": "提前 48 小时免费取消",
     "ctaTitle": "家庭旅行还是商务出行？",
     "ctaBody": "通过 WhatsApp 给我们留言，顾问会用您的语言回复。",
-    "ctaButton": "通过 WhatsApp 联系"
+    "ctaButton": "通过 WhatsApp 联系",
+    "browseBy": "浏览车队",
+    "by_category": "车型",
+    "by_city": "城市",
+    "by_agency": "门店",
+    "availableOnly": "现在可租（{count}）",
+    "allFilter": "全部",
+    "noCarsHere": "目前没有符合此选择的车辆。",
+    "seeAllFiltered": "查看所有这些车辆"
   },
   "Cars": {
     "title": "我们的车辆",
@@ -128,7 +136,13 @@
     "unavailable": "该日期已被预订",
     "available": "该日期可预订",
     "description": "车辆介绍",
-    "similar": "相似车辆"
+    "similar": "相似车辆",
+    "busyUntil": "租出至 {date}",
+    "availableNow": "可租",
+    "promoUntil": "至 {date}",
+    "anyAgency": "所有门店",
+    "availableNowFilter": "今日可租",
+    "promoActivated": "您的优惠码已激活：预订时将自动使用。"
   },
   "Booking": {
     "title": "预订 {car}",
@@ -163,7 +177,26 @@
     "promoApply": "使用",
     "promoInvalid": "此优惠码不适用于本次租赁。",
     "discount": "折扣",
-    "promoRemove": "移除优惠码"
+    "promoRemove": "移除优惠码",
+    "staffCannotBook": "预订需使用客户账户。请退出团队空间后再预订。",
+    "stepIdentity": "您的信息",
+    "identityHint": "一键登录，或仅填写最少信息免注册预订。",
+    "haveAccount": "已是客户？",
+    "loginWithPassword": "使用邮箱和密码登录",
+    "orNoAccount": "或免注册预订",
+    "guestLastName": "姓",
+    "guestFirstName": "名",
+    "guestCity": "城市",
+    "guestEmail": "邮箱",
+    "guestEmailHint": "用于接收确认并跟踪您的预订。",
+    "guestPhone": "电话",
+    "guestWhatsapp": "WhatsApp",
+    "driverOptionalHint": "选填：您可以在门店出示驾照。",
+    "carPromo": "促销 -{percent}%",
+    "accountExists": "已有使用这些信息的账户：请登录后预订。",
+    "guestInvited": "我们已向您发送邮件，用于设置密码并在线跟踪预订。",
+    "guestCallback": "我们的团队将拨打 {phone} 与您确认。",
+    "backToCars": "查看其他车辆"
   },
   "Extras": {
     "child_seat": "儿童座椅",
@@ -272,7 +305,8 @@
     "security": "安全",
     "administration": "邮件模板",
     "clients": "客户",
-    "agencies": "我的门店"
+    "agencies": "我的门店",
+    "marketing": "邮件营销"
   },
   "Managers": {
     "title": "经理",
@@ -426,7 +460,18 @@
     "readOnlySubtitle": "仅供查看：只有管理员可以管理经理。",
     "byAgency": "按门店分配",
     "searchAgency": "搜索门店…",
-    "allAgencies": "全部门店"
+    "allAgencies": "全部门店",
+    "save": "保存",
+    "agenciesTitle": "经理所属门店",
+    "agenciesHint": "将经理分配到一个或多个门店。新增门店的经理会收到邮件通知。",
+    "agenciesHintReadOnly": "该经理负责或所属的门店。",
+    "noAgencyChosen": "无门店",
+    "noAgencyLinked": "暂无门店。",
+    "agencyResponsible": "负责人",
+    "agencyInactive": "已停用",
+    "responsibleNote": "门店负责人在门店页面（负责人标签）中更改。",
+    "agenciesSaved": "门店已保存",
+    "agenciesSavedMailed": "门店已保存：已通过邮件通知{count, plural, other {#位经理}}"
   },
   "Documents": {
     "cin_front": "身份证（CINE）正面",
@@ -607,8 +652,31 @@
       "activate": "已恢复 {count} 辆车",
       "repair": "{count} 辆车维修中",
       "assign": "已分配 {count} 辆车",
-      "agency": "已将 {count} 辆车关联到门店"
-    }
+      "agency": "已将 {count} 辆车关联到门店",
+      "promo": "{count, plural, other {已更新 # 辆车的促销}}"
+    },
+    "promoColumn": "促销",
+    "promoState": {
+      "active": "进行中",
+      "scheduled": "即将开始",
+      "ended": "已结束",
+      "none": "无"
+    },
+    "bulkPromo": "添加促销",
+    "bulkPromoTitle": "{count, plural, other {# 辆车促销}}",
+    "promoApplyOption": "应用促销",
+    "promoRemove": "取消促销",
+    "promoPercent": "折扣（%）",
+    "promoStartsOn": "开始",
+    "promoEndsOn": "结束",
+    "promoHint": "折扣适用于在此期间开始的租车的日租价，网站和预约均生效。无日期时，促销持续到取消为止。",
+    "tabPromotion": "促销",
+    "promoTabHint": "该车日租价的百分比折扣。",
+    "promoPercentError": "请输入 1 到 90% 之间的折扣。",
+    "promoSaved": "促销已保存",
+    "promoRemoved": "促销已取消",
+    "promoPreview": "日租价：{before} → {after}",
+    "promoNoEnd": "无结束日期"
   },
   "Reservations": {
     "title": "预订",
@@ -794,7 +862,9 @@
     "tplBtnClientInvite": "激活我的账户",
     "tplBtnCars": "查看我们的车辆",
     "sentToClientNote": "已向客户发送摘要（{email}）。",
-    "tplBtnLogin": "登录"
+    "tplBtnLogin": "登录",
+    "tplBtnAgency": "查看门店",
+    "tplBtnPromo": "领取我的优惠"
   },
   "Activity": {
     "session_login": "登录",
@@ -867,7 +937,11 @@
     "car_bulk_repair": "批量操作：{name} 辆车维修中",
     "car_bulk_assign": "批量操作：分配 {name} 辆车",
     "car_bulk_agency": "批量操作：{name} 辆车关联到门店",
-    "security_profile_update": "资料已更新"
+    "security_profile_update": "资料已更新",
+    "manager_agencies": "经理门店已修改：{name}",
+    "car_promo": "促销已修改：{car}",
+    "car_bulk_promo": "批量操作：{name} 辆车促销",
+    "marketing_send": "已发送邮件活动：{name}"
   },
   "Deals": {
     "title": "商机 / 潜在客户",
@@ -1120,6 +1194,21 @@
         "name": "新密码",
         "when": "管理员更改经理密码时",
         "recipients": "发送给经理，附带新密码。"
+      },
+      "car_agency_assigned": {
+        "name": "车辆关联到门店",
+        "when": "当一辆或多辆车关联到门店时",
+        "recipients": "发送给该门店的所有经理（负责人和所属经理）。"
+      },
+      "manager_agency_joined": {
+        "name": "门店新经理",
+        "when": "当经理被分配到一个或多个门店时",
+        "recipients": "发送给每个相关门店的经理。"
+      },
+      "marketing_promotion": {
+        "name": "邮件营销：优惠码",
+        "when": "从邮件营销发送活动时",
+        "recipients": "发送给筛选出的客户；按钮会将优惠码分配给客户。"
       }
     },
     "vars": {
@@ -1345,6 +1434,52 @@
     "managerMissing": "不在列表中？请先将其添加为新经理，再回来选择。",
     "addManager": "添加经理",
     "fixInfosTab": "请先完善“基本信息”标签（电话、WhatsApp 等）。",
-    "fixManagerTab": "请先在“负责人”标签中选择负责人。"
+    "fixManagerTab": "请先在“负责人”标签中选择负责人。",
+    "memberBadge": "已分配",
+    "addManagerHint": "要将经理分配到该门店，请打开其资料的“分配与车辆”标签。"
+  },
+  "Marketing": {
+    "title": "邮件营销",
+    "subtitle": "按城市和租车天数选择客户，发送优惠码。",
+    "audienceTitle": "目标客户",
+    "audienceHint": "有邮箱的活跃客户。取消勾选即可排除。",
+    "cities": "城市",
+    "noCity": "未填写城市",
+    "minDays": "租车天数（最少）",
+    "maxDays": "租车天数（最多）",
+    "search": "搜索客户（姓名、邮箱、城市）",
+    "recipientsCount": "{count, plural, other {# 位收件人}}，共 {total} 位",
+    "includeAll": "重新全选",
+    "noMatch": "没有符合这些筛选条件的客户。",
+    "daysRented": "{count, plural, =0 {无租车} other {已租 # 天}}",
+    "composeTitle": "优惠码",
+    "composeHint": "将为本次活动创建一个专属于收件人的唯一优惠码。",
+    "campaignName": "活动名称",
+    "campaignNameHint": "也用作优惠码的开头（例如 WINTER-7KQ2）。",
+    "campaignNamePlaceholder": "2026 冬季",
+    "percent": "折扣（%）",
+    "endsOn": "有效期至",
+    "minRental": "最短租期（天）",
+    "message": "留言",
+    "messageHint": "插入邮件正文。其余文字在邮件模板中编辑。",
+    "howItWorks": "客户点击邮件中的按钮后，优惠码会添加到其账户，并自动用于下次预订。",
+    "preview": "预览",
+    "previewHint": "使用虚拟客户、以界面语言显示的示例。每位客户会收到其语言的邮件。",
+    "send": "{count, plural, =0 {发送} other {发送给 # 位客户}}",
+    "confirmTitle": "{count, plural, other {将活动发送给 # 位客户？}}",
+    "confirmBody": "{percent}% 折扣，有效期至 {date}，适用于至少 {days} 天的租车。",
+    "noRecipients": "没有收件人：请放宽筛选条件。",
+    "sent": "{count, plural, other {已向 # 位客户发送邮件}}（优惠码 {code}）",
+    "skipped": "{count, plural, other {# 封邮件未发送：未配置邮件发送}}",
+    "failed": "{count, plural, other {# 封邮件发送失败}}",
+    "historyTitle": "已发送的活动",
+    "noCampaign": "暂无活动",
+    "noCampaignBody": "已发送的活动及其点击和预订将显示在这里。",
+    "colDate": "日期",
+    "colCode": "优惠码",
+    "colSent": "已发送",
+    "colClicked": "已激活",
+    "colUsed": "已使用",
+    "colAuthor": "发送人"
   }
 }

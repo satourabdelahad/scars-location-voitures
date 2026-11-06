@@ -264,7 +264,7 @@ const T: Record<Lang, Record<BaseKey, Tpl>> = {
 
 
 /** Invitation d'un client ajouté par l'équipe, et suivi d'un prospect envoyé au client. */
-const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
+const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey | Key3>, Tpl>> = {
   fr: {
     manager_password_set: {
       subject: "Votre mot de passe {{site}} a été changé",
@@ -537,7 +537,256 @@ const T2: Record<Lang, Record<Exclude<TemplateKey, BaseKey>, Tpl>> = {
   },
 };
 
+/** Agences : voiture associée à une agence, gestionnaire rattaché à une agence ; email marketing des clients. */
+type Key3 = "car_agency_assigned" | "manager_agency_joined" | "marketing_promotion";
+const T3: Record<Lang, Record<Key3, Tpl>> = {
+  fr: {
+    car_agency_assigned: {
+      subject: "{{agence}} : {{nombre_voitures}} voiture(s) associée(s) à votre agence",
+      html: `<h2>Bonjour {{destinataire}},</h2>
+<p>{{ajoute_par}} vient d'associer {{nombre_voitures}} voiture(s) à l'agence <strong>{{agence}}</strong> :</p>
+<p>{{voitures}}</p>
+<p>{{bouton_agence}}</p>
+<p>L'équipe {{site}}</p>`,
+    },
+    manager_agency_joined: {
+      subject: "{{prenom}} {{nom}} rejoint l'agence {{agence}}",
+      html: `<h2>Bonjour {{destinataire}},</h2>
+<p>{{ajoute_par}} vient de rattacher <strong>{{civilite}} {{prenom}} {{nom}}</strong> à l'agence <strong>{{agence}}</strong>.</p>
+<p>Coordonnées : {{email}} · {{telephone}}</p>
+<p>{{bouton_agence}}</p>
+<p>L'équipe {{site}}</p>`,
+    },
+    marketing_promotion: {
+      subject: "{{prenom}}, -{{remise}} sur votre prochaine location {{site}}",
+      html: `<h2>Bonjour {{civilite}} {{prenom}} {{nom}},</h2>
+<p>{{message}}</p>
+<p>Nous vous offrons <strong>{{remise}} de réduction</strong> sur votre prochaine location (à partir de {{jours_min}} jour(s)), valable jusqu'au {{date_fin}}.</p>
+<p>Cliquez sur le bouton : le code <strong>{{code_promo}}</strong> est ajouté à votre compte et appliqué à votre réservation.</p>
+<p>{{bouton_promo}}</p>
+<p>À très vite sur la route,<br>L'équipe {{site}}</p>`,
+    },
+  },
+  en: {
+    car_agency_assigned: {
+      subject: "{{agence}}: {{nombre_voitures}} car(s) added to your branch",
+      html: `<h2>Hello {{destinataire}},</h2>
+<p>{{ajoute_par}} has just added {{nombre_voitures}} car(s) to the <strong>{{agence}}</strong> branch:</p>
+<p>{{voitures}}</p>
+<p>{{bouton_agence}}</p>
+<p>The {{site}} team</p>`,
+    },
+    manager_agency_joined: {
+      subject: "{{prenom}} {{nom}} joins the {{agence}} branch",
+      html: `<h2>Hello {{destinataire}},</h2>
+<p>{{ajoute_par}} has just assigned <strong>{{prenom}} {{nom}}</strong> to the <strong>{{agence}}</strong> branch.</p>
+<p>Contact: {{email}} · {{telephone}}</p>
+<p>{{bouton_agence}}</p>
+<p>The {{site}} team</p>`,
+    },
+    marketing_promotion: {
+      subject: "{{prenom}}, {{remise}} off your next {{site}} rental",
+      html: `<h2>Hello {{prenom}} {{nom}},</h2>
+<p>{{message}}</p>
+<p>Enjoy <strong>{{remise}} off</strong> your next rental (from {{jours_min}} day(s)), valid until {{date_fin}}.</p>
+<p>Click the button: the code <strong>{{code_promo}}</strong> is added to your account and applied to your booking.</p>
+<p>{{bouton_promo}}</p>
+<p>See you on the road,<br>The {{site}} team</p>`,
+    },
+  },
+  es: {
+    car_agency_assigned: {
+      subject: "{{agence}}: {{nombre_voitures}} coche(s) asociado(s) a su agencia",
+      html: `<h2>Hola {{destinataire}}:</h2>
+<p>{{ajoute_par}} acaba de asociar {{nombre_voitures}} coche(s) a la agencia <strong>{{agence}}</strong>:</p>
+<p>{{voitures}}</p>
+<p>{{bouton_agence}}</p>
+<p>El equipo de {{site}}</p>`,
+    },
+    manager_agency_joined: {
+      subject: "{{prenom}} {{nom}} se une a la agencia {{agence}}",
+      html: `<h2>Hola {{destinataire}}:</h2>
+<p>{{ajoute_par}} acaba de asignar a <strong>{{prenom}} {{nom}}</strong> a la agencia <strong>{{agence}}</strong>.</p>
+<p>Contacto: {{email}} · {{telephone}}</p>
+<p>{{bouton_agence}}</p>
+<p>El equipo de {{site}}</p>`,
+    },
+    marketing_promotion: {
+      subject: "{{prenom}}, un {{remise}} de descuento en su próximo alquiler {{site}}",
+      html: `<h2>Hola {{prenom}} {{nom}}:</h2>
+<p>{{message}}</p>
+<p>Le ofrecemos un <strong>{{remise}} de descuento</strong> en su próximo alquiler (a partir de {{jours_min}} día(s)), válido hasta el {{date_fin}}.</p>
+<p>Pulse el botón: el código <strong>{{code_promo}}</strong> se añade a su cuenta y se aplica a su reserva.</p>
+<p>{{bouton_promo}}</p>
+<p>Hasta pronto en la carretera,<br>El equipo de {{site}}</p>`,
+    },
+  },
+  de: {
+    car_agency_assigned: {
+      subject: "{{agence}}: {{nombre_voitures}} Fahrzeug(e) Ihrer Filiale zugeordnet",
+      html: `<h2>Hallo {{destinataire}},</h2>
+<p>{{ajoute_par}} hat soeben {{nombre_voitures}} Fahrzeug(e) der Filiale <strong>{{agence}}</strong> zugeordnet:</p>
+<p>{{voitures}}</p>
+<p>{{bouton_agence}}</p>
+<p>Ihr {{site}}-Team</p>`,
+    },
+    manager_agency_joined: {
+      subject: "{{prenom}} {{nom}} verstärkt die Filiale {{agence}}",
+      html: `<h2>Hallo {{destinataire}},</h2>
+<p>{{ajoute_par}} hat <strong>{{prenom}} {{nom}}</strong> soeben der Filiale <strong>{{agence}}</strong> zugeordnet.</p>
+<p>Kontakt: {{email}} · {{telephone}}</p>
+<p>{{bouton_agence}}</p>
+<p>Ihr {{site}}-Team</p>`,
+    },
+    marketing_promotion: {
+      subject: "{{prenom}}, {{remise}} Rabatt auf Ihre nächste Miete bei {{site}}",
+      html: `<h2>Hallo {{prenom}} {{nom}},</h2>
+<p>{{message}}</p>
+<p>Wir schenken Ihnen <strong>{{remise}} Rabatt</strong> auf Ihre nächste Miete (ab {{jours_min}} Tag(en)), gültig bis {{date_fin}}.</p>
+<p>Klicken Sie auf die Schaltfläche: Der Code <strong>{{code_promo}}</strong> wird Ihrem Konto hinzugefügt und bei Ihrer Buchung angewendet.</p>
+<p>{{bouton_promo}}</p>
+<p>Bis bald auf der Straße,<br>Ihr {{site}}-Team</p>`,
+    },
+  },
+  ar: {
+    car_agency_assigned: {
+      subject: "{{agence}}: تم ربط {{nombre_voitures}} سيارة بوكالتك",
+      html: rtl(`<h2>مرحبًا {{destinataire}}،</h2>
+<p>قام {{ajoute_par}} بربط {{nombre_voitures}} سيارة بوكالة <strong>{{agence}}</strong>:</p>
+<p>{{voitures}}</p>
+<p>{{bouton_agence}}</p>
+<p>فريق {{site}}</p>`),
+    },
+    manager_agency_joined: {
+      subject: "{{prenom}} {{nom}} ينضم إلى وكالة {{agence}}",
+      html: rtl(`<h2>مرحبًا {{destinataire}}،</h2>
+<p>قام {{ajoute_par}} بإلحاق <strong>{{prenom}} {{nom}}</strong> بوكالة <strong>{{agence}}</strong>.</p>
+<p>بيانات الاتصال: {{email}} · {{telephone}}</p>
+<p>{{bouton_agence}}</p>
+<p>فريق {{site}}</p>`),
+    },
+    marketing_promotion: {
+      subject: "{{prenom}}، تخفيض {{remise}} على كرائك القادم مع {{site}}",
+      html: rtl(`<h2>مرحبًا {{prenom}} {{nom}}،</h2>
+<p>{{message}}</p>
+<p>نقدّم لك <strong>تخفيضًا بنسبة {{remise}}</strong> على كرائك القادم (ابتداءً من {{jours_min}} يوم)، صالحًا حتى {{date_fin}}.</p>
+<p>اضغط على الزر: يُضاف الرمز <strong>{{code_promo}}</strong> إلى حسابك ويُطبَّق على حجزك.</p>
+<p>{{bouton_promo}}</p>
+<p>إلى اللقاء على الطريق،<br>فريق {{site}}</p>`),
+    },
+  },
+  ary: {
+    car_agency_assigned: {
+      subject: "{{agence}}: تزادو {{nombre_voitures}} طوموبيل للوكالة ديالك",
+      html: rtl(`<h2>السلام {{destinataire}}،</h2>
+<p>{{ajoute_par}} زاد {{nombre_voitures}} طوموبيل للوكالة ديال <strong>{{agence}}</strong>:</p>
+<p>{{voitures}}</p>
+<p>{{bouton_agence}}</p>
+<p>الفريق ديال {{site}}</p>`),
+    },
+    manager_agency_joined: {
+      subject: "{{prenom}} {{nom}} دخل للوكالة ديال {{agence}}",
+      html: rtl(`<h2>السلام {{destinataire}}،</h2>
+<p>{{ajoute_par}} زاد <strong>{{prenom}} {{nom}}</strong> للوكالة ديال <strong>{{agence}}</strong>.</p>
+<p>باش تتواصل معاه: {{email}} · {{telephone}}</p>
+<p>{{bouton_agence}}</p>
+<p>الفريق ديال {{site}}</p>`),
+    },
+    marketing_promotion: {
+      subject: "{{prenom}}، عندك {{remise}} ديال التخفيض فالكرا الجاي مع {{site}}",
+      html: rtl(`<h2>السلام {{prenom}} {{nom}}،</h2>
+<p>{{message}}</p>
+<p>عطيناك <strong>{{remise}} ديال التخفيض</strong> فالكرا الجاي ديالك (من {{jours_min}} نهار ولفوق)، صالح حتى لـ {{date_fin}}.</p>
+<p>كليكي على البوطونة: الكود <strong>{{code_promo}}</strong> كيتزاد للحساب ديالك وكيتطبق على الحجز.</p>
+<p>{{bouton_promo}}</p>
+<p>نتشوفو فالطريق،<br>الفريق ديال {{site}}</p>`),
+    },
+  },
+  ja: {
+    car_agency_assigned: {
+      subject: "{{agence}}：{{nombre_voitures}}台の車両が店舗に追加されました",
+      html: `<h2>{{destinataire}} 様</h2>
+<p>{{ajoute_par}} が <strong>{{agence}}</strong> 店舗に {{nombre_voitures}} 台の車両を追加しました。</p>
+<p>{{voitures}}</p>
+<p>{{bouton_agence}}</p>
+<p>{{site}} チーム</p>`,
+    },
+    manager_agency_joined: {
+      subject: "{{nom}} {{prenom}} が {{agence}} 店舗に加わりました",
+      html: `<h2>{{destinataire}} 様</h2>
+<p>{{ajoute_par}} が <strong>{{nom}} {{prenom}}</strong> を <strong>{{agence}}</strong> 店舗に配属しました。</p>
+<p>連絡先：{{email}} · {{telephone}}</p>
+<p>{{bouton_agence}}</p>
+<p>{{site}} チーム</p>`,
+    },
+    marketing_promotion: {
+      subject: "{{prenom}} 様、次回の {{site}} レンタルが {{remise}} オフ",
+      html: `<h2>{{nom}} {{prenom}} 様</h2>
+<p>{{message}}</p>
+<p>次回のレンタル（{{jours_min}} 日以上）が <strong>{{remise}} オフ</strong>になります。有効期限：{{date_fin}}。</p>
+<p>ボタンをクリックすると、コード <strong>{{code_promo}}</strong> がアカウントに追加され、予約に適用されます。</p>
+<p>{{bouton_promo}}</p>
+<p>{{site}} チーム</p>`,
+    },
+  },
+  zh: {
+    car_agency_assigned: {
+      subject: "{{agence}}：{{nombre_voitures}} 辆车已关联到您的门店",
+      html: `<h2>{{destinataire}}，您好：</h2>
+<p>{{ajoute_par}} 刚刚将 {{nombre_voitures}} 辆车关联到 <strong>{{agence}}</strong> 门店：</p>
+<p>{{voitures}}</p>
+<p>{{bouton_agence}}</p>
+<p>{{site}} 团队</p>`,
+    },
+    manager_agency_joined: {
+      subject: "{{nom}}{{prenom}} 加入 {{agence}} 门店",
+      html: `<h2>{{destinataire}}，您好：</h2>
+<p>{{ajoute_par}} 刚刚将 <strong>{{nom}}{{prenom}}</strong> 分配到 <strong>{{agence}}</strong> 门店。</p>
+<p>联系方式：{{email}} · {{telephone}}</p>
+<p>{{bouton_agence}}</p>
+<p>{{site}} 团队</p>`,
+    },
+    marketing_promotion: {
+      subject: "{{prenom}}，您下次在 {{site}} 租车可享 {{remise}} 优惠",
+      html: `<h2>{{nom}}{{prenom}}，您好：</h2>
+<p>{{message}}</p>
+<p>您下次租车（{{jours_min}} 天起）可享 <strong>{{remise}} 优惠</strong>，有效期至 {{date_fin}}。</p>
+<p>点击按钮：优惠码 <strong>{{code_promo}}</strong> 将添加到您的账户并应用于您的预订。</p>
+<p>{{bouton_promo}}</p>
+<p>{{site}} 团队</p>`,
+    },
+  },
+  ko: {
+    car_agency_assigned: {
+      subject: "{{agence}}: 차량 {{nombre_voitures}}대가 지점에 배정되었습니다",
+      html: `<h2>{{destinataire}}님, 안녕하세요.</h2>
+<p>{{ajoute_par}}님이 <strong>{{agence}}</strong> 지점에 차량 {{nombre_voitures}}대를 배정했습니다.</p>
+<p>{{voitures}}</p>
+<p>{{bouton_agence}}</p>
+<p>{{site}} 팀</p>`,
+    },
+    manager_agency_joined: {
+      subject: "{{nom}}{{prenom}}님이 {{agence}} 지점에 합류합니다",
+      html: `<h2>{{destinataire}}님, 안녕하세요.</h2>
+<p>{{ajoute_par}}님이 <strong>{{nom}}{{prenom}}</strong>님을 <strong>{{agence}}</strong> 지점에 배정했습니다.</p>
+<p>연락처: {{email}} · {{telephone}}</p>
+<p>{{bouton_agence}}</p>
+<p>{{site}} 팀</p>`,
+    },
+    marketing_promotion: {
+      subject: "{{prenom}}님, 다음 {{site}} 렌트 {{remise}} 할인",
+      html: `<h2>{{nom}}{{prenom}}님, 안녕하세요.</h2>
+<p>{{message}}</p>
+<p>다음 렌트({{jours_min}}일 이상)에 <strong>{{remise}} 할인</strong>을 드립니다. 유효기간: {{date_fin}}까지.</p>
+<p>버튼을 누르면 코드 <strong>{{code_promo}}</strong>가 계정에 추가되어 예약에 적용됩니다.</p>
+<p>{{bouton_promo}}</p>
+<p>{{site}} 팀</p>`,
+    },
+  },
+};
+
 export function defaultTemplate(key: TemplateKey, locale: string): Tpl {
   const l: Lang = locale in T ? (locale as Lang) : "fr";
+  if (key === "car_agency_assigned" || key === "manager_agency_joined" || key === "marketing_promotion") return T3[l][key];
   return key === "client_invite" || key === "prospect_followup" || key === "manager_password_set" ? T2[l][key] : T[l][key];
 }

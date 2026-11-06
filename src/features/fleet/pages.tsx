@@ -17,6 +17,7 @@ import { RentalsTab } from "@/features/managers/rentals-tab";
 import { RentalsChart } from "@/features/my/rentals-chart";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import { FleetTable } from "./fleet-table";
+import { CarPromotion } from "./car-promotion";
 import { CarForm } from "./car-form";
 import { DeactivateCarButton } from "./deactivate-car";
 import { RepairButton } from "./repair-button";
@@ -95,7 +96,7 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
   const row = fleet.find((f) => f.id === car.id);
   const header = (actions?: React.ReactNode) => (
     <CarHeader
-      car={{ brand: car.brand, model: car.model, year: car.year, plateNumber: car.plateNumber, category: car.category, colorHex: car.colorHex, dailyPrice: car.dailyPrice, mileage: car.mileage, status: car.status, cover: car.images[0]?.url ?? null, city: car.agency.city, agency: car.agency.name }}
+      car={{ brand: car.brand, model: car.model, year: car.year, plateNumber: car.plateNumber, category: car.category, colorHex: car.colorHex, dailyPrice: car.dailyPrice, promoPercent: car.promoPercent, promoStartsOn: car.promoStartsOn, promoEndsOn: car.promoEndsOn, mileage: car.mileage, status: car.status, cover: car.images[0]?.url ?? null, city: car.agency.city, agency: car.agency.name }}
       summary={summary}
       onRoad={row?.onRoad ?? false}
       locale={locale}
@@ -128,6 +129,7 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
         <CarForm
           stats={statsTab}
           history={historyTab}
+          promotion={<CarPromotion carId={car.id} dailyPrice={car.dailyPrice} initial={{ promoPercent: car.promoPercent, promoStartsOn: car.promoStartsOn, promoEndsOn: car.promoEndsOn }} frozen={false} />}
           base={base}
           carId={car.id}
           agencies={await allAgencies()}

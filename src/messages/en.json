@@ -92,7 +92,15 @@
     "trust3": "Free cancellation up to 48 h before",
     "ctaTitle": "Family trip or business travel?",
     "ctaBody": "Message us on WhatsApp and an advisor will reply in your language.",
-    "ctaButton": "Message on WhatsApp"
+    "ctaButton": "Message on WhatsApp",
+    "browseBy": "Browse the fleet",
+    "by_category": "Body type",
+    "by_city": "City",
+    "by_agency": "Branch",
+    "availableOnly": "Available now ({count})",
+    "allFilter": "All",
+    "noCarsHere": "No car for this choice at the moment.",
+    "seeAllFiltered": "See all these cars"
   },
   "Cars": {
     "title": "Our cars",
@@ -128,7 +136,13 @@
     "unavailable": "Already booked on these dates",
     "available": "Available on these dates",
     "description": "Description",
-    "similar": "Similar cars"
+    "similar": "Similar cars",
+    "busyUntil": "Rented until {date}",
+    "availableNow": "Available",
+    "promoUntil": "until {date}",
+    "anyAgency": "All branches",
+    "availableNowFilter": "Available today",
+    "promoActivated": "Your discount code is active: it will be applied automatically to your booking."
   },
   "Booking": {
     "title": "Book {car}",
@@ -163,7 +177,26 @@
     "promoApply": "Apply",
     "promoInvalid": "This code isn't valid for this rental.",
     "discount": "Discount",
-    "promoRemove": "Remove code"
+    "promoRemove": "Remove code",
+    "staffCannotBook": "Bookings are made with a client account. Sign out of the team area to book.",
+    "stepIdentity": "Your details",
+    "identityHint": "Sign in with one click, or book without an account with just the essentials.",
+    "haveAccount": "Already a client?",
+    "loginWithPassword": "Sign in with my email and password",
+    "orNoAccount": "or book without an account",
+    "guestLastName": "Last name",
+    "guestFirstName": "First name",
+    "guestCity": "City",
+    "guestEmail": "Email",
+    "guestEmailHint": "To receive the confirmation and follow your booking.",
+    "guestPhone": "Phone",
+    "guestWhatsapp": "WhatsApp",
+    "driverOptionalHint": "Optional: you can show your licence at the branch.",
+    "carPromo": "Promotion -{percent}%",
+    "accountExists": "An account already exists with these details: sign in to book.",
+    "guestInvited": "We have emailed you a link to choose your password and follow your booking online.",
+    "guestCallback": "Our team will call you at {phone} to confirm.",
+    "backToCars": "See other cars"
   },
   "Extras": {
     "child_seat": "Child seat",
@@ -272,7 +305,8 @@
     "security": "Security",
     "administration": "Email templates",
     "clients": "Customers",
-    "agencies": "My branches"
+    "agencies": "My branches",
+    "marketing": "Email Marketing"
   },
   "Managers": {
     "title": "Managers",
@@ -426,7 +460,18 @@
     "readOnlySubtitle": "Read only: only the administrator manages managers.",
     "byAgency": "Assign by branch",
     "searchAgency": "Search a branch…",
-    "allAgencies": "All branches"
+    "allAgencies": "All branches",
+    "save": "Save",
+    "agenciesTitle": "Manager's branches",
+    "agenciesHint": "Assign the manager to one or more branches. The managers of the added branches are notified by email.",
+    "agenciesHintReadOnly": "Branches this manager runs or is assigned to.",
+    "noAgencyChosen": "No branch",
+    "noAgencyLinked": "No branch yet.",
+    "agencyResponsible": "Head",
+    "agencyInactive": "Deactivated",
+    "responsibleNote": "A branch's head is changed on the branch page (Head tab).",
+    "agenciesSaved": "Branches saved",
+    "agenciesSavedMailed": "Branches saved: {count, plural, one {# manager notified} other {# managers notified}} by email"
   },
   "Documents": {
     "cin_front": "National ID card (CINE), front",
@@ -607,8 +652,31 @@
       "activate": "{count, plural, one {# car back in service} other {# cars back in service}}",
       "repair": "{count, plural, one {# car in repair} other {# cars in repair}}",
       "assign": "{count, plural, one {# car assigned} other {# cars assigned}}",
-      "agency": "{count, plural, one {# car moved to the branch} other {# cars moved to the branch}}"
-    }
+      "agency": "{count, plural, one {# car moved to the branch} other {# cars moved to the branch}}",
+      "promo": "{count, plural, one {Promotion updated on # car} other {Promotion updated on # cars}}"
+    },
+    "promoColumn": "Promotion",
+    "promoState": {
+      "active": "running",
+      "scheduled": "upcoming",
+      "ended": "ended",
+      "none": "none"
+    },
+    "bulkPromo": "Add a promotion",
+    "bulkPromoTitle": "{count, plural, one {Promotion on # car} other {Promotion on # cars}}",
+    "promoApplyOption": "Apply a promotion",
+    "promoRemove": "Remove the promotion",
+    "promoPercent": "Discount (%)",
+    "promoStartsOn": "Start",
+    "promoEndsOn": "End",
+    "promoHint": "The discount applies to the daily price, on the website and at booking, for rentals starting during the period. Without dates, it stays active until removed.",
+    "tabPromotion": "Promotion",
+    "promoTabHint": "Percentage discount on this car's daily price.",
+    "promoPercentError": "Enter a discount between 1 and 90%.",
+    "promoSaved": "Promotion saved",
+    "promoRemoved": "Promotion removed",
+    "promoPreview": "Daily price: {before} → {after}",
+    "promoNoEnd": "no end date"
   },
   "Reservations": {
     "title": "Bookings",
@@ -794,7 +862,9 @@
     "tplBtnClientInvite": "Activate my account",
     "tplBtnCars": "See our cars",
     "sentToClientNote": "Summary sent to the customer ({email}).",
-    "tplBtnLogin": "Sign in"
+    "tplBtnLogin": "Sign in",
+    "tplBtnAgency": "View the branch",
+    "tplBtnPromo": "Get my discount"
   },
   "Activity": {
     "session_login": "Signed in",
@@ -867,7 +937,11 @@
     "car_bulk_repair": "Bulk action: {name} car(s) in repair",
     "car_bulk_assign": "Bulk action: {name} car(s) assigned",
     "car_bulk_agency": "Bulk action: {name} car(s) moved to a branch",
-    "security_profile_update": "Profile updated"
+    "security_profile_update": "Profile updated",
+    "manager_agencies": "Manager's branches changed: {name}",
+    "car_promo": "Promotion changed: {car}",
+    "car_bulk_promo": "Bulk action: promotion on {name} car(s)",
+    "marketing_send": "Email campaign sent: {name}"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -1120,6 +1194,21 @@
         "name": "New password",
         "when": "When the administrator changes a manager's password",
         "recipients": "Sent to the manager, with their new password."
+      },
+      "car_agency_assigned": {
+        "name": "Car added to a branch",
+        "when": "When one or more cars are added to a branch",
+        "recipients": "Sent to all the branch's managers (head and assigned managers)."
+      },
+      "manager_agency_joined": {
+        "name": "New branch manager",
+        "when": "When a manager is assigned to one or more branches",
+        "recipients": "Sent to the managers of each branch concerned."
+      },
+      "marketing_promotion": {
+        "name": "Email marketing: discount code",
+        "when": "When a campaign is sent from Email Marketing",
+        "recipients": "Sent to the filtered clients; the button assigns the code to the client."
       }
     },
     "vars": {
@@ -1345,6 +1434,52 @@
     "managerMissing": "Not in the list? Add them first as a new manager, then come back and choose them here.",
     "addManager": "Add a manager",
     "fixInfosTab": "First complete the “Information” tab (phone, WhatsApp…).",
-    "fixManagerTab": "First choose the person in charge in the “Manager in charge” tab."
+    "fixManagerTab": "First choose the person in charge in the “Manager in charge” tab.",
+    "memberBadge": "Assigned",
+    "addManagerHint": "To assign a manager to this branch, open their profile, “Assignment and cars” tab."
+  },
+  "Marketing": {
+    "title": "Email Marketing",
+    "subtitle": "Send a discount code to clients chosen by city and number of days rented.",
+    "audienceTitle": "Target clients",
+    "audienceHint": "Active clients with an email address. Untick a client to exclude them.",
+    "cities": "Cities",
+    "noCity": "City not provided",
+    "minDays": "Days rented (min.)",
+    "maxDays": "Days rented (max.)",
+    "search": "Search a client (name, email, city)",
+    "recipientsCount": "{count, plural, one {# recipient} other {# recipients}} out of {total}",
+    "includeAll": "Tick all again",
+    "noMatch": "No client matches these filters.",
+    "daysRented": "{count, plural, =0 {No rental} one {# day rented} other {# days rented}}",
+    "composeTitle": "Discount code",
+    "composeHint": "A unique code is created for this campaign, reserved for its recipients.",
+    "campaignName": "Campaign name",
+    "campaignNameHint": "Also used as the start of the code (e.g. WINTER-7KQ2).",
+    "campaignNamePlaceholder": "Winter 2026",
+    "percent": "Discount (%)",
+    "endsOn": "Valid until",
+    "minRental": "Min. length (days)",
+    "message": "Message",
+    "messageHint": "Inserted in the body of the email. The rest of the text is edited in Email templates.",
+    "howItWorks": "When the client clicks the button in the email, the code is added to their account and applied automatically to their next booking.",
+    "preview": "Preview",
+    "previewHint": "Example with a sample client, in the interface language. Each client receives the email in their own language.",
+    "send": "{count, plural, =0 {Send} one {Send to # client} other {Send to # clients}}",
+    "confirmTitle": "{count, plural, one {Send the campaign to # client?} other {Send the campaign to # clients?}}",
+    "confirmBody": "{percent}% off, valid until {date}, for a rental of at least {days} day(s).",
+    "noRecipients": "No recipient: widen the filters.",
+    "sent": "{count, plural, one {Email sent to # client} other {Emails sent to # clients}} (code {code})",
+    "skipped": "{count, plural, one {# email not sent: email sending is not configured} other {# emails not sent: email sending is not configured}}",
+    "failed": "{count, plural, one {# email failed} other {# emails failed}}",
+    "historyTitle": "Sent campaigns",
+    "noCampaign": "No campaign yet",
+    "noCampaignBody": "Sent campaigns will appear here with their clicks and bookings.",
+    "colDate": "Date",
+    "colCode": "Code",
+    "colSent": "Sent",
+    "colClicked": "Codes activated",
+    "colUsed": "Used",
+    "colAuthor": "Sent by"
   }
 }
