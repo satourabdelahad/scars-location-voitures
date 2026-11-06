@@ -157,5 +157,6 @@ export const agencySchema = z.object({
   instagramUrl: optionalUrl,
   linkedinUrl: optionalUrl,
   xUrl: optionalUrl,
+  tiktokUrl: optionalUrl,
 });
 export type AgencyInput = z.infer<typeof agencySchema>;

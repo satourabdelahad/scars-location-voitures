@@ -308,7 +308,8 @@
     "clients": "Kunden",
     "agencies": "Meine Filialen",
     "marketing": "E-Mail-Marketing",
-    "site": "Öffentliche Website"
+    "site": "Öffentliche Website",
+    "documentation": "Dokumentation"
   },
   "Managers": {
     "title": "Disponenten",
@@ -699,7 +700,20 @@
     "promoRemoved": "Aktion entfernt",
     "promoPreview": "Tagespreis: {before} → {after}",
     "promoNoEnd": "ohne Enddatum",
-    "outOfScopeBanner": "Dieses Auto liegt außerhalb Ihres Bereichs: Sie können es ansehen, aber nicht ändern."
+    "outOfScopeBanner": "Dieses Auto liegt außerhalb Ihres Bereichs: Sie können es ansehen, aber nicht ändern.",
+    "extraAgencies": "Weitere Agenturen",
+    "extraAgenciesHint": "0 oder mehrere Agenturen, die das Auto mitverwalten. Die Hauptagentur bleibt der Abholort.",
+    "carResponsibles": "Verantwortliche des Autos",
+    "carResponsiblesHint": "0 oder mehrere Verantwortliche: Sie bestätigen die Buchungen dieses Autos, zusammen mit dem Administrator und den Verantwortlichen der Agentur.",
+    "noCarResponsible": "Kein Verantwortlicher: Die Verantwortlichen der Agentur bestätigen die Buchungen.",
+    "someCarResponsibles": "{count, plural, one {# Verantwortlicher} other {# Verantwortliche}}",
+    "assignedCars": "Zugewiesen",
+    "allCarsView": "Alle ({count})",
+    "assignedCarsView": "Zugewiesen ({count})",
+    "carsAssignedToAgency": "{count, plural, one {# Auto der Agentur zugewiesen} other {# Autos der Agentur zugewiesen}}",
+    "carsRemovedFromAgency": "{count, plural, one {# Auto aus der Agentur entfernt} other {# Autos aus der Agentur entfernt}}",
+    "assignToAgency": "Der Agentur zuweisen",
+    "removeFromAgency": "Aus der Agentur entfernen"
   },
   "Reservations": {
     "title": "Buchungen",
@@ -1476,7 +1490,7 @@
     "tabInfos": "Informationen",
     "tabManager": "Verantwortliche Person",
     "tabManagers": "{count, plural, =0 {Manager} other {Manager (#)}}",
-    "tabCars": "{count, plural, =0 {Autos} other {Autos (#)}}",
+    "tabCars": "Autos ({count})",
     "responsible": "Verantwortlich",
     "noManagers": "Kein Manager",
     "noManagersBody": "Kein Manager ist mit dieser Filiale verbunden (verantwortlich, zugewiesene Autos oder Regel).",
@@ -1512,13 +1526,16 @@
     "bulkSkipped": "{count, plural, one {# Agentur übersprungen (Autos noch im Einsatz)} other {# Agenturen übersprungen (Autos noch im Einsatz)}}",
     "bulkDeactivateTitle": "{count, plural, one {# Agentur deaktivieren} other {# Agenturen deaktivieren}}",
     "pickerAll": "Alle",
-    "pickerSelected": "Ausgewählt ({count})",
     "responsiblesSaved": "Verantwortliche gespeichert",
     "managersSaved": "Verwalter gespeichert",
     "responsiblesHint": "Wählen Sie 0, 1 oder mehrere Verantwortliche. Sie bestätigen die Buchungen der Agentur und sind automatisch Mitglieder.",
     "membersHint": "Wählen Sie die Verwalter dieser Agentur. Ein Verwalter mit Agenturen darf nur die Autos dieser Agenturen bearbeiten.",
     "membersLockedHint": "Verantwortliche und der Administrator gehören immer zur Agentur.",
-    "tabResponsibles": "{count, plural, =0 {Verantwortlich} one {Verantwortlich} other {Verantwortliche (#)}}"
+    "tabResponsibles": "Verantwortliche ({count})",
+    "pickerAssigned": "Zugewiesen ({count})",
+    "roleColumn": "Rolle",
+    "tabResponsiblesPlain": "Verantwortliche",
+    "tiktokUrl": "TikTok-Seite"
   },
   "Marketing": {
     "title": "E-Mail-Marketing",
@@ -1613,5 +1630,12 @@
     "step3Body": "Melden Sie sich an oder geben Sie das Nötigste an: Name, Stadt und Telefon.",
     "step4": "Die Schlüssel",
     "step4Body": "Die Filiale bestätigt, dann holen Sie das Fahrzeug ab oder wir liefern es."
+  },
+  "Docs": {
+    "title": "Dokumentation",
+    "subtitle": "Funktionale Anleitung der Anwendung: öffentliche Website, Backoffice und Geschäftsregeln.",
+    "search": "In der Dokumentation suchen…",
+    "toc": "Inhalt",
+    "noResult": "Kein Abschnitt passt zu Ihrer Suche."
   }
 }

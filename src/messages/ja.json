@@ -308,7 +308,8 @@
     "clients": "顧客",
     "agencies": "店舗一覧",
     "marketing": "メールマーケティング",
-    "site": "公開サイト"
+    "site": "公開サイト",
+    "documentation": "ドキュメント"
   },
   "Managers": {
     "title": "マネージャー",
@@ -699,7 +700,20 @@
     "promoRemoved": "キャンペーンを解除しました",
     "promoPreview": "1日料金：{before} → {after}",
     "promoNoEnd": "終了日なし",
-    "outOfScopeBanner": "この車両は担当範囲外です。閲覧はできますが変更はできません。"
+    "outOfScopeBanner": "この車両は担当範囲外です。閲覧はできますが変更はできません。",
+    "extraAgencies": "追加の店舗",
+    "extraAgenciesHint": "車両の管理を共有する店舗（0件以上）。受け取り場所はメイン店舗のままです。",
+    "carResponsibles": "車両の責任者",
+    "carResponsiblesHint": "責任者（0人以上）：管理者と店舗の責任者とともに、この車両の予約を承認します。",
+    "noCarResponsible": "責任者なし：店舗の責任者が予約を承認します。",
+    "someCarResponsibles": "責任者{count}人",
+    "assignedCars": "割り当て済み",
+    "allCarsView": "すべて（{count}）",
+    "assignedCarsView": "割り当て済み（{count}）",
+    "carsAssignedToAgency": "{count}台を店舗に割り当てました",
+    "carsRemovedFromAgency": "{count}台を店舗から外しました",
+    "assignToAgency": "店舗に割り当て",
+    "removeFromAgency": "店舗から外す"
   },
   "Reservations": {
     "title": "予約",
@@ -1512,13 +1526,16 @@
     "bulkSkipped": "{count}件の店舗はスキップされました（稼働中の車両あり）",
     "bulkDeactivateTitle": "{count}件の店舗を無効にする",
     "pickerAll": "すべて",
-    "pickerSelected": "選択中（{count}）",
     "responsiblesSaved": "責任者を保存しました",
     "managersSaved": "担当者を保存しました",
     "responsiblesHint": "責任者を0人、1人、または複数選択してください。店舗の予約を承認し、自動的にメンバーになります。",
     "membersHint": "この店舗に所属する担当者を選択してください。店舗に所属する担当者は、その店舗の車両のみ操作できます。",
     "membersLockedHint": "責任者と管理者は常に店舗に所属します。",
-    "tabResponsibles": "{count, plural, =0 {責任者} one {責任者} other {責任者（#）}}"
+    "tabResponsibles": "責任者（{count}）",
+    "pickerAssigned": "割り当て済み（{count}）",
+    "roleColumn": "役割",
+    "tabResponsiblesPlain": "責任者",
+    "tiktokUrl": "TikTokページ"
   },
   "Marketing": {
     "title": "メールマーケティング",
@@ -1613,5 +1630,12 @@
     "step3Body": "ログインするか、名前・都市・電話番号だけを入力します。",
     "step4": "鍵の受け取り",
     "step4Body": "店舗が確定した後、車を受け取るか配車をお待ちください。"
+  },
+  "Docs": {
+    "title": "ドキュメント",
+    "subtitle": "アプリの機能ガイド：公開サイト、バックオフィス、運用ルール。",
+    "search": "ドキュメントを検索…",
+    "toc": "目次",
+    "noResult": "検索に一致するセクションはありません。"
   }
 }

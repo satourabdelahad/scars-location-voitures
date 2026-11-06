@@ -209,6 +209,7 @@ export const agencies = pgTable("agencies", {
   instagramUrl: varchar("instagram_url", { length: 300 }),
   linkedinUrl: varchar("linkedin_url", { length: 300 }),
   xUrl: varchar("x_url", { length: 300 }),
+  tiktokUrl: varchar("tiktok_url", { length: 300 }),
   /** Responsable de l'agence : un compte gestionnaire (ses coordonnées sont recopiées ci-dessous) */
   managerId: uuid("manager_id"),
   managerCivility: civilityEnum("manager_civility"),
@@ -626,6 +627,38 @@ export const carsRelations = relations(cars, ({ one, many }) => ({
 }));
 
 /** Gestionnaires associés à une voiture. Aucune ligne = tous les gestionnaires. */
+/** Agences supplémentaires d'une voiture (0 ou plusieurs) ; l'agence principale reste cars.agency_id. */
+export const carAgencies = pgTable(
+  "car_agencies",
+  {
+    carId: uuid("car_id")
+      .notNull()
+      .references(() => cars.id, { onDelete: "restrict" }),
+    agencyId: integer("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "restrict" }),
+    createdBy: uuid("created_by").references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.carId, t.agencyId] }), index("car_agencies_agency_idx").on(t.agencyId)],
+);
+
+/** Responsables d'une voiture (0 ou plusieurs) : ils valident ses réservations. */
+export const carResponsibles = pgTable(
+  "car_responsibles",
+  {
+    carId: uuid("car_id")
+      .notNull()
+      .references(() => cars.id, { onDelete: "restrict" }),
+    managerId: uuid("manager_id")
+      .notNull()
+      .references(() => managers.id, { onDelete: "restrict" }),
+    createdBy: uuid("created_by").references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.carId, t.managerId] }), index("car_responsibles_manager_idx").on(t.managerId)],
+);
+
 export const carManagers = pgTable(
   "car_managers",
   {

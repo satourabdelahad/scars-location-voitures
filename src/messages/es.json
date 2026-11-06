@@ -308,7 +308,8 @@
     "clients": "Clientes",
     "agencies": "Mis agencias",
     "marketing": "Email Marketing",
-    "site": "Sitio público"
+    "site": "Sitio público",
+    "documentation": "Documentación"
   },
   "Managers": {
     "title": "Gestores",
@@ -699,7 +700,20 @@
     "promoRemoved": "Promoción quitada",
     "promoPreview": "Precio por día: {before} → {after}",
     "promoNoEnd": "sin fecha de fin",
-    "outOfScopeBanner": "Este coche está fuera de su perímetro: puede consultarlo pero no modificarlo."
+    "outOfScopeBanner": "Este coche está fuera de su perímetro: puede consultarlo pero no modificarlo.",
+    "extraAgencies": "Agencias adicionales",
+    "extraAgenciesHint": "0 o varias agencias que comparten la gestión del coche. La agencia principal sigue siendo el lugar de recogida.",
+    "carResponsibles": "Responsables del coche",
+    "carResponsiblesHint": "0 o varios responsables: validan las reservas de este coche, junto con el administrador y los responsables de la agencia.",
+    "noCarResponsible": "Sin responsable: los responsables de la agencia validan las reservas.",
+    "someCarResponsibles": "{count, plural, one {# responsable} other {# responsables}}",
+    "assignedCars": "Asignados",
+    "allCarsView": "Todos ({count})",
+    "assignedCarsView": "Asignados ({count})",
+    "carsAssignedToAgency": "{count, plural, one {# coche asignado a la agencia} other {# coches asignados a la agencia}}",
+    "carsRemovedFromAgency": "{count, plural, one {# coche retirado de la agencia} other {# coches retirados de la agencia}}",
+    "assignToAgency": "Asignar a la agencia",
+    "removeFromAgency": "Retirar de la agencia"
   },
   "Reservations": {
     "title": "Reservas",
@@ -1476,7 +1490,7 @@
     "tabInfos": "Información",
     "tabManager": "Responsable",
     "tabManagers": "{count, plural, =0 {Gestores} other {Gestores (#)}}",
-    "tabCars": "{count, plural, =0 {Coches} other {Coches (#)}}",
+    "tabCars": "Coches ({count})",
     "responsible": "Responsable",
     "noManagers": "Ningún gestor",
     "noManagersBody": "Ningún gestor está vinculado a esta agencia (responsable, coches asignados o regla).",
@@ -1512,13 +1526,16 @@
     "bulkSkipped": "{count, plural, one {# agencia omitida (coches aún en servicio)} other {# agencias omitidas (coches aún en servicio)}}",
     "bulkDeactivateTitle": "{count, plural, one {Desactivar # agencia} other {Desactivar # agencias}}",
     "pickerAll": "Todos",
-    "pickerSelected": "Seleccionados ({count})",
     "responsiblesSaved": "Responsables guardados",
     "managersSaved": "Gestores guardados",
     "responsiblesHint": "Marque 0, 1 o varios responsables. Validan las reservas de la agencia y son miembros automáticamente.",
     "membersHint": "Marque los gestores vinculados a esta agencia. Un gestor vinculado a agencias solo puede actuar sobre los coches de esas agencias.",
     "membersLockedHint": "Los responsables y el administrador siempre forman parte de la agencia.",
-    "tabResponsibles": "{count, plural, =0 {Responsable} one {Responsable} other {Responsables (#)}}"
+    "tabResponsibles": "Responsables ({count})",
+    "pickerAssigned": "Asignados ({count})",
+    "roleColumn": "Rol",
+    "tabResponsiblesPlain": "Responsables",
+    "tiktokUrl": "Página de TikTok"
   },
   "Marketing": {
     "title": "Email Marketing",
@@ -1613,5 +1630,12 @@
     "step3Body": "Inicie sesión o deje lo mínimo: nombre, ciudad y teléfono.",
     "step4": "Las llaves",
     "step4Body": "La agencia confirma y usted recoge el coche o se lo entregamos."
+  },
+  "Docs": {
+    "title": "Documentación",
+    "subtitle": "Guía funcional de la aplicación: sitio público, back-office y reglas de gestión.",
+    "search": "Buscar en la documentación…",
+    "toc": "Índice",
+    "noResult": "Ninguna sección coincide con su búsqueda."
   }
 }

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/db";
-import { managerAgencies, managers, tablePreferences } from "@/db/schema";
+import { carResponsibles, managerAgencies, managers, tablePreferences } from "@/db/schema";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { CarArt } from "@/components/car-art";
@@ -40,7 +40,14 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
     .from(managerAgencies)
     .innerJoin(managers, eq(managers.id, managerAgencies.managerId))
     .where(and(eq(managerAgencies.agencyId, r.pickupAgency.id), eq(managerAgencies.isResponsible, true)));
-  const responsible = heads.length ? heads.map((h) => `${h.firstName} ${h.lastName}`).join(", ") : null;
+  // … et responsables de la voiture.
+  const carHeads = await db
+    .select({ firstName: managers.firstName, lastName: managers.lastName })
+    .from(carResponsibles)
+    .innerJoin(managers, eq(managers.id, carResponsibles.managerId))
+    .where(eq(carResponsibles.carId, r.car.id));
+  const names = [...new Set([...heads, ...carHeads].map((h) => `${h.firstName} ${h.lastName}`))];
+  const responsible = names.length ? names.join(", ") : null;
   const [t, ts, tb, tx, te, tf] = await Promise.all([
     getTranslations("Reservations"),
     getTranslations("Status"),

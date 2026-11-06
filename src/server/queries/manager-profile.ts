@@ -147,7 +147,14 @@ export const managerDeals = (managerId: string) => listDeals({ managerId });
 export async function dealFormOptions() {
   const [carRows, promoRows, scope] = await Promise.all([
     db
-      .select({ id: cars.id, brand: cars.brand, model: cars.model, plate: cars.plateNumber, agencyId: cars.agencyId })
+      .select({
+        id: cars.id,
+        brand: cars.brand,
+        model: cars.model,
+        plate: cars.plateNumber,
+        agencyId: cars.agencyId,
+        extraAgencyIds: sql<number[]>`COALESCE((SELECT array_agg(ca.agency_id) FROM car_agencies ca WHERE ca.car_id = ${cars.id}), '{}')`,
+      })
       .from(cars)
       .where(eq(cars.status, "active"))
       .orderBy(asc(cars.brand), asc(cars.model)),
@@ -160,7 +167,7 @@ export async function dealFormOptions() {
   ]);
   return {
     // Gestionnaire rattaché à des agences : seulement les voitures de son périmètre.
-    cars: carRows.filter((c) => !scope || scope.includes(c.agencyId)).map((c) => ({ id: c.id, label: `${c.brand} ${c.model} (${c.plate})` })),
+    cars: carRows.filter((c) => !scope || scope.includes(c.agencyId) || c.extraAgencyIds.some((id) => scope.includes(id))).map((c) => ({ id: c.id, label: `${c.brand} ${c.model} (${c.plate})` })),
     promotions: promoRows,
   };
 }

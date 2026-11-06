@@ -5,12 +5,12 @@ import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
-import { auditLogs, carImages, carManagers, carTranslations, cars, reservations } from "@/db/schema";
+import { auditLogs, carAgencies, carImages, carManagers, carResponsibles, carTranslations, cars, reservations } from "@/db/schema";
 import { notifyCarCreated, notifyCarsJoinedAgency } from "@/server/notifications";
 import { carDeactivationSchema, carSchema, LOCALE_CODES } from "@/lib/validation";
 import { actorLabel, assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { verifyUpload } from "@/server/uploads";
-import { assertAgencyInScope, assertCarsInScope } from "@/server/agency-scope";
+import { agencyScope, assertAgencyInScope, assertCarsInScope } from "@/server/agency-scope";
 import { sendReservationEmail } from "@/server/email";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { CAR_VIEWS } from "@/lib/car-views";
@@ -70,6 +70,23 @@ async function writeChildren(tx: Tx, carId: string, descriptions: Record<string,
 }
 
 const managerIdsSchema = z.array(z.string().uuid()).max(100).default([]);
+const agencyIdsSchema = z.array(z.number().int().positive()).max(100).default([]);
+
+/** Agences supplémentaires (jamais l'agence principale) ; renvoie celles qui viennent d'être ajoutées. */
+async function writeExtraAgencies(tx: Tx, carId: string, principal: number, ids: number[], actorId: string) {
+  const before = (await tx.select({ id: carAgencies.agencyId }).from(carAgencies).where(eq(carAgencies.carId, carId))).map((r) => r.id);
+  const next = [...new Set(ids)].filter((id) => id !== principal);
+  await tx.delete(carAgencies).where(eq(carAgencies.carId, carId));
+  if (next.length) await tx.insert(carAgencies).values(next.map((agencyId) => ({ carId, agencyId, createdBy: actorId })));
+  return next.filter((id) => !before.includes(id));
+}
+
+/** Responsables de la voiture (0 ou plusieurs) : ils valident ses réservations. */
+async function writeResponsibles(tx: Tx, carId: string, ids: string[], actorId: string) {
+  await tx.delete(carResponsibles).where(eq(carResponsibles.carId, carId));
+  const list = [...new Set(ids)];
+  if (list.length) await tx.insert(carResponsibles).values(list.map((managerId) => ({ carId, managerId, createdBy: actorId })));
+}
 
 /** Gestionnaires associés : on remplace la liste (vide = tous les gestionnaires). */
 async function writeManagers(tx: Parameters<Parameters<typeof db.transaction>[0]>[0], carId: string, ids: string[]) {
@@ -81,7 +98,9 @@ async function writeManagers(tx: Parameters<Parameters<typeof db.transaction>[0]
   await recountManagers([...before.map((b) => b.managerId), ...ids], tx);
 }
 
-export async function createCar(input: { data: unknown; images: unknown; managerIds?: unknown }): Promise<ActionResult<{ id: string }>> {
+type CarInput = { data: unknown; images: unknown; managerIds?: unknown; responsibleIds?: unknown; extraAgencyIds?: unknown };
+
+export async function createCar(input: CarInput): Promise<ActionResult<{ id: string }>> {
   try {
     const staff = await assertRole(["admin", "manager"]);
     const parsed = carSchema.safeParse(input.data);
@@ -90,9 +109,12 @@ export async function createCar(input: { data: unknown; images: unknown; manager
     // Photo principale obligatoire
     if (!images.some((i) => i.view === "main")) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
     const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
+    const responsibleIds = managerIdsSchema.parse(input.responsibleIds ?? []);
+    const extraAgencyIds = agencyIdsSchema.parse(input.extraAgencyIds ?? []);
     const { descriptions, ...data } = parsed.data;
     // Gestionnaire rattaché à des agences : seulement des voitures de son périmètre.
     await assertAgencyInScope(staff, data.agencyId);
+    let addedAgencies: number[] = [];
     const id = await db.transaction(async (tx) => {
       const [row] = await tx
         .insert(cars)
@@ -100,14 +122,17 @@ export async function createCar(input: { data: unknown; images: unknown; manager
         .returning({ id: cars.id });
       await writeChildren(tx, row.id, descriptions, images);
       await writeManagers(tx, row.id, managerIds);
+      await writeResponsibles(tx, row.id, responsibleIds, staff.id);
+      addedAgencies = await writeExtraAgencies(tx, row.id, data.agencyId, extraAgencyIds, staff.id);
       // Règles marque / ville des gestionnaires : la nouvelle voiture rejoint leurs listes.
       await syncCarAssignments(row.id, tx);
-      await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: row.id, action: "create", changes: { ...data, managerIds } });
+      await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: row.id, action: "create", changes: { ...data, managerIds, responsibleIds, extraAgencyIds } });
       return row.id;
     });
     await notifyCarCreated(id, staff.name ?? staff.email ?? "—").catch((e) => console.error("[email] nouvelle voiture", e));
     // Les gestionnaires de l'agence sont prévenus de la voiture associée à leur agence.
-    await notifyCarsJoinedAgency([id], data.agencyId, await actorLabel(staff), staff.email).catch((e) => console.error("[email] voiture associée à une agence", e));
+    for (const agencyId of [data.agencyId, ...addedAgencies])
+      await notifyCarsJoinedAgency([id], agencyId, await actorLabel(staff), staff.email).catch((e) => console.error("[email] voiture associée à une agence", e));
     revalidatePath("/", "layout");
     return { ok: true, data: { id } };
   } catch (err) {
@@ -115,7 +140,7 @@ export async function createCar(input: { data: unknown; images: unknown; manager
   }
 }
 
-export async function updateCar(id: string, input: { data: unknown; images: unknown; managerIds?: unknown }): Promise<ActionResult> {
+export async function updateCar(id: string, input: CarInput): Promise<ActionResult> {
   try {
     const staff = await assertRole(["admin", "manager"]);
     const parsed = carSchema.safeParse(input.data);
@@ -124,22 +149,34 @@ export async function updateCar(id: string, input: { data: unknown; images: unkn
     // Photo principale obligatoire
     if (!images.some((i) => i.view === "main")) return { ok: false, error: "validation", fieldErrors: { images: "photoRequired" } };
     const managerIds = managerIdsSchema.parse(input.managerIds ?? []);
+    const responsibleIds = managerIdsSchema.parse(input.responsibleIds ?? []);
+    const extraAgencyIds = agencyIdsSchema.parse(input.extraAgencyIds ?? []);
     const { descriptions, ...data } = parsed.data;
     const [current] = await db.select({ status: cars.status, agencyId: cars.agencyId }).from(cars).where(eq(cars.id, id)).limit(1);
     if (!current) return { ok: false, error: "not_found" };
     // Contrôle applicatif ; la base le garantit aussi par un trigger.
     if (current.status === "deactivated") return { ok: false, error: "car_frozen" };
     await assertCarsInScope(staff, [id]);
-    await assertAgencyInScope(staff, data.agencyId);
+    // Changer l'agence principale ou ajouter une agence : seulement vers une agence du périmètre.
+    if (current.agencyId !== data.agencyId) await assertAgencyInScope(staff, data.agencyId);
+    const had = (await db.select({ id: carAgencies.agencyId }).from(carAgencies).where(eq(carAgencies.carId, id))).map((r) => r.id);
+    const scope = await agencyScope(staff);
+    for (const a of extraAgencyIds) if (!had.includes(a)) await assertAgencyInScope(staff, a, scope);
+    // Les agences hors périmètre ne sont pas proposées au gestionnaire : on les conserve.
+    if (scope) extraAgencyIds.push(...had.filter((a) => !scope.includes(a) && !extraAgencyIds.includes(a)));
+    let addedAgencies: number[] = [];
     await db.transaction(async (tx) => {
       await tx.update(cars).set({ ...data, vin: data.vin || null, updatedBy: staff.id }).where(eq(cars.id, id));
       await writeChildren(tx, id, descriptions, images);
       await writeManagers(tx, id, managerIds);
+      await writeResponsibles(tx, id, responsibleIds, staff.id);
+      addedAgencies = await writeExtraAgencies(tx, id, data.agencyId, extraAgencyIds, staff.id);
       await syncCarAssignments(id, tx);
-      await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "update", changes: { ...data, managerIds } });
+      await tx.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "update", changes: { ...data, managerIds, responsibleIds, extraAgencyIds } });
     });
-    if (current.agencyId !== data.agencyId)
-      await notifyCarsJoinedAgency([id], data.agencyId, await actorLabel(staff), staff.email).catch((e) => console.error("[email] voiture associée à une agence", e));
+    const joined = [...(current.agencyId !== data.agencyId ? [data.agencyId] : []), ...addedAgencies];
+    for (const agencyId of joined)
+      await notifyCarsJoinedAgency([id], agencyId, await actorLabel(staff), staff.email).catch((e) => console.error("[email] voiture associée à une agence", e));
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (err) {
@@ -323,6 +360,45 @@ export async function setCarPromotion(id: string, input: unknown): Promise<Actio
     await db.insert(auditLogs).values({ actorId: staff.id, entity: "car", entityId: id, action: "promo", changes: { ...v, note: promoNote(input) } });
     revalidatePath("/", "layout");
     return { ok: true };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+/**
+ * Onglet « Voitures » de la fiche agence (administrateur) : affecter les voitures cochées à l'agence
+ * comme agence supplémentaire, ou les en retirer. L'agence principale d'une voiture ne se retire pas ici.
+ */
+export async function setCarsAgency(carIds: string[], agencyId: number, assign: boolean): Promise<ActionResult<{ done: string[]; skipped: number }>> {
+  try {
+    const admin = await assertRole(["admin"]);
+    const list = z.array(z.string().uuid()).min(1).max(300).safeParse(carIds);
+    if (!list.success || !Number.isInteger(agencyId)) return { ok: false, error: "validation" };
+    const rows = await db.select({ id: cars.id, agencyId: cars.agencyId, status: cars.status }).from(cars).where(inArray(cars.id, list.data));
+    const eligible = rows.filter((r) => r.agencyId !== agencyId && r.status !== "deactivated").map((r) => r.id);
+    let done: string[] = [];
+    if (eligible.length) {
+      if (assign) {
+        done = (
+          await db
+            .insert(carAgencies)
+            .values(eligible.map((carId) => ({ carId, agencyId, createdBy: admin.id })))
+            .onConflictDoNothing()
+            .returning({ id: carAgencies.carId })
+        ).map((r) => r.id);
+      } else {
+        done = (
+          await db
+            .delete(carAgencies)
+            .where(and(eq(carAgencies.agencyId, agencyId), inArray(carAgencies.carId, eligible)))
+            .returning({ id: carAgencies.carId })
+        ).map((r) => r.id);
+      }
+    }
+    await db.insert(auditLogs).values({ actorId: admin.id, entity: "agency", entityId: String(agencyId), action: assign ? "cars_assign" : "cars_unassign", changes: { carIds: done } });
+    if (assign && done.length) await notifyCarsJoinedAgency(done, agencyId, await actorLabel(admin), admin.email).catch((e) => console.error("[email] voitures associées à une agence", e));
+    revalidatePath("/", "layout");
+    return { ok: true, data: { done, skipped: list.data.length - done.length } };
   } catch (err) {
     return toActionError(err);
   }

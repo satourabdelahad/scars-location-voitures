@@ -1,7 +1,7 @@
 "use client";
 
 import { ExternalLink, Lock, Mail, Phone, Save, Search, UserPlus } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,10 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { ManagerAvatar } from "@/features/managers/manager-avatar";
 import { setAgencyManagers } from "@/server/actions/agencies";
+import { logExport } from "@/server/actions/audit";
+import { ExportMenu } from "@/components/data-table/export-menu";
+import { exportTable, type ExportFormat } from "@/lib/export";
+import { intlLocale, localeMeta, type Locale } from "@/i18n/config";
 
 export type PickerPerson = {
   id: string;
@@ -41,6 +45,8 @@ export function ManagerPicker({
   lockedHint,
   base,
   readOnly = false,
+  exportTitle,
+  exportFilename,
 }: {
   agencyId: number;
   kind: "responsible" | "member";
@@ -50,11 +56,15 @@ export function ManagerPicker({
   lockedHint?: string;
   base: string;
   readOnly?: boolean;
+  exportTitle: string;
+  exportFilename: string;
 }) {
   const t = useTranslations("Agencies");
   const tc = useTranslations("Common");
   const te = useTranslations("Errors");
   const e = useTranslations("Enums");
+  const tm = useTranslations("Managers");
+  const locale = useLocale() as Locale;
   const router = useRouter();
   const [chosen, setChosen] = useState<Set<string>>(() => new Set(initial));
   const [view, setView] = useState<"all" | "selected">(initial.length ? "selected" : "all");
@@ -85,6 +95,29 @@ export function ManagerPicker({
       return n;
     });
 
+  const onExport = async (format: ExportFormat) => {
+    const rows = people.filter((p) => isOn(p.id));
+    await exportTable(
+      {
+        title: exportTitle,
+        subtitle: `${new Date().toLocaleString(intlLocale(locale))} · ${rows.length}`,
+        columns: [
+          { key: "civility", label: tm("civility") },
+          { key: "lastName", label: tm("lastName") },
+          { key: "firstName", label: tm("firstName") },
+          { key: "phone", label: tm("phone") },
+          { key: "email", label: tm("email") },
+          { key: "role", label: t("roleColumn") },
+        ],
+        rows: rows.map((p) => [e(`civility.${p.civility}`), p.lastName, p.firstName, p.phone, p.email ?? "", (p.badges ?? []).map((b) => b.label).join(", ")]),
+        filename: `${exportFilename}-${new Date().toISOString().slice(0, 10)}`,
+        rtl: localeMeta[locale].dir === "rtl",
+      },
+      format,
+    );
+    void logExport({ kind: "table", key: `agency-${kind}`, title: exportTitle, format, rows: rows.length });
+  };
+
   const save = () =>
     start(async () => {
       const r = await setAgencyManagers(agencyId, kind, [...chosen]);
@@ -106,7 +139,7 @@ export function ManagerPicker({
               onClick={() => setView(v)}
               className={cn("rounded-lg px-3 py-1.5 transition-colors", view === v ? "bg-paper text-ink shadow-sm" : "text-ink-3 hover:text-ink")}
             >
-              {v === "all" ? t("pickerAll") : t("pickerSelected", { count })}
+              {v === "all" ? t("pickerAll") : t("pickerAssigned", { count })}
             </button>
           ))}
         </div>
@@ -120,6 +153,8 @@ export function ManagerPicker({
             className="h-10 w-full rounded-xl border border-mist-2 bg-paper ps-9 pe-3 text-sm text-ink outline-none placeholder:text-ink-3/70 focus:border-majorelle"
           />
         </label>
+        {/* Export de la liste des affectés (PDF, Word, CSV…) */}
+        <ExportMenu onExport={onExport} size="sm" />
         {!readOnly && (
           <Button asChild size="sm" variant="outline">
             <Link href="/admin/managers/new"><UserPlus />{t("addManager")}</Link>

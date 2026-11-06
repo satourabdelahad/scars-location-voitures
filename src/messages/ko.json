@@ -308,7 +308,8 @@
     "clients": "고객",
     "agencies": "내 지점",
     "marketing": "이메일 마케팅",
-    "site": "공개 사이트"
+    "site": "공개 사이트",
+    "documentation": "문서"
   },
   "Managers": {
     "title": "매니저",
@@ -699,7 +700,20 @@
     "promoRemoved": "프로모션이 해제되었습니다",
     "promoPreview": "1일 요금: {before} → {after}",
     "promoNoEnd": "종료일 없음",
-    "outOfScopeBanner": "이 차량은 담당 범위 밖입니다. 조회는 가능하지만 수정할 수 없습니다."
+    "outOfScopeBanner": "이 차량은 담당 범위 밖입니다. 조회는 가능하지만 수정할 수 없습니다.",
+    "extraAgencies": "추가 지점",
+    "extraAgenciesHint": "차량 관리를 함께하는 지점(0곳 이상). 인수 장소는 주 지점으로 유지됩니다.",
+    "carResponsibles": "차량 책임자",
+    "carResponsiblesHint": "책임자(0명 이상): 관리자 및 지점 책임자와 함께 이 차량의 예약을 승인합니다.",
+    "noCarResponsible": "책임자 없음: 지점 책임자가 예약을 승인합니다.",
+    "someCarResponsibles": "책임자 {count}명",
+    "assignedCars": "배정됨",
+    "allCarsView": "전체({count})",
+    "assignedCarsView": "배정됨({count})",
+    "carsAssignedToAgency": "차량 {count}대를 지점에 배정했습니다",
+    "carsRemovedFromAgency": "차량 {count}대를 지점에서 제외했습니다",
+    "assignToAgency": "지점에 배정",
+    "removeFromAgency": "지점에서 제외"
   },
   "Reservations": {
     "title": "예약",
@@ -1476,7 +1490,7 @@
     "tabInfos": "정보",
     "tabManager": "책임자",
     "tabManagers": "매니저 ({count})",
-    "tabCars": "차량 ({count})",
+    "tabCars": "차량({count})",
     "responsible": "책임자",
     "noManagers": "매니저 없음",
     "noManagersBody": "이 지점과 연결된 매니저가 없습니다(책임자, 배정 차량, 규칙).",
@@ -1512,13 +1526,16 @@
     "bulkSkipped": "지점 {count}곳을 건너뛰었습니다(운행 중인 차량 있음)",
     "bulkDeactivateTitle": "지점 {count}곳 비활성화",
     "pickerAll": "전체",
-    "pickerSelected": "선택됨({count})",
     "responsiblesSaved": "책임자를 저장했습니다",
     "managersSaved": "관리자를 저장했습니다",
     "responsiblesHint": "책임자를 0명, 1명 또는 여러 명 선택하세요. 지점 예약을 승인하며 자동으로 구성원이 됩니다.",
     "membersHint": "이 지점에 소속된 관리자를 선택하세요. 지점에 소속된 관리자는 해당 지점의 차량만 처리할 수 있습니다.",
     "membersLockedHint": "책임자와 관리자는 항상 지점에 속합니다.",
-    "tabResponsibles": "{count, plural, =0 {책임자} one {책임자} other {책임자(#)}}"
+    "tabResponsibles": "책임자({count})",
+    "pickerAssigned": "배정됨({count})",
+    "roleColumn": "역할",
+    "tabResponsiblesPlain": "책임자",
+    "tiktokUrl": "TikTok 페이지"
   },
   "Marketing": {
     "title": "이메일 마케팅",
@@ -1613,5 +1630,12 @@
     "step3Body": "로그인하거나 이름, 도시, 전화번호만 입력합니다.",
     "step4": "열쇠 받기",
     "step4Body": "지점이 확정하면 차량을 인수하거나 배송받습니다."
+  },
+  "Docs": {
+    "title": "문서",
+    "subtitle": "애플리케이션 기능 안내: 공개 사이트, 백오피스, 운영 규칙.",
+    "search": "문서 검색…",
+    "toc": "목차",
+    "noResult": "검색과 일치하는 섹션이 없습니다."
   }
 }

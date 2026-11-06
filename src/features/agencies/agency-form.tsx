@@ -23,6 +23,7 @@ export type AgencyValues = {
   instagramUrl: string;
   linkedinUrl: string;
   xUrl: string;
+  tiktokUrl: string;
 };
 const URL_PLACEHOLDER = {
   websiteUrl: "https://dizy-cars.com",
@@ -30,9 +31,10 @@ const URL_PLACEHOLDER = {
   instagramUrl: "https://instagram.com/…",
   linkedinUrl: "https://linkedin.com/company/…",
   xUrl: "https://x.com/…",
+  tiktokUrl: "https://tiktok.com/@…",
 } as const;
 
-const EMPTY: AgencyValues = { name: "", city: "", address: "", phone: "", whatsapp: "", isAirport: false, websiteUrl: "", facebookUrl: "", instagramUrl: "", linkedinUrl: "", xUrl: "" };
+const EMPTY: AgencyValues = { name: "", city: "", address: "", phone: "", whatsapp: "", isAirport: false, websiteUrl: "", facebookUrl: "", instagramUrl: "", linkedinUrl: "", xUrl: "", tiktokUrl: "" };
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
   return (
@@ -103,7 +105,7 @@ export function AgencyForm({
           </div>
         </Section>
         <Section title={t("onlineTitle")}>
-          {(["websiteUrl", "facebookUrl", "instagramUrl", "linkedinUrl", "xUrl"] as const).map((k) => (
+          {(["websiteUrl", "facebookUrl", "instagramUrl", "linkedinUrl", "xUrl", "tiktokUrl"] as const).map((k) => (
             <Field key={k} label={t(k)} optionalLabel={tc("optional")} error={err(k)}>
               {(p) => <Input {...p} type="url" dir="ltr" inputMode="url" placeholder={URL_PLACEHOLDER[k]} value={v[k]} onChange={(x) => set(k, x.target.value)} />}
             </Field>

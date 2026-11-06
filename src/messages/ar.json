@@ -308,7 +308,8 @@
     "clients": "العملاء",
     "agencies": "وكالاتي",
     "marketing": "التسويق بالبريد",
-    "site": "الموقع العام"
+    "site": "الموقع العام",
+    "documentation": "الدليل"
   },
   "Managers": {
     "title": "المسيّرون",
@@ -699,7 +700,20 @@
     "promoRemoved": "تمت إزالة العرض",
     "promoPreview": "السعر اليومي: {before} ← {after}",
     "promoNoEnd": "بدون تاريخ نهاية",
-    "outOfScopeBanner": "هذه السيارة خارج نطاقك: يمكنك الاطلاع عليها دون تعديلها."
+    "outOfScopeBanner": "هذه السيارة خارج نطاقك: يمكنك الاطلاع عليها دون تعديلها.",
+    "extraAgencies": "وكالات إضافية",
+    "extraAgenciesHint": "وكالة أو أكثر أو لا شيء تتقاسم تسيير السيارة. تبقى الوكالة الرئيسية مكان الاستلام.",
+    "carResponsibles": "مسؤولو السيارة",
+    "carResponsiblesHint": "مسؤول أو أكثر أو لا أحد: يصادقون على حجوزات هذه السيارة، مع المدير ومسؤولي الوكالة.",
+    "noCarResponsible": "لا يوجد مسؤول: مسؤولو الوكالة يصادقون على الحجوزات.",
+    "someCarResponsibles": "{count, plural, one {مسؤول واحد} other {# مسؤولين}}",
+    "assignedCars": "المعيَّنة",
+    "allCarsView": "الكل ({count})",
+    "assignedCarsView": "المعيَّنة ({count})",
+    "carsAssignedToAgency": "{count, plural, one {تم تعيين سيارة واحدة للوكالة} other {تم تعيين # سيارات للوكالة}}",
+    "carsRemovedFromAgency": "{count, plural, one {تمت إزالة سيارة واحدة من الوكالة} other {تمت إزالة # سيارات من الوكالة}}",
+    "assignToAgency": "تعيين للوكالة",
+    "removeFromAgency": "إزالة من الوكالة"
   },
   "Reservations": {
     "title": "الحجوزات",
@@ -1512,13 +1526,16 @@
     "bulkSkipped": "{count, plural, one {تم تجاهل وكالة واحدة (سيارات لا تزال في الخدمة)} other {تم تجاهل # وكالات (سيارات لا تزال في الخدمة)}}",
     "bulkDeactivateTitle": "{count, plural, one {تعطيل وكالة واحدة} other {تعطيل # وكالات}}",
     "pickerAll": "الكل",
-    "pickerSelected": "المحدَّدون ({count})",
     "responsiblesSaved": "تم حفظ المسؤولين",
     "managersSaved": "تم حفظ المسيّرين",
     "responsiblesHint": "حدّد مسؤولًا واحدًا أو أكثر أو لا أحد. يصادقون على حجوزات الوكالة ويصبحون أعضاء فيها تلقائيًا.",
     "membersHint": "حدّد المسيّرين المرتبطين بهذه الوكالة. المسيّر المرتبط بوكالات لا يتصرف إلا في سيارات تلك الوكالات.",
     "membersLockedHint": "المسؤولون والمدير جزء من الوكالة دائمًا.",
-    "tabResponsibles": "{count, plural, =0 {المسؤول} one {المسؤول} other {المسؤولون (#)}}"
+    "tabResponsibles": "المسؤولون ({count})",
+    "pickerAssigned": "المعيَّنون ({count})",
+    "roleColumn": "الدور",
+    "tabResponsiblesPlain": "المسؤولون",
+    "tiktokUrl": "صفحة تيك توك"
   },
   "Marketing": {
     "title": "التسويق بالبريد الإلكتروني",
@@ -1613,5 +1630,12 @@
     "step3Body": "سجّل الدخول أو اترك الحد الأدنى: الاسم والمدينة والهاتف.",
     "step4": "المفاتيح",
     "step4Body": "تؤكد الوكالة، ثم تتسلم السيارة أو نوصلها إليك."
+  },
+  "Docs": {
+    "title": "الدليل",
+    "subtitle": "دليل وظيفي للتطبيق: الموقع العام والواجهة الخلفية وقواعد التسيير.",
+    "search": "ابحث في الدليل…",
+    "toc": "المحتويات",
+    "noResult": "لا يوجد قسم يطابق بحثك."
   }
 }
