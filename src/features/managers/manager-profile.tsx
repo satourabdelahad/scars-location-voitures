@@ -1,4 +1,4 @@
-import { CalendarClock, CarFront, Handshake, History, IdCard, MailWarning } from "lucide-react";
+import { CalendarClock, Handshake, History, IdCard, KeyRound, MailWarning, Target, Building2 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
@@ -7,19 +7,25 @@ import { ManagerAvatar } from "./manager-avatar";
 import { UnlockButton } from "@/features/security/unlock-button";
 import type { SessionUser } from "@/server/guards";
 import { managerRentalCounts, type ManagerDetail } from "@/server/queries/managers";
-import { dealFormOptions, managerActivity, managerDeals, managerRentals } from "@/server/queries/manager-profile";
+import { dealFormOptions, managerActivity, managerDeals, managerRentals, staffSummary } from "@/server/queries/manager-profile";
+import { StaffHeader } from "./staff-header";
 import { ManagerForm } from "./manager-form";
-import { PasswordForm } from "@/features/profile/profile-form";
+import { AdminSetPasswordForm, PasswordForm } from "@/features/profile/profile-form";
 import { ManagerActions } from "./manager-actions";
 import { ManagerCardExport } from "./managers-table";
 import { RentalsTab } from "./rentals-tab";
 import { DealsTab } from "./deals-tab";
 import { HistoryTab } from "./history-tab";
 import { AssignedCarsTab } from "./assigned-cars-tab";
+import { Perimeter } from "./perimeter";
+import { AgenciesTab } from "./agencies-tab";
+import { managerAgencyLinks } from "@/server/queries/agencies";
+import { RentalsChart } from "@/features/my/rentals-chart";
+import { AppointmentsSection } from "@/features/my/pages";
 import { listFleet } from "@/server/queries/fleet";
 import { managerDisplayStatus } from "@/lib/manager-status";
 
-export const PROFILE_TABS = ["infos", "cars", "rentals", "deals", "history"] as const;
+export const PROFILE_TABS = ["infos", "agencies", "password", "cars", "rentals", "deals", "history"] as const;
 export type ProfileTab = (typeof PROFILE_TABS)[number];
 
 export function parseTab(v: string | string[] | undefined): ProfileTab {
@@ -34,7 +40,7 @@ export async function ManagerProfile({
   manager: m,
   viewer,
   basePath,
-  tab,
+  tab: requestedTab,
   edit,
   locale,
 }: {
@@ -51,14 +57,26 @@ export async function ManagerProfile({
   const locked = m.user.loginLockedUntil && m.user.loginLockedUntil > new Date() ? m.user.loginLockedUntil : null;
   const reservationsBase = isAdmin ? "/admin/reservations" : "/manager/reservations";
   const display = managerDisplayStatus(m);
+  const isSelf = viewer.id === m.userId;
+  // Un gestionnaire qui consulte la fiche d'un collègue : lecture seule, informations et voitures uniquement.
+  const peer = !isAdmin && !isSelf;
+  const summary = await staffSummary(m.userId, m.id);
 
   const tabs: { id: ProfileTab; label: string; Icon: typeof IdCard }[] = [
     { id: "infos", label: t("tabInfo"), Icon: IdCard },
-    { id: "cars", label: t("tabCars"), Icon: CarFront },
-    { id: "rentals", label: t("tabRentals"), Icon: CalendarClock },
-    { id: "deals", label: t("tabDeals"), Icon: Handshake },
-    { id: "history", label: t("tabHistory"), Icon: History },
+    { id: "agencies", label: t("tabAgencies"), Icon: Building2 },
+    { id: "cars", label: t("tabPerimeter"), Icon: Target },
+    // Mot de passe : visible par le gestionnaire lui-même et par l'administrateur.
+    ...(isAdmin || isSelf ? [{ id: "password" as const, label: t("tabPassword"), Icon: KeyRound }] : []),
+    ...(peer
+      ? []
+      : [
+          { id: "rentals" as const, label: t("tabRentals"), Icon: CalendarClock },
+          { id: "deals" as const, label: t("tabDeals"), Icon: Handshake },
+          { id: "history" as const, label: t("tabHistory"), Icon: History },
+        ]),
   ];
+  const tab: ProfileTab = peer && !["infos", "agencies", "cars"].includes(requestedTab) ? "infos" : requestedTab;
 
   const formInitial = {
     civility: m.civility,
@@ -79,25 +97,58 @@ export async function ManagerProfile({
   };
 
   let body: React.ReactNode;
-  if (tab === "cars") {
-    const fleet = await listFleet();
+  if (tab === "password" && (isAdmin || isSelf)) {
+    body = isSelf ? <PasswordForm hasPassword={m.user.hasPassword} /> : <AdminSetPasswordForm managerId={m.id} name={name} />;
+  } else if (tab === "agencies") {
+    body = <AgenciesTab managerId={m.id} links={await managerAgencyLinks(m.id)} canEdit={isAdmin} isAdminTarget={m.user.role === "admin"} base={isAdmin ? "/admin" : "/manager"} />;
+  } else if (tab === "cars") {
+    const [fleet, links] = await Promise.all([listFleet(), managerAgencyLinks(m.id)]);
     body = (
+      <>
+      <Perimeter managerId={m.id} links={links} rule={summary.rule} candidates={fleet.filter((c) => c.status !== "deactivated")} canEdit={isAdmin} base={isAdmin ? "/admin" : "/manager"} />
       <AssignedCarsTab
         managerId={m.id}
         assigned={fleet.filter((c) => c.managerIds.includes(m.id))}
-        candidates={fleet.filter((c) => c.status !== "deactivated" && !c.managerIds.includes(m.id))}
+        candidates={fleet.filter((c) => c.status !== "deactivated")}
+        ruleCarIds={summary.ruleCarIds}
         sharedCount={fleet.filter((c) => c.status !== "deactivated" && c.managerIds.length === 0).length}
         canEdit={isAdmin}
         fleetBase={isAdmin ? "/admin" : "/manager"}
       />
+      </>
     );
   } else if (tab === "rentals") {
-    body = <RentalsTab rows={await managerRentals(m.userId)} reservationsBase={reservationsBase} />;
+    const rentals = await managerRentals(m.userId);
+    body = (
+      <div className="space-y-4">
+        <RentalsChart rows={rentals} />
+        <RentalsTab rows={rentals} reservationsBase={reservationsBase} />
+      </div>
+    );
   } else if (tab === "deals") {
     const [deals, options] = await Promise.all([managerDeals(m.id), dealFormOptions()]);
-    body = <DealsTab scope={{ managerId: m.id }} deals={deals} options={options} />;
+    body = (
+      <>
+        <DealsTab scope={{ managerId: m.id }} deals={deals} options={options} />
+        {/* Sur sa propre fiche : ses rendez-vous, départs et retours sous ses deals */}
+        {isSelf && <AppointmentsSection me={viewer} />}
+      </>
+    );
   } else if (tab === "history") {
     body = <HistoryTab rows={await managerActivity(m.userId, m.id)} />;
+  } else if (peer) {
+    body = (
+      <ManagerForm
+        managerId={m.id}
+        initialPhotoUrl={m.photoUrl}
+        initialMode="view"
+        canEdit={false}
+        canOpenDocs={false}
+        initial={formInitial}
+        existingDocs={m.documents.map((d) => d.kind)}
+        readOnly={readOnlyInfo}
+      />
+    );
   } else if (!isAdmin) {
     // Le gestionnaire sur sa propre fiche : même formulaire que l'administrateur (consultation puis « Modifier »),
     // sauf la date de début et le type de contrat, réservés à l'administrateur.
@@ -114,7 +165,6 @@ export async function ManagerProfile({
           existingDocs={m.documents.map((d) => d.kind)}
           readOnly={readOnlyInfo}
         />
-        <PasswordForm hasPassword={m.user.hasPassword} />
       </div>
     );
   } else {
@@ -138,7 +188,7 @@ export async function ManagerProfile({
 
   return (
     <>
-      {isAdmin && <Link href="/admin/managers" className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>}
+      {(isAdmin || peer) && <Link href={isAdmin ? "/admin/managers" : "/manager/managers"} className="text-sm font-medium text-ink-3 hover:text-ink">← {t("title")}</Link>}
       <div className="mt-3 mb-6 flex flex-wrap items-center gap-4">
         <ManagerAvatar photoUrl={m.photoUrl} firstName={m.firstName} lastName={m.lastName} size="md" />
         <div className="min-w-[min(100%,14rem)] flex-1">
@@ -154,6 +204,8 @@ export async function ManagerProfile({
         </div>
         {isAdmin && <ManagerCardExport manager={await exportRow(m)} size="md" />}
       </div>
+
+      <StaffHeader summary={summary} email={m.user.email} phone={m.phone} whatsapp={m.whatsapp} locale={locale} />
 
       {locked && (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-danger/30 bg-danger-soft px-5 py-4">
@@ -224,6 +276,8 @@ async function exportRow(m: ManagerDetail) {
     rentalsWeek: counts.w,
     rentalsMonth: counts.m,
     rentalsYear: counts.y,
+    hasPassword: m.user.hasPassword,
+    isAdmin: m.user.role === "admin",
     assignedCars: fleet.filter((c) => c.managerIds.includes(m.id)).map((c) => `${c.brand} ${c.model} ${c.year} (${c.plateNumber})`),
   };
 }

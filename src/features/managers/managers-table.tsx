@@ -10,6 +10,7 @@ import { Field, Textarea } from "@/components/ui/field";
 import { useRowPatches } from "@/components/data-table/use-row-patches";
 import { managerDisplayStatus, type ManagerDisplayStatus } from "@/lib/manager-status";
 import { bulkManagerAction } from "@/server/actions/managers";
+import { logExport } from "@/server/actions/audit";
 import { DataTable, type Column } from "@/components/data-table/data-table";
 import { ManagerActions } from "./manager-actions";
 import { ExportMenu } from "@/components/data-table/export-menu";
@@ -67,10 +68,11 @@ export function ManagerCardExport({ manager, size = "icon" }: { manager: Manager
     <ExportMenu
       size={size}
       label={t("exportCard")}
-      onExport={(f) =>
-        exportRecord(
+      onExport={async (f) => {
+        const title = `${t("profileCard")} : ${manager.firstName} ${manager.lastName}`;
+        await exportRecord(
           {
-            title: `${t("profileCard")} : ${manager.firstName} ${manager.lastName}`,
+            title,
             subtitle: new Date().toLocaleString(),
             fields: fields(manager),
             filename: `gestionnaire-${manager.lastName}-${manager.firstName}`.toLowerCase(),
@@ -78,13 +80,25 @@ export function ManagerCardExport({ manager, size = "icon" }: { manager: Manager
             labels: { field: tt("field"), value: tt("value") },
           },
           f,
-        )
-      }
+        );
+        void logExport({ kind: "record", key: "manager", title, format: f, rows: 1 });
+      }}
     />
   );
 }
 
-export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[]; prefs: { visibleColumns: string[]; pageSize: number } | null }) {
+/** readOnly : consultation par un gestionnaire (pas d'action, pas de sélection). */
+export function ManagersTable({
+  rows: serverRows,
+  prefs,
+  base = "/admin",
+  readOnly = false,
+}: {
+  rows: ManagerRow[];
+  prefs: { visibleColumns: string[]; pageSize: number } | null;
+  base?: string;
+  readOnly?: boolean;
+}) {
   const t = useTranslations("Managers");
   const e = useTranslations("Enums");
   const c = useTranslations("Common");
@@ -92,6 +106,8 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
   const router = useRouter();
   // Nouvel état affiché tout de suite après une action, avant le rechargement des données.
   const [rows, patch] = useRowPatches(serverRows);
+  // La fiche de l'administrateur, c'est son profil.
+  const profileHref = (m: ManagerRow) => (m.isAdmin && base === "/admin" ? "/admin/profile" : `${base}/managers/${m.id}`);
   const statusLabel = (s: ManagerDisplayStatus) => (s === "active" ? c("active") : s === "pending" ? t("pendingActivation") : c("deactivated"));
 
   const columns = useMemo<Column<ManagerRow>[]>(() => {
@@ -110,7 +126,7 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
         text: () => "",
         isAction: true,
         cell: (m) => (
-          <Link href={`/admin/managers/${m.id}`} aria-label={`${m.firstName} ${m.lastName}`} className="block w-fit">
+          <Link href={profileHref(m)} aria-label={`${m.firstName} ${m.lastName}`} className="block w-fit">
             <ManagerAvatar photoUrl={m.photoUrl} firstName={m.firstName} lastName={m.lastName} />
           </Link>
         ),
@@ -127,7 +143,10 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
         text: (m) => m.lastName,
         filter: { type: "text" },
         cell: (m) => (
-          <Link href={`/admin/managers/${m.id}`} className="font-semibold text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.lastName}</Link>
+          <span className="inline-flex items-center gap-2">
+            <Link href={profileHref(m)} className="font-semibold text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.lastName}</Link>
+            {m.isAdmin && <Badge tone="dark">{t("adminBadge")}</Badge>}
+          </span>
         ),
       },
       {
@@ -136,7 +155,7 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
         text: (m) => m.firstName,
         filter: { type: "text" },
         cell: (m) => (
-          <Link href={`/admin/managers/${m.id}`} className="font-medium text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.firstName}</Link>
+          <Link href={profileHref(m)} className="font-medium text-ink underline-offset-4 hover:text-majorelle hover:underline">{m.firstName}</Link>
         ),
       },
       { id: "email", header: t("email"), text: (m) => m.email, filter: { type: "text" }, cell: (m) => <a href={`mailto:${m.email}`} className="hover:text-majorelle" dir="ltr">{m.email}</a> },
@@ -181,19 +200,23 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
         cell: (m) => (
           <div className="flex items-center justify-end gap-1">
             <ManagerCardExport manager={m} />
-            <Link href={`/admin/managers/${m.id}`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("view")} title={c("view")}>
+            <Link href={profileHref(m)} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("view")} title={c("view")}>
               <Eye className="size-4" />
             </Link>
-            <Link href={`/admin/managers/${m.id}?edit=1`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("edit")} title={c("edit")}>
-              <Pencil className="size-4" />
-            </Link>
-            <ManagerActions id={m.id} name={`${m.firstName} ${m.lastName}`} status={managerDisplayStatus(m)} compact onDone={(next) => patch(m.id, next)} />
+            {!readOnly && (
+              <>
+                <Link href={m.isAdmin ? "/admin/profile" : `${base}/managers/${m.id}?edit=1`} className="grid size-8 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink" aria-label={c("edit")} title={c("edit")}>
+                  <Pencil className="size-4" />
+                </Link>
+                {!m.isAdmin && <ManagerActions id={m.id} name={`${m.firstName} ${m.lastName}`} status={managerDisplayStatus(m)} canResendInvite={managerDisplayStatus(m) === "active" && !m.hasPassword} compact onDone={(next) => patch(m.id, next)} />}
+              </>
+            )}
           </div>
         ),
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t, e, c, locale, patch]);
+  }, [t, e, c, locale, patch, base, readOnly]);
 
   return (
     <DataTable
@@ -204,8 +227,8 @@ export function ManagersTable({ rows: serverRows, prefs }: { rows: ManagerRow[];
       exportTitle={t("title")}
       exportFilename="gestionnaires"
       rowClassName={(m) => (managerDisplayStatus(m) === "deactivated" ? "opacity-60" : undefined)}
-      onRowClick={(m) => router.push(`/admin/managers/${m.id}`)}
-      bulkActions={(selected, clear) => <ManagersBulkActions selected={selected} onDone={(ids, next) => { if (next) patch(ids, next); clear(); }} />}
+      onRowClick={(m) => router.push(profileHref(m))}
+      bulkActions={readOnly ? undefined : (selected, clear) => <ManagersBulkActions selected={selected} onDone={(ids, next) => { if (next) patch(ids, next); clear(); }} />}
     />
   );
 }
@@ -225,10 +248,12 @@ function ManagersBulkActions({
   const [pending, start] = useTransition();
   const [asking, setAsking] = useState(false);
   const [reason, setReason] = useState("");
-  const by = (s: ManagerDisplayStatus) => selected.filter((m) => managerDisplayStatus(m) === s);
+  // L'administrateur n'est ni désactivable ni invité.
+  const by = (s: ManagerDisplayStatus) => selected.filter((m) => !m.isAdmin && managerDisplayStatus(m) === s);
   const active = by("active");
   const deactivated = by("deactivated");
-  const invited = by("pending");
+  // Invitation : comptes en attente, ou comptes actifs qui n'ont encore jamais choisi de mot de passe.
+  const invited = selected.filter((m) => !m.isAdmin && (managerDisplayStatus(m) === "pending" || (managerDisplayStatus(m) === "active" && !m.hasPassword)));
 
   const run = (action: "deactivate" | "activate" | "resend", rows: ManagerRow[]) =>
     start(async () => {

@@ -13,7 +13,7 @@ import { saveInternalNote, transitionReservation } from "@/server/actions/reserv
 
 type Action = "confirm" | "reject" | "pickup" | "return" | "cancel";
 
-export function ReservationActions({ id, status, internalNote }: { id: string; status: ReservationStatus; internalNote: string | null }) {
+export function ReservationActions({ id, status, internalNote, canValidate, responsible }: { id: string; status: ReservationStatus; internalNote: string | null; canValidate: boolean; responsible: string | null }) {
   const t = useTranslations("Reservations");
   const tc = useTranslations("Common");
   const te = useTranslations("Errors");
@@ -35,7 +35,7 @@ export function ReservationActions({ id, status, internalNote }: { id: string; s
     });
 
   const buttons: { action: Action; label: string; icon: typeof Ban; variant: "primary" | "dangerOutline" | "success" | "outline"; ask?: boolean }[] = [];
-  if (status === "pending") {
+  if (status === "pending" && canValidate) {
     buttons.push({ action: "confirm", label: t("confirm"), icon: CheckCircle2, variant: "primary" });
     buttons.push({ action: "reject", label: t("reject"), icon: XCircle, variant: "dangerOutline", ask: true });
   }
@@ -47,6 +47,9 @@ export function ReservationActions({ id, status, internalNote }: { id: string; s
 
   return (
     <div className="space-y-5">
+      {status === "pending" && !canValidate && (
+        <p className="rounded-xl bg-saffron/15 px-4 py-3 text-sm text-saffron-ink">{responsible ? t("awaitingValidationBy", { name: responsible }) : t("awaitingValidation")}</p>
+      )}
       {buttons.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {buttons.map((b) => (
@@ -92,7 +95,7 @@ export function ReservationActions({ id, status, internalNote }: { id: string; s
 const NEXT_STATUS: Record<Action, ReservationStatus> = { confirm: "confirmed", reject: "rejected", pickup: "ongoing", return: "completed", cancel: "cancelled" };
 
 /** Actions rapides dans la colonne du tableau ; la ligne affiche le nouvel état tout de suite (onDone). */
-export function ReservationRowActions({ id, status, onDone }: { id: string; status: ReservationStatus; onDone: (next: ReservationStatus) => void }) {
+export function ReservationRowActions({ id, status, canValidate, onDone }: { id: string; status: ReservationStatus; canValidate: boolean; onDone: (next: ReservationStatus) => void }) {
   const t = useTranslations("Reservations");
   const tc = useTranslations("Common");
   const te = useTranslations("Errors");
@@ -114,7 +117,7 @@ export function ReservationRowActions({ id, status, onDone }: { id: string; stat
     });
 
   const items: { action: Action; label: string; icon: typeof Ban; tone: string; ask?: boolean }[] = [];
-  if (status === "pending") {
+  if (status === "pending" && canValidate) {
     items.push({ action: "confirm", label: t("confirm"), icon: CheckCircle2, tone: "text-palm hover:bg-palm-soft" });
     items.push({ action: "reject", label: t("reject"), icon: XCircle, tone: "text-ink-3 hover:bg-danger-soft hover:text-danger", ask: true });
   }

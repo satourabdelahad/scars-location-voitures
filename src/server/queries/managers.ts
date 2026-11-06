@@ -38,6 +38,8 @@ export async function listManagersWithStats() {
     rentals_month: number;
     rentals_year: number;
     assigned_cars: string[] | null;
+    has_password: boolean;
+    is_admin: boolean;
   }>(sql`
     WITH bounds AS (
       SELECT
@@ -49,7 +51,7 @@ export async function listManagersWithStats() {
     SELECT
       m.id, m.user_id, m.civility, m.last_name, m.first_name, u.email, m.phone, m.whatsapp, m.city,
       m.birth_date::text, m.marital_status, m.work_start_date::text, m.contract_type, m.photo_url, m.status,
-      m.deactivation_reason, m.deactivated_at, u.last_login_at, m.admin_updated_at,
+      m.deactivation_reason, m.deactivated_at, u.last_login_at, m.admin_updated_at, (u.password_hash IS NOT NULL) AS has_password, (u.role = 'admin') AS is_admin,
       CASE WHEN u.login_locked_until > now() THEN u.login_locked_until END AS locked_until,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.d)::int AS rentals_day,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.w)::int AS rentals_week,
@@ -63,7 +65,7 @@ export async function listManagersWithStats() {
     LEFT JOIN reservations r
       ON r.handled_by = m.user_id AND r.status IN ${RENTED} AND r.confirmed_at >= LEAST(b.y, b.w) AND r.confirmed_at <= now()
     GROUP BY m.id, u.id
-    ORDER BY m.status, m.last_name, m.first_name
+    ORDER BY (u.role = 'admin') DESC, m.status, m.last_name, m.first_name
   `);
   return rows.rows.map((r) => ({
     id: r.id,
@@ -89,6 +91,9 @@ export async function listManagersWithStats() {
     rentalsMonth: r.rentals_month,
     rentalsYear: r.rentals_year,
     assignedCars: r.assigned_cars ?? [],
+    hasPassword: r.has_password,
+    /** L'administrateur figure aussi parmi les gestionnaires (non désactivable, pas d'invitation). */
+    isAdmin: r.is_admin,
   }));
 }
 export type ManagerRow = Awaited<ReturnType<typeof listManagersWithStats>>[number];
@@ -117,7 +122,7 @@ export async function getManager(id: string) {
   const m = await db.query.managers.findFirst({
     where: eq(managers.id, id),
     with: {
-      user: { columns: { email: true, lastLoginAt: true, passwordHash: true, status: true, loginLockedUntil: true } },
+      user: { columns: { email: true, role: true, lastLoginAt: true, passwordHash: true, status: true, loginLockedUntil: true } },
       documents: { orderBy: [asc(managerDocuments.kind)] },
       events: { orderBy: [desc(managerEvents.createdAt)], with: { actor: { columns: { name: true, email: true } } } },
     },

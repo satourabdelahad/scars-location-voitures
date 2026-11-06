@@ -6,16 +6,60 @@ import { Scenery } from "@/components/scenery";
 import { CarCard } from "@/components/car-card";
 import { HeroSearch } from "@/components/hero-search";
 import { listAgencies, listPublicCars } from "@/server/queries/cars";
+import { publicSite, waLink } from "@/server/public-site";
 import { carCategoryEnum } from "@/db/schema";
 
-export default async function HomePage({ params }: PageProps<"/[locale]">) {
+const GROUPS = ["category", "city", "agency"] as const;
+type Group = (typeof GROUPS)[number];
+
+export default async function HomePage({ params, searchParams }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const sp = await searchParams;
+  const one = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : undefined);
+  const by = one("by") as Group;
+  let group: Group = GROUPS.includes(by) ? by : "category";
+  const picked = one("v");
+  const availableOnly = one("dispo") === "1";
   const t = await getTranslations("Home");
   const e = await getTranslations("Enums");
   const tc = await getTranslations("Common");
-  const [agencies, cars] = await Promise.all([listAgencies(), listPublicCars({ sort: "newest", limit: 6 })]);
+  const [agencies, all, site] = await Promise.all([listAgencies(), listPublicCars({ sort: "newest", limit: 300 }), publicSite()]);
   const cities = Array.from(new Map(agencies.map((a) => [a.city, a])).values());
+  const multiAgency = agencies.length > 1;
+  // Une seule agence : seul le classement par carrosserie a du sens.
+  if (!multiAgency) group = "category";
+
+  // Le parc par carrosserie, par ville ou par agence, avec la disponibilité du jour.
+  const keyOf = (c: (typeof all)[number]) => (group === "category" ? c.category : group === "city" ? c.city : String(c.agencyId));
+  const pool = availableOnly ? all.filter((c) => !c.busyUntil) : all;
+  const count = (v: string) => pool.filter((c) => keyOf(c) === v).length;
+  const chips: { value: string; label: string; icon?: "car" | "airport" }[] =
+    group === "category"
+      ? carCategoryEnum.enumValues.map((c) => ({ value: c, label: e(`category.${c}`), icon: "car" as const }))
+      : group === "city"
+        ? [...new Set(agencies.map((a) => a.city))].sort((a, b) => a.localeCompare(b, "fr")).map((c) => ({ value: c, label: c }))
+        : agencies.map((a) => ({ value: String(a.id), label: `${a.city} · ${a.name}`, icon: a.isAirport ? ("airport" as const) : undefined }));
+  const shownChips = chips.filter((ch) => count(ch.value) > 0 || ch.value === picked);
+  const value = picked && chips.some((ch) => ch.value === picked) ? picked : undefined;
+  const cars = (value ? pool.filter((c) => keyOf(c) === value) : pool).slice(0, 9);
+  const availableCount = all.filter((c) => !c.busyUntil).length;
+  const qs = (patch: Record<string, string | undefined>) => {
+    const q = new URLSearchParams();
+    const next = { by: group === "category" ? undefined : group, v: value, dispo: availableOnly ? "1" : undefined, ...patch };
+    for (const [k, x] of Object.entries(next)) if (x) q.set(k, x);
+    const str = q.toString();
+    return str ? `/?${str}` : "/";
+  };
+  const seeAllHref = `/cars?${new URLSearchParams(
+    Object.entries({
+      category: group === "category" ? value : undefined,
+      cityName: group === "city" ? value : undefined,
+      agency: group === "agency" ? value : undefined,
+      dispo: availableOnly ? "1" : undefined,
+    }).filter(([, x]) => x) as [string, string][],
+  ).toString()}`;
+
 
   return (
     <>
@@ -26,7 +70,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <h1 className="display max-w-[11ch] text-[clamp(2.9rem,7.4vw,6.2rem)] text-ink">{t("heroTitle")}</h1>
             <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-ink-2">{t("heroSubtitle")}</p>
           </div>
-          <div className="relative z-10 -mb-[4.6%] hidden w-full max-w-[680px] justify-self-end lg:block" aria-hidden>
+          <div className="relative z-10 -mb-[4.6%] hidden w-full max-w-[400px] justify-self-end lg:block" aria-hidden>
             <Scenery className="absolute -inset-x-[30%] bottom-[7%] h-[62%] [mask-image:linear-gradient(90deg,transparent,#000_18%,#000_82%,transparent)]" />
             <DrivingCar category="suv_4x4" color="#4b3fd8" messages={[tc("hello"), tc("welcome"), tc("mission")]} className="car-arrive" />
           </div>
@@ -58,24 +102,78 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <h2 id="fleet-title" className="display-md text-3xl text-ink sm:text-4xl">{t("fleetTitle")}</h2>
             <p className="mt-2 text-ink-3">{t("fleetSubtitle")}</p>
           </div>
-          <Link href="/cars" className="rounded-full border border-mist-2 px-4 py-2 text-sm font-semibold text-ink hover:border-ink-3">
+          <Link href={seeAllHref} className="rounded-full border border-mist-2 px-4 py-2 text-sm font-semibold text-ink hover:border-ink-3">
             {t("seeAll")}
           </Link>
         </div>
-        <div className="scroll-thin -mx-4 mt-6 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
-          {carCategoryEnum.enumValues.map((c) => (
-            <Link key={c} href={`/cars?category=${c}`} className="flex shrink-0 items-center gap-2 rounded-full border border-mist bg-paper py-1.5 ps-1.5 pe-4 text-sm font-medium text-ink-2 transition-colors hover:border-majorelle hover:text-ink">
-              <span className="grid h-7 w-12 place-items-center rounded-full bg-chalk">
-                <CarArt category={c} color="#6b7390" className="h-5 w-11" />
-              </span>
-              {e(`category.${c}`)}
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <div role="tablist" aria-label={t("browseBy")} className="inline-flex rounded-full border border-mist bg-paper p-1">
+            {GROUPS.filter((g) => multiAgency || g === "category").map((g) => (
+              <Link
+                key={g}
+                role="tab"
+                aria-selected={group === g}
+                scroll={false}
+                href={qs({ by: g === "category" ? undefined : g, v: undefined })}
+                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${group === g ? "bg-ink text-chalk" : "text-ink-2 hover:text-ink"}`}
+              >
+                {t(`by_${g}`)}
+              </Link>
+            ))}
+          </div>
+          <Link
+            scroll={false}
+            href={qs({ dispo: availableOnly ? undefined : "1" })}
+            aria-pressed={availableOnly}
+            className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${availableOnly ? "border-palm bg-palm-soft text-palm" : "border-mist bg-paper text-ink-2 hover:border-palm"}`}
+          >
+            <span className={`size-2 rounded-full ${availableOnly ? "bg-palm" : "bg-ink-3/50"}`} aria-hidden />
+            {t("availableOnly", { count: availableCount })}
+          </Link>
+        </div>
+        <div className="scroll-thin -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
+          <Link
+            scroll={false}
+            href={qs({ v: undefined })}
+            className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${!value ? "border-majorelle bg-majorelle-soft text-majorelle" : "border-mist bg-paper text-ink-2 hover:border-majorelle hover:text-ink"}`}
+          >
+            {t("allFilter")} <span className="text-xs opacity-70 tabular">{pool.length}</span>
+          </Link>
+          {shownChips.map((ch) => (
+            <Link
+              key={ch.value}
+              scroll={false}
+              href={qs({ v: ch.value })}
+              aria-current={value === ch.value ? "true" : undefined}
+              className={`flex shrink-0 items-center gap-2 rounded-full border py-1.5 pe-4 text-sm font-medium transition-colors ${ch.icon === "car" ? "ps-1.5" : "ps-4"} ${value === ch.value ? "border-majorelle bg-majorelle-soft text-majorelle" : "border-mist bg-paper text-ink-2 hover:border-majorelle hover:text-ink"}`}
+            >
+              {ch.icon === "car" && (
+                <span className="grid h-7 w-12 place-items-center rounded-full bg-chalk">
+                  <CarArt category={ch.value as (typeof carCategoryEnum.enumValues)[number]} color="#6b7390" className="h-5 w-11" />
+                </span>
+              )}
+              {ch.icon === "airport" && <span aria-hidden>✈</span>}
+              {ch.label}
+              <span className="text-xs opacity-70 tabular">{count(ch.value)}</span>
             </Link>
           ))}
         </div>
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {cars.map((car) => (
-            <CarCard key={car.id} car={car} locale={locale} />
-          ))}
+        {cars.length ? (
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {cars.map((car) => (
+              <CarCard key={car.id} car={car} locale={locale} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-6 flex flex-col items-center rounded-[22px] border border-dashed border-mist-2 px-6 py-14 text-center">
+            <CarArt category="city_car" color="#cfd3e3" className="w-40" />
+            <p className="mt-4 font-bold text-ink">{t("noCarsHere")}</p>
+          </div>
+        )}
+        <div className="mt-6 flex justify-center">
+          <Link href={seeAllHref} className="rounded-full border border-mist-2 px-5 py-2.5 text-sm font-semibold text-ink hover:border-ink-3">
+            {t("seeAllFiltered")}
+          </Link>
         </div>
       </section>
 
@@ -93,7 +191,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </ol>
       </section>
 
-      {/* ── Villes ── */}
+      {/* ── Villes (seulement avec plusieurs agences) ── */}
+      {multiAgency && (
       <section className="mt-24 bg-ink py-16 text-chalk dark:bg-paper" aria-labelledby="cities-title">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr]">
           <div>
@@ -112,6 +211,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </ul>
         </div>
       </section>
+      )}
 
       {/* ── WhatsApp ── */}
       <section className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
@@ -120,7 +220,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <h2 className="text-2xl font-bold text-ink">{t("ctaTitle")}</h2>
             <p className="mt-1.5 text-ink-3">{t("ctaBody")}</p>
           </div>
-          <a href="https://wa.me/212600000000" target="_blank" rel="noopener" className="inline-flex h-12 items-center gap-2.5 rounded-xl bg-palm px-6 font-bold text-white hover:brightness-110">
+          <a href={site.contact.whatsapp ? waLink(site.contact.whatsapp) : "/contact"} target="_blank" rel="noopener" className="inline-flex h-12 items-center gap-2.5 rounded-xl bg-palm px-6 font-bold text-white hover:brightness-110">
             <MessageCircle className="size-5" aria-hidden />
             {t("ctaButton")}
           </a>

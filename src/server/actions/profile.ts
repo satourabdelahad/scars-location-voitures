@@ -6,10 +6,10 @@ import { getLocale } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
-import { auditLogs, clientProfiles, managerEvents, managers, users } from "@/db/schema";
+import { adminProfiles, auditLogs, clientProfiles, managerEvents, managers, users } from "@/db/schema";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { resolvePhoto } from "@/server/photo";
-import { PHONE_RE } from "@/lib/validation";
+import { adminProfileSchema, PHONE_RE } from "@/lib/validation";
 
 const phone = z.string().trim().regex(PHONE_RE, "phone");
 const optionalPhone = z
@@ -130,6 +130,53 @@ export async function changeMyPassword(input: { current: string; next: string; c
     if (!PASSWORD_RE.test(input.next ?? "")) return { ok: false, error: "validation", fieldErrors: { next: "passwordWeak" } };
     if (input.next !== input.confirm) return { ok: false, error: "validation", fieldErrors: { confirm: "passwordMismatch" } };
     await db.update(users).set({ passwordHash: await bcrypt.hash(input.next, 12) }).where(eq(users.id, me.id));
+    await db.insert(auditLogs).values({ actorId: me.id, entity: "security", entityId: me.id, action: "password_change" });
+    return { ok: true };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+/** L'administrateur modifie sa fiche (même présentation que celle d'un gestionnaire). */
+export async function updateAdminProfile(input: { data: unknown; photo?: unknown }): Promise<ActionResult> {
+  try {
+    const me = await assertRole(["admin"]);
+    const locale = await getLocale();
+    const p = adminProfileSchema.safeParse(input.data);
+    if (!p.success) return { ok: false, error: "validation", fieldErrors: fieldErrors(p.error) };
+    const d = p.data;
+    const [other] = await db.select({ id: users.id }).from(users).where(eq(users.email, d.email)).limit(1);
+    if (other && other.id !== me.id) return { ok: false, error: "unique:users_email_unique", fieldErrors: { email: "unique:users_email_unique" } };
+    const photo = await resolvePhoto(input.photo);
+    const profile = { civility: d.civility, firstName: d.firstName, lastName: d.lastName, whatsapp: d.whatsapp, city: d.city, birthDate: d.birthDate, maritalStatus: d.maritalStatus ?? null };
+    await db.transaction(async (tx) => {
+      await tx
+        .update(users)
+        .set({ name: `${d.firstName} ${d.lastName}`, email: d.email, phone: d.phone, ...(photo ? { image: photo.photoUrl } : {}) })
+        .where(eq(users.id, me.id));
+      await tx
+        .insert(adminProfiles)
+        .values({ userId: me.id, ...profile })
+        .onConflictDoUpdate({ target: adminProfiles.userId, set: { ...profile, updatedAt: new Date() } });
+      // Fiche gestionnaire de l'administrateur : mêmes coordonnées (listes, responsable d'agence).
+      const mgr = {
+        civility: d.civility,
+        firstName: d.firstName,
+        lastName: d.lastName,
+        phone: d.phone,
+        whatsapp: d.whatsapp,
+        city: d.city,
+        birthDate: d.birthDate,
+        maritalStatus: d.maritalStatus ?? null,
+        ...(photo ? { photoUrl: photo.photoUrl, photoPublicId: photo.photoPublicId } : {}),
+      };
+      await tx
+        .insert(managers)
+        .values({ userId: me.id, ...mgr, workStartDate: new Date().toISOString().slice(0, 10), contractType: "cdi" })
+        .onConflictDoUpdate({ target: managers.userId, set: { ...mgr, updatedAt: new Date() } });
+      await tx.insert(auditLogs).values({ actorId: me.id, entity: "security", entityId: me.id, action: "profile_update" });
+    });
+    revalidatePath(`/${locale}`, "layout");
     return { ok: true };
   } catch (err) {
     return toActionError(err);

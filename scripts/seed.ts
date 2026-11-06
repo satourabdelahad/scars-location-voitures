@@ -128,6 +128,22 @@ async function main() {
       .returning();
     console.log(`✓ Administrateur ${adminEmail} : mot de passe remis à la valeur de SEED_ADMIN_PASSWORD`);
   }
+  // L'administrateur a aussi une fiche gestionnaire (listes, responsable d'agence, voitures suivies).
+  await db
+    .insert(schema.managers)
+    .values({
+      userId: admin.id,
+      civility: "male",
+      lastName: "Administrateur",
+      firstName: "Admin",
+      phone: admin.phone ?? "",
+      whatsapp: admin.phone ?? "",
+      city: "",
+      birthDate: "1990-01-01",
+      workStartDate: new Date().toISOString().slice(0, 10),
+      contractType: "cdi",
+    })
+    .onConflictDoNothing();
   // Téléphone et codes de secours perdus : seule personne ayant accès à la base, on peut couper la double authentification.
   if (process.argv.includes("--reset-2fa")) {
     await db

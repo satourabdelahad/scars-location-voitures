@@ -1,7 +1,7 @@
 "use client";
 
 import { DropdownMenu } from "radix-ui";
-import { CalendarCheck, CalendarClock, CarFront, History, LayoutDashboard, LogOut, Trophy, UserRound } from "lucide-react";
+import { CalendarCheck, CarFront, Handshake, History, LayoutDashboard, LogOut, Trophy, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Link } from "@/i18n/navigation";
@@ -19,14 +19,16 @@ export function UserMenu({ user, tone = "light" }: { user: { name?: string | nul
   const [leaving, startLeaving] = useTransition();
   const item = "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-ink-2 outline-none data-[highlighted]:bg-chalk data-[highlighted]:text-ink";
   const staff = user.role !== "client";
+  // Menu en haut à droite : chaque entrée ouvre l'onglet correspondant de sa propre fiche.
+  const profile = user.role === "client" ? "/account/profile" : `${home}/profile`;
   const links = [
-    { href: user.role === "client" ? "/account/profile" : `${home}/profile`, label: t("profile"), Icon: UserRound },
+    { href: profile, label: t("profile"), Icon: UserRound },
     ...(staff
       ? [
-          { href: `${home}/appointments`, label: t("myAppointments"), Icon: CalendarClock },
-          { href: `${home}/achievements`, label: t("myAchievements"), Icon: Trophy },
-          { href: `${home}/my-cars`, label: t("myCars"), Icon: CarFront },
-          { href: `${home}/history`, label: t("history"), Icon: History },
+          { href: `${profile}?tab=deals`, label: t("myDeals"), Icon: Handshake },
+          { href: `${profile}?tab=cars`, label: t("myCars"), Icon: CarFront },
+          { href: `${profile}?tab=rentals`, label: t("myAchievements"), Icon: Trophy },
+          { href: `${profile}?tab=history`, label: t("history"), Icon: History },
         ]
       : [{ href: "/account", label: t("myReservations"), Icon: CalendarCheck }]),
   ];

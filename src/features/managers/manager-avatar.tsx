@@ -1,4 +1,7 @@
+"use client";
+
 /* eslint-disable @next/next/no-img-element */
+import { useState } from "react";
 import { cn, initials } from "@/lib/utils";
 
 const SIZES = { sm: "size-9 text-xs", md: "size-14 text-lg", lg: "size-20 text-2xl" } as const;
@@ -17,12 +20,19 @@ export function ManagerAvatar({
   size?: keyof typeof SIZES;
   className?: string;
 }) {
+  // Photo introuvable : on garde les initiales, sans icône d'image cassée.
+  const [broken, setBroken] = useState<string | null>(null);
+  const showPhoto = photoUrl && broken !== photoUrl;
   return (
     <span
-      className={cn("grid shrink-0 place-items-center overflow-hidden rounded-full bg-ink font-bold text-chalk ring-2 ring-paper", SIZES[size], className)}
+      role="img"
+      aria-label={`${firstName} ${lastName}`}
+      className={cn("relative grid shrink-0 place-items-center overflow-hidden rounded-full bg-ink font-bold text-chalk ring-2 ring-paper", SIZES[size], className)}
       style={{ fontStretch: "120%" }}
     >
-      {photoUrl ? <img src={photoUrl} alt={`${firstName} ${lastName}`} className="size-full object-cover" loading="lazy" /> : initials(firstName, lastName)}
+      {/* Les initiales restent visibles derrière la photo, si elle ne se charge pas. */}
+      <span aria-hidden>{initials(firstName, lastName)}</span>
+      {showPhoto && <img src={photoUrl} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" onError={() => setBroken(photoUrl)} />}
     </span>
   );
 }

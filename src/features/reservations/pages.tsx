@@ -2,11 +2,12 @@ import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/db";
-import { tablePreferences } from "@/db/schema";
+import { managers, tablePreferences } from "@/db/schema";
+import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { CarArt } from "@/components/car-art";
 import { Badge, DefinitionList, PageHeader, Panel, reservationTone } from "@/components/ui/misc";
-import { getReservationForStaff, listReservationsForStaff } from "@/server/queries/reservations";
+import { canValidateReservation, getReservationForStaff, listReservationsForStaff } from "@/server/queries/reservations";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import { promotionLabel } from "@/lib/promotion-label";
 import { ReservationsTable } from "./reservations-table";
@@ -23,7 +24,7 @@ export async function ReservationsListPage({ base, userId }: { base: Base; userI
   return (
     <>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
-      <ReservationsTable rows={rows} base={base} prefs={prefs ? { visibleColumns: prefs.visibleColumns, pageSize: prefs.pageSize } : null} />
+      <ReservationsTable rows={rows} base={base} userId={userId} isAdmin={base === "/admin"} prefs={prefs ? { visibleColumns: prefs.visibleColumns, pageSize: prefs.pageSize } : null} />
     </>
   );
 }
@@ -31,6 +32,11 @@ export async function ReservationsListPage({ base, userId }: { base: Base; userI
 export async function ReservationDetailPage({ base, id, locale }: { base: Base; id: string; locale: string }) {
   const r = await getReservationForStaff(id);
   if (!r) notFound();
+  const session = await auth();
+  const canValidate = session?.user ? await canValidateReservation(session.user, r.id) : false;
+  const responsible = r.pickupAgency.managerId
+    ? await db.query.managers.findFirst({ where: eq(managers.id, r.pickupAgency.managerId), columns: { firstName: true, lastName: true } })
+    : null;
   const [t, ts, tb, tx, te, tf] = await Promise.all([
     getTranslations("Reservations"),
     getTranslations("Status"),
@@ -107,7 +113,7 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
               </div>
             </dl>
             <div className="mt-6">
-              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} />
+              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} canValidate={canValidate} responsible={responsible ? `${responsible.firstName} ${responsible.lastName}` : null} />
             </div>
           </Panel>
           <Panel className="p-6">

@@ -1,6 +1,6 @@
 "use client";
 
-import { CarFront, Eye, Mail, RotateCcw, Save, Send, UserPlus, CalendarCheck, UserRoundPlus, MessageSquareShare } from "lucide-react";
+import { CarFront, Eye, Mail, RotateCcw, Save, Send, UserPlus, CalendarCheck, UserRoundPlus, MessageSquareShare, KeyRound, Store, UsersRound, TicketPercent } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ import { previewEmailTemplate, resetEmailTemplate, saveEmailTemplate, sendTestEm
 
 type Version = { subject: string; html: string; custom: boolean; updatedAt: string | null };
 type Tpl = { key: TemplateKey; byLocale: Record<string, Version> };
-const ICONS: Record<TemplateKey, typeof Mail> = { manager_invite: UserPlus, client_invite: UserRoundPlus, car_created: CarFront, reservation_created: CalendarCheck, prospect_followup: MessageSquareShare };
+const ICONS: Record<TemplateKey, typeof Mail> = { manager_invite: UserPlus, client_invite: UserRoundPlus, car_created: CarFront, reservation_created: CalendarCheck, prospect_followup: MessageSquareShare, manager_password_set: KeyRound, car_agency_assigned: Store, manager_agency_joined: UsersRound, marketing_promotion: TicketPercent };
 
 export function TemplatesEditor({ templates, locale }: { templates: Tpl[]; locale: string }) {
   const t = useTranslations("Admin");

@@ -37,6 +37,8 @@ export const managerSchema = z.object({
   contractType: z.enum(["cdi", "cdd", "freelance"], { message: "required" }),
 });
 export type ManagerInput = z.infer<typeof managerSchema>;
+/** Fiche de l'administrateur : mêmes informations qu'un gestionnaire, sans contrat. */
+export const adminProfileSchema = managerSchema.omit({ workStartDate: true, contractType: true });
 
 export const LOCALE_CODES = ["fr", "ary", "ar", "en", "es", "de", "ja", "zh", "ko"] as const;
 
@@ -77,6 +79,8 @@ export const carDeactivationSchema = z.object({
   note: z.string().trim().max(1000).optional(),
 });
 
+const emptyToNullR = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
+
 export const reservationSchema = z
   .object({
     carId: z.string().uuid(),
@@ -88,14 +92,29 @@ export const reservationSchema = z
     driverFirstName: required(),
     driverLastName: required(),
     driverPhone: phone,
-    driverLicenseNumber: required(64),
-    driverBirthDate: isoDate.refine((d) => yearsBetween(d) >= 21, "minAge21"),
+    // Facultatifs à la réservation (présentés à l'agence au départ)
+    driverLicenseNumber: z.preprocess(emptyToNullR, z.string().trim().max(64).nullable()).default(null),
+    driverBirthDate: z.preprocess(emptyToNullR, isoDate.refine((d) => yearsBetween(d) >= 21, "minAge21").nullable()).default(null),
     flightNumber: z.string().trim().max(16).optional(),
     clientNote: z.string().trim().max(1000).optional(),
     promoCode: z.string().trim().max(32).optional(),
   })
   .refine((r) => r.endDate > r.startDate, { path: ["endDate"], message: "dateOrder" });
 export type ReservationInput = z.infer<typeof reservationSchema>;
+
+/**
+ * Nouveau client sans compte, au moment de réserver : le minimum demandé.
+ * Nom, prénom, ville et téléphone obligatoires ; email et WhatsApp facultatifs.
+ */
+export const guestClientSchema = z.object({
+  lastName: z.string().trim().min(2, "required").max(120),
+  firstName: z.string().trim().min(2, "required").max(120),
+  city: z.string().trim().min(2, "required").max(120),
+  email: z.preprocess(emptyToNullR, z.string().trim().toLowerCase().email("email").max(255).nullable()),
+  phone,
+  whatsapp: z.preprocess(emptyToNullR, phone.nullable()),
+});
+export type GuestClientInput = z.infer<typeof guestClientSchema>;
 
 const emptyToNull = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
 
@@ -114,3 +133,31 @@ export const clientSchema = z.object({
   notes: z.preprocess(emptyToNull, z.string().trim().max(4000).nullable()),
 });
 export type ClientInput = z.infer<typeof clientSchema>;
+
+/** Agence : toutes les informations sont obligatoires (nom, ville, adresse, téléphones, responsable). */
+const optionalUrl = z.preprocess(
+  (v) => {
+    if (typeof v !== "string" || !v.trim()) return null;
+    const t = v.trim();
+    return /^https?:\/\//i.test(t) ? t : `https://${t}`;
+  },
+  z.string().url("url").max(300).refine((u) => /^https?:\/\/[^\s/]+\.[^\s]+/i.test(u), "url").nullable(),
+);
+
+export const agencySchema = z.object({
+  name: z.string().trim().min(2, "required").max(160),
+  city: z.string().trim().min(2, "required").max(120),
+  address: z.string().trim().min(5, "required").max(500),
+  phone,
+  whatsapp: phone,
+  isAirport: z.boolean().default(false),
+  // Site web et réseaux sociaux : facultatifs ; « facebook.com/x » devient « https://facebook.com/x ».
+  websiteUrl: optionalUrl,
+  facebookUrl: optionalUrl,
+  instagramUrl: optionalUrl,
+  linkedinUrl: optionalUrl,
+  xUrl: optionalUrl,
+  /** Responsable : un compte gestionnaire existant */
+  managerId: z.string({ error: "required" }).uuid("required"),
+});
+export type AgencyInput = z.infer<typeof agencySchema>;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, CalendarPlus, CarFront, CheckCircle2, Handshake, KeyRound, LogIn, LogOut, Pencil, PlusCircle, Power, ShieldCheck, StickyNote, Undo2, UserCheck, UserPlus, UserRound, Wrench, XCircle } from "lucide-react";
+import { Ban, Building2, CalendarPlus, Download, ListChecks, CarFront, CheckCircle2, Handshake, KeyRound, LogIn, LogOut, Mail, Pencil, PlusCircle, Power, ShieldCheck, StickyNote, Undo2, UserCheck, UserPlus, UserRound, Wrench, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, type ReactNode } from "react";
 import { DataTable, type Column } from "@/components/data-table/data-table";
@@ -12,7 +12,7 @@ import { cn, formatDateTime } from "@/lib/utils";
 import type { DealType } from "@/db/schema";
 import type { ActivityGroup, ActivityRow } from "@/server/queries/manager-profile";
 
-const GROUPS: ActivityGroup[] = ["session", "fleet", "reservations", "clients", "deals", "profile"];
+const GROUPS: ActivityGroup[] = ["session", "agencies", "fleet", "reservations", "clients", "deals", "profile", "exports"];
 
 const STYLE: Record<string, { icon: ReactNode; tone: string; badge: Tone }> = {
   session_login: { icon: <LogIn />, tone: "bg-palm-soft text-palm", badge: "success" },
@@ -42,6 +42,23 @@ const STYLE: Record<string, { icon: ReactNode; tone: string; badge: Tone }> = {
   profile_activated: { icon: <UserCheck />, tone: "bg-palm-soft text-palm", badge: "success" },
   manager_assign_cars: { icon: <CarFront />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
   manager_unassign_car: { icon: <CarFront />, tone: "bg-mist text-ink-2", badge: "neutral" },
+  manager_assign_rule: { icon: <CarFront />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  manager_agencies: { icon: <Building2 />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  car_bulk_promo: { icon: <ListChecks />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
+  car_promo: { icon: <CarFront />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
+  marketing_send: { icon: <Mail />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  manager_clear_rule: { icon: <CarFront />, tone: "bg-mist text-ink-2", badge: "neutral" },
+  agency_create: { icon: <Building2 />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  agency_update: { icon: <Pencil />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  agency_deactivate: { icon: <Ban />, tone: "bg-danger-soft text-danger", badge: "danger" },
+  agency_reactivate: { icon: <Power />, tone: "bg-palm-soft text-palm", badge: "success" },
+  export_table: { icon: <Download />, tone: "bg-mist text-ink-2", badge: "neutral" },
+  export_record: { icon: <Download />, tone: "bg-mist text-ink-2", badge: "neutral" },
+  manager_bulk_deactivate: { icon: <ListChecks />, tone: "bg-danger-soft text-danger", badge: "danger" },
+  manager_bulk_activate: { icon: <ListChecks />, tone: "bg-palm-soft text-palm", badge: "success" },
+  manager_bulk_resend: { icon: <ListChecks />, tone: "bg-majorelle-soft text-majorelle", badge: "info" },
+  security_password_change: { icon: <KeyRound />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
+  manager_password_set: { icon: <KeyRound />, tone: "bg-saffron/20 text-saffron-ink", badge: "warning" },
   security_unlock: { icon: <ShieldCheck />, tone: "bg-palm-soft text-palm", badge: "success" },
 };
 const fallbackStyle = { icon: <UserRound />, tone: "bg-mist text-ink-2", badge: "neutral" as Tone };

@@ -1,5 +1,5 @@
 /** Modèles d'email modifiables dans Administration. Partagé navigateur / serveur (pas de secrets ici). */
-export const TEMPLATE_KEYS = ["manager_invite", "client_invite", "car_created", "reservation_created", "prospect_followup"] as const;
+export const TEMPLATE_KEYS = ["manager_invite", "client_invite", "car_created", "reservation_created", "prospect_followup", "manager_password_set", "car_agency_assigned", "manager_agency_joined", "marketing_promotion"] as const;
 export type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
 /** Variables disponibles par modèle, avec une valeur d'exemple pour l'aperçu. */
@@ -88,10 +88,57 @@ export const TEMPLATE_VARIABLES: Record<TemplateKey, { key: string; sample: stri
     { key: "bouton_site", sample: "[bouton]" },
     { key: "site", sample: "Dizy Cars" },
   ],
+  manager_password_set: [
+    { key: "civilite", sample: "Madame" },
+    { key: "prenom", sample: "Salma" },
+    { key: "nom", sample: "Bennani" },
+    { key: "email", sample: "salma@dizy-cars.com" },
+    { key: "mot_de_passe", sample: "Nouveau2026!" },
+    { key: "modifie_par", sample: "Hicham (Administrateur)" },
+    { key: "lien_connexion", sample: "https://dizy-cars.com/fr/login" },
+    { key: "bouton_connexion", sample: "[bouton]" },
+    { key: "site", sample: "Dizy Cars" },
+  ],
+  car_agency_assigned: [
+    { key: "destinataire", sample: "Salma" },
+    { key: "agence", sample: "Casablanca, Aéroport Mohammed V" },
+    { key: "nombre_voitures", sample: "2" },
+    { key: "voitures", sample: "Dacia Duster (78901-A-40), BYD Seal U DM-i (77777-A-6)" },
+    { key: "ajoute_par", sample: "Hicham (Administrateur)" },
+    { key: "lien_agence", sample: "https://dizy-cars.com/fr/manager/agencies/1?tab=cars" },
+    { key: "bouton_agence", sample: "[bouton]" },
+    { key: "site", sample: "Dizy Cars" },
+  ],
+  manager_agency_joined: [
+    { key: "destinataire", sample: "Salma" },
+    { key: "civilite", sample: "Monsieur" },
+    { key: "prenom", sample: "Karim" },
+    { key: "nom", sample: "Tazi" },
+    { key: "email", sample: "karim@dizy-cars.com" },
+    { key: "telephone", sample: "+212 6 61 23 45 07" },
+    { key: "agence", sample: "Marrakech, Guéliz" },
+    { key: "ajoute_par", sample: "Hicham (Administrateur)" },
+    { key: "lien_agence", sample: "https://dizy-cars.com/fr/manager/agencies/2?tab=managers" },
+    { key: "bouton_agence", sample: "[bouton]" },
+    { key: "site", sample: "Dizy Cars" },
+  ],
+  marketing_promotion: [
+    { key: "civilite", sample: "Monsieur" },
+    { key: "prenom", sample: "Youssef" },
+    { key: "nom", sample: "Alaoui" },
+    { key: "message", sample: "Profitez de l'hiver pour découvrir le Maroc au volant." },
+    { key: "code_promo", sample: "HIVER-7KQ2" },
+    { key: "remise", sample: "15 %" },
+    { key: "date_fin", sample: "31 décembre 2026" },
+    { key: "jours_min", sample: "3" },
+    { key: "lien_promo", sample: "https://dizy-cars.com/fr/promo/…" },
+    { key: "bouton_promo", sample: "[bouton]" },
+    { key: "site", sample: "Dizy Cars" },
+  ],
 };
 
 /** Variables qui insèrent un bloc HTML (bouton) au lieu d'un texte. */
-export const RAW_VARIABLES = new Set(["bouton_invitation", "bouton_voiture", "bouton_reservation", "bouton_site"]);
+export const RAW_VARIABLES = new Set(["bouton_invitation", "bouton_voiture", "bouton_reservation", "bouton_site", "bouton_connexion", "bouton_agence", "bouton_promo"]);
 
 
 /** Remplace les {{variables}} ; les valeurs texte sont échappées, les boutons sont insérés tels quels. */

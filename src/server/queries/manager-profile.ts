@@ -20,7 +20,7 @@ export async function managerIdForUser(userId: string) {
 /* ───────────────────────────── Réalisations ───────────────────────────── */
 
 /** Locations réalisées par un gestionnaire, ou par toute l'équipe quand userId est null (administrateur). */
-export async function managerRentals(userId: string | null) {
+export async function managerRentals(userId: string | null, opts: { carId?: string } = {}) {
   const res = await db.execute<{
     id: string;
     reference: string;
@@ -56,7 +56,7 @@ export async function managerRentals(userId: string | null) {
     JOIN cars c ON c.id = r.car_id
     JOIN agencies a ON a.id = r.pickup_agency_id
     LEFT JOIN promotions p ON p.id = r.promotion_id
-    WHERE ${userId ? sql`r.handled_by = ${userId} AND` : sql``} r.status IN ('confirmed', 'ongoing', 'completed')
+    WHERE ${userId ? sql`r.handled_by = ${userId} AND` : sql``} ${opts.carId ? sql`r.car_id = ${opts.carId} AND` : sql``} r.status IN ('confirmed', 'ongoing', 'completed')
     ORDER BY r.start_date DESC
     LIMIT 1000
   `);
@@ -88,9 +88,9 @@ export type RentalRow = Awaited<ReturnType<typeof managerRentals>>[number];
 /* ──────────────────────────────── Deals ──────────────────────────────── */
 
 /** Deals d'un gestionnaire ou d'un client (fiche client : tous les gestionnaires). */
-export async function listDeals(scope: { managerId?: string; clientId?: string }) {
+export async function listDeals(scope: { managerId?: string; clientId?: string; createdBy?: string }) {
   const rows = await db.query.deals.findMany({
-    where: scope.clientId ? eq(deals.clientId, scope.clientId) : eq(deals.managerId, scope.managerId!),
+    where: scope.clientId ? eq(deals.clientId, scope.clientId) : scope.createdBy ? eq(deals.createdBy, scope.createdBy) : eq(deals.managerId, scope.managerId!),
     orderBy: [desc(deals.updatedAt)],
     with: {
       manager: { columns: { id: true, firstName: true, lastName: true } },
@@ -164,7 +164,7 @@ export async function dealFormOptions() {
 
 /* ────────────────────────────── Historique ────────────────────────────── */
 
-export type ActivityGroup = "session" | "fleet" | "reservations" | "clients" | "deals" | "profile";
+export type ActivityGroup = "session" | "fleet" | "reservations" | "clients" | "deals" | "profile" | "agencies" | "exports";
 
 /**
  * Journal d'un gestionnaire : connexions, actions sur le parc et les réservations (audit_logs),
@@ -205,9 +205,10 @@ export async function activityLog(scope: { userId: string; managerId: string | n
              r.reference,
              COALESCE(NULLIF(trim(coalesce(cp.first_name, '') || ' ' || coalesce(cp.last_name, '')), ''), cu.name, cu.email,
                       NULLIF(trim(coalesce(ap_cp.first_name, '') || ' ' || coalesce(ap_cp.last_name, '')), ''), au.name,
-                      NULLIF(trim(lm.first_name || ' ' || lm.last_name), '')) AS deal_name,
+                      NULLIF(trim(lm.first_name || ' ' || lm.last_name), ''), ag.name, l.changes->>'title') AS deal_name,
              NULL AS from_type, NULL AS to_type,
-             COALESCE(l.changes->>'reason', l.changes->>'note') AS detail,
+             COALESCE(l.changes->>'reason', l.changes->>'note',
+                      CASE WHEN l.entity = 'export' THEN upper(l.changes->>'format') || ' · ' || (l.changes->>'rows') END) AS detail,
              l.changes->>'provider' AS provider,
              l.actor_id
       FROM audit_logs l
@@ -219,6 +220,7 @@ export async function activityLog(scope: { userId: string; managerId: string | n
       LEFT JOIN users au ON au.id = ap.client_id
       LEFT JOIN client_profiles ap_cp ON ap_cp.user_id = au.id
       LEFT JOIN managers lm ON l.entity = 'manager' AND lm.id::text = l.entity_id
+      LEFT JOIN agencies ag ON l.entity = 'agency' AND ag.id::text = l.entity_id
       WHERE (${byActor(sql.raw("l.actor_id"))}
              OR ${scope?.managerId ? sql`(l.entity = 'manager' AND l.entity_id = ${scope.managerId})` : sql`FALSE`})
         AND l.entity <> 'email_template'
@@ -245,11 +247,15 @@ export async function activityLog(scope: { userId: string; managerId: string | n
         ? "deals"
         : r.source === "profile" || r.entity === "manager"
           ? "profile"
+          : r.entity === "agency"
+            ? "agencies"
+            : r.entity === "export"
+              ? "exports"
           : r.entity === "session" || r.entity === "security"
             ? "session"
             : r.entity === "car"
               ? "fleet"
-              : r.entity === "client" || r.entity === "appointment"
+              : r.entity === "client" || r.entity === "appointment" || r.entity === "marketing"
                 ? "clients"
                 : "reservations";
     const kind = r.source === "audit" ? `${r.entity}_${r.action}` : r.source === "deal" ? `deal_${r.action}` : `profile_${r.action}`;
@@ -396,3 +402,64 @@ export async function staffOptions() {
   `);
   return rows.rows.map((r) => ({ id: r.id, name: r.name ?? "—", role: r.role }));
 }
+
+/* ───────────────────────────── En-tête de fiche ───────────────────────────── */
+
+/** En ligne = activité dans les 5 dernières minutes (users.last_seen_at, mis à jour à chaque page). */
+export const ONLINE_WINDOW_MS = 5 * 60_000;
+
+/**
+ * Résumé affiché en haut de la fiche d'un gestionnaire ou de l'administrateur : présence,
+ * dernière connexion, voitures affectées et leurs villes, règle marque / ville, dernier deal conclu.
+ */
+export async function staffSummary(userId: string, managerId: string | null) {
+  const res = await db.execute<{
+    last_seen_at: string | null;
+    last_login_at: string | null;
+    car_count: number;
+    fleet_count: number;
+    cities: string[] | null;
+    rule_brands: string[] | null;
+    rule_cities: string[] | null;
+    rule_agencies: number[] | null;
+    rule_count: number | null;
+    rule_car_ids: string[] | null;
+    deal_name: string | null;
+    deal_at: string | null;
+  }>(sql`
+    SELECT u.last_seen_at, u.last_login_at,
+      (SELECT count(*)::int FROM car_managers cm WHERE cm.manager_id = ${managerId}) AS car_count,
+      (SELECT count(*)::int FROM cars c WHERE c.status <> 'deactivated') AS fleet_count,
+      (SELECT array_agg(DISTINCT a.city ORDER BY a.city) FROM car_managers cm
+         JOIN cars c ON c.id = cm.car_id JOIN agencies a ON a.id = c.agency_id WHERE cm.manager_id = ${managerId}) AS cities,
+      r.brands AS rule_brands, r.cities AS rule_cities, r.agencies AS rule_agencies, r.car_count AS rule_count,
+      (SELECT array_agg(cm.car_id::text) FROM car_managers cm WHERE cm.manager_id = ${managerId} AND cm.source = 'rule') AS rule_car_ids,
+      d.prospect_name AS deal_name, d.updated_at AS deal_at
+    FROM users u
+    LEFT JOIN manager_car_rules r ON r.manager_id = ${managerId}
+    LEFT JOIN LATERAL (
+      SELECT dd.prospect_name, dd.updated_at FROM deals dd
+      WHERE dd.type = 'rental' AND (dd.created_by = u.id OR (${managerId}::uuid IS NOT NULL AND dd.manager_id = ${managerId}))
+      ORDER BY dd.updated_at DESC LIMIT 1
+    ) d ON TRUE
+    WHERE u.id = ${userId}
+  `);
+  const r = res.rows[0];
+  const lastSeen = r?.last_seen_at ? new Date(r.last_seen_at) : null;
+  const ruleCities = r?.rule_cities ?? [];
+  return {
+    online: Boolean(lastSeen && Date.now() - lastSeen.getTime() < ONLINE_WINDOW_MS),
+    lastLoginAt: r?.last_login_at ? new Date(r.last_login_at).toISOString() : null,
+    carCount: r?.car_count ?? 0,
+    fleetCount: r?.fleet_count ?? 0,
+    /** Villes de la règle, sinon villes des agences des voitures affectées */
+    cities: ruleCities.length ? ruleCities : (r?.cities ?? []),
+    rule:
+      r && (r.rule_brands?.length || ruleCities.length || r.rule_agencies?.length)
+        ? { brands: r.rule_brands ?? [], cities: ruleCities, agencies: r.rule_agencies ?? [], carCount: r.rule_count ?? 0 }
+        : null,
+    ruleCarIds: r?.rule_car_ids ?? [],
+    lastDeal: r?.deal_name ? { name: r.deal_name, at: new Date(r.deal_at!).toISOString() } : null,
+  };
+}
+export type StaffSummary = Awaited<ReturnType<typeof staffSummary>>;

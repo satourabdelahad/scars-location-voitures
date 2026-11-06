@@ -18,7 +18,7 @@ export async function AuthShell({ title, subtitle, children }: { title: string; 
         <svg className="absolute inset-x-0 top-[63%] h-2 w-full" preserveAspectRatio="none" viewBox="0 0 600 8">
           <line x1="0" y1="4" x2="600" y2="4" stroke="var(--saffron)" strokeWidth="5" strokeDasharray="44 30" className="lane-run" />
         </svg>
-        <DrivingCar category="cabriolet" color="#f2b53a" messages={[tc("hello"), tc("welcome"), tc("mission")]} className="car-arrive absolute inset-x-[4%] top-[30%] w-[92%]" />
+        <DrivingCar category="cabriolet" color="#f2b53a" messages={[tc("hello"), tc("welcome"), tc("mission")]} className="car-arrive absolute start-[22%] top-[41%] w-[56%]" />
       </div>
     </div>
   );

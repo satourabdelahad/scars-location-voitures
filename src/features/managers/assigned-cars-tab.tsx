@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { CarFront, Check, Plus, Search, Unlink } from "lucide-react";
+import { Building2, CarFront, Store, Check, Plus, Search, Tag, Unlink } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import { CarArt } from "@/components/car-art";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge, EmptyState, Panel } from "@/components/ui/misc";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { Link, useRouter } from "@/i18n/navigation";
 import { carState, STATE_TONE } from "@/lib/car-state";
 import { cn, formatMoney } from "@/lib/utils";
@@ -22,6 +23,8 @@ const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").to
  * plus le rappel des voitures partagées (sans gestionnaire = tous). L'administrateur peut
  * affecter plusieurs voitures d'un coup et en retirer.
  */
+export type CarRule = { brands: string[]; cities: string[]; agencies?: number[]; carCount: number };
+
 export function AssignedCarsTab({
   managerId,
   assigned,
@@ -29,13 +32,17 @@ export function AssignedCarsTab({
   sharedCount,
   canEdit,
   fleetBase,
+  ruleCarIds = [],
 }: {
   managerId: string;
   assigned: FleetRow[];
+  /** Toutes les voitures actives (déjà affectées comprises) */
   candidates: FleetRow[];
   sharedCount: number;
   canEdit: boolean;
   fleetBase: string;
+  /** Voitures ajoutées par la règle */
+  ruleCarIds?: string[];
 }) {
   const t = useTranslations("Managers");
   const tf = useTranslations("Fleet");
@@ -92,7 +99,10 @@ export function AssignedCarsTab({
                     {r.city}
                   </p>
                   <div className="mt-1.5 flex items-center justify-between gap-2">
-                    <Badge tone={STATE_TONE[s]} dot>{tf(`state.${s}`)}</Badge>
+                    <span className="flex flex-wrap items-center gap-1">
+                      <Badge tone={STATE_TONE[s]} dot>{tf(`state.${s}`)}</Badge>
+                      {ruleCarIds.includes(r.id) && <Badge tone="info">{t("byRule")}</Badge>}
+                    </span>
                     <span className="text-xs font-semibold text-ink-2">{formatMoney(r.dailyPrice, locale)}</span>
                   </div>
                 </div>
@@ -114,25 +124,71 @@ export function AssignedCarsTab({
         </ul>
       )}
 
-      {open && <AssignDialog managerId={managerId} candidates={candidates} onClose={() => setOpen(false)} />}
+      {open && <AssignDialog managerId={managerId} candidates={candidates} assignedIds={rows.map((r) => r.id)} onClose={() => setOpen(false)} />}
     </Panel>
   );
 }
 
-function AssignDialog({ managerId, candidates, onClose }: { managerId: string; candidates: FleetRow[]; onClose: () => void }) {
+function AssignDialog({
+  managerId,
+  candidates,
+  assignedIds,
+  onClose,
+}: {
+  managerId: string;
+  candidates: FleetRow[];
+  assignedIds: string[];
+  onClose: () => void;
+}) {
   const t = useTranslations("Managers");
   const tf = useTranslations("Fleet");
   const tc = useTranslations("Common");
   const te = useTranslations("Errors");
   const router = useRouter();
   const [q, setQ] = useState("");
+  const [brands, setBrands] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [agencyIds, setAgencyIds] = useState<string[]>([]);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [pending, start] = useTransition();
+  const assigned = useMemo(() => new Set(assignedIds), [assignedIds]);
+  // Les critères filtrent la liste ; la règle automatique se règle dans le Périmètre.
+
+  const count = (key: "brand" | "city") => {
+    const m = new Map<string, number>();
+    for (const c of candidates) m.set(c[key], (m.get(c[key]) ?? 0) + 1);
+    return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0], "fr")).map(([value, n]) => ({ value, label: value, count: n }));
+  };
+  const brandOptions = useMemo(() => count("brand"), [candidates]); // eslint-disable-line react-hooks/exhaustive-deps
+  const cityOptions = useMemo(() => count("city"), [candidates]); // eslint-disable-line react-hooks/exhaustive-deps
+  const agencyOptions = useMemo(() => {
+    const m = new Map<string, { value: string; label: string; count: number }>();
+    for (const c of candidates) {
+      const k = String(c.agencyId);
+      const cur = m.get(k) ?? { value: k, label: `${c.city}, ${c.agencyName}`, count: 0 };
+      cur.count++;
+      m.set(k, cur);
+    }
+    return [...m.values()].sort((a, b) => a.label.localeCompare(b.label, "fr"));
+  }, [candidates]);
+  const inAgency = (c: FleetRow) => !agencyIds.length || agencyIds.includes(String(c.agencyId));
+
+  // Filtre : marques ET villes choisies (un critère vide = tous), puis recherche libre.
   const list = useMemo(() => {
     const n = norm(q.trim());
-    return n ? candidates.filter((c) => norm(`${c.brand} ${c.model} ${c.year} ${c.plateNumber} ${c.city}`).includes(n)) : candidates;
-  }, [q, candidates]);
-  const allShown = list.length > 0 && list.every((c) => picked.has(c.id));
+    return candidates.filter(
+      (c) =>
+        (!brands.length || brands.includes(c.brand)) &&
+        (!cities.length || cities.includes(c.city)) &&
+        inAgency(c) &&
+        (!n || norm(`${c.brand} ${c.model} ${c.year} ${c.plateNumber} ${c.city}`).includes(n)),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q, brands, cities, agencyIds, candidates]);
+  const selectable = list.filter((c) => !assigned.has(c.id));
+  const allShown = selectable.length > 0 && selectable.every((c) => picked.has(c.id));
+  const isOn = (id: string) => assigned.has(id) || picked.has(id);
+  const total = picked.size;
 
   const toggle = (id: string) =>
     setPicked((s) => {
@@ -144,7 +200,7 @@ function AssignDialog({ managerId, candidates, onClose }: { managerId: string; c
 
   const save = () =>
     start(async () => {
-      const r = await assignCarsToManager(managerId, [...picked]);
+      const r = await assignCarsToManager(managerId, { carIds: [...picked] });
       if (r.ok) {
         toast.success(t("carsAssigned", { count: r.data!.added }));
         router.refresh();
@@ -154,39 +210,84 @@ function AssignDialog({ managerId, candidates, onClose }: { managerId: string; c
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent title={t("assignCars")} description={t("assignCarsBody")} closeLabel={tc("close")} className="max-h-[calc(100dvh-32px)] max-w-2xl overflow-y-auto">
-        <div className="flex flex-wrap items-center gap-2">
+      <DialogContent title={t("assignCars")} description={t("assignCarsBody")} closeLabel={tc("close")} className="max-h-[calc(100dvh-32px)] max-w-3xl overflow-y-auto">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <MultiSelect
+            label={t("byBrand")}
+            icon={<Tag />}
+            options={brandOptions}
+            value={brands}
+            onChange={(v) => {
+              setBrands(v);
+            }}
+            searchPlaceholder={t("searchBrand")}
+            allLabel={t("allBrands")}
+            clearLabel={t("clearChoice")}
+            emptyLabel={t("noOption")}
+          />
+          <MultiSelect
+            label={t("byCity")}
+            icon={<Building2 />}
+            options={cityOptions}
+            value={cities}
+            onChange={(v) => {
+              setCities(v);
+            }}
+            searchPlaceholder={t("searchCity")}
+            allLabel={t("allCities")}
+            clearLabel={t("clearChoice")}
+            emptyLabel={t("noOption")}
+          />
+          <MultiSelect
+            label={t("byAgency")}
+            icon={<Store />}
+            options={agencyOptions}
+            value={agencyIds}
+            onChange={(v) => {
+              setAgencyIds(v);
+            }}
+            searchPlaceholder={t("searchAgency")}
+            allLabel={t("allAgencies")}
+            clearLabel={t("clearChoice")}
+            emptyLabel={t("noOption")}
+          />
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-[10px] border border-mist-2 bg-paper px-3 focus-within:border-majorelle">
             <Search className="size-4 text-ink-3" />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("searchCars")} aria-label={t("searchCars")} className="h-full min-w-0 flex-1 bg-transparent text-sm outline-none" />
           </label>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              setPicked((s) => {
-                const n = new Set(s);
-                for (const c of list) {
-                  if (allShown) n.delete(c.id);
-                  else n.add(c.id);
-                }
-                return n;
-              })
-            }
-          >
-            {allShown ? t("unselectShown") : t("selectShown")}
-          </Button>
+          {(
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                setPicked((s) => {
+                  const n = new Set(s);
+                  for (const c of selectable) {
+                    if (allShown) n.delete(c.id);
+                    else n.add(c.id);
+                  }
+                  return n;
+                })
+              }
+            >
+              {allShown ? t("unselectShown") : t("selectShown")}
+            </Button>
+          )}
         </div>
-        <ul className="scroll-thin mt-3 max-h-[50vh] space-y-1 overflow-y-auto">
+        <ul className="scroll-thin mt-3 max-h-[42vh] space-y-1 overflow-y-auto">
           {list.map((c) => {
-            const on = picked.has(c.id);
+            const on = isOn(c.id);
+            const locked = assigned.has(c.id);
             return (
               <li key={c.id}>
                 <button
                   type="button"
+                  disabled={locked}
                   onClick={() => toggle(c.id)}
                   aria-pressed={on}
-                  className={cn("flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start transition-colors", on ? "border-majorelle bg-majorelle-soft" : "border-mist hover:bg-chalk")}
+                  className={cn("flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start transition-colors disabled:cursor-default", on ? "border-majorelle bg-majorelle-soft" : "border-mist hover:bg-chalk")}
                 >
                   <span className={cn("grid size-5 shrink-0 place-items-center rounded-md border", on ? "border-majorelle bg-majorelle text-white" : "border-mist-2 bg-paper")}>
                     {on && <Check className="size-3.5" />}
@@ -197,6 +298,7 @@ function AssignDialog({ managerId, candidates, onClose }: { managerId: string; c
                       <span dir="ltr" className="font-mono">{c.plateNumber}</span> · {c.city} · {c.managerNames.length ? c.managerNames.join(", ") : tf("allManagers")}
                     </span>
                   </span>
+                  {assigned.has(c.id) && <Badge tone="success">{t("alreadyAssigned")}</Badge>}
                 </button>
               </li>
             );
@@ -204,7 +306,7 @@ function AssignDialog({ managerId, candidates, onClose }: { managerId: string; c
           {list.length === 0 && <li className="px-3 py-6 text-center text-sm text-ink-3">{t("noCarFound")}</li>}
         </ul>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-mist pt-4">
-          <span className="text-sm text-ink-3">{t("carsPicked", { count: picked.size })}</span>
+          <span className="text-sm text-ink-3">{t("carsPicked", { count: total })}</span>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>{tc("cancel")}</Button>
             <Button loading={pending} disabled={picked.size === 0} onClick={save}>

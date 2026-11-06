@@ -9,6 +9,7 @@ import { locales, localeMeta, type Locale } from "@/i18n/config";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Flag } from "@/components/flags";
+import { startProgress } from "@/lib/progress";
 
 /** Combobox de langue (affichée en haut à droite dans toutes les langues, y compris en arabe). */
 export function LanguageSwitcher({ className, tone = "light" }: { className?: string; tone?: "light" | "dark" }) {
@@ -38,6 +39,8 @@ export function LanguageSwitcher({ className, tone = "light" }: { className?: st
     setQuery("");
     if (locale === current) return;
     const qs = search.toString();
+    // Barre de chargement dès le choix, jusqu'à l'affichage dans la nouvelle langue.
+    startProgress();
     startTransition(() => {
       router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { locale, scroll: false });
     });

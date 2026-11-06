@@ -20,6 +20,9 @@ export async function listFleet() {
       plateNumber: cars.plateNumber,
       mileage: cars.mileage,
       dailyPrice: cars.dailyPrice,
+      promoPercent: cars.promoPercent,
+      promoStartsOn: cars.promoStartsOn,
+      promoEndsOn: cars.promoEndsOn,
       purchaseCity: cars.purchaseCity,
       purchaseDate: cars.purchaseDate,
       purchasePrice: cars.purchasePrice,
@@ -27,6 +30,7 @@ export async function listFleet() {
       deactivationReason: cars.deactivationReason,
       city: agencies.city,
       agencyName: agencies.name,
+      agencyId: cars.agencyId,
       cover: sql<string | null>`(SELECT ci.url FROM ${carImages} ci WHERE ci.car_id = ${cars.id} ORDER BY ci.position LIMIT 1)`,
       reservationsCount: sql<number>`(SELECT count(*)::int FROM reservations r WHERE r.car_id = ${cars.id} AND r.status IN ('confirmed','ongoing','completed'))`,
       onRoad: sql<boolean>`EXISTS (SELECT 1 FROM reservations r WHERE r.car_id = ${cars.id}
@@ -65,8 +69,13 @@ export async function getFleetCar(id: string) {
 }
 export type FleetCar = NonNullable<Awaited<ReturnType<typeof getFleetCar>>>;
 
+/** Agences actives (formulaires : voiture, rendez-vous). */
 export async function allAgencies() {
-  return db.select({ id: agencies.id, city: agencies.city, name: agencies.name }).from(agencies).orderBy(asc(agencies.city), desc(agencies.isAirport));
+  return db
+    .select({ id: agencies.id, city: agencies.city, name: agencies.name })
+    .from(agencies)
+    .where(eq(agencies.isActive, true))
+    .orderBy(asc(agencies.city), desc(agencies.isAirport));
 }
 
 /** Gestionnaires actifs, pour l'association aux voitures. */
@@ -78,3 +87,47 @@ export async function managerOptions() {
   });
   return rows.map((m) => ({ id: m.id, name: `${m.firstName} ${m.lastName}`, city: m.city }));
 }
+
+/** Résumé en haut de la fiche voiture : dernière location, gain cumulé, statistiques. */
+export async function carSummary(carId: string) {
+  const res = await db.execute<{
+    rentals: number;
+    days: number;
+    revenue: string;
+    last_start: string | null;
+    last_at: string | null;
+    last_client: string | null;
+    last_reference: string | null;
+    next_start: string | null;
+    days_365: number;
+  }>(sql`
+    SELECT
+      count(*)::int AS rentals,
+      coalesce(sum(r.days), 0)::int AS days,
+      coalesce(sum(r.total_price), 0) AS revenue,
+      (SELECT x.start_date::text FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('confirmed','ongoing','completed') ORDER BY x.start_date DESC LIMIT 1) AS last_start,
+      (SELECT coalesce(x.picked_up_at, x.confirmed_at) FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('confirmed','ongoing','completed') ORDER BY x.start_date DESC LIMIT 1) AS last_at,
+      (SELECT x.driver_first_name || ' ' || x.driver_last_name FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('confirmed','ongoing','completed') ORDER BY x.start_date DESC LIMIT 1) AS last_client,
+      (SELECT x.reference FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('confirmed','ongoing','completed') ORDER BY x.start_date DESC LIMIT 1) AS last_reference,
+      (SELECT min(x.start_date)::text FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('pending','confirmed') AND x.start_date >= CURRENT_DATE) AS next_start,
+      coalesce(sum(GREATEST(0, LEAST(r.end_date, CURRENT_DATE) - GREATEST(r.start_date, CURRENT_DATE - 365))), 0)::int AS days_365
+    FROM reservations r
+    WHERE r.car_id = ${carId} AND r.status IN ('confirmed', 'ongoing', 'completed')
+  `);
+  const r = res.rows[0];
+  const rentals = r?.rentals ?? 0;
+  const revenue = Number(r?.revenue ?? 0);
+  return {
+    rentals,
+    days: r?.days ?? 0,
+    revenue,
+    averageRental: rentals ? revenue / rentals : 0,
+    /** Taux d'occupation sur les 365 derniers jours */
+    occupancy: Math.min(100, Math.round(((r?.days_365 ?? 0) / 365) * 100)),
+    nextStart: r?.next_start ?? null,
+    last: r?.last_start
+      ? { start: r.last_start, at: r.last_at ? new Date(r.last_at).toISOString() : null, client: r.last_client ?? "—", reference: r.last_reference }
+      : null,
+  };
+}
+export type CarSummary = Awaited<ReturnType<typeof carSummary>>;
