@@ -96,6 +96,8 @@ export function CarForm({
   initialImages = [],
   managers = [],
   initialManagerIds = [],
+  initialResponsibleIds = [],
+  initialExtraAgencyIds = [],
   stats,
   history,
   promotion,
@@ -108,6 +110,10 @@ export function CarForm({
   /** Gestionnaires actifs proposés à l'association */
   managers?: { id: string; name: string; city: string }[];
   initialManagerIds?: string[];
+  /** Responsables de la voiture : ils valident ses réservations */
+  initialResponsibleIds?: string[];
+  /** Agences supplémentaires (en plus de l'agence principale) */
+  initialExtraAgencyIds?: number[];
   /** Onglet « Statistiques » (voiture existante) */
   stats?: ReactNode;
   /** Onglet « Historique » des locations (voiture existante) */
@@ -124,6 +130,8 @@ export function CarForm({
   const [v, setV] = useState<CarFormValues>({ ...DEFAULTS, ...initial });
   const [images, setImages] = useState<Img[]>(initialImages);
   const [managerIds, setManagerIds] = useState<string[]>(initialManagerIds);
+  const [responsibleIds, setResponsibleIds] = useState<string[]>(initialResponsibleIds);
+  const [extraAgencyIds, setExtraAgencyIds] = useState<number[]>(initialExtraAgencyIds);
   const [lang, setLang] = useState<Locale>("fr");
   const [tab, setTab] = useState<CarTab>(stats ? "stats" : "infos");
   const tabs: { id: CarTab; label: string; Icon: typeof Info }[] = [
@@ -191,7 +199,7 @@ export function CarForm({
     // Photo principale obligatoire
     if (!images.some((i) => i.view === "main")) return showErrors({ images: "photoRequired" });
     start(async () => {
-      const payload = { data: v, images, managerIds };
+      const payload = { data: v, images, managerIds, responsibleIds, extraAgencyIds: extraAgencyIds.filter((id) => id !== v.agencyId) };
       const res = carId ? await updateCar(carId, payload) : await createCar(payload);
       if (res.ok) {
         toast.success(carId ? t("updated") : t("created"));
@@ -361,6 +369,24 @@ export function CarForm({
         </div>
       </section>
 
+      <section className={cn("mt-8 grid gap-6 border-t border-mist pt-8 grid-cols-[minmax(0,1fr)] lg:grid-cols-[220px_minmax(0,1fr)]", tab !== "managers" && "hidden")}>
+        <div>
+          <h2 className="text-[15px] font-bold text-ink">{t("carResponsibles")}</h2>
+          <p className="mt-1 text-sm text-ink-3">{t("carResponsiblesHint")}</p>
+        </div>
+        <div>
+          <Chips
+            label={t("carResponsibles")}
+            items={managers.map((m) => ({ id: m.id, label: m.name, sub: m.city }))}
+            value={responsibleIds}
+            onChange={setResponsibleIds}
+          />
+          <p className="mt-3 text-sm font-medium text-ink-2">
+            {responsibleIds.length === 0 ? t("noCarResponsible") : t("someCarResponsibles", { count: responsibleIds.length })}
+          </p>
+        </div>
+      </section>
+
       <section className={cn("space-y-6", tab !== "photos" && "hidden")}>
         <div>
           <h2 className="text-[15px] font-bold text-ink">{t("photos")}</h2>
@@ -445,6 +471,16 @@ export function CarForm({
               </Select>
             )}
           </Field>
+          <div>
+            <p className="mb-1.5 text-sm font-semibold text-ink">{t("extraAgencies")}</p>
+            <p className="mb-3 text-sm text-ink-3">{t("extraAgenciesHint")}</p>
+            <Chips
+              label={t("extraAgencies")}
+              items={agencies.filter((a) => a.id !== v.agencyId).map((a) => ({ id: a.id, label: a.name, sub: a.city }))}
+              value={extraAgencyIds}
+              onChange={setExtraAgencyIds}
+            />
+          </div>
         </div>
       </section>
 
@@ -555,6 +591,36 @@ function PhotoSlot({
         </div>
       )}
       <input ref={input} type="file" accept={ACCEPT_IMAGES} className="sr-only" onChange={(x) => onPick(x.target.files)} />
+    </div>
+  );
+}
+
+/** Liste de pastilles à cocher (0 ou plusieurs). */
+function Chips<K extends string | number>({ label, items, value, onChange }: { label: string; items: { id: K; label: string; sub?: string }[]; value: K[]; onChange: (next: K[]) => void }) {
+  if (!items.length) return <p className="text-sm text-ink-3">—</p>;
+  return (
+    <div className="flex flex-wrap gap-2" role="group" aria-label={label}>
+      {items.map((m) => {
+        const on = value.includes(m.id);
+        return (
+          <button
+            key={String(m.id)}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(on ? value.filter((x) => x !== m.id) : [...value, m.id])}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
+              on ? "border-majorelle bg-majorelle-soft text-majorelle" : "border-mist-2 bg-paper text-ink-2 hover:border-ink-3",
+            )}
+          >
+            <span className={cn("grid size-4 place-items-center rounded-full border", on ? "border-majorelle bg-majorelle text-white" : "border-mist-2")}>
+              {on && <Check className="size-3" />}
+            </span>
+            {m.label}
+            {m.sub && <span className="text-xs text-ink-3">{m.sub}</span>}
+          </button>
+        );
+      })}
     </div>
   );
 }

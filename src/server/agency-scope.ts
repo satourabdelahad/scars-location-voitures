@@ -22,12 +22,15 @@ export async function assertAgencyInScope(user: SessionUser, agencyId: number, s
   if (s && !s.includes(agencyId)) throw new ActionError("out_of_scope");
 }
 
-/** Refuse si une des voitures est rattachée à une agence hors du périmètre du gestionnaire. */
+/** Refuse si une des voitures n'a ni son agence principale ni une agence supplémentaire dans le périmètre. */
 export async function assertCarsInScope(user: SessionUser, carIds: string[], scope?: number[] | null) {
   const s = scope === undefined ? await agencyScope(user) : scope;
   if (!s || !carIds.length) return;
   const res = await db.execute<{ n: number }>(sql`
-    SELECT count(*)::int AS n FROM cars WHERE id = ANY(${carIds}::uuid[]) AND NOT (agency_id = ANY(${s}::int[]))`);
+    SELECT count(*)::int AS n FROM cars c
+    WHERE c.id = ANY(${carIds}::uuid[])
+      AND NOT (c.agency_id = ANY(${s}::int[]))
+      AND NOT EXISTS (SELECT 1 FROM car_agencies ca WHERE ca.car_id = c.id AND ca.agency_id = ANY(${s}::int[]))`);
   if ((res.rows[0]?.n ?? 0) > 0) throw new ActionError("out_of_scope");
 }
 

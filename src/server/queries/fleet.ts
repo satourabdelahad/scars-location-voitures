@@ -40,6 +40,12 @@ export async function listFleet() {
       /** Gestionnaires associés (vide = tous les gestionnaires) */
       managerNames: sql<string[]>`COALESCE((SELECT array_agg(m.first_name || ' ' || m.last_name ORDER BY m.last_name) FROM car_managers cm JOIN managers m ON m.id = cm.manager_id WHERE cm.car_id = ${cars.id}), '{}')`,
       managerIds: sql<string[]>`COALESCE((SELECT array_agg(cm.manager_id::text) FROM car_managers cm WHERE cm.car_id = ${cars.id}), '{}')`,
+      /** Agences supplémentaires (en plus de l'agence principale) */
+      extraAgencyIds: sql<number[]>`COALESCE((SELECT array_agg(ca.agency_id ORDER BY ca.agency_id) FROM car_agencies ca WHERE ca.car_id = ${cars.id}), '{}')`,
+      extraAgencies: sql<string[]>`COALESCE((SELECT array_agg(a2.city || ', ' || a2.name ORDER BY a2.city, a2.name) FROM car_agencies ca JOIN agencies a2 ON a2.id = ca.agency_id WHERE ca.car_id = ${cars.id}), '{}')`,
+      /** Responsables de la voiture : ils valident ses réservations */
+      responsibleNames: sql<string[]>`COALESCE((SELECT array_agg(m.first_name || ' ' || m.last_name ORDER BY m.last_name) FROM car_responsibles cr JOIN managers m ON m.id = cr.manager_id WHERE cr.car_id = ${cars.id}), '{}')`,
+      responsibleIds: sql<string[]>`COALESCE((SELECT array_agg(cr.manager_id::text) FROM car_responsibles cr WHERE cr.car_id = ${cars.id}), '{}')`,
       createdBy: cars.createdBy,
       createdAt: cars.createdAt,
     })
@@ -137,3 +143,6 @@ export async function carSummary(carId: string) {
   };
 }
 export type CarSummary = Awaited<ReturnType<typeof carSummary>>;
+
+/** Une voiture est dans le périmètre si son agence principale ou une agence supplémentaire y est. */
+export const inScope = (r: { agencyId: number; extraAgencyIds: number[] }, scope: number[] | null) => !scope || scope.includes(r.agencyId) || r.extraAgencyIds.some((id) => scope.includes(id));

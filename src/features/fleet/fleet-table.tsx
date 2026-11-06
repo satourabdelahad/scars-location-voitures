@@ -4,12 +4,12 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Ban, Building2, Percent, Power, UserPlus, Wrench } from "lucide-react";
+import { Ban, Building2, Link2, Link2Off, Percent, Power, UserPlus, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { useRowPatches } from "@/components/data-table/use-row-patches";
-import { bulkFleetAction } from "@/server/actions/fleet";
+import { bulkFleetAction, setCarsAgency } from "@/server/actions/fleet";
 import { cn } from "@/lib/utils";
 import { CarArt } from "@/components/car-art";
 import { DataTable, type Column } from "@/components/data-table/data-table";
@@ -30,6 +30,7 @@ export function FleetTable({
   prefs,
   tableKey = "fleet",
   bulk,
+  agency,
 }: {
   rows: FleetRow[];
   base: string;
@@ -37,8 +38,14 @@ export function FleetTable({
   tableKey?: string;
   /** Actions groupées (page Parc automobile) */
   bulk?: BulkOptions;
+  /** Onglet Voitures d'une agence : « Toutes / Affectées », affecter ou retirer (manage = administrateur) */
+  agency?: { id: number; name: string; manage: boolean };
 }) {
-  const [rows, patch] = useRowPatches(serverRows);
+  const [allRows, patch] = useRowPatches(serverRows);
+  const assigned = (r: FleetRow) => !!agency && (r.agencyId === agency.id || r.extraAgencyIds.includes(agency.id));
+  const [view, setView] = useState<"all" | "assigned">("assigned");
+  const assignedCount = allRows.filter(assigned).length;
+  const rows = agency && view === "assigned" ? allRows.filter(assigned) : allRows;
   const agencyOptions = useMemo(
     () => [...new Set(serverRows.map((r) => `${r.city}, ${r.agencyName}`))].sort((a, b) => a.localeCompare(b, "fr")).map((v) => ({ value: v, label: v })),
     [serverRows],
@@ -95,6 +102,15 @@ export function FleetTable({
       },
       // Agence de rattachement : filtre par liste de choix
       { id: "city", header: t("agency"), text: (r) => `${r.city}, ${r.agencyName}`, filter: { type: "select", options: agencyOptions } },
+      {
+        id: "extraAgencies",
+        header: t("extraAgencies"),
+        text: (r) => r.extraAgencies.join(" · "),
+        filter: { type: "text" },
+        addedLater: true,
+        cell: (r) => (r.extraAgencies.length ? <span className="text-[13px]">{r.extraAgencies.join(" · ")}</span> : <span className="text-ink-3">—</span>),
+      },
+      { id: "carResponsibles", header: t("carResponsibles"), text: (r) => r.responsibleNames.join(", "), filter: { type: "text" }, addedLater: true, cell: (r) => (r.responsibleNames.length ? r.responsibleNames.join(", ") : <span className="text-ink-3">—</span>) },
       { id: "mileage", header: t("mileage"), text: (r) => `${r.mileage.toLocaleString(locale)} km`, sortValue: (r) => r.mileage, align: "end", defaultHidden: true },
       { id: "dailyPrice", header: t("dailyPrice"), text: (r) => formatMoney(r.dailyPrice, locale), sortValue: (r) => r.dailyPrice, align: "end", filter: { type: "text" } },
       {
@@ -151,21 +167,54 @@ export function FleetTable({
       columns={columns}
       data={rows}
       initialPrefs={prefs}
-      exportTitle={t("title")}
-      exportFilename="parc-automobile"
+      exportTitle={agency ? `${t("title")} · ${agency.name}${view === "assigned" ? ` · ${t("assignedCars")}` : ""}` : t("title")}
+      exportFilename={agency ? "voitures-agence" : "parc-automobile"}
+      toolbar={
+        agency ? (
+          <div role="tablist" className="inline-flex rounded-xl bg-mist/60 p-1 text-sm font-semibold">
+            {(["all", "assigned"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                role="tab"
+                aria-selected={view === v}
+                onClick={() => setView(v)}
+                className={cn("rounded-lg px-3 py-1.5 transition-colors", view === v ? "bg-paper text-ink shadow-sm" : "text-ink-3 hover:text-ink")}
+              >
+                {v === "all" ? t("allCarsView", { count: allRows.length }) : t("assignedCarsView", { count: assignedCount })}
+              </button>
+            ))}
+          </div>
+        ) : undefined
+      }
       rowClassName={(r) => (r.status === "deactivated" ? "opacity-55" : undefined)}
       onRowClick={(r) => router.push(`${base}/fleet/${r.id}`)}
       bulkActions={
-        bulk
+        bulk || agency?.manage
           ? (selected, clear) => (
-              <FleetBulkActions
-                selected={selected}
-                options={bulk}
-                onDone={(ids, next) => {
-                  if (next) patch(ids, next);
-                  clear();
-                }}
-              />
+              <>
+                {agency?.manage && (
+                  <AgencyCarsBulk
+                    selected={selected}
+                    agency={agency}
+                    onDone={(ids, assign) => {
+                      for (const r of selected.filter((x) => ids.includes(x.id)))
+                        patch(r.id, { extraAgencyIds: assign ? [...r.extraAgencyIds, agency.id] : r.extraAgencyIds.filter((a) => a !== agency.id) });
+                      clear();
+                    }}
+                  />
+                )}
+                {bulk && (
+                  <FleetBulkActions
+                    selected={selected}
+                    options={bulk}
+                    onDone={(ids, next) => {
+                      if (next) patch(ids, next);
+                      clear();
+                    }}
+                  />
+                )}
+              </>
             )
           : undefined
       }
@@ -382,5 +431,36 @@ function PromoFields({ value, onChange }: { value: PromoValue; onChange: (v: Pro
       )}
       <p className="text-xs text-ink-3">{t("promoHint")}</p>
     </div>
+  );
+}
+
+/** Fiche agence, onglet Voitures : affecter les voitures cochées à l'agence (agence supplémentaire) ou les en retirer. */
+function AgencyCarsBulk({ selected, agency, onDone }: { selected: FleetRow[]; agency: { id: number; name: string }; onDone: (ids: string[], assign: boolean) => void }) {
+  const t = useTranslations("Fleet");
+  const te = useTranslations("Errors");
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const live = selected.filter((r) => r.status !== "deactivated" && r.agencyId !== agency.id);
+  const toAdd = live.filter((r) => !r.extraAgencyIds.includes(agency.id));
+  const toRemove = live.filter((r) => r.extraAgencyIds.includes(agency.id));
+  const run = (assign: boolean, rows: FleetRow[]) =>
+    start(async () => {
+      const r = await setCarsAgency(rows.map((x) => x.id), agency.id, assign);
+      if (!r.ok) return void toast.error(te(r.error as "unknown"));
+      toast.success(t(assign ? "carsAssignedToAgency" : "carsRemovedFromAgency", { count: r.data!.done.length }));
+      onDone(r.data!.done, assign);
+      router.refresh();
+    });
+  return (
+    <>
+      <Button size="sm" variant="outline" loading={pending} disabled={pending || toAdd.length === 0} onClick={() => run(true, toAdd)}>
+        <Link2 />
+        {t("assignToAgency")} {toAdd.length > 0 && `(${toAdd.length})`}
+      </Button>
+      <Button size="sm" variant="dangerOutline" disabled={pending || toRemove.length === 0} onClick={() => run(false, toRemove)}>
+        <Link2Off />
+        {t("removeFromAgency")} {toRemove.length > 0 && `(${toRemove.length})`}
+      </Button>
+    </>
   );
 }

@@ -10,7 +10,7 @@ import { localeMeta, type Locale } from "@/i18n/config";
 import { CarArt } from "@/components/car-art";
 import { Button } from "@/components/ui/button";
 import { Badge, DefinitionList, EmptyState, PageHeader, Panel } from "@/components/ui/misc";
-import { allAgencies, carSummary, getFleetCar, listFleet, managerOptions } from "@/server/queries/fleet";
+import { allAgencies, carSummary, getFleetCar, inScope, listFleet, managerOptions } from "@/server/queries/fleet";
 import { managerRentals } from "@/server/queries/manager-profile";
 import { currentAgencyScope } from "@/server/agency-scope";
 import { CarHeader, CarStats } from "./car-header";
@@ -35,7 +35,7 @@ export async function FleetListPage({ base, userId }: { base: Base; userId: stri
     currentAgencyScope(),
   ]);
   // Gestionnaire rattaché à des agences : seulement les voitures de son périmètre.
-  const rows = scope ? all.filter((r) => scope.includes(r.agencyId)) : all;
+  const rows = all.filter((r) => inScope(r, scope));
   const stats = CAR_STATES.map((s) => ({ label: t(`state.${s}`), value: rows.filter((r) => carState(r) === s).length, tone: STATE_TONE[s] }));
   return (
     <>
@@ -147,6 +147,8 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
           agencies={await allAgencies()}
           managers={await managerOptions()}
           initialManagerIds={car.managers.map((x) => x.manager.id)}
+          initialResponsibleIds={row?.responsibleIds ?? []}
+          initialExtraAgencyIds={row?.extraAgencyIds ?? []}
           initial={{
             agencyId: car.agencyId,
             brand: car.brand,

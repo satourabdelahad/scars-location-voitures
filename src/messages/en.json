@@ -308,7 +308,8 @@
     "clients": "Customers",
     "agencies": "My branches",
     "marketing": "Email Marketing",
-    "site": "Public website"
+    "site": "Public website",
+    "documentation": "Documentation"
   },
   "Managers": {
     "title": "Managers",
@@ -699,7 +700,20 @@
     "promoRemoved": "Promotion removed",
     "promoPreview": "Daily price: {before} → {after}",
     "promoNoEnd": "no end date",
-    "outOfScopeBanner": "This car is outside your scope: you can view it but not change it."
+    "outOfScopeBanner": "This car is outside your scope: you can view it but not change it.",
+    "extraAgencies": "Additional agencies",
+    "extraAgenciesHint": "0 or more agencies that share the management of the car. The main agency remains the pick-up location.",
+    "carResponsibles": "People in charge of the car",
+    "carResponsiblesHint": "0 or more people in charge: they validate this car's bookings, along with the administrator and the agency's people in charge.",
+    "noCarResponsible": "No one in charge: the agency's people in charge validate bookings.",
+    "someCarResponsibles": "{count, plural, one {# person in charge} other {# people in charge}}",
+    "assignedCars": "Assigned",
+    "allCarsView": "All ({count})",
+    "assignedCarsView": "Assigned ({count})",
+    "carsAssignedToAgency": "{count, plural, one {# car assigned to the agency} other {# cars assigned to the agency}}",
+    "carsRemovedFromAgency": "{count, plural, one {# car removed from the agency} other {# cars removed from the agency}}",
+    "assignToAgency": "Assign to agency",
+    "removeFromAgency": "Remove from agency"
   },
   "Reservations": {
     "title": "Bookings",
@@ -1476,7 +1490,7 @@
     "tabInfos": "Information",
     "tabManager": "Manager in charge",
     "tabManagers": "{count, plural, =0 {Managers} other {Managers (#)}}",
-    "tabCars": "{count, plural, =0 {Cars} other {Cars (#)}}",
+    "tabCars": "Cars ({count})",
     "responsible": "In charge",
     "noManagers": "No manager",
     "noManagersBody": "No manager is linked to this branch (in charge, assigned cars or rule).",
@@ -1512,13 +1526,16 @@
     "bulkSkipped": "{count, plural, one {# agency skipped (cars still in service)} other {# agencies skipped (cars still in service)}}",
     "bulkDeactivateTitle": "{count, plural, one {Deactivate # agency} other {Deactivate # agencies}}",
     "pickerAll": "All",
-    "pickerSelected": "Selected ({count})",
     "responsiblesSaved": "People in charge saved",
     "managersSaved": "Managers saved",
     "responsiblesHint": "Tick 0, 1 or several people in charge. They validate the agency's bookings and are automatically members.",
     "membersHint": "Tick the managers attached to this agency. A manager attached to agencies can only act on those agencies' cars.",
     "membersLockedHint": "People in charge and the administrator always belong to the agency.",
-    "tabResponsibles": "{count, plural, =0 {In charge} one {In charge} other {In charge (#)}}"
+    "tabResponsibles": "In charge ({count})",
+    "pickerAssigned": "Assigned ({count})",
+    "roleColumn": "Role",
+    "tabResponsiblesPlain": "People in charge",
+    "tiktokUrl": "TikTok page"
   },
   "Marketing": {
     "title": "Email Marketing",
@@ -1613,5 +1630,12 @@
     "step3Body": "Sign in or leave the minimum: name, city and phone.",
     "step4": "The keys",
     "step4Body": "The branch confirms, then you collect the car or we deliver it to you."
+  },
+  "Docs": {
+    "title": "Documentation",
+    "subtitle": "Functional guide to the application: public site, back office and business rules.",
+    "search": "Search the documentation…",
+    "toc": "Contents",
+    "noResult": "No section matches your search."
   }
 }

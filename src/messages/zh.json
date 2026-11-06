@@ -308,7 +308,8 @@
     "clients": "客户",
     "agencies": "我的门店",
     "marketing": "邮件营销",
-    "site": "公开网站"
+    "site": "公开网站",
+    "documentation": "文档"
   },
   "Managers": {
     "title": "经理",
@@ -699,7 +700,20 @@
     "promoRemoved": "促销已取消",
     "promoPreview": "日租价：{before} → {after}",
     "promoNoEnd": "无结束日期",
-    "outOfScopeBanner": "此车辆不在您的范围内：您可以查看，但不能修改。"
+    "outOfScopeBanner": "此车辆不在您的范围内：您可以查看，但不能修改。",
+    "extraAgencies": "附加门店",
+    "extraAgenciesHint": "0 个或多个共同管理该车辆的门店。取车地点仍为主门店。",
+    "carResponsibles": "车辆负责人",
+    "carResponsiblesHint": "0 位或多位负责人：与管理员和门店负责人一起审核该车辆的预订。",
+    "noCarResponsible": "无负责人：由门店负责人审核预订。",
+    "someCarResponsibles": "{count} 位负责人",
+    "assignedCars": "已分配",
+    "allCarsView": "全部（{count}）",
+    "assignedCarsView": "已分配（{count}）",
+    "carsAssignedToAgency": "已将 {count} 辆车分配到门店",
+    "carsRemovedFromAgency": "已将 {count} 辆车移出门店",
+    "assignToAgency": "分配到门店",
+    "removeFromAgency": "移出门店"
   },
   "Reservations": {
     "title": "预订",
@@ -1512,13 +1526,16 @@
     "bulkSkipped": "已跳过 {count} 家门店（仍有车辆在用）",
     "bulkDeactivateTitle": "停用 {count} 家门店",
     "pickerAll": "全部",
-    "pickerSelected": "已选（{count}）",
     "responsiblesSaved": "负责人已保存",
     "managersSaved": "管理员已保存",
     "responsiblesHint": "可勾选 0 位、1 位或多位负责人。他们审核门店的预订，并自动成为门店成员。",
     "membersHint": "勾选隶属于该门店的管理员。隶属门店的管理员只能操作这些门店的车辆。",
     "membersLockedHint": "负责人和管理员始终属于该门店。",
-    "tabResponsibles": "{count, plural, =0 {负责人} one {负责人} other {负责人（#）}}"
+    "tabResponsibles": "负责人（{count}）",
+    "pickerAssigned": "已分配（{count}）",
+    "roleColumn": "角色",
+    "tabResponsiblesPlain": "负责人",
+    "tiktokUrl": "TikTok 页面"
   },
   "Marketing": {
     "title": "邮件营销",
@@ -1613,5 +1630,12 @@
     "step3Body": "登录或只填写姓名、城市和电话。",
     "step4": "取车",
     "step4Body": "门店确认后，您到店取车或由我们送车。"
+  },
+  "Docs": {
+    "title": "文档",
+    "subtitle": "应用功能指南：公开网站、后台和管理规则。",
+    "search": "搜索文档…",
+    "toc": "目录",
+    "noResult": "没有与搜索匹配的章节。"
   }
 }

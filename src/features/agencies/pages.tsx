@@ -10,7 +10,8 @@ import { tablePreferences } from "@/db/schema";
 import { cn, formatMoney } from "@/lib/utils";
 import type { SessionUser } from "@/server/guards";
 import { agencyManagers, agencyStats, getAgency, listAgencies, managerChoices } from "@/server/queries/agencies";
-import { listFleet } from "@/server/queries/fleet";
+import { allAgencies, inScope, listFleet, managerOptions } from "@/server/queries/fleet";
+import { currentAgencyScope } from "@/server/agency-scope";
 import { FleetTable } from "@/features/fleet/fleet-table";
 import { ManagerAvatar } from "@/features/managers/manager-avatar";
 import { AgenciesTable } from "./agencies-table";
@@ -68,21 +69,25 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
   const a = await getAgency(Number(id));
   if (!a) notFound();
   const isAdmin = me.role === "admin";
-  const [t, tm, c, stats, linked, managers] = await Promise.all([
+  const [t, tm, c, stats, linked, managers, fleetAll, scope] = await Promise.all([
     getTranslations("Agencies"),
     getTranslations("Managers"),
     getTranslations("Common"),
     agencyStats(a.agencyId),
     agencyManagers(a.agencyId),
     managerChoices(),
+    listFleet(),
+    currentAgencyScope(),
   ]);
   const path = `${base}/agencies/${a.agencyId}`;
+  const fleet = fleetAll.filter((f) => inScope(f, scope));
+  const assignedCars = fleet.filter((f) => f.agencyId === a.agencyId || f.extraAgencyIds.includes(a.agencyId)).length;
   const tabs = [
     { id: "stats" as const, label: t("tabStats"), Icon: BarChart3 },
     { id: "infos" as const, label: t("tabInfos"), Icon: IdCard },
     { id: "manager" as const, label: t("tabResponsibles", { count: a.responsibles.length }), Icon: UserRoundCog },
     { id: "managers" as const, label: t("tabManagers", { count: linked.length }), Icon: UsersRound },
-    { id: "cars" as const, label: t("tabCars", { count: stats.cars }), Icon: CarFront },
+    { id: "cars" as const, label: t("tabCars", { count: assignedCars }), Icon: CarFront },
   ];
   const initial = {
     name: a.name,
@@ -96,6 +101,7 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
     instagramUrl: a.instagramUrl ?? "",
     linkedinUrl: a.linkedinUrl ?? "",
     xUrl: a.xUrl ?? "",
+    tiktokUrl: a.tiktokUrl ?? "",
   };
 
   // Personnes proposées dans les onglets Responsable(s) et Gestionnaires.
@@ -126,6 +132,8 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
           agencyId={a.agencyId}
           kind="responsible"
           base={base}
+          exportTitle={`${t("tabResponsiblesPlain")} · ${a.name}`}
+          exportFilename="responsables-agence"
           readOnly={!isAdmin || !a.isActive}
           initial={responsibleIds}
           people={people((id) => (managers.find((m) => m.id === id)?.isAdmin ? [{ label: t("adminBadge"), tone: "dark" }] : []))}
@@ -141,6 +149,8 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
           agencyId={a.agencyId}
           kind="member"
           base={base}
+          exportTitle={`${tm("title")} · ${a.name}`}
+          exportFilename="gestionnaires-agence"
           readOnly={!a.isActive}
           initial={memberIds.filter((id) => !responsibleIds.includes(id))}
           locked={[...responsibleIds, ...adminIds]}
@@ -183,12 +193,21 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
       <Panel><EmptyState icon={<UsersRound />} title={t("noManagers")} body={t("noManagersBody")} /></Panel>
     );
   } else if (tab === "cars") {
-    const fleet = (await listFleet()).filter((f) => f.agencyId === a.agencyId);
-    body = <FleetTable rows={fleet} base={base} prefs={null} tableKey="agency-cars" />;
+    // Toutes les voitures (du périmètre) ; la vue « Affectées » montre celles de l'agence (principale ou supplémentaire).
+    body = (
+      <FleetTable
+        rows={fleet}
+        base={base}
+        prefs={null}
+        tableKey="agency-cars"
+        agency={{ id: a.agencyId, name: a.name, manage: isAdmin && a.isActive }}
+        bulk={isAdmin ? { agencies: await allAgencies(), managers: await managerOptions(), canAssign: true } : undefined}
+      />
+    );
   } else {
     body = (
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label={t("statCars")} value={stats.cars} />
+        <Stat label={t("statCars")} value={assignedCars} />
         <Stat label={t("statOnRoad")} value={stats.onRoad} />
         <Stat label={t("statMaintenance")} value={stats.maintenance} />
         <Stat label={t("statManagers")} value={linked.length} />
@@ -217,7 +236,7 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
       <div className="mb-6 grid grid-cols-2 gap-2 sm:max-w-md">
         <div className="rounded-xl border border-mist bg-paper px-4 py-3">
           <p className="text-[11px] font-semibold tracking-wide text-ink-3 uppercase">{t("cars")}</p>
-          <p className="text-xl font-extrabold text-ink tabular">{stats.cars}</p>
+          <p className="text-xl font-extrabold text-ink tabular">{assignedCars}</p>
         </div>
         <div className="rounded-xl border border-mist bg-paper px-4 py-3">
           <p className="text-[11px] font-semibold tracking-wide text-ink-3 uppercase">{t("statManagers")}</p>

@@ -11,13 +11,14 @@ import { pageText } from "@/server/site-settings";
  * à gauche, ouverture 24h/24 · 7j/7 et la livraison gratuite ;
  * à droite, réseaux sociaux, email, téléphone et WhatsApp.
  */
-export async function TopBar() {
+/** wide : pleine largeur (back-office). */
+export async function TopBar({ wide = false }: { wide?: boolean } = {}) {
   const [{ contact, settings }, t, locale] = await Promise.all([publicSite(), getTranslations("TopBar"), getLocale()]);
   const note = pageText(settings, "topbar_note", locale) ?? defaultPageText("topbar_note", locale);
   const c = settings.contact;
   return (
     <div className="bg-ink text-chalk dark:bg-paper dark:text-ink">
-      <div className="scroll-thin mx-auto flex h-9 max-w-7xl items-center gap-x-5 overflow-x-auto px-4 text-xs font-medium whitespace-nowrap sm:px-6">
+      <div className={`scroll-thin mx-auto flex h-9 items-center ${wide ? "" : "max-w-7xl "} gap-x-5 overflow-x-auto px-4 text-xs font-medium whitespace-nowrap sm:px-6`}>
         <span className="inline-flex items-center gap-1.5 text-saffron">
           <Clock className="size-3.5" />
           {t("always")}

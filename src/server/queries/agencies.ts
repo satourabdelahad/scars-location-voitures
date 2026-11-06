@@ -23,6 +23,7 @@ export async function listAgencies() {
     instagram_url: string | null;
     linkedin_url: string | null;
     x_url: string | null;
+    tiktok_url: string | null;
     cars: number;
     updated_at: string;
   }>(sql`
@@ -32,7 +33,7 @@ export async function listAgencies() {
                     ORDER BY m.last_name, m.first_name)
               FROM manager_agencies ma JOIN managers m ON m.id = ma.manager_id JOIN users u ON u.id = m.user_id
              WHERE ma.agency_id = a.id AND ma.is_responsible) AS responsibles,
-           a.deactivation_reason, a.updated_at, a.website_url, a.facebook_url, a.instagram_url, a.linkedin_url, a.x_url,
+           a.deactivation_reason, a.updated_at, a.website_url, a.facebook_url, a.instagram_url, a.linkedin_url, a.x_url, a.tiktok_url,
            (SELECT count(*)::int FROM cars c WHERE c.agency_id = a.id AND c.status <> 'deactivated') AS cars
     FROM agencies a
     ORDER BY a.is_active DESC, a.city, a.name
@@ -54,6 +55,7 @@ export async function listAgencies() {
     instagramUrl: r.instagram_url,
     linkedinUrl: r.linkedin_url,
     xUrl: r.x_url,
+    tiktokUrl: r.tiktok_url,
     cars: r.cars,
     updatedAt: new Date(r.updated_at).toISOString(),
   }));

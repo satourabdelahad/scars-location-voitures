@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { TopBar } from "@/components/layout/top-bar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UserMenu } from "@/components/layout/user-menu";
 import type { SessionUser } from "@/server/guards";
@@ -24,10 +25,14 @@ export async function BackofficeShell({ user, base, children }: { user: SessionU
     ...(base === "/admin" ? [{ href: `${base}/administration`, label: t("administration"), icon: "administration" as const }] : []),
     ...(base === "/admin" ? [{ href: `${base}/security`, label: t("security"), icon: "security" as const }] : []),
     ...(base === "/manager" ? [{ href: `${base}/profile`, label: t("profile"), icon: "profile" as const }] : []),
+    { href: `${base}/documentation`, label: t("documentation"), icon: "documentation" },
   ];
 
 
   return (
+    <>
+    {/* Même bandeau que le site public (horaires, livraison, contacts) */}
+    <TopBar wide />
     <div className="min-h-dvh bg-chalk lg:grid lg:grid-cols-[248px_1fr]">
       <aside className="sticky top-0 hidden h-dvh flex-col border-e border-mist bg-paper px-4 py-5 lg:flex">
         <Link href="/" className="px-2" title={t("viewSite")}><Logo /></Link>
@@ -51,5 +56,6 @@ export async function BackofficeShell({ user, base, children }: { user: SessionU
         <main id="main" className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">{children}</main>
       </div>
     </div>
+    </>
   );
 }

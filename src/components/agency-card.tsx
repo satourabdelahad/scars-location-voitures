@@ -24,7 +24,7 @@ export async function AgencyCard({ a }: { a: Agency }) {
           {a.websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
         </a>
       )}
-      <SocialLinks className="mt-4" links={{ facebook: a.facebookUrl, instagram: a.instagramUrl, linkedin: a.linkedinUrl, x: a.xUrl }} />
+      <SocialLinks className="mt-4" links={{ facebook: a.facebookUrl, instagram: a.instagramUrl, linkedin: a.linkedinUrl, x: a.xUrl, tiktok: a.tiktokUrl }} />
       {(wa || a.phone) && (
         <div className="mt-auto flex gap-2 pt-6">
           {wa && (
