@@ -31,6 +31,7 @@ Même en cas de bug applicatif ou d'accès direct à la base :
 npm install
 cp .env.example .env.local      # puis remplir DATABASE_URL au minimum
 cp .env.local .env              # drizzle-kit et le script de seed lisent .env
+rm -rf .env.example
 npm run db:migrate              # crée les tables, triggers et contraintes
 npm run db:seed -- --demo       # agences, options, codes promo, admin + jeu de démonstration
 npm run dev
@@ -40,9 +41,9 @@ Comptes de démonstration (`--demo`) :
 
 | Rôle | Email | Mot de passe |
 | --- | --- | --- |
-| Administrateur | `SEED_ADMIN_EMAIL` (admin@dizycars.com) | `SEED_ADMIN_PASSWORD` |
-| Gestionnaire | youssef@dizycars.com | Gestion2026! |
-| Client | client@dizycars.com | Client2026! |
+| Administrateur | `SEED_ADMIN_EMAIL` | `SEED_ADMIN_PASSWORD` |
+| Gestionnaire | youssef@dizy-cars.com | Gestion2026! |
+| Client | client@dizy-cars.com | Client2026! |
 
 Sans Cloudinary en développement, les fichiers sont gardés dans `.uploads/` (ignoré par Git). En production, Cloudinary est obligatoire.
 
