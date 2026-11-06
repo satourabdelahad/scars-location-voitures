@@ -1560,5 +1560,8 @@
     "usingDefault": "Standardtext wird angezeigt: Bearbeiten Sie ihn, um ihn anzupassen.",
     "restoreDefault": "Standardtext wiederherstellen",
     "formatHint": "Formatierung: Eine Leerzeile trennt Absätze, „## Titel“ erzeugt eine Zwischenüberschrift, „- Punkt“ eine Liste."
+  },
+  "TopBar": {
+    "always": "7 Tage die Woche · rund um die Uhr"
   }
 }

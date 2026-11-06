@@ -11,19 +11,35 @@ export type Block = { type: "h"; text: string } | { type: "p"; text: string } | 
 export function parseBlocks(text: string): Block[] {
   const out: Block[] = [];
   for (const chunk of text.replace(/\r/g, "").split(/\n\s*\n/)) {
-    const lines = chunk.split("\n").map((l) => l.trim()).filter(Boolean);
-    if (!lines.length) continue;
-    if (lines.every((l) => /^[-•]\s+/.test(l))) out.push({ type: "ul", items: lines.map((l) => l.replace(/^[-•]\s+/, "")) });
-    else if (lines.length === 1 && /^#{1,3}\s+/.test(lines[0])) out.push({ type: "h", text: lines[0].replace(/^#{1,3}\s+/, "") });
-    else {
-      // Un intertitre suivi de texte dans le même bloc.
-      if (/^#{1,3}\s+/.test(lines[0])) {
-        out.push({ type: "h", text: lines[0].replace(/^#{1,3}\s+/, "") });
-        lines.shift();
+    let para: string[] = [];
+    let list: string[] = [];
+    const flush = () => {
+      if (para.length) out.push({ type: "p", text: para.join(" ") });
+      if (list.length) out.push({ type: "ul", items: list });
+      para = [];
+      list = [];
+    };
+    for (const raw of chunk.split("\n")) {
+      const l = raw.trim();
+      if (!l) continue;
+      if (/^#{1,3}\s+/.test(l)) {
+        flush();
+        out.push({ type: "h", text: l.replace(/^#{1,3}\s+/, "") });
+      } else if (/^[-•]\s+/.test(l)) {
+        if (para.length) {
+          out.push({ type: "p", text: para.join(" ") });
+          para = [];
+        }
+        list.push(l.replace(/^[-•]\s+/, ""));
+      } else {
+        if (list.length) {
+          out.push({ type: "ul", items: list });
+          list = [];
+        }
+        para.push(l);
       }
-      if (lines.length && lines.every((l) => /^[-•]\s+/.test(l))) out.push({ type: "ul", items: lines.map((l) => l.replace(/^[-•]\s+/, "")) });
-      else if (lines.length) out.push({ type: "p", text: lines.join(" ") });
     }
+    flush();
   }
   return out;
 }

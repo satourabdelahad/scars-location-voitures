@@ -1,4 +1,5 @@
-import { Clock, Globe, MessageCircle, Phone, Plane } from "lucide-react";
+import { Clock, Globe, Phone, Plane } from "lucide-react";
+import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { getTranslations } from "next-intl/server";
 import { SocialLinks } from "@/components/social-links";
 import { waLink, type publicSite } from "@/server/public-site";
@@ -28,7 +29,7 @@ export async function AgencyCard({ a }: { a: Agency }) {
         <div className="mt-auto flex gap-2 pt-6">
           {wa && (
             <a href={waLink(wa)} target="_blank" rel="noopener" className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-palm text-sm font-semibold text-white hover:brightness-110">
-              <MessageCircle className="size-4" />{t("whatsapp")}
+              <WhatsAppIcon className="size-4" />{t("whatsapp")}
             </a>
           )}
           {a.phone && (

@@ -2,12 +2,13 @@ import "server-only";
 
 /**
  * reCAPTCHA v3 : vérification côté serveur du jeton envoyé par le formulaire.
- * Sans RECAPTCHA_SECRET_KEY (développement), la vérification est ignorée.
+ * Clés : RECAPTCHA_KEY (clé du site) et RECAPTCHA_SECRET (clé secrète).
+ * Sans ces clés (développement), la vérification est ignorée.
  * Score de 0 (robot) à 1 (humain) : refusé en dessous de RECAPTCHA_MIN_SCORE (0,5 par défaut).
  */
 export async function verifyRecaptcha(token: unknown, action: string): Promise<boolean> {
-  const secret = process.env.RECAPTCHA_SECRET_KEY;
-  if (!secret || !process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) return true;
+  const secret = process.env.RECAPTCHA_SECRET || process.env.RECAPTCHA_SECRET_KEY;
+  if (!secret || !(process.env.RECAPTCHA_KEY || process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY)) return true;
   if (typeof token !== "string" || token.length < 20) return false;
   try {
     const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
