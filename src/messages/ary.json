@@ -471,7 +471,22 @@
     "agencyInactive": "موقّفة",
     "responsibleNote": "المسؤول ديال الوكالة كيتبدل فالصفحة ديال الوكالة (أونگلي المسؤول).",
     "agenciesSaved": "الوكالات تسجلو",
-    "agenciesSavedMailed": "الوكالات تسجلو: {count, plural, one {مسير واحد وصلو} other {# ديال المسيرين وصلهم}} إيميل"
+    "agenciesSavedMailed": "الوكالات تسجلو: {count, plural, one {مسير واحد وصلو} other {# ديال المسيرين وصلهم}} إيميل",
+    "tabPerimeter": "المجال",
+    "perimeterTitle": "المجال ديال المسير",
+    "perimeterHint": "الوكالات ديالو (الفريق والإيميلات) والطوموبيلات اللي كيتبع بوحدهم.",
+    "perimeterEdit": "بدّل المجال",
+    "perimeterDialogHint": "الوكالات ديال المسير والطوموبيلات اللي كيتبع، كيتسجلو مجموعين. اللائحة ديال الطوموبيلات كتتحسب دغيا.",
+    "perimeterAgencies": "الوكالات",
+    "perimeterCars": "الطوموبيلات اللي كيتبع",
+    "perimeterCarsHint": "قاعدة أوتوماتيكية: الطوموبيلات النشيطة اللي كتطابق كيتعطاو ليه، حتى اللي غادي يتزادو من بعد.",
+    "perimeterNoRule": "حتى قاعدة: غير الطوموبيلات اللي تعطاو باليد",
+    "linkAgencyCars": "عطيه حتى الطوموبيلات ديال الوكالات اللي تزادو",
+    "linkAgencyCarsHint": "الوكالات اللي تزادو كيدخلو فالمعايير ديال الطوموبيلات اللي كيتبع.",
+    "perimeterSaved": "المجال تسجل",
+    "agenciesMailed": "{count, plural, one {مسير واحد وصلو} other {# ديال المسيرين وصلهم}} إيميل",
+    "deltaAdded": "{count, plural, one {+طوموبيل وحدة} other {+# طوموبيلات}}",
+    "deltaRemoved": "{count, plural, one {−طوموبيل وحدة} other {−# طوموبيلات}}"
   },
   "Documents": {
     "cin_front": "لاكارط ناسيونال (CINE) — القدّام",

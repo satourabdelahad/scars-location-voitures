@@ -471,7 +471,22 @@
     "agencyInactive": "無効",
     "responsibleNote": "店舗の責任者は店舗ページ（責任者タブ）で変更します。",
     "agenciesSaved": "店舗を保存しました",
-    "agenciesSavedMailed": "店舗を保存しました：{count, plural, other {#名のマネージャー}}にメールで通知"
+    "agenciesSavedMailed": "店舗を保存しました：{count, plural, other {#名のマネージャー}}にメールで通知",
+    "tabPerimeter": "担当範囲",
+    "perimeterTitle": "マネージャーの担当範囲",
+    "perimeterHint": "所属店舗（チームとメール）と自動で担当する車両。",
+    "perimeterEdit": "担当範囲を編集",
+    "perimeterDialogHint": "所属店舗と担当車両をまとめて保存します。車両リストはすぐに再計算されます。",
+    "perimeterAgencies": "店舗",
+    "perimeterCars": "担当車両",
+    "perimeterCarsHint": "自動ルール：条件に合う有効な車両が、後から追加されたものも含めて割り当てられます。",
+    "perimeterNoRule": "ルールなし：手動で割り当てた車両のみ",
+    "linkAgencyCars": "追加した店舗の車両も割り当てる",
+    "linkAgencyCarsHint": "追加した店舗が担当車両の条件に加わります。",
+    "perimeterSaved": "担当範囲を保存しました",
+    "agenciesMailed": "{count, plural, other {#名のマネージャー}}にメールで通知",
+    "deltaAdded": "{count, plural, other {+#台}}",
+    "deltaRemoved": "{count, plural, other {−#台}}"
   },
   "Documents": {
     "cin_front": "身分証明書（CINE）表面",

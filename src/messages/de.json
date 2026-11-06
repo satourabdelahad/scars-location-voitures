@@ -471,7 +471,22 @@
     "agencyInactive": "Deaktiviert",
     "responsibleNote": "Die Leitung einer Filiale wird auf der Filialseite geändert (Reiter Leitung).",
     "agenciesSaved": "Filialen gespeichert",
-    "agenciesSavedMailed": "Filialen gespeichert: {count, plural, one {# Manager} other {# Manager}} per E-Mail benachrichtigt"
+    "agenciesSavedMailed": "Filialen gespeichert: {count, plural, one {# Manager} other {# Manager}} per E-Mail benachrichtigt",
+    "tabPerimeter": "Zuständigkeit",
+    "perimeterTitle": "Zuständigkeit des Managers",
+    "perimeterHint": "Seine Filialen (Team und E-Mails) und die Fahrzeuge, die er automatisch betreut.",
+    "perimeterEdit": "Zuständigkeit bearbeiten",
+    "perimeterDialogHint": "Filialen des Managers und betreute Fahrzeuge, gemeinsam gespeichert. Die Fahrzeugliste wird sofort neu berechnet.",
+    "perimeterAgencies": "Filialen",
+    "perimeterCars": "Betreute Fahrzeuge",
+    "perimeterCarsHint": "Automatische Regel: Passende aktive Fahrzeuge werden ihm zugeordnet, auch später hinzugefügte.",
+    "perimeterNoRule": "Keine Regel: nur manuell zugeordnete Fahrzeuge",
+    "linkAgencyCars": "Auch die Fahrzeuge der hinzugefügten Filialen zuordnen",
+    "linkAgencyCarsHint": "Hinzugefügte Filialen werden zu den Kriterien der betreuten Fahrzeuge.",
+    "perimeterSaved": "Zuständigkeit gespeichert",
+    "agenciesMailed": "{count, plural, one {# Manager} other {# Manager}} per E-Mail benachrichtigt",
+    "deltaAdded": "{count, plural, one {+# Fahrzeug} other {+# Fahrzeuge}}",
+    "deltaRemoved": "{count, plural, one {−# Fahrzeug} other {−# Fahrzeuge}}"
   },
   "Documents": {
     "cin_front": "Personalausweis (CINE), Vorderseite",

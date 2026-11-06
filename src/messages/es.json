@@ -471,7 +471,22 @@
     "agencyInactive": "Desactivada",
     "responsibleNote": "El responsable de una agencia se cambia en la ficha de la agencia (pestaña Responsable).",
     "agenciesSaved": "Agencias guardadas",
-    "agenciesSavedMailed": "Agencias guardadas: {count, plural, one {# gestor avisado} other {# gestores avisados}} por email"
+    "agenciesSavedMailed": "Agencias guardadas: {count, plural, one {# gestor avisado} other {# gestores avisados}} por email",
+    "tabPerimeter": "Perímetro",
+    "perimeterTitle": "Perímetro del gestor",
+    "perimeterHint": "Sus agencias (equipo y emails) y los coches que sigue automáticamente.",
+    "perimeterEdit": "Modificar el perímetro",
+    "perimeterDialogHint": "Agencias del gestor y coches seguidos, guardados juntos. La lista de coches se recalcula enseguida.",
+    "perimeterAgencies": "Agencias",
+    "perimeterCars": "Coches seguidos",
+    "perimeterCarsHint": "Regla automática: se le asignan los coches activos que coinciden, incluidos los añadidos después.",
+    "perimeterNoRule": "Sin regla: solo los coches asignados a mano",
+    "linkAgencyCars": "Asignarle también los coches de las agencias añadidas",
+    "linkAgencyCarsHint": "Las agencias añadidas se suman a los criterios de coches seguidos.",
+    "perimeterSaved": "Perímetro guardado",
+    "agenciesMailed": "{count, plural, one {# gestor avisado} other {# gestores avisados}} por email",
+    "deltaAdded": "{count, plural, one {+# coche} other {+# coches}}",
+    "deltaRemoved": "{count, plural, one {−# coche} other {−# coches}}"
   },
   "Documents": {
     "cin_front": "Documento de identidad (CINE), anverso",

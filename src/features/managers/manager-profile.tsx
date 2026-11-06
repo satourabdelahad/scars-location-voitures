@@ -1,4 +1,4 @@
-import { CalendarClock, CarFront, Handshake, History, IdCard, KeyRound, MailWarning } from "lucide-react";
+import { CalendarClock, Handshake, History, IdCard, KeyRound, MailWarning, Target } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
@@ -17,7 +17,7 @@ import { RentalsTab } from "./rentals-tab";
 import { DealsTab } from "./deals-tab";
 import { HistoryTab } from "./history-tab";
 import { AssignedCarsTab } from "./assigned-cars-tab";
-import { ManagerAgencies } from "./manager-agencies";
+import { Perimeter } from "./perimeter";
 import { managerAgencyLinks } from "@/server/queries/agencies";
 import { RentalsChart } from "@/features/my/rentals-chart";
 import { AppointmentsSection } from "@/features/my/pages";
@@ -63,9 +63,9 @@ export async function ManagerProfile({
 
   const tabs: { id: ProfileTab; label: string; Icon: typeof IdCard }[] = [
     { id: "infos", label: t("tabInfo"), Icon: IdCard },
+    { id: "cars", label: t("tabPerimeter"), Icon: Target },
     // Mot de passe : visible par le gestionnaire lui-même et par l'administrateur.
     ...(isAdmin || isSelf ? [{ id: "password" as const, label: t("tabPassword"), Icon: KeyRound }] : []),
-    { id: "cars", label: t("tabCars"), Icon: CarFront },
     ...(peer
       ? []
       : [
@@ -101,12 +101,11 @@ export async function ManagerProfile({
     const [fleet, links] = await Promise.all([listFleet(), managerAgencyLinks(m.id)]);
     body = (
       <>
-      <ManagerAgencies managerId={m.id} links={links} canEdit={isAdmin} base={isAdmin ? "/admin" : "/manager"} />
+      <Perimeter managerId={m.id} links={links} rule={summary.rule} candidates={fleet.filter((c) => c.status !== "deactivated")} canEdit={isAdmin} base={isAdmin ? "/admin" : "/manager"} />
       <AssignedCarsTab
         managerId={m.id}
         assigned={fleet.filter((c) => c.managerIds.includes(m.id))}
         candidates={fleet.filter((c) => c.status !== "deactivated")}
-        rule={summary.rule}
         ruleCarIds={summary.ruleCarIds}
         sharedCount={fleet.filter((c) => c.status !== "deactivated" && c.managerIds.length === 0).length}
         canEdit={isAdmin}

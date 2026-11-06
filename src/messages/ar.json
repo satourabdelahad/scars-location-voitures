@@ -471,7 +471,22 @@
     "agencyInactive": "معطّلة",
     "responsibleNote": "يُغيَّر مسؤول الوكالة من صفحة الوكالة (تبويب المسؤول).",
     "agenciesSaved": "تم حفظ الوكالات",
-    "agenciesSavedMailed": "تم حفظ الوكالات: {count, plural, one {إشعار مسيّر واحد} other {إشعار # مسيّرين}} بالبريد الإلكتروني"
+    "agenciesSavedMailed": "تم حفظ الوكالات: {count, plural, one {إشعار مسيّر واحد} other {إشعار # مسيّرين}} بالبريد الإلكتروني",
+    "tabPerimeter": "النطاق",
+    "perimeterTitle": "نطاق المسيّر",
+    "perimeterHint": "وكالاته (الفريق والبريد) والسيارات التي يتابعها تلقائيًا.",
+    "perimeterEdit": "تعديل النطاق",
+    "perimeterDialogHint": "وكالات المسيّر والسيارات المتابَعة، تُحفظ معًا. تُعاد حساب قائمة السيارات فورًا.",
+    "perimeterAgencies": "الوكالات",
+    "perimeterCars": "السيارات المتابَعة",
+    "perimeterCarsHint": "قاعدة تلقائية: تُسند إليه السيارات النشطة المطابقة، بما فيها المضافة لاحقًا.",
+    "perimeterNoRule": "لا توجد قاعدة: فقط السيارات المسندة يدويًا",
+    "linkAgencyCars": "إسناد سيارات الوكالات المضافة إليه أيضًا",
+    "linkAgencyCarsHint": "تنضم الوكالات المضافة إلى معايير السيارات المتابَعة.",
+    "perimeterSaved": "تم حفظ النطاق",
+    "agenciesMailed": "{count, plural, one {إشعار مسيّر واحد} other {إشعار # مسيّرين}} بالبريد",
+    "deltaAdded": "{count, plural, one {+سيارة واحدة} other {+# سيارات}}",
+    "deltaRemoved": "{count, plural, one {−سيارة واحدة} other {−# سيارات}}"
   },
   "Documents": {
     "cin_front": "البطاقة الوطنية (CINE) — الوجه",

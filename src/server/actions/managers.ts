@@ -481,3 +481,62 @@ export async function setManagerAgencies(managerId: string, agencyIds: number[])
     return toActionError(err);
   }
 }
+
+/**
+ * Onglet « Périmètre » : enregistre en une fois les agences du gestionnaire (équipe, emails)
+ * et la règle des voitures suivies (marques, villes, agences). La règle est appliquée tout de
+ * suite ; le résultat indique les voitures ajoutées et retirées pour l'afficher.
+ */
+export async function saveManagerPerimeter(
+  managerId: string,
+  input: { agencies: number[]; brands: string[]; cities: string[]; ruleAgencies: number[] },
+): Promise<ActionResult<{ agenciesAdded: number; agenciesRemoved: number; emailed: number; carsAdded: number; carsRemoved: number }>> {
+  try {
+    const admin = await assertRole(["admin"]);
+    const p = z
+      .object({
+        agencies: z.array(z.number().int().positive()).max(200),
+        brands: z.array(z.string().trim().min(1).max(80)).max(100),
+        cities: z.array(z.string().trim().min(1).max(120)).max(200),
+        ruleAgencies: z.array(z.number().int().positive()).max(200),
+      })
+      .safeParse(input);
+    if (!p.success || !z.string().uuid().safeParse(managerId).success) return { ok: false, error: "validation" };
+    const { brands, cities } = p.data;
+    const ruleAgencies = [...new Set(p.data.ruleAgencies)];
+
+    // 1. Agences du gestionnaire (avec emails aux gestionnaires des agences ajoutées).
+    const team = await setManagerAgencies(managerId, p.data.agencies);
+    if (!team.ok) return { ok: false, error: team.error };
+
+    // 2. Voitures suivies : seulement si la règle change.
+    const [current] = await db.select().from(managerCarRules).where(eq(managerCarRules.managerId, managerId)).limit(1);
+    const same = (a: (string | number)[], b: (string | number)[]) => a.length === b.length && a.every((x) => b.includes(x));
+    const changed = !current || !same(current.brands, brands) || !same(current.cities, cities) || !same(current.agencies ?? [], ruleAgencies);
+    let carsAdded = 0;
+    let carsRemoved = 0;
+    if (changed && (current || brands.length || cities.length || ruleAgencies.length)) {
+      const res = await applyManagerRule(managerId, brands, cities, admin.id, db, ruleAgencies);
+      carsAdded = res.added.length;
+      carsRemoved = res.removed.length;
+      const agencyNames = ruleAgencies.length
+        ? (await db.select({ name: agenciesTable.name, city: agenciesTable.city }).from(agenciesTable).where(inArray(agenciesTable.id, ruleAgencies))).map((a) => `${a.city}, ${a.name}`)
+        : [];
+      const criteria = [brands.join(", "), cities.join(", "), agencyNames.join(", ")].filter(Boolean).join(" · ") || "—";
+      await db.insert(auditLogs).values({
+        actorId: admin.id,
+        entity: "manager",
+        entityId: managerId,
+        action: "assign_rule",
+        changes: { note: `${criteria} → +${carsAdded} / −${carsRemoved}`, carIds: res.added, removedCarIds: res.removed, brands, cities, agencies: ruleAgencies },
+      });
+    }
+    revalidatePath("/", "layout");
+    return {
+      ok: true,
+      data: { agenciesAdded: team.data!.added, agenciesRemoved: team.data!.removed, emailed: team.data!.emailed, carsAdded, carsRemoved },
+    };
+  } catch (err) {
+    return toActionError(err);
+  }
+}

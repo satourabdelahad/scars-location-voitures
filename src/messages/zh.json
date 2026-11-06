@@ -471,7 +471,22 @@
     "agencyInactive": "已停用",
     "responsibleNote": "门店负责人在门店页面（负责人标签）中更改。",
     "agenciesSaved": "门店已保存",
-    "agenciesSavedMailed": "门店已保存：已通过邮件通知{count, plural, other {#位经理}}"
+    "agenciesSavedMailed": "门店已保存：已通过邮件通知{count, plural, other {#位经理}}",
+    "tabPerimeter": "负责范围",
+    "perimeterTitle": "经理负责范围",
+    "perimeterHint": "其所属门店（团队与邮件）以及自动跟进的车辆。",
+    "perimeterEdit": "修改负责范围",
+    "perimeterDialogHint": "经理所属门店与跟进车辆一并保存。车辆列表会立即重新计算。",
+    "perimeterAgencies": "门店",
+    "perimeterCars": "跟进车辆",
+    "perimeterCarsHint": "自动规则：符合条件的在用车辆（包括之后新增的）都会分配给他。",
+    "perimeterNoRule": "无规则：仅手动分配的车辆",
+    "linkAgencyCars": "同时分配新增门店的车辆",
+    "linkAgencyCarsHint": "新增门店会加入跟进车辆的条件。",
+    "perimeterSaved": "负责范围已保存",
+    "agenciesMailed": "已通过邮件通知{count, plural, other {#位经理}}",
+    "deltaAdded": "{count, plural, other {+# 辆}}",
+    "deltaRemoved": "{count, plural, other {−# 辆}}"
   },
   "Documents": {
     "cin_front": "身份证（CINE）正面",

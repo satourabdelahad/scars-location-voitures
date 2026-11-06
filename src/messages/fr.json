@@ -471,7 +471,22 @@
     "agencyInactive": "Désactivée",
     "responsibleNote": "Le responsable d'une agence se change dans la fiche de l'agence (onglet Responsable).",
     "agenciesSaved": "Agences enregistrées",
-    "agenciesSavedMailed": "Agences enregistrées : {count, plural, one {# gestionnaire prévenu} other {# gestionnaires prévenus}} par email"
+    "agenciesSavedMailed": "Agences enregistrées : {count, plural, one {# gestionnaire prévenu} other {# gestionnaires prévenus}} par email",
+    "tabPerimeter": "Périmètre",
+    "perimeterTitle": "Périmètre du gestionnaire",
+    "perimeterHint": "Ses agences (équipe et emails) et les voitures qu'il suit automatiquement.",
+    "perimeterEdit": "Modifier le périmètre",
+    "perimeterDialogHint": "Agences du gestionnaire et voitures suivies, enregistrées ensemble. La liste des voitures est recalculée tout de suite.",
+    "perimeterAgencies": "Agences",
+    "perimeterCars": "Voitures suivies",
+    "perimeterCarsHint": "Règle automatique : les voitures actives qui correspondent lui sont affectées, y compris celles ajoutées plus tard.",
+    "perimeterNoRule": "Aucune règle : seulement les voitures affectées à la main",
+    "linkAgencyCars": "Lui affecter aussi les voitures des agences ajoutées",
+    "linkAgencyCarsHint": "Les agences ajoutées rejoignent les critères des voitures suivies.",
+    "perimeterSaved": "Périmètre enregistré",
+    "agenciesMailed": "{count, plural, one {# gestionnaire prévenu} other {# gestionnaires prévenus}} par email",
+    "deltaAdded": "{count, plural, one {+# voiture} other {+# voitures}}",
+    "deltaRemoved": "{count, plural, one {−# voiture} other {−# voitures}}"
   },
   "Documents": {
     "cin_front": "Carte d'identité (CINE) — recto",

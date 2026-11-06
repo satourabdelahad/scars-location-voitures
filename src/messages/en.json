@@ -471,7 +471,22 @@
     "agencyInactive": "Deactivated",
     "responsibleNote": "A branch's head is changed on the branch page (Head tab).",
     "agenciesSaved": "Branches saved",
-    "agenciesSavedMailed": "Branches saved: {count, plural, one {# manager notified} other {# managers notified}} by email"
+    "agenciesSavedMailed": "Branches saved: {count, plural, one {# manager notified} other {# managers notified}} by email",
+    "tabPerimeter": "Scope",
+    "perimeterTitle": "Manager's scope",
+    "perimeterHint": "Their branches (team and emails) and the cars they follow automatically.",
+    "perimeterEdit": "Edit scope",
+    "perimeterDialogHint": "Manager's branches and followed cars, saved together. The car list is recalculated right away.",
+    "perimeterAgencies": "Branches",
+    "perimeterCars": "Followed cars",
+    "perimeterCarsHint": "Automatic rule: matching active cars are assigned to them, including cars added later.",
+    "perimeterNoRule": "No rule: only cars assigned by hand",
+    "linkAgencyCars": "Also assign the cars of the added branches",
+    "linkAgencyCarsHint": "Added branches join the followed-cars criteria.",
+    "perimeterSaved": "Scope saved",
+    "agenciesMailed": "{count, plural, one {# manager notified} other {# managers notified}} by email",
+    "deltaAdded": "{count, plural, one {+# car} other {+# cars}}",
+    "deltaRemoved": "{count, plural, one {−# car} other {−# cars}}"
   },
   "Documents": {
     "cin_front": "National ID card (CINE), front",

@@ -471,7 +471,22 @@
     "agencyInactive": "비활성",
     "responsibleNote": "지점 책임자는 지점 페이지(책임자 탭)에서 변경합니다.",
     "agenciesSaved": "지점이 저장되었습니다",
-    "agenciesSavedMailed": "지점 저장: 매니저 {count, plural, other {#명}}에게 이메일로 알림"
+    "agenciesSavedMailed": "지점 저장: 매니저 {count, plural, other {#명}}에게 이메일로 알림",
+    "tabPerimeter": "담당 범위",
+    "perimeterTitle": "매니저 담당 범위",
+    "perimeterHint": "소속 지점(팀 및 이메일)과 자동으로 담당하는 차량입니다.",
+    "perimeterEdit": "담당 범위 수정",
+    "perimeterDialogHint": "소속 지점과 담당 차량을 함께 저장합니다. 차량 목록은 바로 다시 계산됩니다.",
+    "perimeterAgencies": "지점",
+    "perimeterCars": "담당 차량",
+    "perimeterCarsHint": "자동 규칙: 조건에 맞는 운행 차량이 나중에 추가된 차량까지 배정됩니다.",
+    "perimeterNoRule": "규칙 없음: 직접 배정한 차량만",
+    "linkAgencyCars": "추가한 지점의 차량도 배정",
+    "linkAgencyCarsHint": "추가한 지점이 담당 차량 조건에 포함됩니다.",
+    "perimeterSaved": "담당 범위가 저장되었습니다",
+    "agenciesMailed": "매니저 {count, plural, other {#명}}에게 이메일로 알림",
+    "deltaAdded": "{count, plural, other {+#대}}",
+    "deltaRemoved": "{count, plural, other {−#대}}"
   },
   "Documents": {
     "cin_front": "신분증(CINE) 앞면",
