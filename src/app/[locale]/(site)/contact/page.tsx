@@ -1,4 +1,5 @@
-import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
+import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyCard } from "@/components/agency-card";
 import { ContactForm } from "@/features/public/contact-form";
@@ -20,7 +21,7 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
     contact.address && { icon: <MapPin />, label: t("address"), value: contact.address, href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}` },
     contact.email && { icon: <Mail />, label: t("email"), value: contact.email, href: `mailto:${contact.email}` },
     contact.phone && { icon: <Phone />, label: t("phone"), value: contact.phone, href: `tel:${contact.phone.replace(/\s/g, "")}`, ltr: true },
-    contact.whatsapp && { icon: <MessageCircle />, label: "WhatsApp", value: contact.whatsapp, href: waLink(contact.whatsapp), ltr: true },
+    contact.whatsapp && { icon: <WhatsAppIcon />, label: "WhatsApp", value: contact.whatsapp, href: waLink(contact.whatsapp), ltr: true },
   ].filter(Boolean) as { icon: React.ReactNode; label: string; value: string; href: string; ltr?: boolean }[];
 
   return (

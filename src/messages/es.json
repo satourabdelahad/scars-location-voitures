@@ -1560,5 +1560,8 @@
     "usingDefault": "Se muestra el texto por defecto: edítelo para personalizarlo.",
     "restoreDefault": "Restablecer el texto por defecto",
     "formatHint": "Formato: una línea vacía separa párrafos, «## Título» crea un subtítulo, «- elemento» una lista."
+  },
+  "TopBar": {
+    "always": "7 días a la semana · 24 h"
   }
 }

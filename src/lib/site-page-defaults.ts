@@ -1,9 +1,9 @@
 import type { SitePage } from "./site-pages";
+import { OTHER } from "./site-page-defaults-i18n";
 
 /**
- * Textes par défaut des pages du site public (français et anglais), à adapter dans
- * le back office (Site public). Les autres langues reprennent le français (arabe, darija)
- * ou l'anglais, tant qu'une traduction n'a pas été saisie.
+ * Textes par défaut des pages du site public, dans les 9 langues du site, à adapter
+ * dans le back office (Site public). Un texte saisi pour une langue remplace celui-ci.
  */
 const FR: Record<SitePage, string> = {
   about_who: `Dizy Cars est une agence de location de voitures marocaine. Nous mettons à votre disposition des voitures récentes et bien entretenues, de la citadine au 4x4, avec un prix annoncé qui ne change pas au comptoir.
@@ -107,6 +107,8 @@ Under Moroccan law 09-08 on the protection of individuals with regard to the pro
 The site uses cookies needed for it to work (sign-in, language, booking). No advertising cookies are set.`,
 };
 
+const ALL: Record<string, Record<SitePage, string>> = { fr: FR, en: EN, ...OTHER };
+
 export function defaultPageText(page: SitePage, locale: string) {
-  return locale === "fr" || locale === "ar" || locale === "ary" ? FR[page] : EN[page];
+  return (ALL[locale] ?? FR)[page];
 }

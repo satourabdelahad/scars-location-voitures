@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
   // on garde le rendu dynamique classique plutôt que les Cache Components.
   cacheComponents: false,
   serverExternalPackages: ["pg", "bcryptjs"],
+  // Clé publique reCAPTCHA (RECAPTCHA_KEY) exposée au navigateur au moment du build.
+  env: {
+    NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_KEY || process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "",
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },

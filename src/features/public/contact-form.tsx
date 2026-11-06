@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { getRecaptchaToken } from "@/components/recaptcha/recaptcha";
+import { getRecaptchaToken, RecaptchaScript } from "@/components/recaptcha/recaptcha";
 import { submitContactForm } from "@/server/actions/site";
 
 /** Formulaire de la page Contact : le message part par email à l'adresse de contact du site. */
@@ -46,6 +46,7 @@ export function ContactForm() {
 
   return (
     <form onSubmit={submit} noValidate className="grid gap-4 rounded-[22px] border border-mist bg-paper p-6 sm:grid-cols-2 sm:p-8">
+      <RecaptchaScript />
       <h2 className="text-xl font-bold text-ink sm:col-span-2">{t("formTitle")}</h2>
       <Field label={t("name")} required error={err("name")}>
         {(p) => <Input {...p} autoComplete="name" value={v.name} onChange={(e) => set("name", e.target.value)} />}

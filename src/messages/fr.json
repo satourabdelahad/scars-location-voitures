@@ -1560,5 +1560,8 @@
     "usingDefault": "Texte par défaut affiché : modifiez-le pour le personnaliser.",
     "restoreDefault": "Rétablir le texte par défaut",
     "formatHint": "Mise en forme : une ligne vide sépare les paragraphes, « ## Titre » crée un intertitre, « - élément » une liste."
+  },
+  "TopBar": {
+    "always": "7j/7 · 24h/24"
   }
 }

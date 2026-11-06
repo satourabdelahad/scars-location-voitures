@@ -1560,5 +1560,8 @@
     "usingDefault": "Default text shown: edit it to customise it.",
     "restoreDefault": "Restore the default text",
     "formatHint": "Formatting: a blank line separates paragraphs, “## Title” makes a heading, “- item” a list."
+  },
+  "TopBar": {
+    "always": "7 days a week · 24/7"
   }
 }
