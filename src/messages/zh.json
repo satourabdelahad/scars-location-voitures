@@ -698,7 +698,8 @@
     "promoSaved": "促销已保存",
     "promoRemoved": "促销已取消",
     "promoPreview": "日租价：{before} → {after}",
-    "promoNoEnd": "无结束日期"
+    "promoNoEnd": "无结束日期",
+    "outOfScopeBanner": "此车辆不在您的范围内：您可以查看，但不能修改。"
   },
   "Reservations": {
     "title": "预订",
@@ -831,7 +832,8 @@
     "validation_reserved": "只有管理员和取车门店负责人可以确认此预订。",
     "admin_protected": "管理员账户不能停用，也不能发送邀请。",
     "contact_unavailable": "暂时无法发送消息。请通过 WhatsApp 联系我们或致电。",
-    "url": "网址无效"
+    "url": "网址无效",
+    "out_of_scope": "无法操作：此车辆或门店不在您的范围内。"
   },
   "About": {
     "title": "一家车况可靠的摩洛哥租车公司",
@@ -1502,7 +1504,21 @@
     "instagramUrl": "Instagram 主页",
     "linkedinUrl": "LinkedIn 主页",
     "xUrl": "X（Twitter）主页",
-    "adminBadge": "管理员"
+    "adminBadge": "管理员",
+    "responsibles": "负责人",
+    "noResponsible": "无负责人",
+    "bulkActivated": "已重新启用 {count} 家门店",
+    "bulkDeactivated": "已停用 {count} 家门店",
+    "bulkSkipped": "已跳过 {count} 家门店（仍有车辆在用）",
+    "bulkDeactivateTitle": "停用 {count} 家门店",
+    "pickerAll": "全部",
+    "pickerSelected": "已选（{count}）",
+    "responsiblesSaved": "负责人已保存",
+    "managersSaved": "管理员已保存",
+    "responsiblesHint": "可勾选 0 位、1 位或多位负责人。他们审核门店的预订，并自动成为门店成员。",
+    "membersHint": "勾选隶属于该门店的管理员。隶属门店的管理员只能操作这些门店的车辆。",
+    "membersLockedHint": "负责人和管理员始终属于该门店。",
+    "tabResponsibles": "{count, plural, =0 {负责人} one {负责人} other {负责人（#）}}"
   },
   "Marketing": {
     "title": "邮件营销",

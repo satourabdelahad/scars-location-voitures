@@ -698,7 +698,8 @@
     "promoSaved": "Promotion enregistrée",
     "promoRemoved": "Promotion retirée",
     "promoPreview": "Prix par jour : {before} → {after}",
-    "promoNoEnd": "sans date de fin"
+    "promoNoEnd": "sans date de fin",
+    "outOfScopeBanner": "Cette voiture est hors de votre périmètre : vous pouvez la consulter mais pas la modifier."
   },
   "Reservations": {
     "title": "Réservations",
@@ -831,7 +832,8 @@
     "validation_reserved": "Seuls l'administrateur et le responsable de l'agence de départ peuvent valider cette réservation.",
     "admin_protected": "Le compte administrateur ne peut pas être désactivé ni recevoir d'invitation.",
     "contact_unavailable": "Le message n'a pas pu être envoyé pour le moment. Écrivez-nous sur WhatsApp ou appelez-nous.",
-    "url": "Adresse web invalide"
+    "url": "Adresse web invalide",
+    "out_of_scope": "Action impossible : cette voiture ou cette agence est hors de votre périmètre."
   },
   "About": {
     "title": "Une agence marocaine, des voitures bien tenues",
@@ -1502,7 +1504,21 @@
     "instagramUrl": "Page Instagram",
     "linkedinUrl": "Page LinkedIn",
     "xUrl": "Page X (Twitter)",
-    "adminBadge": "Administrateur"
+    "adminBadge": "Administrateur",
+    "responsibles": "Responsable(s)",
+    "noResponsible": "Aucun responsable",
+    "bulkActivated": "{count, plural, one {# agence réactivée} other {# agences réactivées}}",
+    "bulkDeactivated": "{count, plural, one {# agence désactivée} other {# agences désactivées}}",
+    "bulkSkipped": "{count, plural, one {# agence ignorée (voitures encore en service)} other {# agences ignorées (voitures encore en service)}}",
+    "bulkDeactivateTitle": "{count, plural, one {Désactiver # agence} other {Désactiver # agences}}",
+    "pickerAll": "Tous",
+    "pickerSelected": "Sélectionnés ({count})",
+    "responsiblesSaved": "Responsables enregistrés",
+    "managersSaved": "Gestionnaires enregistrés",
+    "responsiblesHint": "Cochez 0, 1 ou plusieurs responsables. Ils valident les réservations de l'agence et en sont automatiquement membres.",
+    "membersHint": "Cochez les gestionnaires rattachés à cette agence. Un gestionnaire rattaché à des agences ne peut agir que sur les voitures de ces agences.",
+    "membersLockedHint": "Les responsables et l'administrateur font toujours partie de l'agence.",
+    "tabResponsibles": "{count, plural, =0 {Responsable} one {Responsable} other {Responsables (#)}}"
   },
   "Marketing": {
     "title": "Email Marketing",

@@ -685,6 +685,8 @@ export const managerAgencies = pgTable(
     agencyId: integer("agency_id")
       .notNull()
       .references(() => agencies.id, { onDelete: "restrict" }),
+    /** Responsable de l'agence (0, 1 ou plusieurs par agence) : valide les réservations */
+    isResponsible: boolean("is_responsible").notNull().default(false),
     createdBy: uuid("created_by").references(() => users.id),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },

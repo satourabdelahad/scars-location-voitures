@@ -698,7 +698,8 @@
     "promoSaved": "Promoción guardada",
     "promoRemoved": "Promoción quitada",
     "promoPreview": "Precio por día: {before} → {after}",
-    "promoNoEnd": "sin fecha de fin"
+    "promoNoEnd": "sin fecha de fin",
+    "outOfScopeBanner": "Este coche está fuera de su perímetro: puede consultarlo pero no modificarlo."
   },
   "Reservations": {
     "title": "Reservas",
@@ -831,7 +832,8 @@
     "validation_reserved": "Solo el administrador y el responsable de la agencia de recogida pueden validar esta reserva.",
     "admin_protected": "La cuenta de administrador no se puede desactivar ni recibir invitaciones.",
     "contact_unavailable": "No se ha podido enviar el mensaje por ahora. Escríbanos por WhatsApp o llámenos.",
-    "url": "Dirección web no válida"
+    "url": "Dirección web no válida",
+    "out_of_scope": "Acción no permitida: este coche o esta agencia está fuera de su perímetro."
   },
   "About": {
     "title": "Una agencia marroquí con coches bien cuidados",
@@ -1502,7 +1504,21 @@
     "instagramUrl": "Página de Instagram",
     "linkedinUrl": "Página de LinkedIn",
     "xUrl": "Página de X (Twitter)",
-    "adminBadge": "Administrador"
+    "adminBadge": "Administrador",
+    "responsibles": "Responsable(s)",
+    "noResponsible": "Sin responsable",
+    "bulkActivated": "{count, plural, one {# agencia reactivada} other {# agencias reactivadas}}",
+    "bulkDeactivated": "{count, plural, one {# agencia desactivada} other {# agencias desactivadas}}",
+    "bulkSkipped": "{count, plural, one {# agencia omitida (coches aún en servicio)} other {# agencias omitidas (coches aún en servicio)}}",
+    "bulkDeactivateTitle": "{count, plural, one {Desactivar # agencia} other {Desactivar # agencias}}",
+    "pickerAll": "Todos",
+    "pickerSelected": "Seleccionados ({count})",
+    "responsiblesSaved": "Responsables guardados",
+    "managersSaved": "Gestores guardados",
+    "responsiblesHint": "Marque 0, 1 o varios responsables. Validan las reservas de la agencia y son miembros automáticamente.",
+    "membersHint": "Marque los gestores vinculados a esta agencia. Un gestor vinculado a agencias solo puede actuar sobre los coches de esas agencias.",
+    "membersLockedHint": "Los responsables y el administrador siempre forman parte de la agencia.",
+    "tabResponsibles": "{count, plural, =0 {Responsable} one {Responsable} other {Responsables (#)}}"
   },
   "Marketing": {
     "title": "Email Marketing",

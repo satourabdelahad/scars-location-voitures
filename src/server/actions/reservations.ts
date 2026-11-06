@@ -13,6 +13,7 @@ import { issuePasswordToken } from "@/server/tokens";
 import { canValidateReservation } from "@/server/queries/reservations";
 import { formatDate, formatMoney, rentalDays, todayISO } from "@/lib/utils";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
+import { assertReservationInScope } from "@/server/agency-scope";
 import { sendReservationEmail } from "@/server/email";
 import { notifyClientInvite, notifyReservationCreated } from "@/server/notifications";
 import { isLocale } from "@/i18n/config";
@@ -239,6 +240,8 @@ export async function transitionReservation(
     const staff = await assertRole(["admin", "manager"]);
     const tr = TRANSITIONS[action];
     if (!tr) return { ok: false, error: "validation" };
+    // Gestionnaire rattaché à des agences : seulement les réservations des voitures de son périmètre.
+    await assertReservationInScope(staff, id);
     // Valider (confirmer ou refuser) : l'administrateur ou le responsable de l'agence de départ.
     if ((action === "confirm" || action === "reject") && !(await canValidateReservation(staff, id))) return { ok: false, error: "validation_reserved" };
     const now = new Date();

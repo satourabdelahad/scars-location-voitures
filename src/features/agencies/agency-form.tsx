@@ -1,14 +1,12 @@
 "use client";
 
-import { Save, UserPlus } from "lucide-react";
+import { Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input } from "@/components/ui/field";
-import { CityCombobox, SuggestCombobox } from "@/components/ui/city-combobox";
-import { Link } from "@/i18n/navigation";
-import { ManagerAvatar } from "@/features/managers/manager-avatar";
+import { CityCombobox } from "@/components/ui/city-combobox";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useRouter } from "@/i18n/navigation";
 import { createAgency, updateAgency } from "@/server/actions/agencies";
@@ -25,10 +23,7 @@ export type AgencyValues = {
   instagramUrl: string;
   linkedinUrl: string;
   xUrl: string;
-  /** Responsable : compte gestionnaire */
-  managerId: string;
 };
-export type ManagerChoice = { id: string; firstName: string; lastName: string; civility: "male" | "female"; email: string | null; phone: string; photoUrl: string | null; active: boolean };
 const URL_PLACEHOLDER = {
   websiteUrl: "https://dizy-cars.com",
   facebookUrl: "https://facebook.com/…",
@@ -37,7 +32,7 @@ const URL_PLACEHOLDER = {
   xUrl: "https://x.com/…",
 } as const;
 
-const EMPTY: AgencyValues = { name: "", city: "", address: "", phone: "", whatsapp: "", isAirport: false, websiteUrl: "", facebookUrl: "", instagramUrl: "", linkedinUrl: "", xUrl: "", managerId: "" };
+const EMPTY: AgencyValues = { name: "", city: "", address: "", phone: "", whatsapp: "", isAirport: false, websiteUrl: "", facebookUrl: "", instagramUrl: "", linkedinUrl: "", xUrl: "" };
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
   return (
@@ -51,27 +46,19 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
   );
 }
 
-/** Ajout / modification d'une agence : toutes les informations sont obligatoires. */
-/**
- * section : "all" (création), "infos" ou "manager" (onglets de la page agence).
- * Chaque onglet enregistre l'agence complète, les autres valeurs restant inchangées.
- */
+/** Ajout / modification d'une agence (onglet Informations). Les responsables s'affectent ensuite dans leur onglet. */
 export function AgencyForm({
   base,
   agencyId,
   initial,
   actions,
   readOnly = false,
-  section = "all",
-  managers,
 }: {
   base: string;
   agencyId?: number;
   initial?: Partial<AgencyValues>;
   actions?: ReactNode;
   readOnly?: boolean;
-  section?: "all" | "infos" | "manager";
-  managers: ManagerChoice[];
 }) {
   const t = useTranslations("Agencies");
   const tc = useTranslations("Common");
@@ -92,16 +79,10 @@ export function AgencyForm({
       if (res.ok) {
         toast.success(agencyId ? t("updated") : t("created"));
         if (agencyId) router.refresh();
-        else router.push(`${base}/agencies/${(res.data as { id: number }).id}`);
+        // Nouvelle agence : on enchaîne sur l'affectation des responsables.
+        else router.push(`${base}/agencies/${(res.data as { id: number }).id}?tab=manager`);
       } else {
-        if (res.fieldErrors) {
-          setErrors(res.fieldErrors);
-          // Champ à corriger dans l'autre onglet : on le dit clairement.
-          const infos = ["name", "city", "address", "phone", "whatsapp", "websiteUrl", "facebookUrl", "instagramUrl", "linkedinUrl", "xUrl"];
-          const keys = Object.keys(res.fieldErrors);
-          if (section === "manager" && keys.some((k) => infos.includes(k))) return void toast.error(t("fixInfosTab"));
-          if (section === "infos" && keys.includes("managerId")) return void toast.error(t("fixManagerTab"));
-        }
+        if (res.fieldErrors) setErrors(res.fieldErrors);
         toast.error(te(res.error as "unknown"));
       }
     });
@@ -111,8 +92,6 @@ export function AgencyForm({
     <form onSubmit={submit} noValidate className="rounded-2xl border border-mist bg-paper p-6 sm:p-8">
       {actions && <div className="mb-6 flex flex-wrap justify-end gap-2 border-b border-mist pb-5">{actions}</div>}
       <fieldset disabled={readOnly} className="contents">
-        {section !== "manager" && (
-          <>
         <Section title={t("agency")}>
           <Field label={t("name")} required error={err("name")}>{(p) => <Input {...p} value={v.name} onChange={(x) => set("name", x.target.value)} />}</Field>
           <Field label={t("city")} required error={err("city")}>{(p) => <CityCombobox {...p} disabled={readOnly} value={v.city} onChange={(c) => set("city", c)} />}</Field>
@@ -130,9 +109,6 @@ export function AgencyForm({
             </Field>
           ))}
         </Section>
-          </>
-        )}
-        {section !== "infos" && <ResponsibleSection managers={managers} value={v.managerId} onChange={(id) => set("managerId", id)} error={err("managerId")} readOnly={readOnly} />}
       </fieldset>
       {!readOnly && (
         <div className="flex justify-end gap-2 border-t border-mist pt-6">
@@ -144,50 +120,3 @@ export function AgencyForm({
   );
 }
 
-/** Responsable de l'agence : un gestionnaire, choisi dans une liste avec recherche. */
-function ResponsibleSection({ managers, value, onChange, error, readOnly }: { managers: ManagerChoice[]; value: string; onChange: (id: string) => void; error?: string; readOnly: boolean }) {
-  const t = useTranslations("Agencies");
-  const tm = useTranslations("Managers");
-  const e = useTranslations("Enums");
-  const label = (m: ManagerChoice) => `${m.firstName} ${m.lastName}${m.email ? ` · ${m.email}` : ""}`;
-  const byLabel = new Map(managers.map((m) => [label(m), m.id]));
-  const chosen = managers.find((m) => m.id === value) ?? null;
-  return (
-    <Section title={t("manager")} hint={t("managerAccountHint")}>
-      <Field label={t("chooseManager")} required error={error} className="sm:col-span-2">
-        {(p) => (
-          <SuggestCombobox
-            {...p}
-            disabled={readOnly}
-            options={managers.filter((m) => m.active || m.id === value).map(label)}
-            value={chosen ? label(chosen) : ""}
-            onChange={(l) => onChange(byLabel.get(l) ?? "")}
-            labels={{ search: t("searchManager"), choose: t("chooseManager"), noResult: t("noManagerFound") }}
-          />
-        )}
-      </Field>
-      {chosen && (
-        <div className="flex items-center gap-4 rounded-xl border border-mist bg-chalk/60 p-4 sm:col-span-2">
-          <ManagerAvatar photoUrl={chosen.photoUrl} firstName={chosen.firstName} lastName={chosen.lastName} size="md" />
-          <dl className="grid min-w-0 flex-1 gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
-            <div><dt className="text-xs text-ink-3">{tm("civility")}</dt><dd className="font-medium text-ink">{e(`civility.${chosen.civility}`)}</dd></div>
-            <div><dt className="text-xs text-ink-3">{tm("lastName")} / {tm("firstName")}</dt><dd className="font-medium text-ink">{chosen.lastName} {chosen.firstName}</dd></div>
-            <div><dt className="text-xs text-ink-3">{tm("email")}</dt><dd className="truncate font-medium text-ink" dir="ltr">{chosen.email ?? "—"}</dd></div>
-            <div><dt className="text-xs text-ink-3">{tm("phone")}</dt><dd className="font-medium text-ink tabular" dir="ltr">{chosen.phone}</dd></div>
-          </dl>
-        </div>
-      )}
-      {!readOnly && (
-        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-majorelle/40 bg-majorelle-soft/40 px-4 py-3 text-sm text-ink-2 sm:col-span-2">
-          <span className="min-w-0 flex-1">{t("managerMissing")}</span>
-          <Button asChild size="sm" variant="outline">
-            <Link href="/admin/managers/new">
-              <UserPlus />
-              {t("addManager")}
-            </Link>
-          </Button>
-        </div>
-      )}
-    </Section>
-  );
-}

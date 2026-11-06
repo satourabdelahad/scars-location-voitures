@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/db";
-import { managers, tablePreferences } from "@/db/schema";
+import { managerAgencies, managers, tablePreferences } from "@/db/schema";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { CarArt } from "@/components/car-art";
@@ -34,9 +34,13 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
   if (!r) notFound();
   const session = await auth();
   const canValidate = session?.user ? await canValidateReservation(session.user, r.id) : false;
-  const responsible = r.pickupAgency.managerId
-    ? await db.query.managers.findFirst({ where: eq(managers.id, r.pickupAgency.managerId), columns: { firstName: true, lastName: true } })
-    : null;
+  // Responsables de l'agence de départ (0, 1 ou plusieurs).
+  const heads = await db
+    .select({ firstName: managers.firstName, lastName: managers.lastName })
+    .from(managerAgencies)
+    .innerJoin(managers, eq(managers.id, managerAgencies.managerId))
+    .where(and(eq(managerAgencies.agencyId, r.pickupAgency.id), eq(managerAgencies.isResponsible, true)));
+  const responsible = heads.length ? heads.map((h) => `${h.firstName} ${h.lastName}`).join(", ") : null;
   const [t, ts, tb, tx, te, tf] = await Promise.all([
     getTranslations("Reservations"),
     getTranslations("Status"),
@@ -113,7 +117,7 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
               </div>
             </dl>
             <div className="mt-6">
-              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} canValidate={canValidate} responsible={responsible ? `${responsible.firstName} ${responsible.lastName}` : null} />
+              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} canValidate={canValidate} responsible={responsible} />
             </div>
           </Panel>
           <Panel className="p-6">

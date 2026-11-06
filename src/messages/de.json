@@ -698,7 +698,8 @@
     "promoSaved": "Aktion gespeichert",
     "promoRemoved": "Aktion entfernt",
     "promoPreview": "Tagespreis: {before} → {after}",
-    "promoNoEnd": "ohne Enddatum"
+    "promoNoEnd": "ohne Enddatum",
+    "outOfScopeBanner": "Dieses Auto liegt außerhalb Ihres Bereichs: Sie können es ansehen, aber nicht ändern."
   },
   "Reservations": {
     "title": "Buchungen",
@@ -831,7 +832,8 @@
     "validation_reserved": "Nur der Administrator und die Leitung der Abholfiliale können diese Buchung bestätigen.",
     "admin_protected": "Das Administratorkonto kann nicht deaktiviert werden und erhält keine Einladung.",
     "contact_unavailable": "Die Nachricht konnte gerade nicht gesendet werden. Schreiben Sie uns per WhatsApp oder rufen Sie uns an.",
-    "url": "Ungültige Webadresse"
+    "url": "Ungültige Webadresse",
+    "out_of_scope": "Nicht erlaubt: Dieses Auto oder diese Agentur liegt außerhalb Ihres Bereichs."
   },
   "About": {
     "title": "Eine marokkanische Agentur mit gepflegten Autos",
@@ -1502,7 +1504,21 @@
     "instagramUrl": "Instagram-Seite",
     "linkedinUrl": "LinkedIn-Seite",
     "xUrl": "X-(Twitter-)Seite",
-    "adminBadge": "Administrator"
+    "adminBadge": "Administrator",
+    "responsibles": "Verantwortliche",
+    "noResponsible": "Kein Verantwortlicher",
+    "bulkActivated": "{count, plural, one {# Agentur reaktiviert} other {# Agenturen reaktiviert}}",
+    "bulkDeactivated": "{count, plural, one {# Agentur deaktiviert} other {# Agenturen deaktiviert}}",
+    "bulkSkipped": "{count, plural, one {# Agentur übersprungen (Autos noch im Einsatz)} other {# Agenturen übersprungen (Autos noch im Einsatz)}}",
+    "bulkDeactivateTitle": "{count, plural, one {# Agentur deaktivieren} other {# Agenturen deaktivieren}}",
+    "pickerAll": "Alle",
+    "pickerSelected": "Ausgewählt ({count})",
+    "responsiblesSaved": "Verantwortliche gespeichert",
+    "managersSaved": "Verwalter gespeichert",
+    "responsiblesHint": "Wählen Sie 0, 1 oder mehrere Verantwortliche. Sie bestätigen die Buchungen der Agentur und sind automatisch Mitglieder.",
+    "membersHint": "Wählen Sie die Verwalter dieser Agentur. Ein Verwalter mit Agenturen darf nur die Autos dieser Agenturen bearbeiten.",
+    "membersLockedHint": "Verantwortliche und der Administrator gehören immer zur Agentur.",
+    "tabResponsibles": "{count, plural, =0 {Verantwortlich} one {Verantwortlich} other {Verantwortliche (#)}}"
   },
   "Marketing": {
     "title": "E-Mail-Marketing",
