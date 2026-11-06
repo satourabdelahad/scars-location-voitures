@@ -20,11 +20,24 @@ export type AgencyValues = {
   phone: string;
   whatsapp: string;
   isAirport: boolean;
+  websiteUrl: string;
+  facebookUrl: string;
+  instagramUrl: string;
+  linkedinUrl: string;
+  xUrl: string;
   /** Responsable : compte gestionnaire */
   managerId: string;
 };
 export type ManagerChoice = { id: string; firstName: string; lastName: string; civility: "male" | "female"; email: string | null; phone: string; photoUrl: string | null; active: boolean };
-const EMPTY: AgencyValues = { name: "", city: "", address: "", phone: "", whatsapp: "", isAirport: false, managerId: "" };
+const URL_PLACEHOLDER = {
+  websiteUrl: "https://dizy-cars.com",
+  facebookUrl: "https://facebook.com/…",
+  instagramUrl: "https://instagram.com/…",
+  linkedinUrl: "https://linkedin.com/company/…",
+  xUrl: "https://x.com/…",
+} as const;
+
+const EMPTY: AgencyValues = { name: "", city: "", address: "", phone: "", whatsapp: "", isAirport: false, websiteUrl: "", facebookUrl: "", instagramUrl: "", linkedinUrl: "", xUrl: "", managerId: "" };
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
   return (
@@ -84,7 +97,7 @@ export function AgencyForm({
         if (res.fieldErrors) {
           setErrors(res.fieldErrors);
           // Champ à corriger dans l'autre onglet : on le dit clairement.
-          const infos = ["name", "city", "address", "phone", "whatsapp"];
+          const infos = ["name", "city", "address", "phone", "whatsapp", "websiteUrl", "facebookUrl", "instagramUrl", "linkedinUrl", "xUrl"];
           const keys = Object.keys(res.fieldErrors);
           if (section === "manager" && keys.some((k) => infos.includes(k))) return void toast.error(t("fixInfosTab"));
           if (section === "infos" && keys.includes("managerId")) return void toast.error(t("fixManagerTab"));
@@ -109,6 +122,13 @@ export function AgencyForm({
           <div className="sm:col-span-2">
             <Checkbox label={t("isAirport")} checked={v.isAirport} onChange={(x) => set("isAirport", x.target.checked)} />
           </div>
+        </Section>
+        <Section title={t("onlineTitle")}>
+          {(["websiteUrl", "facebookUrl", "instagramUrl", "linkedinUrl", "xUrl"] as const).map((k) => (
+            <Field key={k} label={t(k)} optionalLabel={tc("optional")} error={err(k)}>
+              {(p) => <Input {...p} type="url" dir="ltr" inputMode="url" placeholder={URL_PLACEHOLDER[k]} value={v[k]} onChange={(x) => set(k, x.target.value)} />}
+            </Field>
+          ))}
         </Section>
           </>
         )}

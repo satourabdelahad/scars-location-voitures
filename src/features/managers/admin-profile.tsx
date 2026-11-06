@@ -1,10 +1,12 @@
 import { eq } from "drizzle-orm";
-import { CalendarClock, CarFront, Handshake, History, IdCard, KeyRound } from "lucide-react";
+import { Building2, CalendarClock, CarFront, Handshake, History, IdCard, KeyRound } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
 import { db } from "@/db";
-import { adminProfiles, users } from "@/db/schema";
+import { adminProfiles, managers, users } from "@/db/schema";
+import { managerAgencyLinks } from "@/server/queries/agencies";
+import { AgenciesTab } from "./agencies-tab";
 import { cn, formatDateTime } from "@/lib/utils";
 import { ManagerForm } from "./manager-form";
 import type { SessionUser } from "@/server/guards";
@@ -20,7 +22,7 @@ import { StaffHeader } from "./staff-header";
 import { RentalsTab } from "./rentals-tab";
 import { HistoryTab } from "./history-tab";
 
-export const ADMIN_PROFILE_TABS = ["infos", "password", "cars", "rentals", "deals", "history"] as const;
+export const ADMIN_PROFILE_TABS = ["infos", "agencies", "password", "cars", "rentals", "deals", "history"] as const;
 export type AdminProfileTab = (typeof ADMIN_PROFILE_TABS)[number];
 export const parseAdminTab = (v: unknown): AdminProfileTab => (ADMIN_PROFILE_TABS.includes(v as AdminProfileTab) ? (v as AdminProfileTab) : "infos");
 
@@ -49,6 +51,7 @@ export async function AdminProfile({ me, tab, locale }: { me: SessionUser; tab: 
 
   const tabs = [
     { id: "infos" as const, label: t("tabInfo"), Icon: IdCard },
+    { id: "agencies" as const, label: t("tabAgencies"), Icon: Building2 },
     { id: "password" as const, label: t("tabPassword"), Icon: KeyRound },
     { id: "cars" as const, label: t("tabCars"), Icon: CarFront },
     { id: "rentals" as const, label: t("tabRentals"), Icon: CalendarClock },
@@ -58,6 +61,11 @@ export async function AdminProfile({ me, tab, locale }: { me: SessionUser; tab: 
 
   let body: React.ReactNode;
   if (tab === "password") body = <PasswordForm hasPassword={Boolean(u?.hash)} />;
+  else if (tab === "agencies") {
+    // L'administrateur appartient à toutes les agences.
+    const [own] = await db.select({ id: managers.id }).from(managers).where(eq(managers.userId, me.id)).limit(1);
+    body = own ? <AgenciesTab managerId={own.id} links={await managerAgencyLinks(own.id)} canEdit={false} isAdminTarget base="/admin" /> : null;
+  }
   else if (tab === "cars") {
     // L'administrateur suit tout le parc : ici, les voitures qu'il a ajoutées.
     const mine = (await listFleet()).filter((car) => car.createdBy === me.id);

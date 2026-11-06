@@ -20,6 +20,7 @@ export async function BackofficeShell({ user, base, children }: { user: SessionU
     { href: `${base}/clients`, label: t("clients"), icon: "clients" },
     { href: `${base}/reservations`, label: t("reservations"), icon: "reservations" },
     { href: `${base}/marketing`, label: t("marketing"), icon: "marketing" },
+    ...(base === "/admin" ? [{ href: `${base}/site`, label: t("site"), icon: "site" as const }] : []),
     ...(base === "/admin" ? [{ href: `${base}/administration`, label: t("administration"), icon: "administration" as const }] : []),
     ...(base === "/admin" ? [{ href: `${base}/security`, label: t("security"), icon: "security" as const }] : []),
     ...(base === "/manager" ? [{ href: `${base}/profile`, label: t("profile"), icon: "profile" as const }] : []),

@@ -45,6 +45,25 @@ async function send(to: string | null | undefined, subject: string, html: string
   return { skipped: false as const, error };
 }
 
+/** Message envoyé depuis le formulaire de la page Contact du site public. */
+export async function sendContactMessage(opts: { to: string; name: string; email: string; phone?: string | null; message: string; locale: string }) {
+  if (!resend) {
+    console.info(`[email] RESEND_API_KEY absent — message de contact de ${opts.email} non transmis`);
+    return { skipped: true as const };
+  }
+  const body = `<p><strong>${escapeHtml(opts.name)}</strong> &lt;${escapeHtml(opts.email)}&gt;${opts.phone ? ` · ${escapeHtml(opts.phone)}` : ""} · ${escapeHtml(opts.locale)}</p>
+<p style="white-space:pre-wrap">${escapeHtml(opts.message)}</p>`;
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: opts.to,
+    replyTo: opts.email,
+    subject: `Contact — ${opts.name}`,
+    html: layout("fr", `Message de ${opts.name}`, body),
+  });
+  if (error) throw new Error(error.message);
+  return { sent: true as const };
+}
+
 export async function sendManagerInvite(opts: { to: string; firstName: string; token: string; locale?: string }) {
   const { t, locale } = await translator(opts.locale ?? "fr");
   const href = `${APP_URL}/${locale}/set-password?token=${opts.token}`;

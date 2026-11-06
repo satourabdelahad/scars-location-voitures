@@ -158,6 +158,22 @@ export async function updateAdminProfile(input: { data: unknown; photo?: unknown
         .insert(adminProfiles)
         .values({ userId: me.id, ...profile })
         .onConflictDoUpdate({ target: adminProfiles.userId, set: { ...profile, updatedAt: new Date() } });
+      // Fiche gestionnaire de l'administrateur : mêmes coordonnées (listes, responsable d'agence).
+      const mgr = {
+        civility: d.civility,
+        firstName: d.firstName,
+        lastName: d.lastName,
+        phone: d.phone,
+        whatsapp: d.whatsapp,
+        city: d.city,
+        birthDate: d.birthDate,
+        maritalStatus: d.maritalStatus ?? null,
+        ...(photo ? { photoUrl: photo.photoUrl, photoPublicId: photo.photoPublicId } : {}),
+      };
+      await tx
+        .insert(managers)
+        .values({ userId: me.id, ...mgr, workStartDate: new Date().toISOString().slice(0, 10), contractType: "cdi" })
+        .onConflictDoUpdate({ target: managers.userId, set: { ...mgr, updatedAt: new Date() } });
       await tx.insert(auditLogs).values({ actorId: me.id, entity: "security", entityId: me.id, action: "profile_update" });
     });
     revalidatePath(`/${locale}`, "layout");

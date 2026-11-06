@@ -306,7 +306,8 @@
     "administration": "E-Mail-Vorlagen",
     "clients": "Kunden",
     "agencies": "Meine Filialen",
-    "marketing": "E-Mail-Marketing"
+    "marketing": "E-Mail-Marketing",
+    "site": "Öffentliche Website"
   },
   "Managers": {
     "title": "Disponenten",
@@ -486,7 +487,12 @@
     "perimeterSaved": "Zuständigkeit gespeichert",
     "agenciesMailed": "{count, plural, one {# Manager} other {# Manager}} per E-Mail benachrichtigt",
     "deltaAdded": "{count, plural, one {+# Fahrzeug} other {+# Fahrzeuge}}",
-    "deltaRemoved": "{count, plural, one {−# Fahrzeug} other {−# Fahrzeuge}}"
+    "deltaRemoved": "{count, plural, one {−# Fahrzeug} other {−# Fahrzeuge}}",
+    "adminBadge": "Administrator",
+    "tabAgencies": "Filialen",
+    "adminAllAgencies": "Der Administrator gehört zu allen Filialen: Er erhält ihre E-Mails und kann ihre Buchungen bestätigen.",
+    "agencyCars": "{count, plural, =0 {Kein Fahrzeug} one {# Fahrzeug} other {# Fahrzeuge}}",
+    "headLabel": "Leitung: {name}"
   },
   "Documents": {
     "cin_front": "Personalausweis (CINE), Vorderseite",
@@ -719,7 +725,9 @@
     "timeline": "Verlauf",
     "updated": "Buchung aktualisiert",
     "emptyTitle": "Keine Buchungen",
-    "emptyBody": "Kundenanfragen erscheinen hier."
+    "emptyBody": "Kundenanfragen erscheinen hier.",
+    "awaitingValidation": "Wartet auf Bestätigung durch die Filialleitung oder den Administrator.",
+    "awaitingValidationBy": "Wartet auf Bestätigung durch {name} (Filialleitung) oder den Administrator."
   },
   "Status": {
     "pending": "Offen",
@@ -818,7 +826,11 @@
     "email_failed": "Die E-Mail konnte nicht gesendet werden (Domain in Resend prüfen).",
     "email_not_configured": "Der E-Mail-Versand ist nicht eingerichtet (RESEND_API_KEY).",
     "no_client_email": "Der Kunde hat keine E-Mail-Adresse.",
-    "agency_has_cars": "Diese Filiale hat noch Autos im Einsatz: verlegen oder deaktivieren Sie diese zuerst."
+    "agency_has_cars": "Diese Filiale hat noch Autos im Einsatz: verlegen oder deaktivieren Sie diese zuerst.",
+    "validation_reserved": "Nur der Administrator und die Leitung der Abholfiliale können diese Buchung bestätigen.",
+    "admin_protected": "Das Administratorkonto kann nicht deaktiviert werden und erhält keine Einladung.",
+    "contact_unavailable": "Die Nachricht konnte gerade nicht gesendet werden. Schreiben Sie uns per WhatsApp oder rufen Sie uns an.",
+    "url": "Ungültige Webadresse"
   },
   "About": {
     "title": "Eine marokkanische Agentur mit gepflegten Autos",
@@ -830,7 +842,10 @@
     "value2Title": "Ein startklares Auto",
     "value2Body": "Vollgetankt, innen gereinigt, Reifen geprüft. Fehlt etwas, beheben wir es vor Ihrer Abfahrt.",
     "value3Title": "Jemand antwortet",
-    "value3Body": "Eine WhatsApp-Nummer pro Filiale, Tag und Nacht während Ihrer Miete erreichbar."
+    "value3Body": "Eine WhatsApp-Nummer pro Filiale, Tag und Nacht während Ihrer Miete erreichbar.",
+    "section_history": "Geschichte",
+    "section_mission": "Mission",
+    "section_vision": "Vision"
   },
   "Contact": {
     "title": "Kontakt",
@@ -838,7 +853,23 @@
     "whatsapp": "WhatsApp",
     "call": "Anrufen",
     "hours": "Täglich 8–22 Uhr",
-    "airport": "Flughafenschalter"
+    "airport": "Flughafenschalter",
+    "agenciesTitle": "Unsere Filialen",
+    "contactSubtitle": "Eine Frage oder ein besonderer Wunsch? Schreiben Sie uns, wir antworten schnell.",
+    "address": "Adresse",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "mapTitle": "Karte der Adresse",
+    "ourAgency": "Unsere Filiale",
+    "allAgencies": "Alle Filialen",
+    "formTitle": "Schreiben Sie uns",
+    "name": "Vor- und Nachname",
+    "message": "Nachricht",
+    "send": "Senden",
+    "sentTitle": "Nachricht gesendet",
+    "sentBody": "Danke, wir antworten Ihnen so schnell wie möglich.",
+    "messageTooShort": "Ihre Nachricht muss mindestens 10 Zeichen lang sein.",
+    "unavailable": "Die Nachricht konnte gerade nicht gesendet werden. Schreiben Sie uns per WhatsApp oder rufen Sie uns an."
   },
   "Email": {
     "inviteSubject": "Ihr Zugang zum Dizy-Cars-Verwaltungsbereich",
@@ -956,7 +987,8 @@
     "manager_agencies": "Filialen des Managers geändert: {name}",
     "car_promo": "Aktion geändert: {car}",
     "car_bulk_promo": "Sammelaktion: Aktion für {name} Fahrzeug(e)",
-    "marketing_send": "E-Mail-Kampagne versendet: {name}"
+    "marketing_send": "E-Mail-Kampagne versendet: {name}",
+    "site_update": "Öffentliche Website geändert"
   },
   "Deals": {
     "title": "Deals / Interessenten",
@@ -1451,7 +1483,14 @@
     "fixInfosTab": "Vervollständigen Sie zuerst den Reiter „Informationen“ (Telefon, WhatsApp…).",
     "fixManagerTab": "Wählen Sie zuerst die verantwortliche Person im Reiter „Verantwortliche Person“.",
     "memberBadge": "Zugeordnet",
-    "addManagerHint": "Um einen Manager dieser Filiale zuzuordnen, öffnen Sie sein Profil, Reiter „Zuordnung und Fahrzeuge“."
+    "addManagerHint": "Um einen Manager dieser Filiale zuzuordnen, öffnen Sie sein Profil, Reiter „Zuordnung und Fahrzeuge“.",
+    "onlineTitle": "Website und soziale Netzwerke",
+    "websiteUrl": "Website",
+    "facebookUrl": "Facebook-Seite",
+    "instagramUrl": "Instagram-Seite",
+    "linkedinUrl": "LinkedIn-Seite",
+    "xUrl": "X-(Twitter-)Seite",
+    "adminBadge": "Administrator"
   },
   "Marketing": {
     "title": "E-Mail-Marketing",
@@ -1496,5 +1535,30 @@
     "colClicked": "Aktivierte Codes",
     "colUsed": "Genutzt",
     "colAuthor": "Gesendet von"
+  },
+  "Site": {
+    "title": "Öffentliche Website",
+    "subtitle": "Kontaktdaten und Seitentexte der Website.",
+    "tabContact": "Kontakt",
+    "tabAbout": "Über uns",
+    "tabTerms": "Mietbedingungen",
+    "tabPrivacy": "Datenschutz",
+    "contactHint": "Oben auf der Website und auf der Kontaktseite angezeigt. Ohne Angabe werden die Daten der ersten Filiale verwendet.",
+    "address": "Hauptadresse",
+    "addressHint": "Wird auf der Karte der Kontaktseite angezeigt.",
+    "email": "E-Mail",
+    "emailHint": "Erhält auch die Nachrichten des Kontaktformulars.",
+    "phone": "Telefon",
+    "whatsapp": "WhatsApp",
+    "topBarPreview": "Obere Leiste:",
+    "textsHint": "Ein Text pro Sprache. Solange eine Sprache leer ist, wird der Standardtext angezeigt.",
+    "language": "Sprache",
+    "about_who": "Wer wir sind",
+    "about_history": "Geschichte",
+    "about_mission": "Mission",
+    "about_vision": "Vision",
+    "usingDefault": "Standardtext wird angezeigt: Bearbeiten Sie ihn, um ihn anzupassen.",
+    "restoreDefault": "Standardtext wiederherstellen",
+    "formatHint": "Formatierung: Eine Leerzeile trennt Absätze, „## Titel“ erzeugt eine Zwischenüberschrift, „- Punkt“ eine Liste."
   }
 }

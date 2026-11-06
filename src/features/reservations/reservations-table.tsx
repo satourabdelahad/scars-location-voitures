@@ -11,7 +11,20 @@ import { reservationStatusEnum } from "@/db/schema";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import type { StaffReservationRow } from "@/server/queries/reservations";
 
-export function ReservationsTable({ rows: serverRows, base, prefs }: { rows: StaffReservationRow[]; base: string; prefs: { visibleColumns: string[]; pageSize: number } | null }) {
+export function ReservationsTable({
+  rows: serverRows,
+  base,
+  prefs,
+  userId,
+  isAdmin,
+}: {
+  rows: StaffReservationRow[];
+  base: string;
+  prefs: { visibleColumns: string[]; pageSize: number } | null;
+  /** Pour savoir si l'utilisateur peut valider : administrateur ou responsable de l'agence de départ */
+  userId: string;
+  isAdmin: boolean;
+}) {
   const t = useTranslations("Reservations");
   const ts = useTranslations("Status");
   const c = useTranslations("Common");
@@ -50,10 +63,10 @@ export function ReservationsTable({ rows: serverRows, base, prefs }: { rows: Sta
         text: () => "",
         isAction: true,
         align: "end",
-        cell: (r) => <ReservationRowActions id={r.id} status={r.status} onDone={(status) => patch(r.id, { status })} />,
+        cell: (r) => <ReservationRowActions id={r.id} status={r.status} canValidate={isAdmin || r.responsibleUserId === userId} onDone={(status) => patch(r.id, { status })} />,
       },
     ],
-    [t, ts, c, locale, base, patch],
+    [t, ts, c, locale, base, patch, isAdmin, userId],
   );
 
   return (

@@ -306,7 +306,8 @@
     "administration": "邮件模板",
     "clients": "客户",
     "agencies": "我的门店",
-    "marketing": "邮件营销"
+    "marketing": "邮件营销",
+    "site": "公开网站"
   },
   "Managers": {
     "title": "经理",
@@ -486,7 +487,12 @@
     "perimeterSaved": "负责范围已保存",
     "agenciesMailed": "已通过邮件通知{count, plural, other {#位经理}}",
     "deltaAdded": "{count, plural, other {+# 辆}}",
-    "deltaRemoved": "{count, plural, other {−# 辆}}"
+    "deltaRemoved": "{count, plural, other {−# 辆}}",
+    "adminBadge": "管理员",
+    "tabAgencies": "门店",
+    "adminAllAgencies": "管理员属于所有门店：会收到各门店的邮件，并可确认其预订。",
+    "agencyCars": "{count, plural, =0 {无车辆} other {# 辆}}",
+    "headLabel": "负责人：{name}"
   },
   "Documents": {
     "cin_front": "身份证（CINE）正面",
@@ -719,7 +725,9 @@
     "timeline": "进度",
     "updated": "预订已更新",
     "emptyTitle": "暂无预订",
-    "emptyBody": "客户的申请会显示在这里。"
+    "emptyBody": "客户的申请会显示在这里。",
+    "awaitingValidation": "等待门店负责人或管理员确认。",
+    "awaitingValidationBy": "等待 {name}（门店负责人）或管理员确认。"
   },
   "Status": {
     "pending": "待确认",
@@ -818,7 +826,11 @@
     "email_failed": "邮件发送失败（请检查 Resend 中的域名）。",
     "email_not_configured": "未配置邮件发送（RESEND_API_KEY）。",
     "no_client_email": "该客户没有邮箱地址。",
-    "agency_has_cars": "该门店仍有在用车辆：请先将其转到其他门店或停用。"
+    "agency_has_cars": "该门店仍有在用车辆：请先将其转到其他门店或停用。",
+    "validation_reserved": "只有管理员和取车门店负责人可以确认此预订。",
+    "admin_protected": "管理员账户不能停用，也不能发送邀请。",
+    "contact_unavailable": "暂时无法发送消息。请通过 WhatsApp 联系我们或致电。",
+    "url": "网址无效"
   },
   "About": {
     "title": "一家车况可靠的摩洛哥租车公司",
@@ -830,7 +842,10 @@
     "value2Title": "车辆随时可出发",
     "value2Body": "油箱加满、车内清洁、轮胎已检查。如有缺失，出发前为您补齐。",
     "value3Title": "随时有人回应",
-    "value3Body": "每个门店都有 WhatsApp 号码，租车期间全天候在线。"
+    "value3Body": "每个门店都有 WhatsApp 号码，租车期间全天候在线。",
+    "section_history": "发展历程",
+    "section_mission": "使命",
+    "section_vision": "愿景"
   },
   "Contact": {
     "title": "联系我们",
@@ -838,7 +853,23 @@
     "whatsapp": "WhatsApp",
     "call": "致电",
     "hours": "每天 8:00–22:00",
-    "airport": "机场柜台"
+    "airport": "机场柜台",
+    "agenciesTitle": "我们的门店",
+    "contactSubtitle": "有问题或特殊需求？请给我们留言，我们会尽快回复。",
+    "address": "地址",
+    "email": "邮箱",
+    "phone": "电话",
+    "mapTitle": "地址地图",
+    "ourAgency": "我们的门店",
+    "allAgencies": "所有门店",
+    "formTitle": "给我们留言",
+    "name": "姓名",
+    "message": "留言",
+    "send": "发送",
+    "sentTitle": "已发送",
+    "sentBody": "谢谢，我们会尽快回复您。",
+    "messageTooShort": "留言至少需要 10 个字符。",
+    "unavailable": "暂时无法发送消息。请通过 WhatsApp 联系我们或致电。"
   },
   "Email": {
     "inviteSubject": "您的 Dizy Cars 经理后台访问权限",
@@ -956,7 +987,8 @@
     "manager_agencies": "经理门店已修改：{name}",
     "car_promo": "促销已修改：{car}",
     "car_bulk_promo": "批量操作：{name} 辆车促销",
-    "marketing_send": "已发送邮件活动：{name}"
+    "marketing_send": "已发送邮件活动：{name}",
+    "site_update": "公开网站已修改"
   },
   "Deals": {
     "title": "商机 / 潜在客户",
@@ -1451,7 +1483,14 @@
     "fixInfosTab": "请先完善“基本信息”标签（电话、WhatsApp 等）。",
     "fixManagerTab": "请先在“负责人”标签中选择负责人。",
     "memberBadge": "已分配",
-    "addManagerHint": "要将经理分配到该门店，请打开其资料的“分配与车辆”标签。"
+    "addManagerHint": "要将经理分配到该门店，请打开其资料的“分配与车辆”标签。",
+    "onlineTitle": "网站与社交媒体",
+    "websiteUrl": "网站",
+    "facebookUrl": "Facebook 主页",
+    "instagramUrl": "Instagram 主页",
+    "linkedinUrl": "LinkedIn 主页",
+    "xUrl": "X（Twitter）主页",
+    "adminBadge": "管理员"
   },
   "Marketing": {
     "title": "邮件营销",
@@ -1496,5 +1535,30 @@
     "colClicked": "已激活",
     "colUsed": "已使用",
     "colAuthor": "发送人"
+  },
+  "Site": {
+    "title": "公开网站",
+    "subtitle": "网站的联系方式和页面文字。",
+    "tabContact": "联系我们",
+    "tabAbout": "关于我们",
+    "tabTerms": "租车条款",
+    "tabPrivacy": "隐私",
+    "contactHint": "显示在网站顶部和联系页面。留空时使用第一家门店的信息。",
+    "address": "主要地址",
+    "addressHint": "显示在联系页面的地图上。",
+    "email": "邮箱",
+    "emailHint": "也接收联系表单的消息。",
+    "phone": "电话",
+    "whatsapp": "WhatsApp",
+    "topBarPreview": "顶部栏：",
+    "textsHint": "每种语言一段文字。未填写的语言显示默认文字。",
+    "language": "语言",
+    "about_who": "我们是谁",
+    "about_history": "发展历程",
+    "about_mission": "使命",
+    "about_vision": "愿景",
+    "usingDefault": "正在显示默认文字：可编辑以自定义。",
+    "restoreDefault": "恢复默认文字",
+    "formatHint": "格式：空行分隔段落，“## 标题”为小标题，“- 项目”为列表。"
   }
 }

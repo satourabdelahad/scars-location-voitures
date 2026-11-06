@@ -306,7 +306,8 @@
     "administration": "Templates des emails",
     "clients": "Clients",
     "agencies": "Mes agences",
-    "marketing": "Email Marketing"
+    "marketing": "Email Marketing",
+    "site": "Site public"
   },
   "Managers": {
     "title": "Gestionnaires",
@@ -486,7 +487,12 @@
     "perimeterSaved": "Périmètre enregistré",
     "agenciesMailed": "{count, plural, one {# gestionnaire prévenu} other {# gestionnaires prévenus}} par email",
     "deltaAdded": "{count, plural, one {+# voiture} other {+# voitures}}",
-    "deltaRemoved": "{count, plural, one {−# voiture} other {−# voitures}}"
+    "deltaRemoved": "{count, plural, one {−# voiture} other {−# voitures}}",
+    "adminBadge": "Administrateur",
+    "tabAgencies": "Agences",
+    "adminAllAgencies": "L'administrateur appartient à toutes les agences : il reçoit leurs emails et peut valider leurs réservations.",
+    "agencyCars": "{count, plural, =0 {Aucune voiture} one {# voiture} other {# voitures}}",
+    "headLabel": "Responsable : {name}"
   },
   "Documents": {
     "cin_front": "Carte d'identité (CINE) — recto",
@@ -719,7 +725,9 @@
     "timeline": "Suivi",
     "updated": "Réservation mise à jour",
     "emptyTitle": "Aucune réservation",
-    "emptyBody": "Les demandes des clients apparaîtront ici."
+    "emptyBody": "Les demandes des clients apparaîtront ici.",
+    "awaitingValidation": "En attente de validation par le responsable de l'agence ou l'administrateur.",
+    "awaitingValidationBy": "En attente de validation par {name} (responsable de l'agence) ou l'administrateur."
   },
   "Status": {
     "pending": "En attente",
@@ -818,7 +826,11 @@
     "email_failed": "L'email n'a pas pu être envoyé (vérifiez le domaine dans Resend).",
     "email_not_configured": "L'envoi d'emails n'est pas configuré (RESEND_API_KEY).",
     "no_client_email": "Le client n'a pas d'adresse email.",
-    "agency_has_cars": "Cette agence a encore des voitures en service : rattachez-les à une autre agence ou désactivez-les d'abord."
+    "agency_has_cars": "Cette agence a encore des voitures en service : rattachez-les à une autre agence ou désactivez-les d'abord.",
+    "validation_reserved": "Seuls l'administrateur et le responsable de l'agence de départ peuvent valider cette réservation.",
+    "admin_protected": "Le compte administrateur ne peut pas être désactivé ni recevoir d'invitation.",
+    "contact_unavailable": "Le message n'a pas pu être envoyé pour le moment. Écrivez-nous sur WhatsApp ou appelez-nous.",
+    "url": "Adresse web invalide"
   },
   "About": {
     "title": "Une agence marocaine, des voitures bien tenues",
@@ -830,7 +842,10 @@
     "value2Title": "Une voiture prête",
     "value2Body": "Plein fait, intérieur nettoyé, pneus contrôlés. Si quelque chose manque, on le corrige avant votre départ.",
     "value3Title": "Quelqu'un répond",
-    "value3Body": "Un numéro WhatsApp par agence, joignable jour et nuit pendant votre location."
+    "value3Body": "Un numéro WhatsApp par agence, joignable jour et nuit pendant votre location.",
+    "section_history": "Historique",
+    "section_mission": "Mission",
+    "section_vision": "Vision"
   },
   "Contact": {
     "title": "Nous contacter",
@@ -838,7 +853,23 @@
     "whatsapp": "WhatsApp",
     "call": "Appeler",
     "hours": "Tous les jours, 8 h – 22 h",
-    "airport": "Comptoir aéroport"
+    "airport": "Comptoir aéroport",
+    "agenciesTitle": "Nos agences",
+    "contactSubtitle": "Une question, une demande particulière ? Écrivez-nous, nous répondons rapidement.",
+    "address": "Adresse",
+    "email": "Email",
+    "phone": "Téléphone",
+    "mapTitle": "Carte de l'adresse",
+    "ourAgency": "Notre agence",
+    "allAgencies": "Toutes les agences",
+    "formTitle": "Envoyez-nous un message",
+    "name": "Nom et prénom",
+    "message": "Message",
+    "send": "Envoyer",
+    "sentTitle": "Message envoyé",
+    "sentBody": "Merci, nous vous répondons au plus vite.",
+    "messageTooShort": "Votre message doit contenir au moins 10 caractères.",
+    "unavailable": "Le message n'a pas pu être envoyé pour le moment. Écrivez-nous sur WhatsApp ou appelez-nous."
   },
   "Email": {
     "inviteSubject": "Votre accès à l'espace gestionnaire Dizy Cars",
@@ -956,7 +987,8 @@
     "manager_agencies": "Agences du gestionnaire modifiées : {name}",
     "car_promo": "Promotion modifiée : {car}",
     "car_bulk_promo": "Action groupée : promotion sur {name} voiture(s)",
-    "marketing_send": "Campagne email envoyée : {name}"
+    "marketing_send": "Campagne email envoyée : {name}",
+    "site_update": "Site public modifié"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -1451,7 +1483,14 @@
     "fixInfosTab": "Complétez d'abord l'onglet « Informations » (téléphone, WhatsApp…).",
     "fixManagerTab": "Choisissez d'abord le responsable dans l'onglet « Responsable ».",
     "memberBadge": "Rattaché",
-    "addManagerHint": "Pour rattacher un gestionnaire à cette agence, ouvrez sa fiche, onglet « Affectation et voitures »."
+    "addManagerHint": "Pour rattacher un gestionnaire à cette agence, ouvrez sa fiche, onglet « Affectation et voitures ».",
+    "onlineTitle": "Site web et réseaux sociaux",
+    "websiteUrl": "Site web",
+    "facebookUrl": "Page Facebook",
+    "instagramUrl": "Page Instagram",
+    "linkedinUrl": "Page LinkedIn",
+    "xUrl": "Page X (Twitter)",
+    "adminBadge": "Administrateur"
   },
   "Marketing": {
     "title": "Email Marketing",
@@ -1496,5 +1535,30 @@
     "colClicked": "Codes activés",
     "colUsed": "Utilisés",
     "colAuthor": "Envoyé par"
+  },
+  "Site": {
+    "title": "Site public",
+    "subtitle": "Coordonnées de contact et textes des pages du site.",
+    "tabContact": "Contact",
+    "tabAbout": "À propos",
+    "tabTerms": "Conditions de location",
+    "tabPrivacy": "Confidentialité",
+    "contactHint": "Affichées en haut du site et sur la page Contact. Sans valeur, les coordonnées de la première agence sont utilisées.",
+    "address": "Adresse principale",
+    "addressHint": "Affichée sur la carte de la page Contact.",
+    "email": "Email",
+    "emailHint": "Reçoit aussi les messages du formulaire de contact.",
+    "phone": "Téléphone",
+    "whatsapp": "WhatsApp",
+    "topBarPreview": "Bandeau du site :",
+    "textsHint": "Un texte par langue. Tant qu'une langue n'est pas renseignée, le texte par défaut s'affiche.",
+    "language": "Langue",
+    "about_who": "Qui nous sommes",
+    "about_history": "Historique",
+    "about_mission": "Mission",
+    "about_vision": "Vision",
+    "usingDefault": "Texte par défaut affiché : modifiez-le pour le personnaliser.",
+    "restoreDefault": "Rétablir le texte par défaut",
+    "formatHint": "Mise en forme : une ligne vide sépare les paragraphes, « ## Titre » crée un intertitre, « - élément » une liste."
   }
 }

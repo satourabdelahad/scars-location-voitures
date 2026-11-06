@@ -306,7 +306,8 @@
     "administration": "メールテンプレート",
     "clients": "顧客",
     "agencies": "店舗一覧",
-    "marketing": "メールマーケティング"
+    "marketing": "メールマーケティング",
+    "site": "公開サイト"
   },
   "Managers": {
     "title": "マネージャー",
@@ -486,7 +487,12 @@
     "perimeterSaved": "担当範囲を保存しました",
     "agenciesMailed": "{count, plural, other {#名のマネージャー}}にメールで通知",
     "deltaAdded": "{count, plural, other {+#台}}",
-    "deltaRemoved": "{count, plural, other {−#台}}"
+    "deltaRemoved": "{count, plural, other {−#台}}",
+    "adminBadge": "管理者",
+    "tabAgencies": "店舗",
+    "adminAllAgencies": "管理者はすべての店舗に所属し、各店舗のメールを受け取り、予約を承認できます。",
+    "agencyCars": "{count, plural, =0 {車両なし} other {#台}}",
+    "headLabel": "責任者：{name}"
   },
   "Documents": {
     "cin_front": "身分証明書（CINE）表面",
@@ -719,7 +725,9 @@
     "timeline": "経過",
     "updated": "予約を更新しました",
     "emptyTitle": "予約はありません",
-    "emptyBody": "お客様からのリクエストがここに表示されます。"
+    "emptyBody": "お客様からのリクエストがここに表示されます。",
+    "awaitingValidation": "店舗責任者または管理者の承認待ちです。",
+    "awaitingValidationBy": "{name}（店舗責任者）または管理者の承認待ちです。"
   },
   "Status": {
     "pending": "確認待ち",
@@ -818,7 +826,11 @@
     "email_failed": "メールを送信できませんでした（Resendのドメインを確認してください）。",
     "email_not_configured": "メール送信が設定されていません（RESEND_API_KEY）。",
     "no_client_email": "顧客にメールアドレスがありません。",
-    "agency_has_cars": "この店舗にはまだ稼働中の車両があります。先に別の店舗へ移すか無効化してください。"
+    "agency_has_cars": "この店舗にはまだ稼働中の車両があります。先に別の店舗へ移すか無効化してください。",
+    "validation_reserved": "この予約を承認できるのは、管理者と出発店舗の責任者のみです。",
+    "admin_protected": "管理者アカウントは無効化や招待の送信ができません。",
+    "contact_unavailable": "現在メッセージを送信できません。WhatsAppまたはお電話でご連絡ください。",
+    "url": "無効なURLです"
   },
   "About": {
     "title": "整備の行き届いた車を、モロッコから",
@@ -830,7 +842,10 @@
     "value2Title": "すぐに走れる車",
     "value2Body": "燃料満タン、車内清掃済み、タイヤ点検済み。不足があれば出発前に対応します。",
     "value3Title": "いつでもつながる",
-    "value3Body": "店舗ごとのWhatsApp番号で、レンタル中は昼夜を問わず対応します。"
+    "value3Body": "店舗ごとのWhatsApp番号で、レンタル中は昼夜を問わず対応します。",
+    "section_history": "沿革",
+    "section_mission": "ミッション",
+    "section_vision": "ビジョン"
   },
   "Contact": {
     "title": "お問い合わせ",
@@ -838,7 +853,23 @@
     "whatsapp": "WhatsApp",
     "call": "電話する",
     "hours": "毎日 8:00〜22:00",
-    "airport": "空港カウンター"
+    "airport": "空港カウンター",
+    "agenciesTitle": "店舗一覧",
+    "contactSubtitle": "ご質問やご要望はお気軽にどうぞ。すぐにお返事します。",
+    "address": "住所",
+    "email": "メール",
+    "phone": "電話番号",
+    "mapTitle": "住所の地図",
+    "ourAgency": "店舗",
+    "allAgencies": "すべての店舗",
+    "formTitle": "メッセージを送る",
+    "name": "氏名",
+    "message": "メッセージ",
+    "send": "送信",
+    "sentTitle": "送信しました",
+    "sentBody": "ありがとうございます。できるだけ早くご返信します。",
+    "messageTooShort": "メッセージは10文字以上で入力してください。",
+    "unavailable": "現在メッセージを送信できません。WhatsAppまたはお電話でご連絡ください。"
   },
   "Email": {
     "inviteSubject": "Dizy Carsマネージャーページへのアクセス",
@@ -956,7 +987,8 @@
     "manager_agencies": "担当店舗を変更：{name}",
     "car_promo": "キャンペーンを変更：{car}",
     "car_bulk_promo": "一括操作：{name}台にキャンペーン",
-    "marketing_send": "メールキャンペーンを送信：{name}"
+    "marketing_send": "メールキャンペーンを送信：{name}",
+    "site_update": "公開サイトを変更"
   },
   "Deals": {
     "title": "商談 / 見込み客",
@@ -1451,7 +1483,14 @@
     "fixInfosTab": "先に「基本情報」タブ（電話、WhatsAppなど）を入力してください。",
     "fixManagerTab": "先に「責任者」タブで責任者を選択してください。",
     "memberBadge": "配属",
-    "addManagerHint": "この店舗にマネージャーを配属するには、そのプロフィールの「割り当てと車両」タブを開きます。"
+    "addManagerHint": "この店舗にマネージャーを配属するには、そのプロフィールの「割り当てと車両」タブを開きます。",
+    "onlineTitle": "ウェブサイトとSNS",
+    "websiteUrl": "ウェブサイト",
+    "facebookUrl": "Facebookページ",
+    "instagramUrl": "Instagramページ",
+    "linkedinUrl": "LinkedInページ",
+    "xUrl": "X（Twitter）ページ",
+    "adminBadge": "管理者"
   },
   "Marketing": {
     "title": "メールマーケティング",
@@ -1496,5 +1535,30 @@
     "colClicked": "有効化されたコード",
     "colUsed": "使用済み",
     "colAuthor": "送信者"
+  },
+  "Site": {
+    "title": "公開サイト",
+    "subtitle": "サイトの連絡先とページの文章。",
+    "tabContact": "お問い合わせ",
+    "tabAbout": "会社概要",
+    "tabTerms": "レンタル規約",
+    "tabPrivacy": "プライバシー",
+    "contactHint": "サイト上部とお問い合わせページに表示されます。未入力の場合は最初の店舗の情報を使います。",
+    "address": "本社住所",
+    "addressHint": "お問い合わせページの地図に表示されます。",
+    "email": "メール",
+    "emailHint": "お問い合わせフォームのメッセージもここに届きます。",
+    "phone": "電話番号",
+    "whatsapp": "WhatsApp",
+    "topBarPreview": "上部バー：",
+    "textsHint": "言語ごとに1つの文章。未入力の言語にはデフォルトの文章が表示されます。",
+    "language": "言語",
+    "about_who": "私たちについて",
+    "about_history": "沿革",
+    "about_mission": "ミッション",
+    "about_vision": "ビジョン",
+    "usingDefault": "デフォルトの文章を表示中：編集してカスタマイズできます。",
+    "restoreDefault": "デフォルトの文章に戻す",
+    "formatHint": "書式：空行で段落を区切り、「## 見出し」で小見出し、「- 項目」でリストになります。"
   }
 }

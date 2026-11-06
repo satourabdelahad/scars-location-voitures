@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
+import { publicSite } from "@/server/public-site";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -10,11 +11,13 @@ import { MobileNav } from "./mobile-nav";
 
 export async function SiteHeader() {
   const t = await getTranslations("Nav");
-  const session = await auth();
+  const [session, { multiAgency }] = await Promise.all([auth(), publicSite()]);
+  // « Agences » seulement s'il y en a plusieurs ; sinon tout est sur la page Contact.
   const links = [
     { href: "/cars", label: t("cars") },
-    { href: "/contact", label: t("agencies") },
+    ...(multiAgency ? [{ href: "/agencies", label: t("agencies") }] : []),
     { href: "/about", label: t("about") },
+    { href: "/contact", label: t("contact") },
   ];
 
   return (

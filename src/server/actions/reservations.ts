@@ -10,6 +10,7 @@ import { agencies, auditLogs, cars, clientProfiles, clientPromotions, extras, re
 import { guestClientSchema, reservationSchema } from "@/lib/validation";
 import { auth } from "@/auth";
 import { issuePasswordToken } from "@/server/tokens";
+import { canValidateReservation } from "@/server/queries/reservations";
 import { formatDate, formatMoney, rentalDays, todayISO } from "@/lib/utils";
 import { assertRole, toActionError, type ActionResult } from "@/server/guards";
 import { sendReservationEmail } from "@/server/email";
@@ -238,6 +239,8 @@ export async function transitionReservation(
     const staff = await assertRole(["admin", "manager"]);
     const tr = TRANSITIONS[action];
     if (!tr) return { ok: false, error: "validation" };
+    // Valider (confirmer ou refuser) : l'administrateur ou le responsable de l'agence de départ.
+    if ((action === "confirm" || action === "reject") && !(await canValidateReservation(staff, id))) return { ok: false, error: "validation_reserved" };
     const now = new Date();
     const patch: Partial<typeof reservations.$inferInsert> = { status: tr.to };
     if (action === "confirm") Object.assign(patch, { confirmedAt: now, handledBy: staff.id });

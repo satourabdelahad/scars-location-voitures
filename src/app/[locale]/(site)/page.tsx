@@ -6,6 +6,7 @@ import { Scenery } from "@/components/scenery";
 import { CarCard } from "@/components/car-card";
 import { HeroSearch } from "@/components/hero-search";
 import { listAgencies, listPublicCars } from "@/server/queries/cars";
+import { publicSite, waLink } from "@/server/public-site";
 import { carCategoryEnum } from "@/db/schema";
 
 const GROUPS = ["category", "city", "agency"] as const;
@@ -16,14 +17,18 @@ export default async function HomePage({ params, searchParams }: PageProps<"/[lo
   setRequestLocale(locale);
   const sp = await searchParams;
   const one = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : undefined);
-  const group: Group = GROUPS.includes(one("by") as Group) ? (one("by") as Group) : "category";
+  const by = one("by") as Group;
+  let group: Group = GROUPS.includes(by) ? by : "category";
   const picked = one("v");
   const availableOnly = one("dispo") === "1";
   const t = await getTranslations("Home");
   const e = await getTranslations("Enums");
   const tc = await getTranslations("Common");
-  const [agencies, all] = await Promise.all([listAgencies(), listPublicCars({ sort: "newest", limit: 300 })]);
+  const [agencies, all, site] = await Promise.all([listAgencies(), listPublicCars({ sort: "newest", limit: 300 }), publicSite()]);
   const cities = Array.from(new Map(agencies.map((a) => [a.city, a])).values());
+  const multiAgency = agencies.length > 1;
+  // Une seule agence : seul le classement par carrosserie a du sens.
+  if (!multiAgency) group = "category";
 
   // Le parc par carrosserie, par ville ou par agence, avec la disponibilité du jour.
   const keyOf = (c: (typeof all)[number]) => (group === "category" ? c.category : group === "city" ? c.city : String(c.agencyId));
@@ -103,7 +108,7 @@ export default async function HomePage({ params, searchParams }: PageProps<"/[lo
         </div>
         <div className="mt-6 flex flex-wrap items-center gap-2">
           <div role="tablist" aria-label={t("browseBy")} className="inline-flex rounded-full border border-mist bg-paper p-1">
-            {GROUPS.map((g) => (
+            {GROUPS.filter((g) => multiAgency || g === "category").map((g) => (
               <Link
                 key={g}
                 role="tab"
@@ -186,7 +191,8 @@ export default async function HomePage({ params, searchParams }: PageProps<"/[lo
         </ol>
       </section>
 
-      {/* ── Villes ── */}
+      {/* ── Villes (seulement avec plusieurs agences) ── */}
+      {multiAgency && (
       <section className="mt-24 bg-ink py-16 text-chalk dark:bg-paper" aria-labelledby="cities-title">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr]">
           <div>
@@ -205,6 +211,7 @@ export default async function HomePage({ params, searchParams }: PageProps<"/[lo
           </ul>
         </div>
       </section>
+      )}
 
       {/* ── WhatsApp ── */}
       <section className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
@@ -213,7 +220,7 @@ export default async function HomePage({ params, searchParams }: PageProps<"/[lo
             <h2 className="text-2xl font-bold text-ink">{t("ctaTitle")}</h2>
             <p className="mt-1.5 text-ink-3">{t("ctaBody")}</p>
           </div>
-          <a href="https://wa.me/212600000000" target="_blank" rel="noopener" className="inline-flex h-12 items-center gap-2.5 rounded-xl bg-palm px-6 font-bold text-white hover:brightness-110">
+          <a href={site.contact.whatsapp ? waLink(site.contact.whatsapp) : "/contact"} target="_blank" rel="noopener" className="inline-flex h-12 items-center gap-2.5 rounded-xl bg-palm px-6 font-bold text-white hover:brightness-110">
             <MessageCircle className="size-5" aria-hidden />
             {t("ctaButton")}
           </a>

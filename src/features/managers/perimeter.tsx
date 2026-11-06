@@ -9,12 +9,11 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge, Panel } from "@/components/ui/misc";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Link, useRouter } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
 import { saveManagerPerimeter } from "@/server/actions/managers";
 import type { FleetRow } from "@/server/queries/fleet";
 import type { CarRule } from "./assigned-cars-tab";
 
-export type AgencyLink = { id: number; label: string; active: boolean; responsible: boolean; member: boolean };
+export type AgencyLink = { id: number; label: string; active: boolean; airport?: boolean; responsible: boolean; member: boolean; cars?: number; head?: string | null };
 
 type Delta = { carsAdded: number; carsRemoved: number; agenciesAdded: number; agenciesRemoved: number };
 
@@ -138,12 +137,11 @@ function PerimeterDialog({
   const te = useTranslations("Errors");
   const router = useRouter();
   const [pending, start] = useTransition();
-  const initialMembers = links.filter((l) => l.member).map((l) => String(l.id));
-  const [members, setMembers] = useState<string[]>(initialMembers);
+  // Les agences du gestionnaire se règlent dans l'onglet Agences ; ici, seulement les voitures suivies.
+  const members = links.filter((l) => l.member).map((l) => String(l.id));
   const [brands, setBrands] = useState<string[]>(rule?.brands ?? []);
   const [cities, setCities] = useState<string[]>(rule?.cities ?? []);
   const [ruleAgencies, setRuleAgencies] = useState<string[]>((rule?.agencies ?? []).map(String));
-  const [linkCars, setLinkCars] = useState(true);
 
   const countBy = (key: "brand" | "city") => {
     const m = new Map<string, number>();
@@ -158,20 +156,6 @@ function PerimeterDialog({
     return m;
   }, [candidates]);
   const agencyOptions = links.filter((l) => l.active || l.member).map((l) => ({ value: String(l.id), label: l.label, count: agencyCarCount.get(String(l.id)) ?? 0 }));
-  const memberOptions = links.filter((l) => !l.responsible && (l.active || l.member)).map((l) => ({ value: String(l.id), label: l.label }));
-  const newlyAdded = members.filter((m) => !initialMembers.includes(m));
-
-  const initialRule = (rule?.agencies ?? []).map(String);
-  // Agence ajoutée à l'équipe : avec la case cochée, ses voitures sont ajoutées aux voitures suivies.
-  const changeMembers = (next: string[]) => {
-    const added = next.filter((x) => !members.includes(x) && !initialMembers.includes(x));
-    if (linkCars && added.length) setRuleAgencies((r) => [...new Set([...r, ...added])]);
-    setMembers(next);
-  };
-  const toggleLink = (on: boolean) => {
-    setLinkCars(on);
-    setRuleAgencies((r) => (on ? [...new Set([...r, ...newlyAdded])] : r.filter((x) => !newlyAdded.includes(x) || initialRule.includes(x))));
-  };
   const ruleFinal = ruleAgencies;
   // Aperçu : nombre de voitures actives que suivra le gestionnaire avec ces critères.
   const preview = useMemo(() => {
@@ -193,42 +177,14 @@ function PerimeterDialog({
       const d = r.data!;
       onSaved(d);
       toast.success(t("perimeterSaved"));
-      if (d.emailed) toast.success(t("agenciesMailed", { count: d.emailed }));
       router.refresh();
       onClose();
     });
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent title={t("perimeterEdit")} description={t("perimeterDialogHint")} closeLabel={tc("close")} className="max-h-[calc(100dvh-32px)] max-w-2xl overflow-y-auto">
+      <DialogContent title={t("perimeterEdit")} description={t("perimeterCarsHint")} closeLabel={tc("close")} className="max-h-[calc(100dvh-32px)] max-w-2xl overflow-y-auto">
         <section>
-          <h3 className="flex items-center gap-2 text-sm font-bold text-ink">
-            <Store className="size-4 text-majorelle" />
-            {t("perimeterAgencies")}
-          </h3>
-          <p className="mt-0.5 mb-2.5 text-xs text-ink-3">{t("agenciesHint")}</p>
-          <MultiSelect
-            label={t("perimeterAgencies")}
-            icon={<Building2 />}
-            options={memberOptions}
-            value={members}
-            onChange={changeMembers}
-            searchPlaceholder={t("searchAgency")}
-            allLabel={t("noAgencyChosen")}
-            clearLabel={t("clearChoice")}
-            emptyLabel={t("noOption")}
-          />
-          {links.some((l) => l.responsible) && <p className="mt-2 text-xs text-ink-3">{t("responsibleNote")}</p>}
-          <label className={cn("mt-3 flex items-start gap-2.5 rounded-xl border px-3 py-2.5 text-sm", newlyAdded.length ? "cursor-pointer border-majorelle/30 bg-majorelle-soft/60" : "border-mist text-ink-3")}>
-            <input type="checkbox" className="mt-0.5 size-4 accent-[var(--majorelle)]" disabled={!newlyAdded.length} checked={linkCars} onChange={(e) => toggleLink(e.target.checked)} />
-            <span>
-              <span className="block font-semibold text-ink">{t("linkAgencyCars")}</span>
-              <span className="block text-xs text-ink-3">{t("linkAgencyCarsHint")}</span>
-            </span>
-          </label>
-        </section>
-
-        <section className="mt-6 border-t border-mist pt-5">
           <h3 className="flex items-center gap-2 text-sm font-bold text-ink">
             <Sparkles className="size-4 text-majorelle" />
             {t("perimeterCars")}

@@ -306,7 +306,8 @@
     "administration": "Email templates",
     "clients": "Customers",
     "agencies": "My branches",
-    "marketing": "Email Marketing"
+    "marketing": "Email Marketing",
+    "site": "Public website"
   },
   "Managers": {
     "title": "Managers",
@@ -486,7 +487,12 @@
     "perimeterSaved": "Scope saved",
     "agenciesMailed": "{count, plural, one {# manager notified} other {# managers notified}} by email",
     "deltaAdded": "{count, plural, one {+# car} other {+# cars}}",
-    "deltaRemoved": "{count, plural, one {−# car} other {−# cars}}"
+    "deltaRemoved": "{count, plural, one {−# car} other {−# cars}}",
+    "adminBadge": "Administrator",
+    "tabAgencies": "Branches",
+    "adminAllAgencies": "The administrator belongs to every branch: they receive their emails and can validate their bookings.",
+    "agencyCars": "{count, plural, =0 {No car} one {# car} other {# cars}}",
+    "headLabel": "Head: {name}"
   },
   "Documents": {
     "cin_front": "National ID card (CINE), front",
@@ -719,7 +725,9 @@
     "timeline": "Timeline",
     "updated": "Booking updated",
     "emptyTitle": "No bookings",
-    "emptyBody": "Customer requests will appear here."
+    "emptyBody": "Customer requests will appear here.",
+    "awaitingValidation": "Awaiting validation by the branch head or the administrator.",
+    "awaitingValidationBy": "Awaiting validation by {name} (branch head) or the administrator."
   },
   "Status": {
     "pending": "Pending",
@@ -818,7 +826,11 @@
     "email_failed": "The email could not be sent (check the domain in Resend).",
     "email_not_configured": "Email sending is not configured (RESEND_API_KEY).",
     "no_client_email": "The customer has no email address.",
-    "agency_has_cars": "This branch still has cars in service: move them to another branch or deactivate them first."
+    "agency_has_cars": "This branch still has cars in service: move them to another branch or deactivate them first.",
+    "validation_reserved": "Only the administrator and the head of the pick-up branch can validate this booking.",
+    "admin_protected": "The administrator account cannot be deactivated or receive an invitation.",
+    "contact_unavailable": "Your message could not be sent right now. Write to us on WhatsApp or call us.",
+    "url": "Invalid web address"
   },
   "About": {
     "title": "A Moroccan agency with well-kept cars",
@@ -830,7 +842,10 @@
     "value2Title": "A car that's ready",
     "value2Body": "Full tank, clean interior, tyres checked. If something is missing, we fix it before you leave.",
     "value3Title": "Someone answers",
-    "value3Body": "A WhatsApp number for each branch, reachable day and night during your rental."
+    "value3Body": "A WhatsApp number for each branch, reachable day and night during your rental.",
+    "section_history": "Our story",
+    "section_mission": "Mission",
+    "section_vision": "Vision"
   },
   "Contact": {
     "title": "Contact us",
@@ -838,7 +853,23 @@
     "whatsapp": "WhatsApp",
     "call": "Call",
     "hours": "Every day, 8 am – 10 pm",
-    "airport": "Airport counter"
+    "airport": "Airport counter",
+    "agenciesTitle": "Our branches",
+    "contactSubtitle": "A question or a special request? Write to us, we reply quickly.",
+    "address": "Address",
+    "email": "Email",
+    "phone": "Phone",
+    "mapTitle": "Map of the address",
+    "ourAgency": "Our branch",
+    "allAgencies": "All branches",
+    "formTitle": "Send us a message",
+    "name": "Full name",
+    "message": "Message",
+    "send": "Send",
+    "sentTitle": "Message sent",
+    "sentBody": "Thank you, we will reply as soon as possible.",
+    "messageTooShort": "Your message must be at least 10 characters long.",
+    "unavailable": "Your message could not be sent right now. Write to us on WhatsApp or call us."
   },
   "Email": {
     "inviteSubject": "Your access to the Dizy Cars manager area",
@@ -956,7 +987,8 @@
     "manager_agencies": "Manager's branches changed: {name}",
     "car_promo": "Promotion changed: {car}",
     "car_bulk_promo": "Bulk action: promotion on {name} car(s)",
-    "marketing_send": "Email campaign sent: {name}"
+    "marketing_send": "Email campaign sent: {name}",
+    "site_update": "Public website updated"
   },
   "Deals": {
     "title": "Deals / prospects",
@@ -1451,7 +1483,14 @@
     "fixInfosTab": "First complete the “Information” tab (phone, WhatsApp…).",
     "fixManagerTab": "First choose the person in charge in the “Manager in charge” tab.",
     "memberBadge": "Assigned",
-    "addManagerHint": "To assign a manager to this branch, open their profile, “Assignment and cars” tab."
+    "addManagerHint": "To assign a manager to this branch, open their profile, “Assignment and cars” tab.",
+    "onlineTitle": "Website and social media",
+    "websiteUrl": "Website",
+    "facebookUrl": "Facebook page",
+    "instagramUrl": "Instagram page",
+    "linkedinUrl": "LinkedIn page",
+    "xUrl": "X (Twitter) page",
+    "adminBadge": "Administrator"
   },
   "Marketing": {
     "title": "Email Marketing",
@@ -1496,5 +1535,30 @@
     "colClicked": "Codes activated",
     "colUsed": "Used",
     "colAuthor": "Sent by"
+  },
+  "Site": {
+    "title": "Public website",
+    "subtitle": "Contact details and page texts of the website.",
+    "tabContact": "Contact",
+    "tabAbout": "About",
+    "tabTerms": "Rental terms",
+    "tabPrivacy": "Privacy",
+    "contactHint": "Shown at the top of the site and on the Contact page. When empty, the first branch's details are used.",
+    "address": "Main address",
+    "addressHint": "Shown on the map of the Contact page.",
+    "email": "Email",
+    "emailHint": "Also receives messages from the contact form.",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "topBarPreview": "Site top bar:",
+    "textsHint": "One text per language. Until a language is filled in, the default text is shown.",
+    "language": "Language",
+    "about_who": "Who we are",
+    "about_history": "Our story",
+    "about_mission": "Mission",
+    "about_vision": "Vision",
+    "usingDefault": "Default text shown: edit it to customise it.",
+    "restoreDefault": "Restore the default text",
+    "formatHint": "Formatting: a blank line separates paragraphs, “## Title” makes a heading, “- item” a list."
   }
 }

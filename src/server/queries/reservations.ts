@@ -26,6 +26,8 @@ export async function listReservationsForStaff() {
       plate: cars.plateNumber,
       pickup: agencies.city,
       handledBy: handler.name,
+      /** Utilisateur responsable de l'agence de départ : il valide la réservation (avec l'administrateur) */
+      responsibleUserId: sql<string | null>`(SELECT m.user_id FROM managers m WHERE m.id = ${agencies.managerId})`,
     })
     .from(reservations)
     .innerJoin(users, eq(users.id, reservations.clientId))
@@ -121,3 +123,16 @@ export async function todayMovements() {
   return { departures, returns, pending };
 }
 
+
+/** L'administrateur et le responsable de l'agence de départ valident (confirment ou refusent) une réservation. */
+export async function canValidateReservation(user: { id: string; role: string }, reservationId: string) {
+  if (user.role === "admin") return true;
+  const res = await db.execute<{ ok: boolean }>(sql`
+    SELECT EXISTS (
+      SELECT 1 FROM reservations r
+      JOIN agencies a ON a.id = r.pickup_agency_id
+      JOIN managers m ON m.id = a.manager_id
+      WHERE r.id = ${reservationId} AND m.user_id = ${user.id}
+    ) AS ok`);
+  return Boolean(res.rows[0]?.ok);
+}

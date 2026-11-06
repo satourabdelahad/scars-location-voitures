@@ -90,6 +90,11 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
     phone: a.phone ?? "",
     whatsapp: a.whatsapp ?? "",
     isAirport: a.isAirport,
+    websiteUrl: a.websiteUrl ?? "",
+    facebookUrl: a.facebookUrl ?? "",
+    instagramUrl: a.instagramUrl ?? "",
+    linkedinUrl: a.linkedinUrl ?? "",
+    xUrl: a.xUrl ?? "",
     managerId: a.managerId ?? "",
   };
 
@@ -119,7 +124,8 @@ export async function AgencyPage({ base, id, me, tab, locale }: { base: Base; id
                 <span className="block truncate text-xs text-ink-3" dir="ltr">{m.email ?? m.phone}</span>
                 <span className="mt-1 flex flex-wrap gap-1">
                   {m.responsible && <Badge tone="dark">{t("responsible")}</Badge>}
-                  {m.member && !m.responsible && <Badge tone="success">{t("memberBadge")}</Badge>}
+                  {m.isAdmin && <Badge tone="dark">{t("adminBadge")}</Badge>}
+                  {m.member && !m.responsible && !m.isAdmin && <Badge tone="success">{t("memberBadge")}</Badge>}
                   {m.byRule && <Badge tone="info">{tm("byRule")}</Badge>}
                   {m.cars > 0 && <Badge tone="neutral">{tm("carsCount", { count: m.cars })}</Badge>}
                 </span>

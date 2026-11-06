@@ -135,6 +135,15 @@ export const clientSchema = z.object({
 export type ClientInput = z.infer<typeof clientSchema>;
 
 /** Agence : toutes les informations sont obligatoires (nom, ville, adresse, téléphones, responsable). */
+const optionalUrl = z.preprocess(
+  (v) => {
+    if (typeof v !== "string" || !v.trim()) return null;
+    const t = v.trim();
+    return /^https?:\/\//i.test(t) ? t : `https://${t}`;
+  },
+  z.string().url("url").max(300).refine((u) => /^https?:\/\/[^\s/]+\.[^\s]+/i.test(u), "url").nullable(),
+);
+
 export const agencySchema = z.object({
   name: z.string().trim().min(2, "required").max(160),
   city: z.string().trim().min(2, "required").max(120),
@@ -142,6 +151,12 @@ export const agencySchema = z.object({
   phone,
   whatsapp: phone,
   isAirport: z.boolean().default(false),
+  // Site web et réseaux sociaux : facultatifs ; « facebook.com/x » devient « https://facebook.com/x ».
+  websiteUrl: optionalUrl,
+  facebookUrl: optionalUrl,
+  instagramUrl: optionalUrl,
+  linkedinUrl: optionalUrl,
+  xUrl: optionalUrl,
   /** Responsable : un compte gestionnaire existant */
   managerId: z.string({ error: "required" }).uuid("required"),
 });

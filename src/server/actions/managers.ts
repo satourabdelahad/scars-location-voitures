@@ -152,12 +152,19 @@ export async function updateManager(id: string, input: { data: unknown; document
 }
 
 /** On ne supprime jamais un gestionnaire : on le désactive avec un motif (obligatoire). */
+/** La fiche gestionnaire de l'administrateur ne se désactive pas et ne reçoit pas d'invitation. */
+async function isAdminManager(id: string) {
+  const [r] = await db.select({ role: users.role }).from(managers).innerJoin(users, eq(users.id, managers.userId)).where(eq(managers.id, id)).limit(1);
+  return r?.role === "admin";
+}
+
 export async function deactivateManager(id: string, reason: string): Promise<ActionResult> {
   try {
     const admin = await assertRole(["admin"]);
     const locale = await getLocale();
     const r = z.string().trim().min(3).max(1000).safeParse(reason);
     if (!r.success) return { ok: false, error: "validation", fieldErrors: { reason: "minLength" } };
+    if (await isAdminManager(id)) return { ok: false, error: "admin_protected" };
     await db.transaction(async (tx) => {
       const [m] = await tx
         .update(managers)
@@ -202,6 +209,7 @@ export async function resendManagerInvite(id: string): Promise<ActionResult> {
   try {
     await assertRole(["admin"]);
     const locale = await getLocale();
+    if (await isAdminManager(id)) return { ok: false, error: "admin_protected" };
     const m = await db.query.managers.findFirst({ where: eq(managers.id, id), with: { user: true } });
     // Possible tant que le gestionnaire n'a pas activé son compte (aucun mot de passe).
     if (!m || !m.user.email || m.user.passwordHash) return { ok: false, error: "invalid_transition" };
@@ -445,13 +453,19 @@ export async function saveTablePreferences(tableKey: string, visibleColumns: str
  * Rattache un gestionnaire à une ou plusieurs agences (administrateur). Les gestionnaires des
  * agences ajoutées sont prévenus par email (modèle « Nouveau gestionnaire d'agence »).
  */
-export async function setManagerAgencies(managerId: string, agencyIds: number[]): Promise<ActionResult<{ added: number; removed: number; emailed: number }>> {
+export async function setManagerAgencies(
+  managerId: string,
+  agencyIds: number[],
+  opts: { linkCars?: boolean } = {},
+): Promise<ActionResult<{ added: number; removed: number; emailed: number; carsAdded: number }>> {
   try {
     const admin = await assertRole(["admin"]);
     const ids = z.array(z.number().int().positive()).max(200).safeParse(agencyIds);
     if (!z.string().uuid().safeParse(managerId).success || !ids.success) return { ok: false, error: "validation" };
     const [m] = await db.select({ id: managers.id, status: managers.status }).from(managers).where(eq(managers.id, managerId)).limit(1);
     if (!m) return { ok: false, error: "not_found" };
+    // L'administrateur appartient déjà à toutes les agences.
+    if (await isAdminManager(managerId)) return { ok: true, data: { added: 0, removed: 0, emailed: 0, carsAdded: 0 } };
     const wanted = [...new Set(ids.data)];
     const valid = wanted.length ? (await db.select({ id: agenciesTable.id }).from(agenciesTable).where(inArray(agenciesTable.id, wanted))).map((a) => a.id) : [];
     const before = (await db.select({ id: managerAgencies.agencyId }).from(managerAgencies).where(eq(managerAgencies.managerId, managerId))).map((r) => r.id);
@@ -475,8 +489,15 @@ export async function setManagerAgencies(managerId: string, agencyIds: number[])
       });
       emailed = r?.sent ?? 0;
     }
+    // Option : les voitures des agences ajoutées rejoignent ses voitures suivies (règle automatique).
+    let carsAdded = 0;
+    if (opts.linkCars && added.length) {
+      const [rule] = await db.select().from(managerCarRules).where(eq(managerCarRules.managerId, managerId)).limit(1);
+      const next = [...new Set([...(rule?.agencies ?? []), ...added])];
+      carsAdded = (await applyManagerRule(managerId, rule?.brands ?? [], rule?.cities ?? [], admin.id, db, next)).added.length;
+    }
     revalidatePath("/", "layout");
-    return { ok: true, data: { added: added.length, removed: removed.length, emailed } };
+    return { ok: true, data: { added: added.length, removed: removed.length, emailed, carsAdded } };
   } catch (err) {
     return toActionError(err);
   }

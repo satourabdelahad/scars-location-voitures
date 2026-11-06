@@ -1,4 +1,4 @@
-import { CalendarClock, Handshake, History, IdCard, KeyRound, MailWarning, Target } from "lucide-react";
+import { CalendarClock, Handshake, History, IdCard, KeyRound, MailWarning, Target, Building2 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/misc";
@@ -18,13 +18,14 @@ import { DealsTab } from "./deals-tab";
 import { HistoryTab } from "./history-tab";
 import { AssignedCarsTab } from "./assigned-cars-tab";
 import { Perimeter } from "./perimeter";
+import { AgenciesTab } from "./agencies-tab";
 import { managerAgencyLinks } from "@/server/queries/agencies";
 import { RentalsChart } from "@/features/my/rentals-chart";
 import { AppointmentsSection } from "@/features/my/pages";
 import { listFleet } from "@/server/queries/fleet";
 import { managerDisplayStatus } from "@/lib/manager-status";
 
-export const PROFILE_TABS = ["infos", "password", "cars", "rentals", "deals", "history"] as const;
+export const PROFILE_TABS = ["infos", "agencies", "password", "cars", "rentals", "deals", "history"] as const;
 export type ProfileTab = (typeof PROFILE_TABS)[number];
 
 export function parseTab(v: string | string[] | undefined): ProfileTab {
@@ -63,6 +64,7 @@ export async function ManagerProfile({
 
   const tabs: { id: ProfileTab; label: string; Icon: typeof IdCard }[] = [
     { id: "infos", label: t("tabInfo"), Icon: IdCard },
+    { id: "agencies", label: t("tabAgencies"), Icon: Building2 },
     { id: "cars", label: t("tabPerimeter"), Icon: Target },
     // Mot de passe : visible par le gestionnaire lui-même et par l'administrateur.
     ...(isAdmin || isSelf ? [{ id: "password" as const, label: t("tabPassword"), Icon: KeyRound }] : []),
@@ -74,7 +76,7 @@ export async function ManagerProfile({
           { id: "history" as const, label: t("tabHistory"), Icon: History },
         ]),
   ];
-  const tab: ProfileTab = peer && !["infos", "cars"].includes(requestedTab) ? "infos" : requestedTab;
+  const tab: ProfileTab = peer && !["infos", "agencies", "cars"].includes(requestedTab) ? "infos" : requestedTab;
 
   const formInitial = {
     civility: m.civility,
@@ -97,6 +99,8 @@ export async function ManagerProfile({
   let body: React.ReactNode;
   if (tab === "password" && (isAdmin || isSelf)) {
     body = isSelf ? <PasswordForm hasPassword={m.user.hasPassword} /> : <AdminSetPasswordForm managerId={m.id} name={name} />;
+  } else if (tab === "agencies") {
+    body = <AgenciesTab managerId={m.id} links={await managerAgencyLinks(m.id)} canEdit={isAdmin} isAdminTarget={m.user.role === "admin"} base={isAdmin ? "/admin" : "/manager"} />;
   } else if (tab === "cars") {
     const [fleet, links] = await Promise.all([listFleet(), managerAgencyLinks(m.id)]);
     body = (
@@ -273,6 +277,7 @@ async function exportRow(m: ManagerDetail) {
     rentalsMonth: counts.m,
     rentalsYear: counts.y,
     hasPassword: m.user.hasPassword,
+    isAdmin: m.user.role === "admin",
     assignedCars: fleet.filter((c) => c.managerIds.includes(m.id)).map((c) => `${c.brand} ${c.model} ${c.year} (${c.plateNumber})`),
   };
 }

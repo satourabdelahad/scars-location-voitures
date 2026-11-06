@@ -203,6 +203,12 @@ export const agencies = pgTable("agencies", {
   whatsapp: varchar("whatsapp", { length: 32 }),
   isAirport: boolean("is_airport").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
+  /** Site web et réseaux sociaux de l'agence (facultatifs) */
+  websiteUrl: varchar("website_url", { length: 300 }),
+  facebookUrl: varchar("facebook_url", { length: 300 }),
+  instagramUrl: varchar("instagram_url", { length: 300 }),
+  linkedinUrl: varchar("linkedin_url", { length: 300 }),
+  xUrl: varchar("x_url", { length: 300 }),
   /** Responsable de l'agence : un compte gestionnaire (ses coordonnées sont recopiées ci-dessous) */
   managerId: uuid("manager_id"),
   managerCivility: civilityEnum("manager_civility"),

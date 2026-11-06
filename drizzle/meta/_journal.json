@@ -92,6 +92,13 @@
       "when": 1793907181475,
       "tag": "0012_promotions_marketing",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793966544720,
+      "tag": "0013_agency_social_admin_manager",
+      "breakpoints": true
     }
   ]
 }
