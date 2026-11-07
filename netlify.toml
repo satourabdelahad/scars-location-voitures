@@ -6,6 +6,9 @@
   NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
 
+[secrets_scanning]
+  omit_paths = [".netlify/.next/cache"]
+
 # Netlify détecte Next.js et applique automatiquement son adaptateur (OpenNext).
 [[plugins]]
   package = "@netlify/plugin-nextjs"

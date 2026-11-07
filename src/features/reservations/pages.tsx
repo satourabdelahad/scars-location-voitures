@@ -2,12 +2,14 @@ import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/db";
-import { tablePreferences } from "@/db/schema";
+import { carResponsibles, managerAgencies, managers, tablePreferences } from "@/db/schema";
+import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { CarArt } from "@/components/car-art";
 import { Badge, DefinitionList, PageHeader, Panel, reservationTone } from "@/components/ui/misc";
-import { getReservationForStaff, listReservationsForStaff } from "@/server/queries/reservations";
+import { canValidateReservation, getReservationForStaff, listReservationsForStaff } from "@/server/queries/reservations";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
+import { promotionLabel } from "@/lib/promotion-label";
 import { ReservationsTable } from "./reservations-table";
 import { ReservationActions } from "./reservation-actions";
 
@@ -22,7 +24,7 @@ export async function ReservationsListPage({ base, userId }: { base: Base; userI
   return (
     <>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
-      <ReservationsTable rows={rows} base={base} prefs={prefs ? { visibleColumns: prefs.visibleColumns, pageSize: prefs.pageSize } : null} />
+      <ReservationsTable rows={rows} base={base} userId={userId} isAdmin={base === "/admin"} prefs={prefs ? { visibleColumns: prefs.visibleColumns, pageSize: prefs.pageSize } : null} />
     </>
   );
 }
@@ -30,6 +32,22 @@ export async function ReservationsListPage({ base, userId }: { base: Base; userI
 export async function ReservationDetailPage({ base, id, locale }: { base: Base; id: string; locale: string }) {
   const r = await getReservationForStaff(id);
   if (!r) notFound();
+  const session = await auth();
+  const canValidate = session?.user ? await canValidateReservation(session.user, r.id) : false;
+  // Responsables de l'agence de départ (0, 1 ou plusieurs).
+  const heads = await db
+    .select({ firstName: managers.firstName, lastName: managers.lastName })
+    .from(managerAgencies)
+    .innerJoin(managers, eq(managers.id, managerAgencies.managerId))
+    .where(and(eq(managerAgencies.agencyId, r.pickupAgency.id), eq(managerAgencies.isResponsible, true)));
+  // … et responsables de la voiture.
+  const carHeads = await db
+    .select({ firstName: managers.firstName, lastName: managers.lastName })
+    .from(carResponsibles)
+    .innerJoin(managers, eq(managers.id, carResponsibles.managerId))
+    .where(eq(carResponsibles.carId, r.car.id));
+  const names = [...new Set([...heads, ...carHeads].map((h) => `${h.firstName} ${h.lastName}`))];
+  const responsible = names.length ? names.join(", ") : null;
   const [t, ts, tb, tx, te, tf] = await Promise.all([
     getTranslations("Reservations"),
     getTranslations("Status"),
@@ -97,13 +115,16 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
               {r.extras.map((x) => (
                 <div key={x.extraId} className="flex justify-between"><dt className="text-ink-2">{tx(x.extra.code as "gps")}</dt><dd className="font-semibold text-ink">{formatMoney(x.unitPricePerDay * r.days, locale)}</dd></div>
               ))}
+              {r.discountAmount > 0 && (
+                <div className="flex justify-between text-palm"><dt>{tb("discount")}{r.promotion ? <span dir="ltr"> ({promotionLabel(r.promotion)})</span> : null}</dt><dd className="font-semibold">−{formatMoney(r.discountAmount, locale)}</dd></div>
+              )}
               <div className="flex items-baseline justify-between border-t border-mist pt-3">
                 <dt className="font-bold text-ink">{tb("total")}</dt>
                 <dd className="text-2xl font-extrabold text-ink" style={{ fontStretch: "112%" }}>{formatMoney(r.totalPrice, locale)}</dd>
               </div>
             </dl>
             <div className="mt-6">
-              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} />
+              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} canValidate={canValidate} responsible={responsible} />
             </div>
           </Panel>
           <Panel className="p-6">

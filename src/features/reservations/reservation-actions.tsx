@@ -13,7 +13,7 @@ import { saveInternalNote, transitionReservation } from "@/server/actions/reserv
 
 type Action = "confirm" | "reject" | "pickup" | "return" | "cancel";
 
-export function ReservationActions({ id, status, internalNote }: { id: string; status: ReservationStatus; internalNote: string | null }) {
+export function ReservationActions({ id, status, internalNote, canValidate, responsible }: { id: string; status: ReservationStatus; internalNote: string | null; canValidate: boolean; responsible: string | null }) {
   const t = useTranslations("Reservations");
   const tc = useTranslations("Common");
   const te = useTranslations("Errors");
@@ -35,7 +35,7 @@ export function ReservationActions({ id, status, internalNote }: { id: string; s
     });
 
   const buttons: { action: Action; label: string; icon: typeof Ban; variant: "primary" | "dangerOutline" | "success" | "outline"; ask?: boolean }[] = [];
-  if (status === "pending") {
+  if (status === "pending" && canValidate) {
     buttons.push({ action: "confirm", label: t("confirm"), icon: CheckCircle2, variant: "primary" });
     buttons.push({ action: "reject", label: t("reject"), icon: XCircle, variant: "dangerOutline", ask: true });
   }
@@ -47,6 +47,9 @@ export function ReservationActions({ id, status, internalNote }: { id: string; s
 
   return (
     <div className="space-y-5">
+      {status === "pending" && !canValidate && (
+        <p className="rounded-xl bg-saffron/15 px-4 py-3 text-sm text-saffron-ink">{responsible ? t("awaitingValidationBy", { name: responsible }) : t("awaitingValidation")}</p>
+      )}
       {buttons.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {buttons.map((b) => (
@@ -79,6 +82,74 @@ export function ReservationActions({ id, status, internalNote }: { id: string; s
           <Field label={t("reasonLabel")} required>{(p) => <Textarea {...p} autoFocus value={reason} onChange={(x) => setReason(x.target.value)} />}</Field>
           <div className="mt-5 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setAsking(null)}>{tc("back")}</Button>
+            <Button variant="danger" disabled={reason.trim().length < 3} loading={pending} onClick={() => asking && run(asking, { reason })}>
+              {asking === "reject" ? t("reject") : t("cancel")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+const NEXT_STATUS: Record<Action, ReservationStatus> = { confirm: "confirmed", reject: "rejected", pickup: "ongoing", return: "completed", cancel: "cancelled" };
+
+/** Actions rapides dans la colonne du tableau ; la ligne affiche le nouvel état tout de suite (onDone). */
+export function ReservationRowActions({ id, status, canValidate, onDone }: { id: string; status: ReservationStatus; canValidate: boolean; onDone: (next: ReservationStatus) => void }) {
+  const t = useTranslations("Reservations");
+  const tc = useTranslations("Common");
+  const te = useTranslations("Errors");
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [asking, setAsking] = useState<Action | null>(null);
+  const [reason, setReason] = useState("");
+
+  const run = (action: Action, opts: { reason?: string } = {}) =>
+    start(async () => {
+      const res = await transitionReservation(id, action, opts);
+      if (res.ok) {
+        toast.success(t("updated"));
+        onDone(NEXT_STATUS[action]);
+        setAsking(null);
+        setReason("");
+        router.refresh();
+      } else toast.error(te(res.error as "unknown"));
+    });
+
+  const items: { action: Action; label: string; icon: typeof Ban; tone: string; ask?: boolean }[] = [];
+  if (status === "pending" && canValidate) {
+    items.push({ action: "confirm", label: t("confirm"), icon: CheckCircle2, tone: "text-palm hover:bg-palm-soft" });
+    items.push({ action: "reject", label: t("reject"), icon: XCircle, tone: "text-ink-3 hover:bg-danger-soft hover:text-danger", ask: true });
+  }
+  if (status === "confirmed") {
+    items.push({ action: "pickup", label: t("markPickedUp"), icon: KeyRound, tone: "text-majorelle hover:bg-majorelle-soft" });
+    items.push({ action: "cancel", label: t("cancel"), icon: Ban, tone: "text-ink-3 hover:bg-danger-soft hover:text-danger", ask: true });
+  }
+  if (status === "ongoing") items.push({ action: "return", label: t("markReturned"), icon: Undo2, tone: "text-palm hover:bg-palm-soft" });
+  if (!items.length) return null;
+
+  return (
+    <div className="flex items-center justify-end gap-1">
+      {items.map((b) => (
+        <button
+          key={b.action}
+          type="button"
+          disabled={pending}
+          onClick={() => (b.ask ? setAsking(b.action) : run(b.action))}
+          title={b.label}
+          aria-label={b.label}
+          className={`grid size-8 place-items-center rounded-lg disabled:opacity-50 ${b.tone}`}
+        >
+          <b.icon className="size-4" />
+        </button>
+      ))}
+      <Dialog open={asking !== null} onOpenChange={(o) => !o && setAsking(null)}>
+        <DialogContent title={asking === "reject" ? t("rejectTitle") : t("cancel")} closeLabel={tc("close")}>
+          <Field label={t("reasonLabel")} required>
+            {(p) => <Textarea {...p} autoFocus value={reason} onChange={(x) => setReason(x.target.value)} />}
+          </Field>
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setAsking(null)}>{tc("cancel")}</Button>
             <Button variant="danger" disabled={reason.trim().length < 3} loading={pending} onClick={() => asking && run(asking, { reason })}>
               {asking === "reject" ? t("reject") : t("cancel")}
             </Button>

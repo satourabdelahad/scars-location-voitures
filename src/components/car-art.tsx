@@ -3,10 +3,64 @@ import { cn } from "@/lib/utils";
 import { HelloBubble } from "@/components/hello-bubble";
 
 /**
- * Illustration de profil propre à SCar : une silhouette par catégorie, teintée de la couleur réelle
+ * Illustration de profil propre à Dizy Cars : une silhouette par catégorie, teintée de la couleur réelle
  * de la voiture. Sert de visuel tant qu'aucune photo n'a été téléversée.
  */
-const SHAPES: Record<CarCategory, { body: string; glass: string; wheels: [number, number]; pillar?: number; head: [number, number]; open?: boolean }> = {
+type ArtShape = "economy" | "compact" | "sedan" | "luxury" | "suv" | "van" | "convertible" | "pickup";
+
+/**
+ * Versions « courtes » pour la voiture animée de l'accueil et de la connexion :
+ * arrière coupé net, porte-à-faux arrière réduit.
+ */
+const SHORT: Partial<Record<ArtShape, Shape>> = {
+  suv: {
+    body: "M104 120 L104 72 Q106 57 122 56 L248 51 Q268 51 280 61 L306 80 L350 86 Q368 90 372 104 L374 120 Z",
+    glass: "M118 82 L120 64 Q122 60 131 60 L246 57 Q262 57 272 67 L290 82 Z",
+    head: [232, 71], wheels: [148, 308],
+    pillar: 190, rear: 102,
+    backSeat: { girl: [168, 71], dog: [138, 72] },
+  },
+  convertible: {
+    body: "M100 118 L100 101 Q102 94 112 93 L248 92 L270 68 L278 68 L268 90 L352 92 Q372 96 374 108 L374 118 Z",
+    glass: "M252 91 L271 70 L276 70 L264 91 Z",
+    head: [226, 78], open: true, wheels: [144, 306], rear: 98,
+    backSeat: { girl: [186, 81], dog: [152, 83] },
+  },
+};
+/** Cadre du dessin : la version courte retire la zone vide derrière la voiture. */
+const VIEW = { full: { x: 0, w: 400 }, short: { x: 84, w: 306 } };
+
+/** Chaque carrosserie réutilise la silhouette la plus proche. */
+const ART: Record<CarCategory, ArtShape> = {
+  city_car: "economy",
+  micro_car: "economy",
+  compact: "compact",
+  sedan: "sedan",
+  estate: "luxury",
+  coupe: "luxury",
+  cabriolet: "convertible",
+  cc: "convertible",
+  suv_4x4: "suv",
+  crossover: "suv",
+  mpv: "van",
+  pickup: "pickup",
+  minivan: "van",
+  van: "van",
+};
+
+type Shape = {
+  body: string;
+  glass: string;
+  wheels: [number, number];
+  pillar?: number;
+  head: [number, number];
+  open?: boolean;
+  rear?: number;
+  /** Places arrière : position de la tête de la fille et du chien */
+  backSeat?: { girl: [number, number]; dog: [number, number] };
+};
+
+const SHAPES: Record<ArtShape, Shape> = {
   economy: {
     body: "M28 120 Q26 100 36 92 L62 84 Q96 80 120 76 L156 50 Q166 44 182 44 L262 44 Q282 44 296 56 L318 76 L350 82 Q368 86 372 100 L374 120 Z",
     glass: "M132 76 L162 53 Q168 50 180 50 L258 50 Q273 50 285 60 L303 76 Z",
@@ -62,6 +116,8 @@ export function CarArt({
   title,
   driver,
   animated,
+  short,
+  passengers,
 }: {
   category: CarCategory;
   color?: string;
@@ -71,11 +127,18 @@ export function CarArt({
   driver?: boolean;
   /** Roues qui tournent et légère suspension : la voiture roule */
   animated?: boolean;
+  /** Arrière coupé, plus court (voiture animée) */
+  short?: boolean;
+  /** Une fille et un chien sur la banquette arrière, qui regardent par la vitre */
+  passengers?: boolean;
 }) {
-  const s = SHAPES[category] ?? SHAPES.sedan;
+  const shape = ART[category] ?? "compact";
+  const s = (short && SHORT[shape]) || SHAPES[shape] || SHAPES.sedan;
+  const v = short && SHORT[shape] ? VIEW.short : VIEW.full;
+  const rear = s.rear ?? 22;
   const id = `g-${category}-${color.replace("#", "")}`;
   return (
-    <svg viewBox="0 0 400 160" className={cn("rtl:-scale-x-100", className)} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
+    <svg viewBox={`${v.x} 0 ${v.w} 160`} className={cn("rtl:-scale-x-100", className)} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
       <defs>
         <linearGradient id={`${id}-b`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor={color} />
@@ -91,8 +154,9 @@ export function CarArt({
           <path d={s.glass} />
         </clipPath>
       </defs>
-      <ellipse cx="200" cy="142" rx="176" ry="7" fill="#141a2e" opacity="0.14" />
+      <ellipse cx={v.x + v.w / 2} cy="142" rx={v.w / 2 - 24} ry="7" fill="#141a2e" opacity="0.14" />
       <g className={animated ? "car-bob" : undefined}>
+      {passengers && s.open && s.backSeat && <BackSeat seat={s.backSeat} />}
       {driver && s.open && <Driver x={s.head[0]} y={s.head[1]} waving />}
       <path d={s.body} fill={`url(#${id}-b)`} />
       <path d={s.body} fill={color} opacity="0.55" />
@@ -105,13 +169,14 @@ export function CarArt({
       )}
       {driver && !s.open && (
         <g clipPath={`url(#${id}-c)`}>
+          {passengers && s.backSeat && <BackSeat seat={s.backSeat} />}
           <Driver x={s.head[0]} y={s.head[1]} />
           <path d={s.glass} fill="#fff" opacity="0.08" />
         </g>
       )}
-      <path d="M40 104 L360 100" stroke="#fff" strokeOpacity="0.28" strokeWidth="2" strokeLinecap="round" />
+      <path d={`M${rear + 18} 104 L360 100`} stroke="#fff" strokeOpacity="0.28" strokeWidth="2" strokeLinecap="round" />
       <rect x="358" y="90" width="14" height="6" rx="3" fill="#ffe7a8" />
-      <rect x="22" y="94" width="10" height="7" rx="3" fill="#d6453a" />
+      <rect x={rear} y="94" width="10" height="7" rx="3" fill="#d6453a" />
       </g>
       {s.wheels.map((x) => (
         <g key={x} className={animated ? "wheel-spin" : undefined} style={animated ? { transformOrigin: `${x}px 120px`, transformBox: "view-box" } : undefined}>
@@ -124,6 +189,42 @@ export function CarArt({
         </g>
       ))}
     </svg>
+  );
+}
+
+/** Banquette arrière : une petite fille souriante et un chien qui regardent par la vitre. */
+function BackSeat({ seat }: { seat: { girl: [number, number]; dog: [number, number] } }) {
+  const [gx, gy] = seat.girl;
+  const [dx, dy] = seat.dog;
+  return (
+    <g>
+      {/* Fille : queues de cheval, nœud, joues roses */}
+      <g className="driver-nod" style={{ transformOrigin: `${gx}px ${gy + 10}px`, transformBox: "view-box", animationDelay: "-0.6s" }}>
+        <path d={`M${gx - 9} ${gy + 20} Q${gx - 8} ${gy + 9} ${gx} ${gy + 8} Q${gx + 8} ${gy + 9} ${gx + 9} ${gy + 20} Z`} fill="#3fb6a8" />
+        <circle cx={gx - 8.5} cy={gy - 1} r="3.4" fill="#5a3420" />
+        <circle cx={gx + 8.5} cy={gy - 1} r="3.4" fill="#5a3420" />
+        <circle cx={gx} cy={gy} r="7.2" fill="#eab88e" />
+        <path d={`M${gx - 7.2} ${gy - 0.5} Q${gx - 7} ${gy - 8.5} ${gx} ${gy - 8} Q${gx + 7} ${gy - 8.5} ${gx + 7.2} ${gy - 0.5} Q${gx + 3} ${gy - 4.5} ${gx} ${gy - 4} Q${gx - 3} ${gy - 4.5} ${gx - 7.2} ${gy - 0.5} Z`} fill="#5a3420" />
+        <path d={`M${gx + 3} ${gy - 7.5} l3.2 -2.2 l0.6 3.4 Z M${gx + 3} ${gy - 7.5} l-0.2 3.6 l3.4 -1 Z`} fill="#ff6f91" />
+        <circle cx={gx - 2.6} cy={gy + 0.2} r="0.95" fill="#2b1d14" />
+        <circle cx={gx + 2.6} cy={gy + 0.2} r="0.95" fill="#2b1d14" />
+        <path d={`M${gx - 2.4} ${gy + 3} Q${gx} ${gy + 5.2} ${gx + 2.4} ${gy + 3}`} stroke="#2b1d14" strokeWidth="0.9" fill="none" strokeLinecap="round" />
+        <circle cx={gx - 4.6} cy={gy + 2.6} r="1.3" fill="#f08a7a" opacity="0.55" />
+        <circle cx={gx + 4.6} cy={gy + 2.6} r="1.3" fill="#f08a7a" opacity="0.55" />
+      </g>
+      {/* Chien : oreilles tombantes, museau, langue */}
+      <g className="driver-nod" style={{ transformOrigin: `${dx}px ${dy + 8}px`, transformBox: "view-box", animationDelay: "-1.1s" }}>
+        <path d={`M${dx - 8} ${dy + 18} Q${dx - 7} ${dy + 8} ${dx} ${dy + 7} Q${dx + 7} ${dy + 8} ${dx + 8} ${dy + 18} Z`} fill="#b97a45" />
+        <ellipse cx={dx - 7.2} cy={dy + 1.5} rx="2.8" ry="5.2" fill="#7a4a26" transform={`rotate(14 ${dx - 7.2} ${dy + 1.5})`} />
+        <ellipse cx={dx + 7.2} cy={dy + 1.5} rx="2.8" ry="5.2" fill="#7a4a26" transform={`rotate(-14 ${dx + 7.2} ${dy + 1.5})`} />
+        <circle cx={dx} cy={dy} r="6.8" fill="#c98b55" />
+        <ellipse cx={dx} cy={dy + 3.2} rx="3.8" ry="2.9" fill="#f1d6b3" />
+        <ellipse cx={dx} cy={dy + 1.8} rx="1.5" ry="1.1" fill="#2b1d14" />
+        <circle cx={dx - 2.6} cy={dy - 1.6} r="1" fill="#2b1d14" />
+        <circle cx={dx + 2.6} cy={dy - 1.6} r="1" fill="#2b1d14" />
+        <path d={`M${dx - 0.9} ${dy + 4.6} q0.9 2.6 1.8 0`} fill="#f07a8a" />
+      </g>
+    </g>
   );
 }
 
@@ -160,18 +261,21 @@ function Driver({ x, y, waving }: { x: number; y: number; waving?: boolean }) {
  * La bulle est en HTML (hors du SVG) pour ne pas être inversée en arabe/darija.
  */
 export function DrivingCar({ category, color, messages, className, bubbleClassName }: { category: CarCategory; color: string; messages: string[]; className?: string; bubbleClassName?: string }) {
-  const [hx, hy] = (SHAPES[category] ?? SHAPES.sedan).head;
+  const shape = ART[category] ?? "compact";
+  const short = Boolean(SHORT[shape]);
+  const [hx, hy] = (SHORT[shape] ?? SHAPES[shape] ?? SHAPES.sedan).head;
+  const v = short ? VIEW.short : VIEW.full;
   return (
     <div className={cn("relative", className)}>
       {/* Traits de vitesse derrière la voiture */}
       <div aria-hidden className="speed-lines absolute inset-y-[38%] -start-[9%] w-[12%]">
         <span /><span /><span />
       </div>
-      <CarArt category={category} color={color} driver animated className="block w-full" />
+      <CarArt category={category} color={color} driver animated short passengers className="block w-full" />
       <HelloBubble
         messages={messages}
         className={bubbleClassName}
-        style={{ insetInlineStart: `${(hx / 400) * 100}%`, bottom: `${100 - ((hy - 24) / 160) * 100}%` }}
+        style={{ insetInlineStart: `${((hx - v.x) / v.w) * 100}%`, bottom: `${100 - ((hy - 24) / 160) * 100}%` }}
       />
     </div>
   );

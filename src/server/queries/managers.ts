@@ -1,7 +1,7 @@
 import "server-only";
 import { asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { managerDocuments, managerEvents, managers, users } from "@/db/schema";
+import { managerDocuments, managerEvents, managers } from "@/db/schema";
 
 const TZ = "Africa/Casablanca";
 const RENTED = sql`('confirmed','ongoing','completed')`;
@@ -25,7 +25,9 @@ export async function listManagersWithStats() {
     birth_date: string;
     marital_status: "married" | "widowed" | "single" | null;
     work_start_date: string;
-    contract_type: "freelance" | "cdi";
+    contract_type: "cdi" | "cdd" | "freelance";
+    photo_url: string | null;
+    locked_until: string | null;
     status: "active" | "deactivated";
     deactivation_reason: string | null;
     deactivated_at: string | null;
@@ -35,6 +37,9 @@ export async function listManagersWithStats() {
     rentals_week: number;
     rentals_month: number;
     rentals_year: number;
+    assigned_cars: string[] | null;
+    has_password: boolean;
+    is_admin: boolean;
   }>(sql`
     WITH bounds AS (
       SELECT
@@ -45,25 +50,30 @@ export async function listManagersWithStats() {
     )
     SELECT
       m.id, m.user_id, m.civility, m.last_name, m.first_name, u.email, m.phone, m.whatsapp, m.city,
-      m.birth_date::text, m.marital_status, m.work_start_date::text, m.contract_type, m.status,
-      m.deactivation_reason, m.deactivated_at, u.last_login_at, m.admin_updated_at,
+      m.birth_date::text, m.marital_status, m.work_start_date::text, m.contract_type, m.photo_url, m.status,
+      m.deactivation_reason, m.deactivated_at, u.last_login_at, m.admin_updated_at, (u.password_hash IS NOT NULL) AS has_password, (u.role = 'admin') AS is_admin,
+      CASE WHEN u.login_locked_until > now() THEN u.login_locked_until END AS locked_until,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.d)::int AS rentals_day,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.w)::int AS rentals_week,
       count(r.id) FILTER (WHERE r.confirmed_at >= b.m)::int AS rentals_month,
-      count(r.id) FILTER (WHERE r.confirmed_at >= b.y)::int AS rentals_year
+      count(r.id) FILTER (WHERE r.confirmed_at >= b.y)::int AS rentals_year,
+      (SELECT array_agg(c.brand || ' ' || c.model || ' ' || c.year || ' (' || c.plate_number || ')' ORDER BY c.brand, c.model)
+         FROM car_managers cm JOIN cars c ON c.id = cm.car_id WHERE cm.manager_id = m.id) AS assigned_cars
     FROM managers m
     JOIN users u ON u.id = m.user_id
     CROSS JOIN bounds b
     LEFT JOIN reservations r
       ON r.handled_by = m.user_id AND r.status IN ${RENTED} AND r.confirmed_at >= LEAST(b.y, b.w) AND r.confirmed_at <= now()
     GROUP BY m.id, u.id
-    ORDER BY m.status, m.last_name, m.first_name
+    ORDER BY (u.role = 'admin') DESC, m.status, m.last_name, m.first_name
   `);
   return rows.rows.map((r) => ({
     id: r.id,
     civility: r.civility,
     lastName: r.last_name,
     firstName: r.first_name,
+    photoUrl: r.photo_url,
+    lockedUntil: r.locked_until ? new Date(r.locked_until).toISOString() : null,
     email: r.email,
     phone: r.phone,
     whatsapp: r.whatsapp,
@@ -80,6 +90,10 @@ export async function listManagersWithStats() {
     rentalsWeek: r.rentals_week,
     rentalsMonth: r.rentals_month,
     rentalsYear: r.rentals_year,
+    assignedCars: r.assigned_cars ?? [],
+    hasPassword: r.has_password,
+    /** L'administrateur figure aussi parmi les gestionnaires (non désactivable, pas d'invitation). */
+    isAdmin: r.is_admin,
   }));
 }
 export type ManagerRow = Awaited<ReturnType<typeof listManagersWithStats>>[number];
@@ -108,7 +122,7 @@ export async function getManager(id: string) {
   const m = await db.query.managers.findFirst({
     where: eq(managers.id, id),
     with: {
-      user: { columns: { email: true, lastLoginAt: true, passwordHash: true, status: true } },
+      user: { columns: { email: true, role: true, lastLoginAt: true, passwordHash: true, status: true, loginLockedUntil: true } },
       documents: { orderBy: [asc(managerDocuments.kind)] },
       events: { orderBy: [desc(managerEvents.createdAt)], with: { actor: { columns: { name: true, email: true } } } },
     },

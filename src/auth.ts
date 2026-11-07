@@ -7,10 +7,22 @@ import Facebook from "next-auth/providers/facebook";
 import Twitter from "next-auth/providers/twitter";
 import TikTok from "next-auth/providers/tiktok";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, lt, or } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { accounts, sessions, users, verificationTokens, type Role } from "@/db/schema";
+import { accounts, auditLogs, sessions, users, verificationTokens, type Role } from "@/db/schema";
+import {
+  checkTotp,
+  clearLoginFailures,
+  clientIp,
+  consumeRecoveryCode,
+  isLoginLocked,
+  loginKeys,
+  looksLikeRecoveryCode,
+  openSecret,
+  recordLoginFailure,
+} from "@/server/security";
+import { getSecuritySettings, MAX_CLIENT_SESSION_DAYS } from "@/server/settings";
 
 declare module "next-auth" {
   interface Session {
@@ -24,6 +36,16 @@ class InvalidLogin extends CredentialsSignin {
 class AccountDisabled extends CredentialsSignin {
   code = "disabled";
 }
+class LoginLocked extends CredentialsSignin {
+  code = "locked";
+}
+class TotpRequired extends CredentialsSignin {
+  code = "totp_required";
+}
+class TotpInvalid extends CredentialsSignin {
+  code = "totp_invalid";
+}
+
 
 /**
  * Instagram : l'ancienne "Basic Display API" a été fermée par Meta fin 2024.
@@ -65,23 +87,52 @@ export const socialProviders = {
 } as const;
 export type SocialProviderId = keyof typeof socialProviders;
 
+const DUMMY_HASH = "$2b$12$ATwVEfNPtTA0fO2JYUoC2OguCtBigvAa0M2Fii6QPNNkt85uBNb.2";
+
 const credentialsSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
   password: z.string().min(1).max(200),
+  code: z.string().trim().max(20).optional(),
 });
 
 const providers: Provider[] = [
   Credentials({
     id: "credentials",
-    credentials: { email: {}, password: {} },
-    async authorize(raw) {
+    credentials: { email: {}, password: {}, code: {} },
+    async authorize(raw, request) {
       const parsed = credentialsSchema.safeParse(raw);
       if (!parsed.success) throw new InvalidLogin();
+      // Contrôles faits ici (et pas seulement dans le formulaire) : l'URL de connexion d'Auth.js peut être appelée directement.
+      const keys = loginKeys(parsed.data.email, clientIp(request.headers));
+      if (await isLoginLocked(keys)) throw new LoginLocked();
+
       const [user] = await db.select().from(users).where(eq(users.email, parsed.data.email)).limit(1);
-      if (!user?.passwordHash) throw new InvalidLogin();
-      const ok = await bcrypt.compare(parsed.data.password, user.passwordHash);
-      if (!ok) throw new InvalidLogin();
+      // Même durée de calcul que l'email existe ou non : on ne révèle pas quels comptes existent.
+      const ok = await bcrypt.compare(parsed.data.password, user?.passwordHash ?? DUMMY_HASH).then((v) => v && Boolean(user?.passwordHash));
+      if (!user || !ok) {
+        await recordLoginFailure(keys);
+        throw new InvalidLogin();
+      }
       if (user.status !== "active") throw new AccountDisabled();
+
+      if (user.totpEnabledAt && user.totpSecret) {
+        const code = parsed.data.code ?? "";
+        if (!code) throw new TotpRequired();
+        const step = checkTotp(openSecret(user.totpSecret), code, user.totpLastStep);
+        if (step !== null) {
+          await db.update(users).set({ totpLastStep: step }).where(eq(users.id, user.id));
+        } else {
+          const left = looksLikeRecoveryCode(code) ? consumeRecoveryCode(user.totpRecoveryCodes, code) : null;
+          if (!left) {
+            await recordLoginFailure(keys);
+            throw new TotpInvalid();
+          }
+          await db.update(users).set({ totpRecoveryCodes: left }).where(eq(users.id, user.id));
+          await db.insert(auditLogs).values({ actorId: user.id, entity: "session", entityId: user.id, action: "recovery_code", changes: { left: left.length } });
+        }
+      }
+
+      await clearLoginFailures(keys);
       return { id: user.id, name: user.name, email: user.email, image: user.image };
     },
   }),
@@ -101,7 +152,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verificationTokensTable: verificationTokens,
   }),
   // JWT obligatoire avec le fournisseur "credentials" ; le rôle et le statut sont relus en base à chaque requête.
-  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 14 },
+  // Durée maximale du cookie ; la durée réelle (équipe / clients) est réglée dans Administration → Sécurité.
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * MAX_CLIENT_SESSION_DAYS },
   pages: { signIn: "/fr/login", error: "/fr/login" },
   trustHost: true,
   providers,
@@ -122,6 +174,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       const id = (user?.id ?? token.sub) as string | undefined;
       if (!id) return null;
+      // Heure de connexion réelle (le jeton, lui, est réémis à chaque visite).
+      if (user || typeof token.authAt !== "number") token.authAt = Date.now();
       const [row] = await db
         .select({ role: users.role, status: users.status, name: users.name, image: users.image, email: users.email })
         .from(users)
@@ -129,6 +183,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         .limit(1);
       // Un compte désactivé est déconnecté immédiatement.
       if (!row || row.status !== "active") return null;
+      // Durée de session : en heures pour l'équipe, en jours pour les clients.
+      const sec = await getSecuritySettings();
+      const limit = row.role === "client" ? sec.clientSessionDays * 86_400_000 : sec.staffSessionHours * 3_600_000;
+      if (Date.now() - (token.authAt as number) > limit) return null;
+      // Présence (« En ligne ») : au plus une écriture par minute, sans bloquer la page.
+      if (row.role !== "client")
+        void db
+          .update(users)
+          .set({ lastSeenAt: new Date() })
+          .where(and(eq(users.id, id), or(isNull(users.lastSeenAt), lt(users.lastSeenAt, new Date(Date.now() - 60_000)))))
+          .catch(() => {});
       token.sub = id;
       token.role = row.role;
       token.name = row.name;
@@ -143,8 +208,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   events: {
-    async signIn({ user }) {
-      if (user.id) await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
+    // Connexions et déconnexions alimentent l'onglet "Historique" de la fiche gestionnaire.
+    async signIn({ user, account }) {
+      if (!user.id) return;
+      await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
+      await db
+        .insert(auditLogs)
+        .values({ actorId: user.id, entity: "session", entityId: user.id, action: "login", changes: { provider: account?.provider ?? "credentials" } })
+        .catch((e) => console.error("[auth] journal de connexion", e));
+    },
+    async signOut(message) {
+      const userId = "token" in message ? message.token?.sub : "session" in message ? message.session?.userId : undefined;
+      if (!userId) return;
+      await db.update(users).set({ lastSeenAt: null }).where(eq(users.id, userId)).catch(() => {});
+      await db
+        .insert(auditLogs)
+        .values({ actorId: userId, entity: "session", entityId: userId, action: "logout" })
+        .catch((e) => console.error("[auth] journal de déconnexion", e));
     },
   },
 });

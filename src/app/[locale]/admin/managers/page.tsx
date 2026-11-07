@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/ui/misc";
 import { requireRole } from "@/server/guards";
 import { listManagersWithStats, managersDailyTrend } from "@/server/queries/managers";
 import { ManagersCharts } from "./managers-charts";
-import { ManagersTable } from "./managers-table";
+import { ManagersTable } from "@/features/managers/managers-table";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/admin/managers">) {
   const { locale } = await params;

@@ -1,11 +1,18 @@
+import { isPossiblePhoneNumber } from "libphonenumber-js/min";
 import { z } from "zod";
+import { carCategoryEnum, fuelEnum, transmissionEnum } from "@/db/schema";
 
 /** Schémas partagés navigateur/serveur. Les messages sont des clés du namespace "Errors". */
 export const PHONE_RE = /^\+?[0-9 ().-]{8,20}$/;
 export const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const isoDate = z.string().regex(ISO_DATE_RE, "date");
-const phone = z.string().trim().regex(PHONE_RE, "phone");
+/** Numéro international (+212…) plausible pour le pays de son indicatif. */
+const phone = z
+  .string()
+  .trim()
+  .regex(PHONE_RE, "phone")
+  .refine((v) => isPossiblePhoneNumber(v.startsWith("+") ? v : `+${v}`), "phone");
 const required = (max = 120) => z.string().trim().min(1, "required").max(max);
 
 function yearsBetween(birth: string, ref = new Date()) {
@@ -27,9 +34,11 @@ export const managerSchema = z.object({
   birthDate: isoDate.refine((d) => yearsBetween(d) >= 18, "minAge18"),
   maritalStatus: z.enum(["married", "widowed", "single"]).nullable().optional(),
   workStartDate: isoDate,
-  contractType: z.enum(["freelance", "cdi"], { message: "required" }),
+  contractType: z.enum(["cdi", "cdd", "freelance"], { message: "required" }),
 });
 export type ManagerInput = z.infer<typeof managerSchema>;
+/** Fiche de l'administrateur : mêmes informations qu'un gestionnaire, sans contrat. */
+export const adminProfileSchema = managerSchema.omit({ workStartDate: true, contractType: true });
 
 export const LOCALE_CODES = ["fr", "ary", "ar", "en", "es", "de", "ja", "zh", "ko"] as const;
 
@@ -38,9 +47,9 @@ export const carSchema = z.object({
   brand: required(80),
   model: required(80),
   year: z.coerce.number().int().min(1990, "number").max(2100, "number"),
-  category: z.enum(["economy", "compact", "sedan", "suv", "luxury", "van", "convertible", "pickup"]),
-  transmission: z.enum(["manual", "automatic"]),
-  fuel: z.enum(["petrol", "diesel", "hybrid", "electric"]),
+  category: z.enum(carCategoryEnum.enumValues, { message: "required" }),
+  transmission: z.enum(transmissionEnum.enumValues, { message: "required" }),
+  fuel: z.enum(fuelEnum.enumValues, { message: "required" }),
   seats: z.coerce.number().int().min(1, "number").max(20, "number"),
   doors: z.coerce.number().int().min(2, "number").max(6, "number"),
   luggage: z.coerce.number().int().min(0, "number").max(10, "number"),
@@ -58,6 +67,9 @@ export const carSchema = z.object({
   dailyPrice: z.coerce.number().positive("number"),
   deposit: z.coerce.number().min(0, "number"),
   airConditioning: z.boolean(),
+  purchaseCity: required(120),
+  purchaseDate: isoDate.refine((d) => d <= new Date().toISOString().slice(0, 10), "futureDate"),
+  purchasePrice: z.coerce.number().positive("number"),
   descriptions: z.record(z.string(), z.string().max(2000)).refine((d) => (d.fr ?? "").trim().length > 0, "required"),
 });
 export type CarInput = z.infer<typeof carSchema>;
@@ -66,6 +78,8 @@ export const carDeactivationSchema = z.object({
   reason: z.enum(["stolen", "sold", "totaled", "accident", "end_of_lease", "other"]),
   note: z.string().trim().max(1000).optional(),
 });
+
+const emptyToNullR = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
 
 export const reservationSchema = z
   .object({
@@ -78,10 +92,71 @@ export const reservationSchema = z
     driverFirstName: required(),
     driverLastName: required(),
     driverPhone: phone,
-    driverLicenseNumber: required(64),
-    driverBirthDate: isoDate.refine((d) => yearsBetween(d) >= 21, "minAge21"),
+    // Facultatifs à la réservation (présentés à l'agence au départ)
+    driverLicenseNumber: z.preprocess(emptyToNullR, z.string().trim().max(64).nullable()).default(null),
+    driverBirthDate: z.preprocess(emptyToNullR, isoDate.refine((d) => yearsBetween(d) >= 21, "minAge21").nullable()).default(null),
     flightNumber: z.string().trim().max(16).optional(),
     clientNote: z.string().trim().max(1000).optional(),
+    promoCode: z.string().trim().max(32).optional(),
   })
   .refine((r) => r.endDate > r.startDate, { path: ["endDate"], message: "dateOrder" });
 export type ReservationInput = z.infer<typeof reservationSchema>;
+
+/**
+ * Nouveau client sans compte, au moment de réserver : le minimum demandé.
+ * Nom, prénom, ville et téléphone obligatoires ; email et WhatsApp facultatifs.
+ */
+export const guestClientSchema = z.object({
+  lastName: z.string().trim().min(2, "required").max(120),
+  firstName: z.string().trim().min(2, "required").max(120),
+  city: z.string().trim().min(2, "required").max(120),
+  email: z.preprocess(emptyToNullR, z.string().trim().toLowerCase().email("email").max(255).nullable()),
+  phone,
+  whatsapp: z.preprocess(emptyToNullR, phone.nullable()),
+});
+export type GuestClientInput = z.infer<typeof guestClientSchema>;
+
+const emptyToNull = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
+
+/** Fiche client (créée ou modifiée par l'équipe). */
+export const clientSchema = z.object({
+  civility: z.preprocess(emptyToNull, z.enum(["male", "female"]).nullable()),
+  firstName: required(),
+  lastName: required(),
+  email: z.preprocess(emptyToNull, z.string().trim().toLowerCase().email("email").nullable()),
+  phone,
+  whatsapp: z.preprocess(emptyToNull, phone.nullable()),
+  city: z.preprocess(emptyToNull, z.string().trim().max(120).nullable()),
+  birthDate: z.preprocess(emptyToNull, isoDate.refine((d) => yearsBetween(d) >= 18, "minAge18").nullable()),
+  licenseNumber: z.preprocess(emptyToNull, z.string().trim().max(64).nullable()),
+  preferredLocale: z.enum(LOCALE_CODES).default("fr"),
+  notes: z.preprocess(emptyToNull, z.string().trim().max(4000).nullable()),
+});
+export type ClientInput = z.infer<typeof clientSchema>;
+
+/** Agence : toutes les informations sont obligatoires (nom, ville, adresse, téléphones, responsable). */
+const optionalUrl = z.preprocess(
+  (v) => {
+    if (typeof v !== "string" || !v.trim()) return null;
+    const t = v.trim();
+    return /^https?:\/\//i.test(t) ? t : `https://${t}`;
+  },
+  z.string().url("url").max(300).refine((u) => /^https?:\/\/[^\s/]+\.[^\s]+/i.test(u), "url").nullable(),
+);
+
+export const agencySchema = z.object({
+  name: z.string().trim().min(2, "required").max(160),
+  city: z.string().trim().min(2, "required").max(120),
+  address: z.string().trim().min(5, "required").max(500),
+  phone,
+  whatsapp: phone,
+  isAirport: z.boolean().default(false),
+  // Site web et réseaux sociaux : facultatifs ; « facebook.com/x » devient « https://facebook.com/x ».
+  websiteUrl: optionalUrl,
+  facebookUrl: optionalUrl,
+  instagramUrl: optionalUrl,
+  linkedinUrl: optionalUrl,
+  xUrl: optionalUrl,
+  tiktokUrl: optionalUrl,
+});
+export type AgencyInput = z.infer<typeof agencySchema>;

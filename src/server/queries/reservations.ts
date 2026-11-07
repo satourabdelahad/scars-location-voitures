@@ -26,6 +26,10 @@ export async function listReservationsForStaff() {
       plate: cars.plateNumber,
       pickup: agencies.city,
       handledBy: handler.name,
+      /** Utilisateurs responsables de l'agence de départ : ils valident la réservation (avec l'administrateur) */
+      responsibleUserIds: sql<string[]>`coalesce((SELECT array_agg(m.user_id) FROM managers m WHERE m.id IN (
+        SELECT ma.manager_id FROM manager_agencies ma WHERE ma.agency_id = ${agencies.id} AND ma.is_responsible
+        UNION SELECT cr.manager_id FROM car_responsibles cr WHERE cr.car_id = ${cars.id})), '{}')`,
     })
     .from(reservations)
     .innerJoin(users, eq(users.id, reservations.clientId))
@@ -48,6 +52,7 @@ export async function getReservationForStaff(id: string) {
       pickupAgency: true,
       returnAgency: true,
       extras: { with: { extra: true } },
+      promotion: true,
     },
   });
 }
@@ -120,3 +125,21 @@ export async function todayMovements() {
   return { departures, returns, pending };
 }
 
+
+/** L'administrateur, les responsables de l'agence de départ et ceux de la voiture valident (confirment ou refusent) une réservation. */
+export async function canValidateReservation(user: { id: string; role: string }, reservationId: string) {
+  if (user.role === "admin") return true;
+  const res = await db.execute<{ ok: boolean }>(sql`
+    SELECT EXISTS (
+      SELECT 1 FROM reservations r
+      JOIN manager_agencies ma ON ma.agency_id = r.pickup_agency_id AND ma.is_responsible
+      JOIN managers m ON m.id = ma.manager_id
+      WHERE r.id = ${reservationId} AND m.user_id = ${user.id}
+    ) OR EXISTS (
+      SELECT 1 FROM reservations r
+      JOIN car_responsibles cr ON cr.car_id = r.car_id
+      JOIN managers m ON m.id = cr.manager_id
+      WHERE r.id = ${reservationId} AND m.user_id = ${user.id}
+    ) AS ok`);
+  return Boolean(res.rows[0]?.ok);
+}

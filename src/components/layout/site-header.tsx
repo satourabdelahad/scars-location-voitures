@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
+import { publicSite } from "@/server/public-site";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -10,11 +11,14 @@ import { MobileNav } from "./mobile-nav";
 
 export async function SiteHeader() {
   const t = await getTranslations("Nav");
-  const session = await auth();
+  const [session, { multiAgency }] = await Promise.all([auth(), publicSite()]);
+  // « Agences » seulement s'il y en a plusieurs ; sinon tout est sur la page Contact.
   const links = [
     { href: "/cars", label: t("cars") },
-    { href: "/contact", label: t("agencies") },
+    { href: "/reservation", label: t("booking") },
+    ...(multiAgency ? [{ href: "/agencies", label: t("agencies") }] : []),
     { href: "/about", label: t("about") },
+    { href: "/contact", label: t("contact") },
   ];
 
   return (
@@ -23,7 +27,7 @@ export async function SiteHeader() {
         {t("skip")}
       </a>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 sm:gap-5 px-4 sm:px-6">
-        <Link href="/" aria-label="SCar" className="shrink-0">
+        <Link href="/" aria-label="Dizy Cars" className="shrink-0">
           <Logo />
         </Link>
         <nav className="hidden items-center gap-1 md:flex" aria-label={t("menu")}>

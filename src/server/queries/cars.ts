@@ -1,15 +1,20 @@
 import "server-only";
 import { and, asc, desc, eq, gte, inArray, lte, sql, type SQL } from "drizzle-orm";
 import { db } from "@/db";
-import { agencies, carImages, carTranslations, cars, reservations, type CarCategory } from "@/db/schema";
+import { agencies, carImages, carTranslations, cars, reservations, type CarCategory, fuelEnum, transmissionEnum } from "@/db/schema";
 
 export type PublicCarFilters = {
   city?: string;
+  /** Ville (nom), toutes agences confondues */
+  cityName?: string;
+  agencyId?: number;
+  /** Seulement les voitures libres aujourd'hui */
+  availableNow?: boolean;
   start?: string;
   end?: string;
   category?: CarCategory;
-  transmission?: "manual" | "automatic";
-  fuel?: "petrol" | "diesel" | "hybrid" | "electric";
+  transmission?: (typeof transmissionEnum.enumValues)[number];
+  fuel?: (typeof fuelEnum.enumValues)[number];
   seats?: number;
   maxPrice?: number;
   sort?: "price_asc" | "price_desc" | "newest";
@@ -22,6 +27,10 @@ const ACTIVE_RES = sql`('pending','confirmed','ongoing')`;
 export async function listPublicCars(f: PublicCarFilters) {
   const where: SQL[] = [eq(cars.status, "active")];
   if (f.city) where.push(eq(agencies.slug, f.city));
+  if (f.cityName) where.push(eq(agencies.city, f.cityName));
+  if (f.agencyId) where.push(eq(agencies.id, f.agencyId));
+  if (f.availableNow)
+    where.push(sql`NOT EXISTS (SELECT 1 FROM ${reservations} r WHERE r.car_id = ${cars.id} AND r.status IN ('confirmed','ongoing') AND r.start_date <= CURRENT_DATE AND r.end_date > CURRENT_DATE)`);
   if (f.category) where.push(eq(cars.category, f.category));
   if (f.transmission) where.push(eq(cars.transmission, f.transmission));
   if (f.fuel) where.push(eq(cars.fuel, f.fuel));
@@ -51,9 +60,18 @@ export async function listPublicCars(f: PublicCarFilters) {
       luggage: cars.luggage,
       colorHex: cars.colorHex,
       dailyPrice: cars.dailyPrice,
+      promoPercent: cars.promoPercent,
+      promoStartsOn: cars.promoStartsOn,
+      promoEndsOn: cars.promoEndsOn,
       airConditioning: cars.airConditioning,
       city: agencies.city,
       citySlug: agencies.slug,
+      agencyId: agencies.id,
+      agencyName: agencies.name,
+      isAirport: agencies.isAirport,
+      /** Louée en ce moment : date de retour prévue (sinon disponible aujourd'hui) */
+      busyUntil: sql<string | null>`(SELECT max(r.end_date)::text FROM ${reservations} r
+        WHERE r.car_id = ${cars.id} AND r.status IN ('confirmed','ongoing') AND r.start_date <= CURRENT_DATE AND r.end_date > CURRENT_DATE)`,
       cover: sql<string | null>`(SELECT ci.url FROM ${carImages} ci WHERE ci.car_id = ${cars.id} ORDER BY ci.position LIMIT 1)`,
     })
     .from(cars)

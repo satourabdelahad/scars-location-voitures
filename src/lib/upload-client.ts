@@ -17,9 +17,9 @@ export const ACCEPT_DOCS = "image/jpeg,image/png,image/webp,application/pdf";
 export const MAX_BYTES = 10 * 1024 * 1024;
 
 /** Envoi direct navigateur → Cloudinary avec une signature fournie par le serveur. */
-export async function uploadFile(file: File, purpose: "car" | "identity"): Promise<UploadedFile> {
+export async function uploadFile(file: File, purpose: "car" | "identity" | "avatar"): Promise<UploadedFile> {
   if (file.size > MAX_BYTES) throw new Error("too_big");
-  const allowed = purpose === "car" ? ACCEPT_IMAGES : ACCEPT_DOCS;
+  const allowed = purpose === "identity" ? ACCEPT_DOCS : ACCEPT_IMAGES;
   if (!allowed.split(",").includes(file.type)) throw new Error("bad_type");
 
   const ticket = await requestUpload(purpose);

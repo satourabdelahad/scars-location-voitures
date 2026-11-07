@@ -14,7 +14,7 @@ if (cloudinaryConfigured) {
   });
 }
 
-export type UploadPurpose = "car" | "identity";
+export type UploadPurpose = "car" | "identity" | "avatar";
 
 /**
  * Signature pour un envoi direct navigateur → Cloudinary (le fichier ne transite pas par Netlify).
@@ -25,8 +25,8 @@ export function signUpload(purpose: UploadPurpose) {
   const timestamp = Math.round(Date.now() / 1000);
   const params: { timestamp: number; folder: string; type?: string } =
     purpose === "identity"
-      ? { timestamp, folder: "scar/identity", type: "authenticated" }
-      : { timestamp, folder: "scar/cars" };
+      ? { timestamp, folder: "dizycars/identity", type: "authenticated" }
+      : { timestamp, folder: purpose === "avatar" ? "dizycars/avatars" : "dizycars/cars" };
   const signature = cloudinary.utils.api_sign_request({ ...params }, process.env.CLOUDINARY_API_SECRET!);
   return {
     ...params,

@@ -1,6 +1,7 @@
 import "server-only";
 import { asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
+import { currentAgencyScope } from "@/server/agency-scope";
 import { agencies, carImages, carTranslations, cars, users } from "@/db/schema";
 
 /** Parc complet pour l'équipe (y compris les voitures désactivées). */
@@ -20,20 +21,41 @@ export async function listFleet() {
       plateNumber: cars.plateNumber,
       mileage: cars.mileage,
       dailyPrice: cars.dailyPrice,
+      promoPercent: cars.promoPercent,
+      promoStartsOn: cars.promoStartsOn,
+      promoEndsOn: cars.promoEndsOn,
+      purchaseCity: cars.purchaseCity,
+      purchaseDate: cars.purchaseDate,
+      purchasePrice: cars.purchasePrice,
       status: cars.status,
       deactivationReason: cars.deactivationReason,
       city: agencies.city,
       agencyName: agencies.name,
+      agencyId: cars.agencyId,
       cover: sql<string | null>`(SELECT ci.url FROM ${carImages} ci WHERE ci.car_id = ${cars.id} ORDER BY ci.position LIMIT 1)`,
       reservationsCount: sql<number>`(SELECT count(*)::int FROM reservations r WHERE r.car_id = ${cars.id} AND r.status IN ('confirmed','ongoing','completed'))`,
-      onRoad: sql<boolean>`EXISTS (SELECT 1 FROM reservations r WHERE r.car_id = ${cars.id} AND r.status = 'ongoing')`,
+      onRoad: sql<boolean>`EXISTS (SELECT 1 FROM reservations r WHERE r.car_id = ${cars.id}
+        AND (r.status = 'ongoing' OR (r.status = 'confirmed' AND CURRENT_DATE >= r.start_date AND CURRENT_DATE < r.end_date)))`,
       nextBooking: sql<string | null>`(SELECT min(r.start_date)::text FROM reservations r WHERE r.car_id = ${cars.id} AND r.status IN ('pending','confirmed') AND r.start_date >= CURRENT_DATE)`,
+      /** Gestionnaires associés (vide = tous les gestionnaires) */
+      managerNames: sql<string[]>`COALESCE((SELECT array_agg(m.first_name || ' ' || m.last_name ORDER BY m.last_name) FROM car_managers cm JOIN managers m ON m.id = cm.manager_id WHERE cm.car_id = ${cars.id}), '{}')`,
+      managerIds: sql<string[]>`COALESCE((SELECT array_agg(cm.manager_id::text) FROM car_managers cm WHERE cm.car_id = ${cars.id}), '{}')`,
+      /** Agences supplémentaires (en plus de l'agence principale) */
+      extraAgencyIds: sql<number[]>`COALESCE((SELECT array_agg(ca.agency_id ORDER BY ca.agency_id) FROM car_agencies ca WHERE ca.car_id = ${cars.id}), '{}')`,
+      extraAgencies: sql<string[]>`COALESCE((SELECT array_agg(a2.city || ', ' || a2.name ORDER BY a2.city, a2.name) FROM car_agencies ca JOIN agencies a2 ON a2.id = ca.agency_id WHERE ca.car_id = ${cars.id}), '{}')`,
+      /** Responsables de la voiture : ils valident ses réservations */
+      responsibleNames: sql<string[]>`COALESCE((SELECT array_agg(m.first_name || ' ' || m.last_name ORDER BY m.last_name) FROM car_responsibles cr JOIN managers m ON m.id = cr.manager_id WHERE cr.car_id = ${cars.id}), '{}')`,
+      responsibleIds: sql<string[]>`COALESCE((SELECT array_agg(cr.manager_id::text) FROM car_responsibles cr WHERE cr.car_id = ${cars.id}), '{}')`,
+      createdBy: cars.createdBy,
+      createdAt: cars.createdAt,
     })
     .from(cars)
     .innerJoin(agencies, eq(agencies.id, cars.agencyId))
     .orderBy(asc(cars.status), asc(cars.brand), asc(cars.model));
 }
 export type FleetRow = Awaited<ReturnType<typeof listFleet>>[number];
+
+export { carState, type CarState } from "@/lib/car-state";
 
 export async function getFleetCar(id: string) {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
@@ -43,6 +65,7 @@ export async function getFleetCar(id: string) {
       agency: true,
       images: { orderBy: [asc(carImages.position)] },
       translations: { orderBy: [asc(carTranslations.locale)] },
+      managers: { with: { manager: { columns: { id: true, firstName: true, lastName: true } } } },
     },
   });
   if (!car) return null;
@@ -53,6 +76,73 @@ export async function getFleetCar(id: string) {
 }
 export type FleetCar = NonNullable<Awaited<ReturnType<typeof getFleetCar>>>;
 
+/** Agences actives (formulaires : voiture, rendez-vous). */
+/** Agences actives proposées dans le parc ; un gestionnaire rattaché à des agences ne voit que les siennes. */
 export async function allAgencies() {
-  return db.select({ id: agencies.id, city: agencies.city, name: agencies.name }).from(agencies).orderBy(asc(agencies.city), desc(agencies.isAirport));
+  const [rows, scope] = await Promise.all([
+    db
+      .select({ id: agencies.id, city: agencies.city, name: agencies.name })
+      .from(agencies)
+      .where(eq(agencies.isActive, true))
+      .orderBy(asc(agencies.city), desc(agencies.isAirport)),
+    currentAgencyScope(),
+  ]);
+  return scope ? rows.filter((a) => scope.includes(a.id)) : rows;
 }
+
+/** Gestionnaires actifs, pour l'association aux voitures. */
+export async function managerOptions() {
+  const rows = await db.query.managers.findMany({
+    where: (m, { eq: q }) => q(m.status, "active"),
+    columns: { id: true, firstName: true, lastName: true, city: true },
+    orderBy: (m, { asc: a }) => [a(m.lastName), a(m.firstName)],
+  });
+  return rows.map((m) => ({ id: m.id, name: `${m.firstName} ${m.lastName}`, city: m.city }));
+}
+
+/** Résumé en haut de la fiche voiture : dernière location, gain cumulé, statistiques. */
+export async function carSummary(carId: string) {
+  const res = await db.execute<{
+    rentals: number;
+    days: number;
+    revenue: string;
+    last_start: string | null;
+    last_at: string | null;
+    last_client: string | null;
+    last_reference: string | null;
+    next_start: string | null;
+    days_365: number;
+  }>(sql`
+    SELECT
+      count(*)::int AS rentals,
+      coalesce(sum(r.days), 0)::int AS days,
+      coalesce(sum(r.total_price), 0) AS revenue,
+      (SELECT x.start_date::text FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('confirmed','ongoing','completed') ORDER BY x.start_date DESC LIMIT 1) AS last_start,
+      (SELECT coalesce(x.picked_up_at, x.confirmed_at) FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('confirmed','ongoing','completed') ORDER BY x.start_date DESC LIMIT 1) AS last_at,
+      (SELECT x.driver_first_name || ' ' || x.driver_last_name FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('confirmed','ongoing','completed') ORDER BY x.start_date DESC LIMIT 1) AS last_client,
+      (SELECT x.reference FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('confirmed','ongoing','completed') ORDER BY x.start_date DESC LIMIT 1) AS last_reference,
+      (SELECT min(x.start_date)::text FROM reservations x WHERE x.car_id = ${carId} AND x.status IN ('pending','confirmed') AND x.start_date >= CURRENT_DATE) AS next_start,
+      coalesce(sum(GREATEST(0, LEAST(r.end_date, CURRENT_DATE) - GREATEST(r.start_date, CURRENT_DATE - 365))), 0)::int AS days_365
+    FROM reservations r
+    WHERE r.car_id = ${carId} AND r.status IN ('confirmed', 'ongoing', 'completed')
+  `);
+  const r = res.rows[0];
+  const rentals = r?.rentals ?? 0;
+  const revenue = Number(r?.revenue ?? 0);
+  return {
+    rentals,
+    days: r?.days ?? 0,
+    revenue,
+    averageRental: rentals ? revenue / rentals : 0,
+    /** Taux d'occupation sur les 365 derniers jours */
+    occupancy: Math.min(100, Math.round(((r?.days_365 ?? 0) / 365) * 100)),
+    nextStart: r?.next_start ?? null,
+    last: r?.last_start
+      ? { start: r.last_start, at: r.last_at ? new Date(r.last_at).toISOString() : null, client: r.last_client ?? "—", reference: r.last_reference }
+      : null,
+  };
+}
+export type CarSummary = Awaited<ReturnType<typeof carSummary>>;
+
+/** Une voiture est dans le périmètre si son agence principale ou une agence supplémentaire y est. */
+export const inScope = (r: { agencyId: number; extraAgencyIds: number[] }, scope: number[] | null) => !scope || scope.includes(r.agencyId) || r.extraAgencyIds.some((id) => scope.includes(id));

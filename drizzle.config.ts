@@ -1,8 +1,5 @@
-import { config } from "dotenv";
+import "./scripts/load-env";
 import { defineConfig } from "drizzle-kit";
-
-// Next.js utilise .env.local : on le charge en priorité, puis .env en repli.
-config({ path: [".env.local", ".env"], quiet: true });
 
 export default defineConfig({
   schema: "./src/db/schema.ts",

@@ -1,12 +1,14 @@
 "use client";
 
 import { DropdownMenu } from "radix-ui";
-import { CalendarCheck, LayoutDashboard, LogOut } from "lucide-react";
+import { CalendarCheck, CarFront, Handshake, History, LayoutDashboard, LogOut, Trophy, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useTransition } from "react";
 import { Link } from "@/i18n/navigation";
 import { signOutAction } from "@/server/actions/auth";
 import type { Role } from "@/db/schema";
 import { cn } from "@/lib/utils";
+import { startProgress } from "@/lib/progress";
 
 export function UserMenu({ user, tone = "light" }: { user: { name?: string | null; email?: string | null; image?: string | null; role: Role }; tone?: "light" | "dark" }) {
   const t = useTranslations("Nav");
@@ -14,12 +16,28 @@ export function UserMenu({ user, tone = "light" }: { user: { name?: string | nul
   const home = user.role === "admin" ? "/admin" : user.role === "manager" ? "/manager" : "/account";
   const roleLabel = user.role === "admin" ? tb("roleAdmin") : user.role === "manager" ? tb("roleManager") : tb("roleClient");
   const display = user.name || user.email || "—";
+  const [leaving, startLeaving] = useTransition();
+  const item = "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-ink-2 outline-none data-[highlighted]:bg-chalk data-[highlighted]:text-ink";
+  const staff = user.role !== "client";
+  // Menu en haut à droite : chaque entrée ouvre l'onglet correspondant de sa propre fiche.
+  const profile = user.role === "client" ? "/account/profile" : `${home}/profile`;
+  const links = [
+    { href: profile, label: t("profile"), Icon: UserRound },
+    ...(staff
+      ? [
+          { href: `${profile}?tab=deals`, label: t("myDeals"), Icon: Handshake },
+          { href: `${profile}?tab=cars`, label: t("myCars"), Icon: CarFront },
+          { href: `${profile}?tab=rentals`, label: t("myAchievements"), Icon: Trophy },
+          { href: `${profile}?tab=history`, label: t("history"), Icon: History },
+        ]
+      : [{ href: "/account", label: t("myReservations"), Icon: CalendarCheck }]),
+  ];
 
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         className={cn(
-          "inline-flex h-10 items-center gap-2 rounded-full ps-1 pe-3 text-sm font-semibold transition-colors",
+          "inline-flex h-11 items-center gap-2 rounded-full ps-1 pe-3 text-sm font-semibold transition-colors",
           tone === "dark" ? "text-white hover:bg-white/10" : "text-ink hover:bg-mist",
         )}
       >
@@ -31,7 +49,10 @@ export function UserMenu({ user, tone = "light" }: { user: { name?: string | nul
             {display.charAt(0).toUpperCase()}
           </span>
         )}
-        <span className="hidden max-w-32 truncate sm:inline">{display}</span>
+        <span className="hidden min-w-0 text-start leading-tight sm:block">
+          <span className="block max-w-40 truncate">{display}</span>
+          <span className={cn("block text-[11px] font-medium", tone === "dark" ? "text-white/70" : "text-ink-3")}>{roleLabel}</span>
+        </span>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
@@ -44,19 +65,32 @@ export function UserMenu({ user, tone = "light" }: { user: { name?: string | nul
             <p className="text-xs text-ink-3">{roleLabel}</p>
           </div>
           <DropdownMenu.Separator className="my-1 h-px bg-mist" />
+          {links.map(({ href, label, Icon }) => (
+            <DropdownMenu.Item key={href} asChild>
+              <Link href={href} className={item}>
+                <Icon className="size-4" />
+                {label}
+              </Link>
+            </DropdownMenu.Item>
+          ))}
+          <DropdownMenu.Separator className="my-1 h-px bg-mist" />
           <DropdownMenu.Item asChild>
             <Link href={home} className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-ink-2 outline-none data-[highlighted]:bg-chalk data-[highlighted]:text-ink">
               {user.role === "client" ? <CalendarCheck className="size-4" /> : <LayoutDashboard className="size-4" />}
               {user.role === "admin" ? t("adminSpace") : user.role === "manager" ? t("managerSpace") : t("clientSpace")}
             </Link>
           </DropdownMenu.Item>
-          <DropdownMenu.Item asChild>
-            <form action={signOutAction}>
-              <button type="submit" className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-danger outline-none hover:bg-danger-soft">
-                <LogOut className="size-4" />
-                {t("logout")}
-              </button>
-            </form>
+          <DropdownMenu.Item
+            disabled={leaving}
+            onSelect={() => {
+              // Barre de progression, déconnexion, puis retour à l'accueil public.
+              startProgress();
+              startLeaving(() => signOutAction());
+            }}
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-danger outline-none data-[highlighted]:bg-danger-soft"
+          >
+            <LogOut className="size-4" />
+            {t("logout")}
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

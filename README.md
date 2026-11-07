@@ -1,4 +1,4 @@
-# SCar — Location de voitures
+# Dizy Cars — Location de voitures
 
 Site de location de voitures au Maroc : pages publiques, espace réservation client, espace gestionnaire et espace administrateur, en 9 langues (Darija, arabe, français, anglais, espagnol, allemand, japonais, chinois, coréen).
 
@@ -31,8 +31,9 @@ Même en cas de bug applicatif ou d'accès direct à la base :
 npm install
 cp .env.example .env.local      # puis remplir DATABASE_URL au minimum
 cp .env.local .env              # drizzle-kit et le script de seed lisent .env
+rm -rf .env.example
 npm run db:migrate              # crée les tables, triggers et contraintes
-npm run db:seed -- --demo       # agences, options, admin + jeu de démonstration
+npm run db:seed -- --demo       # agences, options, codes promo, admin + jeu de démonstration
 npm run dev
 ```
 
@@ -40,9 +41,9 @@ Comptes de démonstration (`--demo`) :
 
 | Rôle | Email | Mot de passe |
 | --- | --- | --- |
-| Administrateur | `SEED_ADMIN_EMAIL` (admin@scar.ma) | `SEED_ADMIN_PASSWORD` |
-| Gestionnaire | youssef@scar.ma | Gestion2026! |
-| Client | client@scar.ma | Client2026! |
+| Administrateur | `SEED_ADMIN_EMAIL` | `SEED_ADMIN_PASSWORD` |
+| Gestionnaire | youssef@dizy-cars.com | Gestion2026! |
+| Client | client@dizy-cars.com | Client2026! |
 
 Sans Cloudinary en développement, les fichiers sont gardés dans `.uploads/` (ignoré par Git). En production, Cloudinary est obligatoire.
 
@@ -56,13 +57,14 @@ Scripts utiles : `npm run typecheck`, `npm run lint`, `npm run i18n:check` (vér
 1. Créez un projet sur neon.tech (région Europe, proche du Maroc).
 2. Copiez la chaîne **pooled** (hôte contenant `-pooler`) dans `DATABASE_URL` et la chaîne **directe** dans `DATABASE_URL_UNPOOLED`.
 3. Depuis votre poste : `npm run db:migrate` puis `npm run db:seed` (sans `--demo` en production).
+   Le seed lit `.env` **et** `.env.local`. Relancé, il remet le compte `SEED_ADMIN_EMAIL` actif avec le mot de passe `SEED_ADMIN_PASSWORD` : c'est la marche à suivre si la connexion administrateur échoue.
 
 ### 2. Cloudinary
 Copiez `Cloud name`, `API key`, `API secret` dans `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` et `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`.
-Les pièces d'identité sont envoyées en mode `authenticated` (dossier `scar/identity`) : elles ne sont jamais accessibles publiquement, l'administrateur les ouvre via un lien signé valable 10 minutes.
+Les pièces d'identité sont envoyées en mode `authenticated` (dossier `dizycars/identity`) : elles ne sont jamais accessibles publiquement, l'administrateur les ouvre via un lien signé valable 10 minutes.
 
 ### 3. Resend
-Vérifiez votre domaine sur resend.com, puis renseignez `RESEND_API_KEY` et `EMAIL_FROM` (ex. `SCar <reservations@votre-domaine.ma>`).
+Vérifiez votre domaine sur resend.com, puis renseignez `RESEND_API_KEY` et `EMAIL_FROM` (ex. `Dizy Cars <reservations@votre-domaine.ma>`).
 Emails envoyés dans la langue du destinataire : invitation des gestionnaires, réinitialisation de mot de passe, demande reçue, confirmation, refus, annulation.
 
 ### 4. Connexions sociales
@@ -88,11 +90,30 @@ Les comptes de l'équipe (administrateur, gestionnaires) se connectent uniquemen
 
 ---
 
+## Sécurité des connexions
+
+- **Règles réglables** dans Administration → Sécurité : essais avant blocage d'un compte (5 par défaut), durée du blocage (15 min), essais par adresse IP (20), durée de session de l'équipe (12 h) et des clients (14 jours, 90 au maximum).
+- **Comptes bloqués** : colonne `users.login_locked_until` (vide = non bloqué). L'administrateur les débloque depuis Sécurité ou depuis la fiche du gestionnaire.
+- **Double authentification de l'administrateur** : Administration → Sécurité. Code à 6 chiffres (Google Authenticator, Microsoft Authenticator…) et 8 codes de secours à usage unique.
+- **Téléphone et codes de secours perdus** : `npm run db:seed -- --reset-2fa` désactive la double authentification de `SEED_ADMIN_EMAIL` et lève son blocage.
+- Les secrets de double authentification sont chiffrés avec une clé dérivée d'`AUTH_SECRET`. **Changer `AUTH_SECRET` les rend illisibles** : lancer alors `--reset-2fa` puis réactiver la protection.
+
+## Emails automatiques
+
+Modifiables dans **Administration** (éditeur HTML, variables `{{prenom}}`, `{{marque}}`…, aperçu, email de test) :
+
+| Modèle | Quand | Destinataires |
+|---|---|---|
+| Invitation gestionnaire | création d'un gestionnaire, renvoi d'invitation | le gestionnaire |
+| Ajout d'une voiture | ajout au parc | administrateur(s) et tous les gestionnaires actifs |
+| Réservation d'une voiture | nouvelle réservation | client, administrateur(s), gestionnaires associés à la voiture (tous si aucun) |
+
+Sans `RESEND_API_KEY`, rien n'est envoyé : le terminal affiche chaque destinataire.
+
 ## Structure
 
 ```
 drizzle/                    migrations SQL (dont 0001_integrity_rules.sql : triggers et contraintes)
-scripts/seed.ts             données initiales et démo
 scripts/check-i18n.mjs      contrôle des traductions
 src/
   app/[locale]/(site)/      pages publiques, connexion, réservation, espace client

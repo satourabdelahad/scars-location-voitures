@@ -10,7 +10,7 @@ export function hashToken(token: string) {
 /** Crée un jeton à usage unique ; seul son hash est conservé en base. Jamais exposé comme action serveur. */
 export async function issuePasswordToken(userId: string, purpose: "invite" | "reset") {
   const token = randomBytes(32).toString("base64url");
-  const hours = purpose === "invite" ? 72 : 1;
+  const hours = purpose === "invite" ? 24 * 7 : 1;
   await db.insert(passwordTokens).values({
     userId,
     purpose,
