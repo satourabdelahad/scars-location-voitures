@@ -118,6 +118,8 @@ export const users = pgTable(
     totpRecoveryCodes: jsonb("totp_recovery_codes").$type<string[]>(),
     /** Connexion bloquée jusqu'à cette date après trop d'échecs (null = non bloqué). L'administrateur peut le lever. */
     loginLockedUntil: timestamp("login_locked_until", { withTimezone: true, mode: "date" }),
+    /** Dernière ouverture du menu Notifications : les événements plus récents sont « non lus » */
+    notificationsSeenAt: timestamp("notifications_seen_at", { withTimezone: true, mode: "date" }),
     ...timestamps,
   },
   (t) => [index("users_role_idx").on(t.role)],
@@ -468,6 +470,13 @@ export const reservations = pgTable(
     returnedAt: timestamp("returned_at", { withTimezone: true, mode: "date" }),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true, mode: "date" }),
     cancelReason: text("cancel_reason"),
+    /** Permis vérifié par l'équipe avant la remise des clés */
+    licenseCheckedAt: timestamp("license_checked_at", { withTimezone: true, mode: "date" }),
+    licenseCheckedBy: uuid("license_checked_by").references(() => users.id),
+    driverLicenseExpiresOn: date("driver_license_expires_on", { mode: "string" }),
+    /** Prolongation : date de fin d'origine (la première fois qu'on prolonge) */
+    originalEndDate: date("original_end_date", { mode: "string" }),
+    extendedAt: timestamp("extended_at", { withTimezone: true, mode: "date" }),
     ...timestamps,
   },
   (t) => [
@@ -815,8 +824,13 @@ export const clientProfiles = pgTable("client_profiles", {
   city: varchar("city", { length: 120 }),
   birthDate: date("birth_date", { mode: "string" }),
   licenseNumber: varchar("license_number", { length: 64 }),
+  licenseExpiresOn: date("license_expires_on", { mode: "string" }),
   notes: text("notes"),
   deactivationReason: text("deactivation_reason"),
+  /** Liste noire : plus aucune réservation possible tant que le client y figure */
+  blacklistedAt: timestamp("blacklisted_at", { withTimezone: true, mode: "date" }),
+  blacklistedBy: uuid("blacklisted_by").references(() => users.id),
+  blacklistReason: text("blacklist_reason"),
   createdBy: uuid("created_by").references(() => users.id),
   updatedBy: uuid("updated_by").references(() => users.id),
   ...timestamps,
@@ -881,6 +895,113 @@ export const dealEventsRelations = relations(dealEvents, ({ one }) => ({
   deal: one(deals, { fields: [dealEvents.dealId], references: [deals.id] }),
   actor: one(users, { fields: [dealEvents.actorId], references: [users.id] }),
 }));
+
+/* ─────────────────────── Dossier voiture ─────────────────────── */
+
+export const carRecordKindEnum = pgEnum("car_record_kind", ["insurance", "vignette", "oil_change", "technical_inspection", "expense"]);
+export const expenseCategoryEnum = pgEnum("expense_category", ["maintenance", "repair", "tyres", "cleaning", "fuel", "parts", "fine", "other"]);
+
+/**
+ * Historique du dossier d'une voiture : assurance, vignette, vidange, visite technique et dépenses.
+ * validUntil = échéance (fin d'assurance, prochaine vidange…) ; amount = coût, repris dans la rentabilité.
+ */
+export const carRecords = pgTable(
+  "car_records",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    carId: uuid("car_id")
+      .notNull()
+      .references(() => cars.id, { onDelete: "restrict" }),
+    kind: carRecordKindEnum("kind").notNull(),
+    category: expenseCategoryEnum("category"),
+    performedOn: date("performed_on", { mode: "string" }).notNull(),
+    validUntil: date("valid_until", { mode: "string" }),
+    mileage: integer("mileage"),
+    nextMileage: integer("next_mileage"),
+    amount: numeric("amount", { precision: 10, scale: 2, mode: "number" }),
+    provider: varchar("provider", { length: 160 }),
+    reference: varchar("reference", { length: 120 }),
+    notes: text("notes"),
+    /** Annulé (saisie erronée) : reste dans l'historique, ignoré dans les calculs */
+    voidedAt: timestamp("voided_at", { withTimezone: true, mode: "date" }),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    ...timestamps,
+  },
+  (t) => [
+    index("car_records_car_idx").on(t.carId, t.kind, t.performedOn),
+    check("car_records_amount_chk", sql`${t.amount} IS NULL OR ${t.amount} >= 0`),
+    check("car_records_dates_chk", sql`${t.validUntil} IS NULL OR ${t.validUntil} >= ${t.performedOn}`),
+  ],
+);
+
+/** Documents d'une ligne du dossier (attestation d'assurance, carte grise, facture…), stockés en privé. */
+export const carRecordFiles = pgTable(
+  "car_record_files",
+  {
+    id: serial("id").primaryKey(),
+    recordId: uuid("record_id")
+      .notNull()
+      .references(() => carRecords.id, { onDelete: "restrict" }),
+    name: varchar("name", { length: 200 }).notNull(),
+    publicId: text("public_id").notNull(),
+    resourceType: varchar("resource_type", { length: 16 }).notNull().default("image"),
+    format: varchar("format", { length: 16 }),
+    bytes: integer("bytes"),
+    createdBy: uuid("created_by").references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [index("car_record_files_record_idx").on(t.recordId)],
+);
+
+export const inspectionKindEnum = pgEnum("inspection_kind", ["departure", "return"]);
+
+/** État des lieux au départ ou au retour : kilométrage, carburant, dégâts, photos, signature du client. */
+export const carInspections = pgTable(
+  "car_inspections",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    carId: uuid("car_id")
+      .notNull()
+      .references(() => cars.id, { onDelete: "restrict" }),
+    reservationId: uuid("reservation_id").references(() => reservations.id, { onDelete: "restrict" }),
+    kind: inspectionKindEnum("kind").notNull(),
+    mileage: integer("mileage").notNull(),
+    /** Carburant en huitièmes : 0 = vide, 8 = plein */
+    fuelEighths: smallint("fuel_eighths").notNull(),
+    damages: text("damages"),
+    notes: text("notes"),
+    signedByName: varchar("signed_by_name", { length: 160 }),
+    signaturePublicId: text("signature_public_id"),
+    createdBy: uuid("created_by").references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("car_inspections_car_idx").on(t.carId, t.createdAt),
+    index("car_inspections_reservation_idx").on(t.reservationId),
+    check("car_inspections_fuel_chk", sql`${t.fuelEighths} BETWEEN 0 AND 8`),
+    check("car_inspections_mileage_chk", sql`${t.mileage} >= 0`),
+  ],
+);
+
+export const carInspectionPhotos = pgTable(
+  "car_inspection_photos",
+  {
+    id: serial("id").primaryKey(),
+    inspectionId: uuid("inspection_id")
+      .notNull()
+      .references(() => carInspections.id, { onDelete: "restrict" }),
+    publicId: text("public_id").notNull(),
+    resourceType: varchar("resource_type", { length: 16 }).notNull().default("image"),
+    format: varchar("format", { length: 16 }),
+    caption: varchar("caption", { length: 200 }),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [index("car_inspection_photos_idx").on(t.inspectionId)],
+);
+
+export type CarRecordKind = (typeof carRecordKindEnum.enumValues)[number];
+export type ExpenseCategory = (typeof expenseCategoryEnum.enumValues)[number];
 
 export const reservationsRelations = relations(reservations, ({ one, many }) => ({
   promotion: one(promotions, { fields: [reservations.promotionId], references: [promotions.id] }),

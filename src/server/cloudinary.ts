@@ -14,7 +14,9 @@ if (cloudinaryConfigured) {
   });
 }
 
-export type UploadPurpose = "car" | "identity" | "avatar";
+/** document : pièces des voitures (assurance, carte grise, factures), photos d'état des lieux et signatures : privés. */
+export type UploadPurpose = "car" | "identity" | "avatar" | "document";
+const PRIVATE: UploadPurpose[] = ["identity", "document"];
 
 /**
  * Signature pour un envoi direct navigateur → Cloudinary (le fichier ne transite pas par Netlify).
@@ -24,8 +26,8 @@ export function signUpload(purpose: UploadPurpose) {
   if (!cloudinaryConfigured) throw new Error("cloudinary_not_configured");
   const timestamp = Math.round(Date.now() / 1000);
   const params: { timestamp: number; folder: string; type?: string } =
-    purpose === "identity"
-      ? { timestamp, folder: "dizycars/identity", type: "authenticated" }
+    PRIVATE.includes(purpose)
+      ? { timestamp, folder: `dizycars/${purpose}`, type: "authenticated" }
       : { timestamp, folder: purpose === "avatar" ? "dizycars/avatars" : "dizycars/cars" };
   const signature = cloudinary.utils.api_sign_request({ ...params }, process.env.CLOUDINARY_API_SECRET!);
   return {
@@ -50,7 +52,7 @@ export function privateDocumentUrl(publicId: string, resourceType = "image", for
 export async function assertUploaded(publicId: string, purpose: UploadPurpose, resourceType = "image") {
   if (!cloudinaryConfigured) throw new Error("cloudinary_not_configured");
   const res = await cloudinary.api.resource(publicId, {
-    type: purpose === "identity" ? "authenticated" : "upload",
+    type: PRIVATE.includes(purpose) ? "authenticated" : "upload",
     resource_type: resourceType,
   });
   return res as { public_id: string; secure_url: string; width?: number; height?: number; format: string; bytes: number };

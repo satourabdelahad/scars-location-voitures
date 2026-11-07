@@ -33,9 +33,11 @@ export async function listClients() {
     has_account: boolean;
     added_by: string | null;
     updated_at: string | null;
+    blacklisted_at: string | null;
+    blacklist_reason: string | null;
   }>(sql`
     SELECT u.id, u.name, p.first_name, p.last_name, p.civility, u.email, u.phone, p.whatsapp, p.city, u.status,
-           u.created_at, u.last_login_at, u.preferred_locale, p.updated_at,
+           u.created_at, u.last_login_at, u.preferred_locale, p.updated_at, p.blacklisted_at, p.blacklist_reason,
            (SELECT COALESCE(NULLIF(trim(sm.first_name || ' ' || sm.last_name), ''), su.name, su.email)
               FROM users su LEFT JOIN managers sm ON sm.user_id = su.id WHERE su.id = p.created_by) AS added_by,
            (u.password_hash IS NOT NULL OR EXISTS (SELECT 1 FROM accounts a WHERE a.user_id = u.id)) AS has_account,
@@ -73,6 +75,8 @@ export async function listClients() {
       hasAccount: r.has_account,
       addedBy: r.added_by,
       updatedAt: r.updated_at ? new Date(r.updated_at).toISOString() : null,
+      blacklisted: Boolean(r.blacklisted_at),
+      blacklistReason: r.blacklist_reason,
       segment,
     };
   });
@@ -107,6 +111,10 @@ export async function getClient(id: string) {
     licenseNumber: p?.licenseNumber ?? null,
     notes: p?.notes ?? null,
     deactivationReason: p?.deactivationReason ?? null,
+    licenseExpiresOn: p?.licenseExpiresOn ?? null,
+    blacklistedAt: p?.blacklistedAt ?? null,
+    blacklistReason: p?.blacklistReason ?? null,
+    blacklistedBy: await staffName(p?.blacklistedBy),
   };
 }
 /** Nom complet et rôle d'un membre de l'équipe (auteur d'une création ou d'une modification). */

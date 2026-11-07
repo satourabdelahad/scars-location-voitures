@@ -101,6 +101,8 @@ export function CarForm({
   stats,
   history,
   promotion,
+  extraTabs = [],
+  initialTab,
 }: {
   base: string;
   carId?: string;
@@ -120,6 +122,10 @@ export function CarForm({
   history?: ReactNode;
   /** Onglet « Promotion » (voiture existante) : enregistré à part */
   promotion?: ReactNode;
+  /** Onglets du dossier (assurance, vignette, vidange, visite, états des lieux, rentabilité, planning) */
+  extraTabs?: { id: string; label: string; icon: ReactNode; content: ReactNode }[];
+  /** Onglet ouvert à l'arrivée (?tab=…) */
+  initialTab?: string;
 }) {
   const t = useTranslations("Fleet");
   const te = useTranslations("Errors");
@@ -133,7 +139,7 @@ export function CarForm({
   const [responsibleIds, setResponsibleIds] = useState<string[]>(initialResponsibleIds);
   const [extraAgencyIds, setExtraAgencyIds] = useState<number[]>(initialExtraAgencyIds);
   const [lang, setLang] = useState<Locale>("fr");
-  const [tab, setTab] = useState<CarTab>(stats ? "stats" : "infos");
+  const [tab, setTab] = useState<CarTab | string>(initialTab ?? (stats ? "stats" : "infos"));
   const tabs: { id: CarTab; label: string; Icon: typeof Info }[] = [
     ...(stats ? [{ id: "stats" as const, label: t("tabStats"), Icon: BarChart3 }] : []),
     { id: "infos", label: t("tabInfos"), Icon: Info },
@@ -216,7 +222,8 @@ export function CarForm({
     });
   }
 
-  const formTab = tab !== "stats" && tab !== "history" && tab !== "promotion";
+  const extra = extraTabs.find((x) => x.id === tab);
+  const formTab = tab !== "stats" && tab !== "history" && tab !== "promotion" && !extra;
   return (
     <>
     <nav aria-label={t("title")} className="scroll-thin mb-6 flex gap-1 overflow-x-auto border-b border-mist">
@@ -239,10 +246,27 @@ export function CarForm({
           </button>
         );
       })}
+      {extraTabs.length > 0 && <span aria-hidden className="mx-1 my-3 w-px shrink-0 bg-mist-2" />}
+      {extraTabs.map(({ id, label, icon }) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => setTab(id)}
+          aria-current={tab === id ? "page" : undefined}
+          className={cn(
+            "-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition-colors [&_svg]:size-4",
+            tab === id ? "border-majorelle text-majorelle" : "border-transparent text-ink-3 hover:text-ink",
+          )}
+        >
+          {icon}
+          {label}
+        </button>
+      ))}
     </nav>
     {tab === "stats" && stats}
     {tab === "history" && history}
     {tab === "promotion" && promotion}
+    {extra?.content}
     <form onSubmit={submit} noValidate className={cn("rounded-2xl border border-mist bg-paper p-6 sm:p-8", !formTab && "hidden")}>
       <div className={tab === "infos" ? undefined : "hidden"}>
       <Section title={t("general")}>

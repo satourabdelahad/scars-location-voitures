@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/db";
-import { carResponsibles, managerAgencies, managers, tablePreferences } from "@/db/schema";
+import { carResponsibles, clientProfiles, managerAgencies, managers, tablePreferences } from "@/db/schema";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { CarArt } from "@/components/car-art";
@@ -29,7 +29,7 @@ export async function ReservationsListPage({ base, userId }: { base: Base; userI
   );
 }
 
-export async function ReservationDetailPage({ base, id, locale }: { base: Base; id: string; locale: string }) {
+export async function ReservationDetailPage({ base, id, locale, openPickup = false }: { base: Base; id: string; locale: string; openPickup?: boolean }) {
   const r = await getReservationForStaff(id);
   if (!r) notFound();
   const session = await auth();
@@ -56,11 +56,36 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
     getTranslations("Errors"),
     getTranslations("Fleet"),
   ]);
+  // Client : liste noire, permis connu, numéro WhatsApp pour les messages pré-remplis (dans la langue de la réservation).
+  const profile = await db.query.clientProfiles.findFirst({ where: eq(clientProfiles.userId, r.clientId) });
+  const tw = await getTranslations({ locale: r.locale, namespace: "WhatsApp" });
+  const phone = waNumber(profile?.whatsapp || r.driverPhone || r.client.phone || "");
+  const vars = {
+    name: r.driverFirstName,
+    reference: r.reference,
+    car: `${r.car.brand} ${r.car.model}`,
+    start: formatDate(r.startDate, r.locale),
+    end: formatDate(r.endDate, r.locale),
+    agency: `${r.pickupAgency.name}, ${r.pickupAgency.city}`,
+    returnAgency: `${r.returnAgency.name}, ${r.returnAgency.city}`,
+    total: formatMoney(r.totalPrice, r.locale),
+  };
+  const wa = (text: string) => `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+  const more = {
+    base,
+    carId: r.car.id,
+    endDate: r.endDate,
+    blacklisted: profile?.blacklistedAt ? (profile.blacklistReason ?? "") || "—" : null,
+    license: { number: r.driverLicenseNumber ?? profile?.licenseNumber ?? "", expiresOn: r.driverLicenseExpiresOn ?? profile?.licenseExpiresOn ?? "" },
+    whatsapp: phone ? { confirm: wa(tw("confirm", vars)), reminder: wa(tw("reminder", vars)), return: wa(tw("return", vars)) } : null,
+  };
   const timeline = [
     { label: t("createdAt"), at: r.createdAt },
     { label: ts("confirmed"), at: r.confirmedAt },
     { label: t("markPickedUp"), at: r.pickedUpAt },
+    { label: t("licenseVerified"), at: r.licenseCheckedAt },
     { label: t("markReturned"), at: r.returnedAt },
+    { label: t("extendedOn", { from: r.originalEndDate ? formatDate(r.originalEndDate, locale) : "" }), at: r.extendedAt },
     { label: r.status === "rejected" ? ts("rejected") : ts("cancelled"), at: r.cancelledAt },
   ].filter((x) => x.at);
 
@@ -94,7 +119,16 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
               items={[
                 { label: tb("driverFirstName"), value: `${r.driverFirstName} ${r.driverLastName}` },
                 { label: tb("driverPhone"), value: <a href={`tel:${r.driverPhone}`} dir="ltr" className="hover:text-majorelle">{r.driverPhone}</a> },
-                { label: t("license"), value: <span dir="ltr">{r.driverLicenseNumber}</span> },
+                {
+                  label: t("license"),
+                  value: (
+                    <span className="inline-flex flex-wrap items-center gap-2">
+                      <span dir="ltr">{r.driverLicenseNumber ?? "—"}</span>
+                      {r.driverLicenseExpiresOn && <span className="text-xs text-ink-3">{t("validUntil", { date: formatDate(r.driverLicenseExpiresOn, locale) })}</span>}
+                      {r.licenseCheckedAt ? <Badge tone="success">{t("licenseVerified")}</Badge> : <Badge tone="warning">{t("licenseNotVerified")}</Badge>}
+                    </span>
+                  ),
+                },
                 { label: tb("driverBirthDate"), value: formatDate(r.driverBirthDate, locale) },
                 { label: t("flight"), value: r.flightNumber ?? "—" },
                 { label: t("client"), value: r.client.email ?? r.client.name ?? "—" },
@@ -124,7 +158,7 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
               </div>
             </dl>
             <div className="mt-6">
-              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} canValidate={canValidate} responsible={responsible} />
+              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} canValidate={canValidate} responsible={responsible} more={more} openPickup={openPickup} />
             </div>
           </Panel>
           <Panel className="p-6">
@@ -145,4 +179,12 @@ export async function ReservationDetailPage({ base, id, locale }: { base: Base; 
       </div>
     </>
   );
+}
+
+/** Numéro au format international pour wa.me (06… / 07… au Maroc → 2126…). */
+function waNumber(raw: string) {
+  let d = raw.replace(/\D/g, "");
+  if (d.startsWith("00")) d = d.slice(2);
+  if (d.length === 10 && d.startsWith("0")) d = `212${d.slice(1)}`;
+  return d.length >= 9 ? d : "";
 }

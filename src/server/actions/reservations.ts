@@ -124,6 +124,8 @@ export async function createReservation(
       created = g.created;
       guestEmail = g.email;
     }
+    // Liste noire : le client ne peut plus réserver.
+    if (await isBlacklisted(clientId)) return { ok: false, error: "client_blacklisted" };
 
     // Le prix est toujours recalculé côté serveur à partir des tarifs en base.
     const days = rentalDays(r.startDate, r.endDate);
@@ -231,10 +233,21 @@ const TRANSITIONS: Record<string, { from: ReservationStatus[]; to: ReservationSt
   cancel: { from: ["pending", "confirmed"], to: "cancelled" },
 };
 
+async function isBlacklisted(clientId: string) {
+  const [p] = await db.select({ at: clientProfiles.blacklistedAt }).from(clientProfiles).where(eq(clientProfiles.userId, clientId)).limit(1);
+  return Boolean(p?.at);
+}
+
+const licenseSchema = z.object({
+  number: z.string().trim().min(3, "required").max(64),
+  expiresOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "required"),
+  checked: z.literal(true),
+});
+
 export async function transitionReservation(
   id: string,
   action: keyof typeof TRANSITIONS,
-  opts: { reason?: string; internalNote?: string } = {},
+  opts: { reason?: string; internalNote?: string; license?: unknown } = {},
 ): Promise<ActionResult> {
   try {
     const staff = await assertRole(["admin", "manager"]);
@@ -246,6 +259,21 @@ export async function transitionReservation(
     if ((action === "confirm" || action === "reject") && !(await canValidateReservation(staff, id))) return { ok: false, error: "validation_reserved" };
     const now = new Date();
     const patch: Partial<typeof reservations.$inferInsert> = { status: tr.to };
+    const [cur] = await db.select({ clientId: reservations.clientId, endDate: reservations.endDate }).from(reservations).where(eq(reservations.id, id)).limit(1);
+    if (!cur) return { ok: false, error: "not_found" };
+    // Client sur liste noire : pas de confirmation ni de remise des clés.
+    if ((action === "confirm" || action === "pickup") && (await isBlacklisted(cur.clientId))) return { ok: false, error: "client_blacklisted" };
+    // Remise des clés : le permis doit avoir été vérifié, et rester valable jusqu'au retour.
+    if (action === "pickup") {
+      const lic = licenseSchema.safeParse(opts.license);
+      if (!lic.success) return { ok: false, error: "license_required" };
+      if (lic.data.expiresOn < cur.endDate) return { ok: false, error: "license_expired" };
+      Object.assign(patch, { licenseCheckedAt: now, licenseCheckedBy: staff.id, driverLicenseNumber: lic.data.number, driverLicenseExpiresOn: lic.data.expiresOn });
+      await db
+        .update(clientProfiles)
+        .set({ licenseNumber: lic.data.number, licenseExpiresOn: lic.data.expiresOn })
+        .where(eq(clientProfiles.userId, cur.clientId));
+    }
     if (action === "confirm") Object.assign(patch, { confirmedAt: now, handledBy: staff.id });
     if (action === "reject") Object.assign(patch, { handledBy: staff.id, cancelReason: opts.reason?.trim() || null, cancelledAt: now });
     if (action === "pickup") Object.assign(patch, { pickedUpAt: now });
@@ -261,7 +289,7 @@ export async function transitionReservation(
       .returning({ id: reservations.id });
     if (!row) return { ok: false, error: "invalid_transition" };
 
-    await db.insert(auditLogs).values({ actorId: staff.id, entity: "reservation", entityId: id, action, changes: opts });
+    await db.insert(auditLogs).values({ actorId: staff.id, entity: "reservation", entityId: id, action, changes: { reason: opts.reason, internalNote: opts.internalNote, license: action === "pickup" ? opts.license : undefined } });
     if (action === "confirm") await notify(id, "confirmed");
     if (action === "reject") await notify(id, "rejected", opts.reason);
     if (action === "cancel") await notify(id, "cancelled", opts.reason);
@@ -302,4 +330,35 @@ export async function checkPromoCode(input: { code: string; carId: string; start
   const chosen = ids.length ? await db.select().from(extras).where(and(inArray(extras.id, ids), eq(extras.isActive, true))) : [];
   const subtotal = promoPrice(car.dailyPrice, activePromoPercent(car, input.startDate)) * days + chosen.reduce((s, x) => s + x.pricePerDay * days, 0);
   return { ok: true as const, code: promo.code, label: promotionLabel(promo), discount: computeDiscount(promo, subtotal) };
+}
+
+/**
+ * Prolongation d'une location confirmée ou en cours : nouvelle date de retour, prix recalculé avec le même
+ * prix par jour et les mêmes options. La base refuse si la voiture est déjà réservée sur les nouveaux jours.
+ */
+export async function extendReservation(id: string, newEndDate: string): Promise<ActionResult<{ days: number; total: number }>> {
+  try {
+    const staff = await assertRole(["admin", "manager"]);
+    await assertReservationInScope(staff, id);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(newEndDate)) return { ok: false, error: "validation", fieldErrors: { endDate: "date" } };
+    const [r] = await db.select().from(reservations).where(eq(reservations.id, id)).limit(1);
+    if (!r) return { ok: false, error: "not_found" };
+    if (!["confirmed", "ongoing"].includes(r.status)) return { ok: false, error: "invalid_transition" };
+    if (newEndDate <= r.endDate) return { ok: false, error: "validation", fieldErrors: { endDate: "dateOrder" } };
+    const days = rentalDays(r.startDate, newEndDate);
+    const added = days - r.days;
+    const ex = await db.select({ unit: reservationExtras.unitPricePerDay, qty: reservationExtras.quantity }).from(reservationExtras).where(eq(reservationExtras.reservationId, id));
+    const extrasPerDay = ex.reduce((sum, x) => sum + x.unit * x.qty, 0);
+    const extrasTotal = r.extrasTotal + extrasPerDay * added;
+    const total = r.totalPrice + (r.dailyPrice + extrasPerDay) * added;
+    await db
+      .update(reservations)
+      .set({ endDate: newEndDate, days, extrasTotal, totalPrice: total, originalEndDate: r.originalEndDate ?? r.endDate, extendedAt: new Date() })
+      .where(eq(reservations.id, id));
+    await db.insert(auditLogs).values({ actorId: staff.id, entity: "reservation", entityId: id, action: "extend", changes: { from: r.endDate, to: newEndDate, days, total } });
+    revalidatePath("/", "layout");
+    return { ok: true, data: { days, total } };
+  } catch (err) {
+    return toActionError(err);
+  }
 }

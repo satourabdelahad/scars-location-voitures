@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { ActionError, type SessionUser } from "@/server/guards";
+import { pgArray } from "@/lib/utils";
 
 /**
  * Périmètre d'action d'un gestionnaire : les agences où il est rattaché (membre ou responsable).
@@ -28,9 +29,9 @@ export async function assertCarsInScope(user: SessionUser, carIds: string[], sco
   if (!s || !carIds.length) return;
   const res = await db.execute<{ n: number }>(sql`
     SELECT count(*)::int AS n FROM cars c
-    WHERE c.id = ANY(${carIds}::uuid[])
-      AND NOT (c.agency_id = ANY(${s}::int[]))
-      AND NOT EXISTS (SELECT 1 FROM car_agencies ca WHERE ca.car_id = c.id AND ca.agency_id = ANY(${s}::int[]))`);
+    WHERE c.id = ANY(${pgArray(carIds)}::uuid[])
+      AND NOT (c.agency_id = ANY(${pgArray(s)}::int[]))
+      AND NOT EXISTS (SELECT 1 FROM car_agencies ca WHERE ca.car_id = c.id AND ca.agency_id = ANY(${pgArray(s)}::int[]))`);
   if ((res.rows[0]?.n ?? 0) > 0) throw new ActionError("out_of_scope");
 }
 

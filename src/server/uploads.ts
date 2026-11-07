@@ -23,7 +23,7 @@ export const MAX_BYTES = 10 * 1024 * 1024;
 export async function saveLocalUpload(file: File, purpose: UploadPurpose) {
   if (!localUploadsEnabled) throw new Error("cloudinary_not_configured");
   const ext = ALLOWED[file.type];
-  if (!ext || (purpose !== "identity" && ext === "pdf")) throw new Error("bad_type");
+  if (!ext || (purpose !== "identity" && purpose !== "document" && ext === "pdf")) throw new Error("bad_type");
   if (file.size > MAX_BYTES) throw new Error("too_big");
   await mkdir(LOCAL_DIR, { recursive: true });
   const name = `${purpose}-${randomBytes(12).toString("hex")}.${ext}`;
@@ -47,7 +47,7 @@ export async function verifyUpload(publicId: string, purpose: UploadPurpose, res
     const s = await stat(path.join(LOCAL_DIR, name));
     return { publicId, url: `/api/dev-files/${name}`, format: name.split(".").pop() ?? null, bytes: s.size, width: null, height: null };
   }
-  const expectedFolder = { identity: "dizycars/identity/", car: "dizycars/cars/", avatar: "dizycars/avatars/" }[purpose];
+  const expectedFolder = { identity: "dizycars/identity/", document: "dizycars/document/", car: "dizycars/cars/", avatar: "dizycars/avatars/" }[purpose];
   if (!publicId.startsWith(expectedFolder)) throw new Error("validation");
   const r = await assertUploaded(publicId, purpose, resourceType);
   return { publicId: r.public_id, url: r.secure_url, format: r.format, bytes: r.bytes, width: r.width ?? null, height: r.height ?? null };

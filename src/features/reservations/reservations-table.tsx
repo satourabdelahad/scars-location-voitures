@@ -63,7 +63,7 @@ export function ReservationsTable({
         text: () => "",
         isAction: true,
         align: "end",
-        cell: (r) => <ReservationRowActions id={r.id} status={r.status} canValidate={isAdmin || r.responsibleUserIds.includes(userId)} onDone={(status) => patch(r.id, { status })} />,
+        cell: (r) => <ReservationRowActions id={r.id} status={r.status} canValidate={isAdmin || r.responsibleUserIds.includes(userId)} onDone={(status) => patch(r.id, { status })} detailHref={`${base}/reservations/${r.id}`} />,
       },
     ],
     [t, ts, c, locale, base, patch, isAdmin, userId],

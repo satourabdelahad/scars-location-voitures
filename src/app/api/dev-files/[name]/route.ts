@@ -13,6 +13,11 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/dev-files/[name
   if (!localUploadsEnabled) return new Response("Not found", { status: 404 });
   const { name } = await ctx.params;
   const safe = path.basename(name);
+  // Documents des voitures, photos d'état des lieux et signatures : équipe uniquement.
+  if (safe.startsWith("document-")) {
+    const session = await auth();
+    if (!session?.user || !["admin", "manager"].includes(session.user.role)) return new Response("Not found", { status: 404 });
+  }
   if (safe.startsWith("identity-")) {
     const session = await auth();
     const role = session?.user.role;
