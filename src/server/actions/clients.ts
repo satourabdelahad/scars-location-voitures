@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { getLocale } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -167,3 +167,28 @@ export async function searchClients(q: string): Promise<ClientOption[]> {
   return searchClientsQuery(q);
 }
 
+
+/**
+ * Liste noire : un client qui y figure ne peut plus réserver, ni être confirmé, ni recevoir les clés.
+ * Motif obligatoire pour l'y ajouter ; plusieurs clients à la fois depuis la liste.
+ */
+export async function setClientsBlacklist(ids: string[], on: boolean, reason?: string): Promise<ActionResult<{ done: number }>> {
+  try {
+    const staff = await assertRole(["admin", "manager"]);
+    const list = z.array(z.string().uuid()).min(1).max(300).safeParse(ids);
+    if (!list.success) return { ok: false, error: "validation" };
+    const why = (reason ?? "").trim();
+    if (on && why.length < 3) return { ok: false, error: "validation", fieldErrors: { reason: "minLength" } };
+    const rows = await db
+      .update(clientProfiles)
+      .set(on ? { blacklistedAt: new Date(), blacklistedBy: staff.id, blacklistReason: why.slice(0, 1000) } : { blacklistedAt: null, blacklistedBy: null, blacklistReason: null })
+      .where(inArray(clientProfiles.userId, list.data))
+      .returning({ id: clientProfiles.userId });
+    for (const r of rows)
+      await db.insert(auditLogs).values({ actorId: staff.id, entity: "client", entityId: r.id, action: on ? "blacklist" : "unblacklist", changes: on ? { reason: why } : {} });
+    revalidatePath(`/${await getLocale()}`, "layout");
+    return { ok: true, data: { done: rows.length } };
+  } catch (err) {
+    return toActionError(err);
+  }
+}

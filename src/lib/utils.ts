@@ -47,3 +47,8 @@ export function todayISO(offsetDays = 0) {
 export function initials(first?: string | null, last?: string | null) {
   return `${(first ?? "").charAt(0)}${(last ?? "").charAt(0)}`.toUpperCase() || "?";
 }
+
+/** Littéral de tableau PostgreSQL ({1,2,3}) à passer en un seul paramètre SQL, puis ::int[] ou ::uuid[]. */
+export function pgArray(values: (string | number)[]) {
+  return `{${values.map((v) => String(v).replace(/[{},"\\\s]/g, "")).join(",")}}`;
+}

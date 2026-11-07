@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { TopBar } from "@/components/layout/top-bar";
+import { HeaderPanels } from "./header-panels";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UserMenu } from "@/components/layout/user-menu";
 import type { SessionUser } from "@/server/guards";
@@ -23,6 +24,7 @@ export async function BackofficeShell({ user, base, children }: { user: SessionU
     { href: `${base}/marketing`, label: t("marketing"), icon: "marketing" },
     ...(base === "/admin" ? [{ href: `${base}/site`, label: t("site"), icon: "site" as const }] : []),
     ...(base === "/admin" ? [{ href: `${base}/administration`, label: t("administration"), icon: "administration" as const }] : []),
+    ...(base === "/admin" ? [{ href: `${base}/contract`, label: t("contract"), icon: "contract" as const }] : []),
     ...(base === "/admin" ? [{ href: `${base}/security`, label: t("security"), icon: "security" as const }] : []),
     ...(base === "/manager" ? [{ href: `${base}/profile`, label: t("profile"), icon: "profile" as const }] : []),
     { href: `${base}/documentation`, label: t("documentation"), icon: "documentation" },
@@ -46,6 +48,7 @@ export async function BackofficeShell({ user, base, children }: { user: SessionU
           <SideNav items={items} mobile />
           <div className="ms-auto flex items-center gap-1">
             <ThemeToggle />
+            <HeaderPanels base={base} />
             <UserMenu user={user} />
           </div>
           {/* La langue reste en haut à droite dans toutes les langues */}

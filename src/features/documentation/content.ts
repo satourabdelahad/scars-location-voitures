@@ -141,6 +141,26 @@ Cochez des voitures pour : désactiver, remettre en service, mettre en réparati
 Dans la fiche d'un gestionnaire, une règle par marque, ville ou agence ajoute automatiquement les voitures correspondantes à sa liste, y compris les voitures créées plus tard.`,
   },
   {
+    id: "car-file",
+    title: "Le dossier d'une voiture",
+    body: `La fiche d'une voiture a, en plus de ses informations, sept onglets de suivi.
+
+### Assurance, vignette, vidange, visite technique
+Chaque onglet affiche l'échéance en cours (à jour, bientôt, expirée) puis l'**historique**. **Ajouter** enregistre une nouvelle ligne : dates, montant, assureur ou garage, numéro de police ou de procès-verbal, et les **documents** (attestation d'assurance, carte grise, facture…), conservés en privé. Pour la vidange, on note aussi le kilométrage et la prochaine vidange en date et en kilomètres. Une saisie erronée s'**annule** : elle reste visible, barrée, et sort des calculs.
+
+### États des lieux
+Au départ et au retour de chaque location : kilométrage, niveau de carburant (en huitièmes), dégâts constatés, **photos** prises avec le téléphone et **signature du client** au doigt. Le kilométrage de la voiture se met à jour. Depuis une réservation, les boutons « État des lieux départ » et « État des lieux retour » ouvrent directement le bon formulaire.
+
+### Rentabilité
+Chiffre d'affaires des locations, toutes les dépenses (assurance, vignette, vidange, visite, entretien, réparations, pneus…), **marge réelle**, et ce qu'il reste à amortir sur le prix d'achat. Un graphique montre les 12 derniers mois. Les dépenses s'ajoutent en bas de l'onglet.
+
+### Planning
+Le calendrier du mois de la voiture, avec ses réservations colorées selon leur état et son taux d'occupation.
+
+### Le parc en calendrier
+Dans **Parc automobile**, le bouton **Calendrier** affiche toutes les voitures du périmètre sur un mois : une ligne par voiture, une barre par réservation. Un clic sur une barre ouvre la réservation.`,
+  },
+  {
     id: "reservations",
     title: "Les réservations",
     body: `Une réservation passe par les étapes **en attente → confirmée → en cours → terminée**. Elle peut aussi être **refusée** ou **annulée**.
@@ -151,6 +171,18 @@ Confirmer ou refuser une réservation est réservé à l'**administrateur**, aux
 ### Emails
 Le client reçoit un email à la confirmation, au refus et à l'annulation. L'équipe concernée est prévenue de chaque nouvelle réservation.
 
+### Remise des clés
+Avant de remettre les clés, l'équipe **vérifie le permis** : numéro, date de validité (elle doit couvrir toute la location) et original présenté. Sans cette vérification, la location ne peut pas démarrer. La fiche de la réservation affiche « Permis vérifié ».
+
+### Prolonger
+Une location confirmée ou en cours se **prolonge** avec une nouvelle date de retour ; le prix est recalculé avec le même prix par jour et les mêmes options. La base refuse si la voiture est déjà réservée sur les jours ajoutés.
+
+### Contrat PDF
+Le bouton **Contrat PDF** ouvre le contrat de location rempli avec les données du client, de la voiture, de la location et des états des lieux, prêt à imprimer ou à enregistrer en PDF.
+
+### Messages WhatsApp
+Trois messages pré-remplis, dans la langue de la réservation : **confirmation**, **rappel la veille** et **retour**. Un clic ouvre WhatsApp avec le message prêt à envoyer au client.
+
 ### Garanties
 Une même voiture ne peut pas être réservée deux fois sur la même période, et une voiture désactivée ne peut pas être réservée.`,
   },
@@ -160,11 +192,23 @@ Une même voiture ne peut pas être réservée deux fois sur la même période, 
     body: `### Clients
 La liste des clients et leur fiche : informations, réservations, deals et rendez-vous. Un client ajouté avec un email reçoit une invitation.
 
+### Liste noire
+Cochez un ou plusieurs clients puis **Mettre sur liste noire**, avec un motif. Un client sur liste noire ne peut plus réserver, ses réservations ne peuvent plus être confirmées et les clés ne peuvent pas lui être remises. Sa fiche affiche un bandeau rouge avec le motif.
+
 ### Deals (prospects)
 Un deal est toujours lié à un client. Il précise le type de prospection, la source, la date et l'heure de l'échange, la voiture et le code promo éventuels, une note et la prochaine action. Le bouton **Envoyer au client** envoie le modèle « Suivi de prospection ». Un gestionnaire limité à des agences ne choisit que des voitures de son périmètre.
 
 ### Rendez-vous et réalisations
 Les rendez-vous se planifient avec les clients ; les réalisations récapitulent l'activité de chaque gestionnaire.`,
+  },
+  {
+    id: "header",
+    title: "En haut à droite : alertes, notifications, équipe",
+    body: `- **Alertes** (triangle) : voitures à nouveau disponibles, voitures en réparation, et échéances proches ou dépassées pour l'assurance, la vidange (en jours ou en kilomètres), la vignette et la visite technique. L'administrateur règle les délais avec **Régler**.
+- **Notifications** (cloche) : les événements récents (nouvelle réservation, location démarrée, voiture à nouveau disponible, prolongation, nouveau gestionnaire, nouveau client en négociation, nouvelle voiture). Le chiffre rouge compte les non lues ; elles deviennent lues à la fermeture du menu.
+- **Gestionnaires** : toute l'équipe avec son état de connexion, point vert pour les personnes en ligne, gris pour les autres.
+
+Un gestionnaire limité à des agences ne voit que les alertes et notifications des voitures de son périmètre.`,
   },
   {
     id: "marketing",
@@ -180,6 +224,18 @@ Les rendez-vous se planifient avec les clients ; les réalisations récapitulent
 - **Conditions de location** et **Confidentialité**.
 
 Chaque texte se règle langue par langue (drapeau à côté de chaque langue). Une langue laissée vide affiche le texte par défaut. Dans les textes, une ligne qui commence par « ## » devient un intertitre et une ligne qui commence par « - » un élément de liste.`,
+  },
+  {
+    id: "contract",
+    title: "Contrat (modèle)",
+    adminOnly: true,
+    body: `Dans **Contrat**, l'administrateur règle le modèle du contrat de location en deux parties : l'**en-tête** (logo, nom et coordonnées de la société, numéro du contrat) et le **contrat** lui-même.
+
+- Mode **Visuel** : on écrit comme dans un traitement de texte (gras, titres, listes, tableaux, alignement).
+- Mode **HTML** : pour modifier le code directement.
+- Mode **Aperçu** : le contrat rempli avec des données d'exemple.
+
+Les **variables** (nom et prénom du client, civilité, permis, voiture, dates, prix, caution, kilométrage et carburant des états des lieux, signature…) s'insèrent d'un clic et sont remplacées à la génération. Le logo s'ajoute dans la colonne de droite. « Modèle par défaut » remet le texte d'origine.`,
   },
   {
     id: "emails",

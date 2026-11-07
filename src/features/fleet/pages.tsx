@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
-import { Building2, Lock, Plus } from "lucide-react";
+import { Building2, CalendarDays, ClipboardCheck, ClipboardList, Droplets, Lock, Plus, ShieldCheck, Stamp, Table2, Wallet } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/db";
 import { tablePreferences } from "@/db/schema";
@@ -13,6 +13,13 @@ import { Badge, DefinitionList, EmptyState, PageHeader, Panel } from "@/componen
 import { allAgencies, carSummary, getFleetCar, inScope, listFleet, managerOptions } from "@/server/queries/fleet";
 import { managerRentals } from "@/server/queries/manager-profile";
 import { currentAgencyScope } from "@/server/agency-scope";
+import { getAlertSettings } from "@/server/app-settings";
+import { carFinance, carInspectionsFor, carRecordsFor, inspectableReservations } from "@/server/queries/car-file";
+import type { CarRecordKind } from "@/db/schema";
+import { CarRecordsTab } from "./car-file/records-tab";
+import { InspectionsTab } from "./car-file/inspections-tab";
+import { FinancePanel } from "./car-file/finance-panel";
+import { CarCalendar, FleetCalendar } from "./car-file/calendar";
 import { CarHeader, CarStats } from "./car-header";
 import { RentalsTab } from "@/features/managers/rentals-tab";
 import { RentalsChart } from "@/features/my/rentals-chart";
@@ -27,7 +34,7 @@ import type { CarView } from "@/lib/car-views";
 
 type Base = "/admin" | "/manager";
 
-export async function FleetListPage({ base, userId }: { base: Base; userId: string }) {
+export async function FleetListPage({ base, userId, view = "table" }: { base: Base; userId: string; view?: "table" | "calendar" }) {
   const t = await getTranslations("Fleet");
   const [all, [prefs], scope] = await Promise.all([
     listFleet(),
@@ -52,12 +59,34 @@ export async function FleetListPage({ base, userId }: { base: Base; userId: stri
           </Panel>
         ))}
       </div>
-      <FleetTable
-        rows={rows}
-        base={base}
-        prefs={prefs ? { visibleColumns: prefs.visibleColumns, pageSize: prefs.pageSize } : null}
-        bulk={{ agencies: await allAgencies(), managers: await managerOptions(), canAssign: base === "/admin" }}
-      />
+      {/* Vue tableau ou vue calendrier (planning de toutes les voitures) */}
+      <div role="tablist" aria-label={t("viewMode")} className="mb-4 inline-flex rounded-xl bg-mist/60 p-1 text-sm font-semibold">
+        {(["table", "calendar"] as const).map((v) => (
+          <Link
+            key={v}
+            role="tab"
+            aria-selected={view === v}
+            href={v === "table" ? `${base}/fleet` : `${base}/fleet?view=calendar`}
+            className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors ${view === v ? "bg-paper text-ink shadow-sm" : "text-ink-3 hover:text-ink"}`}
+          >
+            {v === "table" ? <Table2 className="size-4" /> : <CalendarDays className="size-4" />}
+            {t(v === "table" ? "viewTable" : "viewCalendar")}
+          </Link>
+        ))}
+      </div>
+      {view === "calendar" ? (
+        <FleetCalendar
+          base={base}
+          cars={rows.filter((r) => r.status !== "deactivated").map((r) => ({ id: r.id, brand: r.brand, model: r.model, plateNumber: r.plateNumber, status: r.status, city: r.city }))}
+        />
+      ) : (
+        <FleetTable
+          rows={rows}
+          base={base}
+          prefs={prefs ? { visibleColumns: prefs.visibleColumns, pageSize: prefs.pageSize } : null}
+          bulk={{ agencies: await allAgencies(), managers: await managerOptions(), canAssign: base === "/admin" }}
+        />
+      )}
     </>
   );
 }
@@ -86,7 +115,7 @@ export async function NewCarPage({ base }: { base: Base }) {
   );
 }
 
-export async function CarDetailPage({ base, id, locale }: { base: Base; id: string; locale: string }) {
+export async function CarDetailPage({ base, id, locale, query = {} }: { base: Base; id: string; locale: string; query?: { tab?: string; new?: string; reservation?: string } }) {
   const car = await getFleetCar(id);
   if (!car) notFound();
   const [t, e, summary, rentals, fleet] = await Promise.all([
@@ -98,8 +127,8 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
   ]);
   const name = `${car.brand} ${car.model}`;
   const scope = await currentAgencyScope();
-  const outOfScope = Boolean(scope && !scope.includes(car.agencyId));
   const row = fleet.find((f) => f.id === car.id);
+  const outOfScope = Boolean(row && !inScope(row, scope));
   const header = (actions?: React.ReactNode) => (
     <CarHeader
       car={{ brand: car.brand, model: car.model, year: car.year, plateNumber: car.plateNumber, category: car.category, colorHex: car.colorHex, dailyPrice: car.dailyPrice, promoPercent: car.promoPercent, promoStartsOn: car.promoStartsOn, promoEndsOn: car.promoEndsOn, mileage: car.mileage, status: car.status, cover: car.images[0]?.url ?? null, city: car.agency.city, agency: car.agency.name }}
@@ -116,6 +145,53 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
       <RentalsChart rows={rentals} />
     </div>
   );
+
+  // Dossier de la voiture : assurance, vignette, vidange, visite technique, états des lieux, rentabilité, planning.
+  const [records, inspections, inspectable, finance, alertCfg, tf] = await Promise.all([
+    carRecordsFor(car.id),
+    carInspectionsFor(car.id),
+    inspectableReservations(car.id),
+    carFinance(car.id),
+    getAlertSettings(),
+    getTranslations("CarFile"),
+  ]);
+  const readOnly = outOfScope || car.status === "deactivated";
+  const recordTab = (kind: CarRecordKind, icon: React.ReactNode, warnDays: number, warnKm?: number) => ({
+    id: kind,
+    label: tf(`${kind}.tab`),
+    icon,
+    content: (
+      <CarRecordsTab carId={car.id} kind={kind} records={records.filter((r) => r.kind === kind)} currentMileage={car.mileage} warnDays={warnDays} warnKm={warnKm} readOnly={readOnly} />
+    ),
+  });
+  const preset = query.new === "departure" || query.new === "return" ? { kind: query.new as "departure" | "return", reservationId: query.reservation } : null;
+  const extraTabs = [
+    recordTab("insurance", <ShieldCheck />, alertCfg.insuranceDays),
+    recordTab("vignette", <Stamp />, alertCfg.vignetteDays),
+    recordTab("oil_change", <Droplets />, alertCfg.oilDays, alertCfg.oilKm),
+    recordTab("technical_inspection", <ClipboardList />, alertCfg.inspectionDays),
+    {
+      id: "inspections",
+      label: tf("inspectionsTab"),
+      icon: <ClipboardCheck />,
+      content: <InspectionsTab carId={car.id} rows={inspections} reservations={inspectable} currentMileage={car.mileage} readOnly={readOnly} preset={preset} />,
+    },
+    {
+      id: "finance",
+      label: tf("financeTab"),
+      icon: <Wallet />,
+      content: (
+        <div className="space-y-6">
+          <FinancePanel data={finance} locale={locale} />
+          <div>
+            <h3 className="mb-3 text-[15px] font-bold text-ink">{tf("expense.tab")}</h3>
+            <CarRecordsTab carId={car.id} kind="expense" records={records.filter((r) => r.kind === "expense")} currentMileage={car.mileage} warnDays={0} readOnly={readOnly} />
+          </div>
+        </div>
+      ),
+    },
+    { id: "calendar", label: tf("calendarTab"), icon: <CalendarDays />, content: <CarCalendar carId={car.id} base={base} /> },
+  ];
 
   if (car.status !== "deactivated") {
     return (
@@ -139,6 +215,8 @@ export async function CarDetailPage({ base, id, locale }: { base: Base; id: stri
           </div>,
         )}
         <CarForm
+          extraTabs={extraTabs}
+          initialTab={query.tab}
           stats={statsTab}
           history={historyTab}
           promotion={<CarPromotion carId={car.id} dailyPrice={car.dailyPrice} initial={{ promoPercent: car.promoPercent, promoStartsOn: car.promoStartsOn, promoEndsOn: car.promoEndsOn }} frozen={false} />}

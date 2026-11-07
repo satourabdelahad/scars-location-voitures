@@ -1,4 +1,4 @@
-import { CalendarClock, Handshake, IdCard, Plus } from "lucide-react";
+import { CalendarClock, Handshake, IdCard, Plus, ShieldBan } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { RentalsTab } from "@/features/managers/rentals-tab";
 import { DealsTab } from "@/features/managers/deals-tab";
 import { ClientForm } from "./client-form";
 import { ClientInviteButton, ClientStatusButton } from "./client-status";
+import { BlacklistActions } from "./blacklist";
 import { ClientsTable, segmentTone } from "./clients-table";
 
 type Base = "/admin" | "/manager";
@@ -76,6 +77,7 @@ export async function ClientProfilePage({ base, id, tab, locale }: { base: Base;
         statusActions={
           <>
             {client.status === "active" && client.email && !client.hasAccount && <ClientInviteButton id={id} />}
+            <BlacklistActions size="md" selected={[{ id, blacklisted: Boolean(client.blacklistedAt), firstName: client.firstName, lastName: client.lastName }]} />
             <ClientStatusButton id={id} name={name} status={client.status} />
           </>
         }
@@ -138,6 +140,16 @@ export async function ClientProfilePage({ base, id, tab, locale }: { base: Base;
         </div>
       </div>
 
+      {client.blacklistedAt && (
+        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-danger/30 bg-danger-soft px-5 py-4 text-sm text-ink">
+          <ShieldBan className="mt-0.5 size-5 shrink-0 text-danger" />
+          <div>
+            <p className="font-bold text-danger">{t("blacklistedBanner")}</p>
+            <p className="mt-1 text-ink-2">{client.blacklistReason}</p>
+            <p className="mt-1 text-xs text-ink-3">{formatDateTime(client.blacklistedAt, locale)}{client.blacklistedBy ? ` · ${client.blacklistedBy.name}` : ""}</p>
+          </div>
+        </div>
+      )}
       {client.status === "deactivated" && client.deactivationReason && (
         <div className="mb-6 rounded-2xl border border-mist-2 bg-mist/50 px-5 py-4 text-sm text-ink-2">
           <span className="font-semibold text-ink">{t("deactivationReason")} :</span> {client.deactivationReason}
