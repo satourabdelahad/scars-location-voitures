@@ -765,8 +765,7 @@
     },
     "contract": {
       "freelance": "Freiberuflich",
-      "cdi": "Unbefristet (CDI)"
-   ,
+      "cdi": "Unbefristet (CDI)",
       "cdd": "Befristet"
     },
     "category": {
@@ -793,8 +792,7 @@
     "fuel": {
       "petrol": "Benzin",
       "diesel": "Diesel",
-      "electric": "Elektro"
-   ,
+      "electric": "Elektro",
       "hybrid": "Hybrid",
       "plug_in_hybrid": "Plug-in-Hybrid"
     },
