@@ -83,7 +83,7 @@ export default async function HomePage({ params, searchParams }: PageProps<"/[lo
           </svg>
         </div>
         <div className="relative mx-auto -mt-10 max-w-7xl px-4 sm:px-6 md:-mt-12">
-          <HeroSearch agencies={cities} locale={locale} />
+          <HeroSearch agencies={agencies.map((a) => ({ id: a.id, city: a.city, name: a.name, address: a.address }))} locale={locale} />
           <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-sm font-medium text-ink-2">
             {[t("trust1"), t("trust2"), t("trust3")].map((x) => (
               <li key={x} className="flex items-center gap-2">

@@ -13,6 +13,7 @@ import {
   serial,
   smallint,
   text,
+  time,
   timestamp,
   uniqueIndex,
   uuid,
@@ -394,10 +395,19 @@ export const carImages = pgTable(
 
 /* ───────────────────────────── Réservations ───────────────────────────── */
 
+/** Supplément : prix par jour, ou une seule fois pour toute la location. */
+export const extraPricingEnum = pgEnum("extra_pricing", ["per_day", "once"]);
+
+/** Suppléments proposés à la réservation (GPS, siège bébé, assistance…), réglés par l'administrateur. */
 export const extras = pgTable("extras", {
   id: serial("id").primaryKey(),
   code: varchar("code", { length: 32 }).notNull().unique(),
+  /** Nom affiché (saisi par l'administrateur) ; vide = traduction du code */
+  name: varchar("name", { length: 160 }),
+  /** Prix : par jour ou une fois selon pricing */
   pricePerDay: numeric("price_per_day", { precision: 10, scale: 2, mode: "number" }).notNull(),
+  pricing: extraPricingEnum("pricing").notNull().default("per_day"),
+  sortOrder: smallint("sort_order").notNull().default(0),
   isActive: boolean("is_active").notNull().default(true),
 });
 
@@ -474,6 +484,12 @@ export const reservations = pgTable(
     licenseCheckedAt: timestamp("license_checked_at", { withTimezone: true, mode: "date" }),
     licenseCheckedBy: uuid("license_checked_by").references(() => users.id),
     driverLicenseExpiresOn: date("driver_license_expires_on", { mode: "string" }),
+    /** Heures de prise et de retour (facultatives) */
+    pickupTime: time("pickup_time"),
+    returnTime: time("return_time"),
+    /** Location avec chauffeur */
+    withDriver: boolean("with_driver").notNull().default(false),
+    driverTotal: numeric("driver_total", { precision: 10, scale: 2, mode: "number" }).notNull().default(0),
     /** Prolongation : date de fin d'origine (la première fois qu'on prolonge) */
     originalEndDate: date("original_end_date", { mode: "string" }),
     extendedAt: timestamp("extended_at", { withTimezone: true, mode: "date" }),
@@ -501,6 +517,8 @@ export const reservationExtras = pgTable(
       .references(() => extras.id),
     quantity: smallint("quantity").notNull().default(1),
     unitPricePerDay: numeric("unit_price_per_day", { precision: 10, scale: 2, mode: "number" }).notNull(),
+    /** Mode de prix au moment de la réservation */
+    pricing: extraPricingEnum("pricing").notNull().default("per_day"),
   },
   (t) => [primaryKey({ columns: [t.reservationId, t.extraId] })],
 );
@@ -825,6 +843,9 @@ export const clientProfiles = pgTable("client_profiles", {
   birthDate: date("birth_date", { mode: "string" }),
   licenseNumber: varchar("license_number", { length: 64 }),
   licenseExpiresOn: date("license_expires_on", { mode: "string" }),
+  idCardNumber: varchar("id_card_number", { length: 64 }),
+  /** Inscrit à la newsletter en acceptant les conditions de location */
+  newsletterAt: timestamp("newsletter_at", { withTimezone: true, mode: "date" }),
   notes: text("notes"),
   deactivationReason: text("deactivation_reason"),
   /** Liste noire : plus aucune réservation possible tant que le client y figure */
@@ -998,6 +1019,52 @@ export const carInspectionPhotos = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },
   (t) => [index("car_inspection_photos_idx").on(t.inspectionId)],
+);
+
+/* ─────────────────────── Documents client et prolongations ─────────────────────── */
+
+export const clientDocumentKindEnum = pgEnum("client_document_kind", ["license_front", "license_back", "id_front", "id_back"]);
+
+/** Pièces déposées par le client (permis et carte d'identité, recto et verso), stockées en privé. */
+export const clientDocuments = pgTable(
+  "client_documents",
+  {
+    id: serial("id").primaryKey(),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    reservationId: uuid("reservation_id").references(() => reservations.id, { onDelete: "restrict" }),
+    kind: clientDocumentKindEnum("kind").notNull(),
+    publicId: text("public_id").notNull(),
+    resourceType: varchar("resource_type", { length: 16 }).notNull().default("image"),
+    format: varchar("format", { length: 16 }),
+    bytes: integer("bytes"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [index("client_documents_client_idx").on(t.clientId, t.kind, t.createdAt)],
+);
+
+export const extensionStatusEnum = pgEnum("extension_status", ["pending", "accepted", "refused"]);
+
+/** Demande de prolongation faite par le client : acceptée ou refusée par l'équipe. */
+export const reservationExtensions = pgTable(
+  "reservation_extensions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    reservationId: uuid("reservation_id")
+      .notNull()
+      .references(() => reservations.id, { onDelete: "restrict" }),
+    fromEndDate: date("from_end_date", { mode: "string" }).notNull(),
+    requestedEndDate: date("requested_end_date", { mode: "string" }).notNull(),
+    status: extensionStatusEnum("status").notNull().default("pending"),
+    note: text("note"),
+    reason: text("reason"),
+    requestedBy: uuid("requested_by").references(() => users.id),
+    decidedBy: uuid("decided_by").references(() => users.id),
+    decidedAt: timestamp("decided_at", { withTimezone: true, mode: "date" }),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [index("reservation_extensions_res_idx").on(t.reservationId, t.createdAt)],
 );
 
 export type CarRecordKind = (typeof carRecordKindEnum.enumValues)[number];

@@ -25,6 +25,7 @@ export async function BackofficeShell({ user, base, children }: { user: SessionU
     ...(base === "/admin" ? [{ href: `${base}/site`, label: t("site"), icon: "site" as const }] : []),
     ...(base === "/admin" ? [{ href: `${base}/administration`, label: t("administration"), icon: "administration" as const }] : []),
     ...(base === "/admin" ? [{ href: `${base}/contract`, label: t("contract"), icon: "contract" as const }] : []),
+    ...(base === "/admin" ? [{ href: `${base}/extras`, label: t("extras"), icon: "extras" as const }] : []),
     ...(base === "/admin" ? [{ href: `${base}/security`, label: t("security"), icon: "security" as const }] : []),
     ...(base === "/manager" ? [{ href: `${base}/profile`, label: t("profile"), icon: "profile" as const }] : []),
     { href: `${base}/documentation`, label: t("documentation"), icon: "documentation" },

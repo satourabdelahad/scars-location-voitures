@@ -102,7 +102,12 @@
     "availableOnly": "지금 이용 가능({count})",
     "allFilter": "전체",
     "noCarsHere": "현재 이 조건의 차량이 없습니다.",
-    "seeAllFiltered": "이 차량 모두 보기"
+    "seeAllFiltered": "이 차량 모두 보기",
+    "searchPlace": "인수 장소",
+    "searchPlaceholder": "지점 선택",
+    "searchStartTime": "인수 시간",
+    "searchEndTime": "반납 시간",
+    "searchRequired": "장소와 인수·반납 날짜를 선택하세요."
   },
   "Cars": {
     "title": "차량 목록",
@@ -198,7 +203,52 @@
     "accountExists": "이 정보로 된 계정이 이미 있습니다. 로그인 후 예약하세요.",
     "guestInvited": "비밀번호를 설정하고 온라인으로 예약을 확인할 수 있는 이메일을 보내드렸습니다.",
     "guestCallback": "확인을 위해 {phone}(으)로 연락드리겠습니다.",
-    "backToCars": "다른 차량 보기"
+    "backToCars": "다른 차량 보기",
+    "specSeats": "{count, plural, other {#인승}}",
+    "specDoors": "{count, plural, other {#도어}}",
+    "specBags": "{count, plural, other {캐리어 #개}}",
+    "specAc": "에어컨",
+    "time": "시간",
+    "needDriver": "기사가 필요하신가요?",
+    "driverPrice": "기사: 하루 {price}",
+    "driverOnQuote": "기사 요금은 지점에서 안내해 드립니다.",
+    "yesDriver": "네, 기사 포함",
+    "noDriver": "아니요, 직접 운전합니다",
+    "driverLine": "기사",
+    "driverService": "기사",
+    "onQuote": "견적",
+    "extrasTitle": "추가 옵션",
+    "once": "1회",
+    "yourInfo": "고객 정보",
+    "yourInfoHint": "렌터카 계약서 작성에 필요합니다.",
+    "moreInfo": "추가 정보",
+    "depositLabel": "보증금",
+    "depositHint": "인수 시 보류되며 차량 반납 후 해제됩니다.",
+    "totalSum": "총액",
+    "acceptTerms": "다음에 동의합니다:",
+    "termsLink": "렌터카 이용약관",
+    "acceptTermsRequired": "이용약관에 동의해야 합니다.",
+    "termsTitle": "렌터카 이용약관",
+    "acceptAndClose": "동의합니다",
+    "reserve": "예약하기",
+    "noPaymentNow": "지금 결제하지 않습니다: 키 인수 시 결제합니다.",
+    "identifyTitle": "예약하려면 로그인하세요",
+    "identifyBody": "로그인하거나 몇 초 만에 계정을 만드세요. 선택한 내용은 유지됩니다.",
+    "withSocial": "소셜 계정으로",
+    "socialHint": "로그인 후 신분증 번호와 운전면허 번호만 입력하면 됩니다.",
+    "or": "또는",
+    "tabNewClient": "신규 고객",
+    "tabHaveAccount": "계정이 있습니다",
+    "loginAndReserve": "로그인하고 예약",
+    "useLoginPage": "계정에 2단계 인증이 설정되어 있습니다. 로그인 페이지에서 로그인하세요.",
+    "civility": "호칭",
+    "idCardNumber": "신분증 또는 여권 번호",
+    "licenseNumber": "운전면허 번호",
+    "phoneIsWhatsapp": "이 번호는 WhatsApp 번호이기도 합니다",
+    "receivedTitle": "요청이 접수되었습니다",
+    "receivedBody": "요청 {ref}이(가) 접수되었습니다. 지점에서 최대 {hours, plural, other {#시간}} 이내에 답변드립니다.",
+    "existingAccountLogin": "이 정보로 된 계정이 이미 있습니다. 로그인하여 예약을 확인하세요.",
+    "loginToFollow": "로그인하여 예약 확인"
   },
   "Extras": {
     "child_seat": "어린이 카시트",
@@ -229,7 +279,60 @@
     "name": "이름",
     "phone": "전화번호",
     "language": "이메일 언어",
-    "connectedWith": "로그인 방식"
+    "connectedWith": "로그인 방식",
+    "tabInfos": "정보",
+    "tabReservations": "예약",
+    "tabHistory": "기록",
+    "historyEmpty": "아직 기록이 없습니다.",
+    "seeDetails": "상세 보기",
+    "upcomingBadge": "예정",
+    "bookedOn": "{date} 예약",
+    "carSpecs": "차량",
+    "print": "인쇄",
+    "downloadPdf": "PDF 다운로드",
+    "extend": "연장",
+    "extendTitle": "대여 연장",
+    "extendBody": "새 반납 날짜를 선택하세요. 지점에서 요청을 수락하거나 거절합니다.",
+    "newEndDate": "새 반납 날짜",
+    "extendNote": "지점에 보낼 메시지",
+    "sendRequest": "요청 보내기",
+    "extensionSent": "연장 요청을 보냈습니다.",
+    "extensionAlready": "이미 대기 중인 연장 요청이 있습니다.",
+    "extensionPending": "{date}까지 연장 요청 대기 중: 최대 {hours, plural, other {#시간}} 이내에 답변합니다.",
+    "extensionsTitle": "연장 요청",
+    "ext": {
+      "pending": "대기 중",
+      "accepted": "수락됨",
+      "refused": "거절됨"
+    },
+    "docsTitle": "내 서류",
+    "docsHint": "운전면허증과 신분증(앞면·뒷면)을 올려 두면 지점에서 시간을 절약할 수 있습니다. 사진 또는 PDF, 최대 10MB.",
+    "doc": {
+      "license_front": "운전면허증 (앞면)",
+      "license_back": "운전면허증 (뒷면)",
+      "id_front": "신분증 (앞면)",
+      "id_back": "신분증 (뒷면)"
+    },
+    "docMissing": "아직 올리지 않음",
+    "docSent": "{date} 업로드",
+    "docUpload": "업로드",
+    "docReplace": "교체",
+    "docView": "서류 보기",
+    "docUploaded": "서류를 업로드했습니다.",
+    "ev": {
+      "booked": "{detail} 예약",
+      "confirmed": "예약 확정",
+      "picked_up": "차량 인수",
+      "returned": "차량 반납",
+      "rejected": "예약 거절",
+      "cancelled": "예약 취소",
+      "extension_requested": "{detail}까지 연장 요청",
+      "extension_accepted": "{detail}까지 연장 수락",
+      "extension_refused": "연장 거절",
+      "extension_pending": "연장 대기 중",
+      "document": "서류 업로드: {detail}",
+      "profile": "정보 수정"
+    }
   },
   "Auth": {
     "loginTitle": "로그인",
@@ -311,7 +414,8 @@
     "marketing": "이메일 마케팅",
     "site": "공개 사이트",
     "documentation": "문서",
-    "contract": "계약서"
+    "contract": "계약서",
+    "extras": "추가 옵션"
   },
   "Managers": {
     "title": "매니저",
@@ -774,7 +878,17 @@
     "licenseBlacklisted": "이 고객은 블랙리스트에 있어 차량 인도가 차단됩니다.",
     "licenseVerified": "면허 확인됨",
     "licenseNotVerified": "면허 미확인",
-    "validUntil": "{date}까지 유효"
+    "validUntil": "{date}까지 유효",
+    "decideFromEmail": "이메일에서 열었습니다: 아래 버튼으로 예약을 확정하세요.",
+    "extensionRequests": "연장 요청",
+    "extensionStatus": {
+      "pending": "대기 중",
+      "accepted": "수락됨",
+      "refused": "거절됨"
+    },
+    "acceptExtension": "수락",
+    "refuseExtension": "거절",
+    "clientDocuments": "고객 서류"
   },
   "Status": {
     "pending": "대기 중",
@@ -891,7 +1005,10 @@
     "out_of_scope": "허용되지 않음: 이 차량 또는 지점은 담당 범위 밖입니다.",
     "client_blacklisted": "이 고객은 블랙리스트에 있습니다. 예약도 차량 인도도 할 수 없습니다.",
     "license_required": "열쇠를 건네기 전에 운전면허(번호, 유효기간, 원본)를 확인하세요.",
-    "license_expired": "운전면허가 반납일 전에 만료됩니다."
+    "license_expired": "운전면허가 반납일 전에 만료됩니다.",
+    "extension_pending": "이미 대기 중인 연장 요청이 있습니다.",
+    "acceptTerms": "이용약관에 동의해야 합니다.",
+    "time": "잘못된 시간"
   },
   "About": {
     "title": "잘 관리된 차량을 갖춘 모로코 렌터카",
@@ -982,7 +1099,18 @@
     "sentToClientNote": "고객에게 요약을 보냈습니다({email}).",
     "tplBtnLogin": "로그인",
     "tplBtnAgency": "지점 보기",
-    "tplBtnPromo": "할인 받기"
+    "tplBtnPromo": "할인 받기",
+    "tplBtnAccept": "수락",
+    "tplBtnRefuse": "거절",
+    "extSubject": "연장 요청 · {ref}",
+    "extTitle": "연장 요청",
+    "extBody": "{client} 님이 {car} 대여를 {from}에서 {to}까지 연장하고자 합니다. 요청을 수락하거나 거절하세요.",
+    "extAcceptedSubject": "연장 수락 · {ref}",
+    "extAcceptedTitle": "연장이 수락되었습니다",
+    "extAcceptedBody": "{car} 대여가 {to}까지 연장되었습니다.",
+    "extRefusedSubject": "연장 거절 · {ref}",
+    "extRefusedTitle": "연장이 수락되지 않았습니다",
+    "extRefusedBody": "{car} 대여를 {to}까지 연장할 수 없습니다."
   },
   "Activity": {
     "session_login": "로그인",
@@ -1207,7 +1335,8 @@
     "setPasswordTitle": "비밀번호 변경",
     "setPasswordHint": "{name}의 새 비밀번호를 정하세요. 이메일로 전달됩니다.",
     "showPassword": "비밀번호 표시",
-    "savePassword": "비밀번호 저장"
+    "savePassword": "비밀번호 저장",
+    "idCardNumber": "신분증 번호"
   },
   "My": {
     "chartTitle": "월별 매출",
@@ -1468,7 +1597,13 @@
     "blacklistReason": "사유",
     "blacklistedBanner": "블랙리스트 고객",
     "blacklistAdded": "고객 {count}명을 블랙리스트에 추가했습니다",
-    "blacklistRemoved": "고객 {count}명을 블랙리스트에서 제거했습니다"
+    "blacklistRemoved": "고객 {count}명을 블랙리스트에서 제거했습니다",
+    "bulkActivate": "활성화",
+    "bulkDeactivate": "비활성화",
+    "bulkActivated": "{count, plural, other {고객 #명 활성화됨}}",
+    "bulkDeactivated": "{count, plural, other {고객 #명 비활성화됨}}",
+    "bulkDeactivateTitle": "{count, plural, other {고객 #명 비활성화}}",
+    "bulkDeactivateReason": "비활성화 사유"
   },
   "Appointments": {
     "title": "예정된 약속",
@@ -1683,7 +1818,21 @@
     "step3": "고객 정보",
     "step3Body": "로그인하거나 이름, 도시, 전화번호만 입력합니다.",
     "step4": "열쇠 받기",
-    "step4Body": "지점이 확정하면 차량을 인수하거나 배송받습니다."
+    "step4Body": "지점이 확정하면 차량을 인수하거나 배송받습니다.",
+    "resultsTitle": "이용 가능한 차량",
+    "resultsCount": "{count, plural, =0 {이용 가능한 차량이 없습니다} other {이용 가능한 차량 #대}}",
+    "resultsFor": "{place} · {days, plural, other {#일}}",
+    "sortBy": "정렬",
+    "sortPriceAsc": "낮은 가격순",
+    "sortPriceDesc": "높은 가격순",
+    "sortNameAsc": "이름 (A → Z)",
+    "sortNameDesc": "이름 (Z → A)",
+    "noneTitle": "이 날짜에 빈 차량이 없습니다",
+    "noneBody": "다른 날짜나 다른 지점을 선택해 보세요.",
+    "seats": "{count, plural, other {#인승}}",
+    "bags": "{count, plural, other {캐리어 #개}}",
+    "bookThis": "이 차량 예약",
+    "allDetails": "상세 정보 모두 보기"
   },
   "Docs": {
     "title": "문서",
@@ -1794,7 +1943,8 @@
       "months": "최근 12개월",
       "byType": "유형별 지출",
       "noExpense": "지출 기록이 없습니다."
-    }
+    },
+    "reservationsTab": "예약"
   },
   "Inspection": {
     "intro": "차량 점검은 보증금을 지키고 분쟁을 해결합니다. 주행거리, 연료, 손상, 사진을 기록하고 고객이 휴대폰이나 태블릿에 서명합니다.",
@@ -2004,5 +2154,23 @@
     "confirm": "{name}님, 예약 {reference}이(가) 확정되었습니다: {car}, {start}부터 {end}까지. 인수 장소: {agency}. 합계: {total}. 감사합니다!",
     "reminder": "{name}님, 내일({start}) {agency}에서 {car} 렌트가 시작됩니다. 운전면허증과 신분증을 지참해 주세요. 내일 뵙겠습니다!",
     "return": "{name}님, {car} 렌트가 {end}에 종료됩니다. {returnAgency}에 같은 연료량으로 반납해 주세요. 연장이 필요하면 이 메시지에 답장해 주세요."
+  },
+  "ExtrasAdmin": {
+    "title": "추가 옵션",
+    "subtitle": "예약 시 제공하는 옵션: GPS, 어린이 카시트, 긴급출동 등. 1일 단위 또는 1회 요금.",
+    "name": "이름",
+    "price": "가격 (MAD)",
+    "pricing": "과금 방식",
+    "perDay": "1일당",
+    "once": "1회",
+    "active": "활성",
+    "up": "위로",
+    "down": "아래로",
+    "add": "옵션 추가",
+    "neverDeleted": "옵션은 삭제되지 않습니다. 숨기려면 「활성」을 해제하세요.",
+    "driverPrice": "기사 1일 요금 (MAD)",
+    "driverPriceHint": "0 = 견적. 고객에게 표시: 하루 {example}",
+    "responseHours": "안내하는 답변 시간 (시간)",
+    "responseHoursHint": "예약 또는 연장 요청 후 고객에게 표시됩니다."
   }
 }

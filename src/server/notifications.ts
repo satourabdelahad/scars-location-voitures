@@ -1,10 +1,11 @@
 import "server-only";
-import { and, eq, inArray } from "drizzle-orm";
+import { extraName } from "@/lib/pricing";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { createTranslator } from "next-intl";
 import { db } from "@/db";
 import { agencies, carManagers, cars, clientProfiles, managerAgencies, managers, marketingCampaigns, marketingRecipients, promotions, reservations, users } from "@/db/schema";
 import { formatDate, formatMoney } from "@/lib/utils";
-import { APP_BASE_URL, emailButton, sendTemplate } from "@/server/email";
+import { APP_BASE_URL, emailButton, sendSimpleEmail, sendTemplate } from "@/server/email";
 import { isLocale, type Locale } from "@/i18n/config";
 
 /** Libellés (carrosserie, options, boutons…) dans la langue du destinataire. */
@@ -187,7 +188,7 @@ export async function notifyReservationCreated(reservationId: string) {
         date_fin: date(r.endDate),
         jours: String(r.days),
         prix_jour: money(r.dailyPrice),
-        options: r.extras.length ? r.extras.map((o) => (x.has(o.extra.code as "gps") ? x(o.extra.code as "gps") : o.extra.code)).join(", ") : m("tplNone"),
+        options: r.extras.length ? r.extras.map((o) => extraName(o.extra, x)).join(", ") : m("tplNone"),
         code_promo: r.promotion?.code ?? "",
         remise: money(r.discountAmount ?? 0),
         total: money(r.totalPrice),
@@ -200,12 +201,17 @@ export async function notifyReservationCreated(reservationId: string) {
   };
   const recipients = [];
   const c = await varsFor(r.locale);
+  // Équipe qui décide : administrateur, responsables de l'agence de la voiture et responsables de la voiture.
+  const deciders = await reservationDeciders(r.id);
   const clientLink = `${APP_BASE_URL}/${c.l}/account`;
   recipients.push({ to: r.client.email, locale: c.l, vars: { ...c.vars, destinataire: r.driverFirstName, lien_reservation: clientLink, bouton_reservation: emailButton(c.m("tplBtnBooking"), clientLink) } });
-  for (const s of staff) {
+  void staff;
+  for (const s of deciders) {
     const v = await varsFor(s.locale);
     const link = `${APP_BASE_URL}/${v.l}/${s.role === "admin" ? "admin" : "manager"}/reservations/${r.id}`;
-    recipients.push({ to: s.email, locale: v.l, vars: { ...v.vars, destinataire: s.name, lien_reservation: link, bouton_reservation: emailButton(v.m("tplBtnProcess"), link) } });
+    // Deux boutons : accepter ou refuser (la fiche s'ouvre sur la décision).
+    const buttons = `${emailButton(v.m("tplBtnAccept"), `${link}?decide=confirm`)} ${emailButton(v.m("tplBtnRefuse"), `${link}?decide=reject`)}`;
+    recipients.push({ to: s.email, locale: v.l, vars: { ...v.vars, destinataire: s.name, lien_reservation: link, bouton_reservation: buttons } });
   }
   await sendTemplate("reservation_created", recipients);
 }
@@ -373,4 +379,50 @@ export async function sendMarketingCampaign(campaignId: number) {
   }
   await db.update(marketingCampaigns).set({ sentCount: out.sent, failedCount: out.failed }).where(eq(marketingCampaigns.id, campaignId));
   return out;
+}
+
+/** Qui accepte ou refuse une réservation : l'administrateur, les responsables de l'agence de la voiture et ceux de la voiture. */
+export async function reservationDeciders(reservationId: string) {
+  const res = await db.execute<{ email: string; name: string; role: "admin" | "manager"; locale: string | null }>(sql`
+    SELECT DISTINCT u.email, COALESCE(m.first_name, u.name, 'Admin') AS name, u.role, u.preferred_locale AS locale
+    FROM users u LEFT JOIN managers m ON m.user_id = u.id
+    WHERE u.status = 'active' AND u.email IS NOT NULL AND (
+      u.role = 'admin'
+      OR m.id IN (
+        SELECT ma.manager_id FROM manager_agencies ma JOIN cars c ON c.agency_id = ma.agency_id JOIN reservations r ON r.car_id = c.id
+        WHERE r.id = ${reservationId} AND ma.is_responsible
+        UNION
+        SELECT cr.manager_id FROM car_responsibles cr JOIN reservations r ON r.car_id = cr.car_id WHERE r.id = ${reservationId}
+      )
+    )`);
+  return res.rows;
+}
+
+/** Demande de prolongation du client : emails à l'équipe qui décide, avec les boutons accepter / refuser. */
+export async function notifyExtensionRequest(reservationId: string, extensionId: string, requestedEnd: string) {
+  const r = await db.query.reservations.findFirst({ where: eq(reservations.id, reservationId), with: { car: true } });
+  if (!r) return;
+  for (const s of await reservationDeciders(reservationId)) {
+    const { m, date, locale: l } = await tr(s.locale);
+    const link = `${APP_BASE_URL}/${l}/${s.role === "admin" ? "admin" : "manager"}/reservations/${r.id}`;
+    await sendSimpleEmail(s.email, l, m("extSubject", { ref: r.reference }), m("extTitle"), m("extBody", { client: `${r.driverFirstName} ${r.driverLastName}`, car: `${r.car.brand} ${r.car.model}`, from: date(r.endDate), to: date(requestedEnd) }), [
+      { label: m("tplBtnAccept"), href: `${link}?extension=${extensionId}&decide=accept` },
+      { label: m("tplBtnRefuse"), href: `${link}?extension=${extensionId}&decide=refuse` },
+    ]).catch((e) => console.error("[email] prolongation", e));
+  }
+}
+
+/** Réponse à la demande de prolongation, envoyée au client. */
+export async function notifyExtensionDecision(reservationId: string, accepted: boolean, requestedEnd: string, reason?: string | null) {
+  const r = await db.query.reservations.findFirst({ where: eq(reservations.id, reservationId), with: { car: true, client: true } });
+  if (!r?.client.email) return;
+  const { m, date, locale: l } = await tr(r.locale);
+  await sendSimpleEmail(
+    r.client.email,
+    l,
+    m(accepted ? "extAcceptedSubject" : "extRefusedSubject", { ref: r.reference }),
+    m(accepted ? "extAcceptedTitle" : "extRefusedTitle"),
+    m(accepted ? "extAcceptedBody" : "extRefusedBody", { car: `${r.car.brand} ${r.car.model}`, to: date(requestedEnd) }) + (reason ? `\n${reason}` : ""),
+    [{ label: m("tplBtnBooking"), href: `${APP_BASE_URL}/${l}/account/reservations/${r.id}` }],
+  ).catch((e) => console.error("[email] décision prolongation", e));
 }

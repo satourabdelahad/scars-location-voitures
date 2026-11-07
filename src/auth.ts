@@ -2,6 +2,7 @@ import NextAuth, { type DefaultSession, CredentialsSignin } from "next-auth";
 import type { Provider } from "next-auth/providers";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import Credentials from "next-auth/providers/credentials";
+import { readBookingToken } from "@/server/booking-token";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import Twitter from "next-auth/providers/twitter";
@@ -133,6 +134,18 @@ const providers: Provider[] = [
       }
 
       await clearLoginFailures(keys);
+      return { id: user.id, name: user.name, email: user.email, image: user.image };
+    },
+  }),
+  // Connexion automatique d'un nouveau client juste après sa réservation (jeton serveur, 5 minutes).
+  Credentials({
+    id: "booking-token",
+    credentials: { token: {} },
+    async authorize(raw) {
+      const userId = readBookingToken(String((raw as { token?: unknown })?.token ?? ""));
+      if (!userId) return null;
+      const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (!user || user.role !== "client" || user.status !== "active") return null;
       return { id: user.id, name: user.name, email: user.email, image: user.image };
     },
   }),

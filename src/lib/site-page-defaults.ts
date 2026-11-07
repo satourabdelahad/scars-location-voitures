@@ -41,7 +41,10 @@ L'annulation est gratuite jusqu'à 48 heures avant le départ. Contactez l'agenc
 - Toute sortie du territoire marocain doit être autorisée par écrit par l'agence.
 
 ## Assurance et assistance
-Les voitures sont assurées. Une assurance tous risques sans franchise est proposée en option. En cas de panne ou d'accident, appelez l'assistance 24h/24 avant toute réparation.`,
+Les voitures sont assurées. Une assurance tous risques sans franchise est proposée en option. En cas de panne ou d'accident, appelez l'assistance 24h/24 avant toute réparation.
+
+## Newsletter
+En acceptant ces conditions, vous êtes inscrit automatiquement à notre newsletter (offres et nouveautés). Vous pouvez vous désinscrire à tout moment grâce au lien présent dans chaque email.`,
   privacy: `## Données collectées
 Lors d'une réservation ou d'un message, nous recueillons votre nom, votre prénom, votre ville, votre téléphone et, si vous la donnez, votre adresse email. Pour la location, les informations du conducteur (permis, date de naissance) peuvent être demandées.
 
@@ -92,7 +95,10 @@ Cancellation is free up to 48 hours before pick-up. Contact the branch for any c
 - Leaving Moroccan territory requires written permission from the branch.
 
 ## Insurance and assistance
-All cars are insured. A zero-excess full insurance is available as an option. In case of breakdown or accident, call 24/7 assistance before any repair.`,
+All cars are insured. A zero-excess full insurance is available as an option. In case of breakdown or accident, call 24/7 assistance before any repair.
+
+## Newsletter
+By accepting these terms, you are automatically subscribed to our newsletter (offers and news). You can unsubscribe at any time with the link included in every email.`,
   privacy: `## Data we collect
 When you book or send us a message, we collect your last name, first name, city, phone number and, if you provide it, your email address. Driver details (licence, date of birth) may be requested for the rental.
 

@@ -7,7 +7,8 @@ import { agencies, cars, reservations, users } from "@/db/schema";
 const handler = alias(users, "handler");
 
 /** Réservations pour l'équipe : les 12 derniers mois et tout ce qui est à venir. */
-export async function listReservationsForStaff() {
+/** Réservations visibles par l'équipe ; pour une voiture donnée, tout l'historique. */
+export async function listReservationsForStaff(opts: { carId?: string } = {}) {
   return db
     .select({
       id: reservations.id,
@@ -36,7 +37,7 @@ export async function listReservationsForStaff() {
     .innerJoin(cars, eq(cars.id, reservations.carId))
     .innerJoin(agencies, eq(agencies.id, reservations.pickupAgencyId))
     .leftJoin(handler, eq(handler.id, reservations.handledBy))
-    .where(gte(reservations.endDate, sql`CURRENT_DATE - interval '12 months'`))
+    .where(opts.carId ? eq(reservations.carId, opts.carId) : gte(reservations.endDate, sql`CURRENT_DATE - interval '12 months'`))
     .orderBy(sql`CASE ${reservations.status} WHEN 'pending' THEN 0 WHEN 'confirmed' THEN 1 WHEN 'ongoing' THEN 2 ELSE 3 END`, desc(reservations.startDate));
 }
 export type StaffReservationRow = Awaited<ReturnType<typeof listReservationsForStaff>>[number];

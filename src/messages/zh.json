@@ -102,7 +102,12 @@
     "availableOnly": "现在可租（{count}）",
     "allFilter": "全部",
     "noCarsHere": "目前没有符合此选择的车辆。",
-    "seeAllFiltered": "查看所有这些车辆"
+    "seeAllFiltered": "查看所有这些车辆",
+    "searchPlace": "取车地点",
+    "searchPlaceholder": "选择门店",
+    "searchStartTime": "取车时间",
+    "searchEndTime": "还车时间",
+    "searchRequired": "请选择地点以及取车和还车日期。"
   },
   "Cars": {
     "title": "我们的车辆",
@@ -198,7 +203,52 @@
     "accountExists": "已有使用这些信息的账户：请登录后预订。",
     "guestInvited": "我们已向您发送邮件，用于设置密码并在线跟踪预订。",
     "guestCallback": "我们的团队将拨打 {phone} 与您确认。",
-    "backToCars": "查看其他车辆"
+    "backToCars": "查看其他车辆",
+    "specSeats": "{count, plural, other {# 座}}",
+    "specDoors": "{count, plural, other {# 门}}",
+    "specBags": "{count, plural, other {# 件行李}}",
+    "specAc": "空调",
+    "time": "时间",
+    "needDriver": "需要司机吗？",
+    "driverPrice": "司机：每天 {price}。",
+    "driverOnQuote": "门店将告知您司机的价格。",
+    "yesDriver": "是，带司机",
+    "noDriver": "否，我自己开",
+    "driverLine": "司机",
+    "driverService": "司机",
+    "onQuote": "另行报价",
+    "extrasTitle": "附加服务",
+    "once": "一次性",
+    "yourInfo": "您的信息",
+    "yourInfoHint": "用于准备租车合同。",
+    "moreInfo": "补充信息",
+    "depositLabel": "押金",
+    "depositHint": "取车时冻结，还车后退还。",
+    "totalSum": "总金额",
+    "acceptTerms": "我接受",
+    "termsLink": "租车通用条款",
+    "acceptTermsRequired": "您必须接受通用条款。",
+    "termsTitle": "租车通用条款",
+    "acceptAndClose": "我接受",
+    "reserve": "预订",
+    "noPaymentNow": "现在无需付款：取钥匙时付款。",
+    "identifyTitle": "请登录以预订",
+    "identifyBody": "登录或在几秒内创建账户；您的选择会被保留。",
+    "withSocial": "使用社交账号",
+    "socialHint": "登录后，只需填写身份证号和驾照号。",
+    "or": "或",
+    "tabNewClient": "新客户",
+    "tabHaveAccount": "我已有账户",
+    "loginAndReserve": "登录并预订",
+    "useLoginPage": "您的账户启用了双重验证：请从登录页面登录。",
+    "civility": "称谓",
+    "idCardNumber": "身份证或护照号码",
+    "licenseNumber": "驾照号码",
+    "phoneIsWhatsapp": "此号码也是我的 WhatsApp",
+    "receivedTitle": "已收到您的申请",
+    "receivedBody": "您的申请 {ref} 已受理。门店将在最多 {hours, plural, other {# 小时}}内回复您。",
+    "existingAccountLogin": "已有使用这些信息的账户：请登录以跟进您的预订。",
+    "loginToFollow": "登录以跟进我的预订"
   },
   "Extras": {
     "child_seat": "儿童座椅",
@@ -229,7 +279,60 @@
     "name": "姓名",
     "phone": "电话",
     "language": "邮件语言",
-    "connectedWith": "登录方式"
+    "connectedWith": "登录方式",
+    "tabInfos": "信息",
+    "tabReservations": "预订",
+    "tabHistory": "历史",
+    "historyEmpty": "暂无记录。",
+    "seeDetails": "查看详情",
+    "upcomingBadge": "即将开始",
+    "bookedOn": "预订于 {date}",
+    "carSpecs": "车辆",
+    "print": "打印",
+    "downloadPdf": "下载 PDF",
+    "extend": "延期",
+    "extendTitle": "延长租期",
+    "extendBody": "选择新的还车日期。门店将接受或拒绝您的申请。",
+    "newEndDate": "新的还车日期",
+    "extendNote": "给门店的留言",
+    "sendRequest": "发送申请",
+    "extensionSent": "延期申请已发送。",
+    "extensionAlready": "已有一个待处理的延期申请。",
+    "extensionPending": "延期至 {date} 的申请待处理：最多 {hours, plural, other {# 小时}}内回复。",
+    "extensionsTitle": "延期申请",
+    "ext": {
+      "pending": "待处理",
+      "accepted": "已接受",
+      "refused": "已拒绝"
+    },
+    "docsTitle": "我的证件",
+    "docsHint": "上传驾照和身份证（正反面），在门店节省时间。照片或 PDF，最大 10 MB。",
+    "doc": {
+      "license_front": "驾照（正面）",
+      "license_back": "驾照（反面）",
+      "id_front": "身份证（正面）",
+      "id_back": "身份证（反面）"
+    },
+    "docMissing": "尚未上传",
+    "docSent": "上传于 {date}",
+    "docUpload": "上传",
+    "docReplace": "替换",
+    "docView": "查看证件",
+    "docUploaded": "证件已上传。",
+    "ev": {
+      "booked": "预订 {detail}",
+      "confirmed": "预订已确认",
+      "picked_up": "已取车",
+      "returned": "已还车",
+      "rejected": "预订被拒绝",
+      "cancelled": "预订已取消",
+      "extension_requested": "申请延期至 {detail}",
+      "extension_accepted": "延期至 {detail} 已接受",
+      "extension_refused": "延期被拒绝",
+      "extension_pending": "延期待处理",
+      "document": "已上传证件：{detail}",
+      "profile": "信息已更新"
+    }
   },
   "Auth": {
     "loginTitle": "登录",
@@ -311,7 +414,8 @@
     "marketing": "邮件营销",
     "site": "公开网站",
     "documentation": "文档",
-    "contract": "合同"
+    "contract": "合同",
+    "extras": "附加服务"
   },
   "Managers": {
     "title": "经理",
@@ -774,7 +878,17 @@
     "licenseBlacklisted": "该客户在黑名单中：禁止交车。",
     "licenseVerified": "驾照已核实",
     "licenseNotVerified": "驾照未核实",
-    "validUntil": "有效期至 {date}"
+    "validUntil": "有效期至 {date}",
+    "decideFromEmail": "您从邮件进入：请用下方按钮确认预订。",
+    "extensionRequests": "延期申请",
+    "extensionStatus": {
+      "pending": "待处理",
+      "accepted": "已接受",
+      "refused": "已拒绝"
+    },
+    "acceptExtension": "接受",
+    "refuseExtension": "拒绝",
+    "clientDocuments": "客户证件"
   },
   "Status": {
     "pending": "待确认",
@@ -891,7 +1005,10 @@
     "out_of_scope": "无法操作：此车辆或门店不在您的范围内。",
     "client_blacklisted": "该客户在黑名单中：无法预订，也无法交车。",
     "license_required": "交车前请核实驾照（号码、有效期、原件）。",
-    "license_expired": "驾照在还车日期之前到期。"
+    "license_expired": "驾照在还车日期之前到期。",
+    "extension_pending": "已有一个待处理的延期申请。",
+    "acceptTerms": "您必须接受通用条款。",
+    "time": "时间无效"
   },
   "About": {
     "title": "一家车况可靠的摩洛哥租车公司",
@@ -982,7 +1099,18 @@
     "sentToClientNote": "已向客户发送摘要（{email}）。",
     "tplBtnLogin": "登录",
     "tplBtnAgency": "查看门店",
-    "tplBtnPromo": "领取我的优惠"
+    "tplBtnPromo": "领取我的优惠",
+    "tplBtnAccept": "接受",
+    "tplBtnRefuse": "拒绝",
+    "extSubject": "延期申请 · {ref}",
+    "extTitle": "延期申请",
+    "extBody": "{client} 申请将 {car} 的租期从 {from} 延长至 {to}。请接受或拒绝该申请。",
+    "extAcceptedSubject": "延期已接受 · {ref}",
+    "extAcceptedTitle": "您的延期已被接受",
+    "extAcceptedBody": "好消息：{car} 的租期已延长至 {to}。",
+    "extRefusedSubject": "延期被拒绝 · {ref}",
+    "extRefusedTitle": "您的延期未能被接受",
+    "extRefusedBody": "{car} 的租期无法延长至 {to}。"
   },
   "Activity": {
     "session_login": "登录",
@@ -1207,7 +1335,8 @@
     "setPasswordTitle": "更改密码",
     "setPasswordHint": "为 {name} 设置新密码，他将通过邮件收到。",
     "showPassword": "显示密码",
-    "savePassword": "保存密码"
+    "savePassword": "保存密码",
+    "idCardNumber": "身份证号码"
   },
   "My": {
     "chartTitle": "每月营业额",
@@ -1468,7 +1597,13 @@
     "blacklistReason": "原因",
     "blacklistedBanner": "黑名单客户",
     "blacklistAdded": "已将 {count} 位客户加入黑名单",
-    "blacklistRemoved": "已将 {count} 位客户移出黑名单"
+    "blacklistRemoved": "已将 {count} 位客户移出黑名单",
+    "bulkActivate": "启用",
+    "bulkDeactivate": "停用",
+    "bulkActivated": "{count, plural, other {已启用 # 位客户}}",
+    "bulkDeactivated": "{count, plural, other {已停用 # 位客户}}",
+    "bulkDeactivateTitle": "{count, plural, other {停用 # 位客户}}",
+    "bulkDeactivateReason": "停用原因"
   },
   "Appointments": {
     "title": "已安排的预约",
@@ -1683,7 +1818,21 @@
     "step3": "您的信息",
     "step3Body": "登录或只填写姓名、城市和电话。",
     "step4": "取车",
-    "step4Body": "门店确认后，您到店取车或由我们送车。"
+    "step4Body": "门店确认后，您到店取车或由我们送车。",
+    "resultsTitle": "可用车辆",
+    "resultsCount": "{count, plural, =0 {暂无可用车辆} other {# 辆可用车辆}}",
+    "resultsFor": "{place} · {days, plural, other {# 天}}",
+    "sortBy": "排序",
+    "sortPriceAsc": "价格从低到高",
+    "sortPriceDesc": "价格从高到低",
+    "sortNameAsc": "名称（A → Z）",
+    "sortNameDesc": "名称（Z → A）",
+    "noneTitle": "这些日期没有空闲车辆",
+    "noneBody": "请尝试其他日期或其他门店。",
+    "seats": "{count, plural, other {# 座}}",
+    "bags": "{count, plural, other {# 件行李}}",
+    "bookThis": "预订这辆车",
+    "allDetails": "查看全部详情"
   },
   "Docs": {
     "title": "文档",
@@ -1794,7 +1943,8 @@
       "months": "近 12 个月",
       "byType": "按类型的支出",
       "noExpense": "暂无支出记录。"
-    }
+    },
+    "reservationsTab": "预订"
   },
   "Inspection": {
     "intro": "验车记录保护押金并解决纠纷：里程、燃油、损伤和照片，由客户在手机或平板上签名。",
@@ -2004,5 +2154,23 @@
     "confirm": "{name} 您好，您的预订 {reference} 已确认：{car}，{start} 至 {end}。取车地点：{agency}。总计：{total}。谢谢，期待再见！",
     "reminder": "{name} 您好，温馨提醒：您的 {car} 租赁将于明天（{start}）在 {agency} 开始。请携带驾照和身份证件。明天见！",
     "return": "{name} 您好，您的 {car} 租赁将于 {end} 结束。请在 {returnAgency} 还车，并保持相同油量。需要续租？直接回复此消息。"
+  },
+  "ExtrasAdmin": {
+    "title": "附加服务",
+    "subtitle": "预订时提供的选项：GPS、儿童座椅、道路救援……按天或一次性计价。",
+    "name": "名称",
+    "price": "价格（MAD）",
+    "pricing": "计费方式",
+    "perDay": "按天",
+    "once": "一次性",
+    "active": "启用",
+    "up": "上移",
+    "down": "下移",
+    "add": "添加附加服务",
+    "neverDeleted": "附加服务不会被删除：取消勾选“启用”即可隐藏。",
+    "driverPrice": "司机每日价格（MAD）",
+    "driverPriceHint": "0 = 另行报价。客户看到：每天 {example}。",
+    "responseHours": "公布的回复时间（小时）",
+    "responseHoursHint": "在预订或延期申请后显示给客户。"
   }
 }

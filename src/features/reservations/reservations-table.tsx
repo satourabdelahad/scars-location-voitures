@@ -17,7 +17,10 @@ export function ReservationsTable({
   prefs,
   userId,
   isAdmin,
+  tableKey = "reservations",
 }: {
+  /** Clé des préférences (colonnes, taille de page) */
+  tableKey?: string;
   rows: StaffReservationRow[];
   base: string;
   prefs: { visibleColumns: string[]; pageSize: number } | null;
@@ -71,7 +74,7 @@ export function ReservationsTable({
 
   return (
     <DataTable
-      tableKey="reservations"
+      tableKey={tableKey}
       columns={columns}
       data={rows}
       initialPrefs={prefs}

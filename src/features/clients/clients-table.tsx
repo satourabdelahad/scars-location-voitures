@@ -11,6 +11,7 @@ import { cn, formatDate, formatMoney } from "@/lib/utils";
 import type { ClientRow, ClientSegment } from "@/server/queries/clients";
 import { ClientStatusButton } from "./client-status";
 import { BlacklistActions } from "./blacklist";
+import { BulkStatusActions } from "./bulk-status";
 
 const SEGMENTS: { id: ClientSegment; Icon: typeof CarFront; tone: Tone }[] = [
   { id: "renting", Icon: CarFront, tone: "dark" },
@@ -66,14 +67,6 @@ export function ClientsTable({ rows: serverRows, base }: { rows: ClientRow[]; ba
       { id: "addedBy", header: t("addedBy"), text: (r) => r.addedBy ?? t("selfRegistered"), filter: { type: "text" }, defaultHidden: true },
       { id: "updatedAt", header: t("updatedOn"), text: (r) => (r.updatedAt ? formatDate(r.updatedAt, locale) : ""), sortValue: (r) => r.updatedAt, defaultHidden: true },
       {
-        id: "blacklist",
-        header: t("blacklist"),
-        text: (r) => (r.blacklisted ? t("blacklisted") : ""),
-        filter: { type: "select", options: [{ value: t("blacklisted"), label: t("blacklisted") }] },
-        addedLater: true,
-        cell: (r) => (r.blacklisted ? <Badge tone="danger" dot><span title={r.blacklistReason ?? undefined}>{t("blacklisted")}</span></Badge> : null),
-      },
-      {
         id: "status",
         header: c("status"),
         text: (r) => (r.status === "active" ? c("active") : c("deactivated")),
@@ -116,23 +109,7 @@ export function ClientsTable({ rows: serverRows, base }: { rows: ClientRow[]; ba
           </button>
         ))}
       </div>
-      <DataTable
-        tableKey="clients"
-        columns={columns}
-        data={data}
-        exportTitle={t("title")}
-        exportFilename="clients"
-        onRowClick={(r) => router.push(`${base}/clients/${r.id}`)}
-        bulkActions={(selected, clear) => (
-          <BlacklistActions
-            selected={selected}
-            onDone={(ids, on, reason) => {
-              patch(ids, { blacklisted: on, blacklistReason: on ? reason : null });
-              clear();
-            }}
-          />
-        )}
-      />
+      <DataTable tableKey="clients" columns={columns} data={data} exportTitle={t("title")} exportFilename="clients" onRowClick={(r) => router.push(`${base}/clients/${r.id}`)} />
     </div>
   );
 }

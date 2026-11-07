@@ -50,6 +50,16 @@ async function write(key: string, value: unknown, userId: string) {
 export const getAlertSettings = () => read("alerts", alertSettingsSchema, DEFAULT_ALERTS);
 export const saveAlertSettings = (v: AlertSettings, userId: string) => write("alerts", v, userId);
 
+/** Réservation en ligne : prix du chauffeur par jour, délai de réponse annoncé au client. */
+export const bookingSettingsSchema = z.object({
+  driverPricePerDay: z.coerce.number().min(0, "number").max(100000, "number"),
+  responseHours: z.coerce.number().int().min(1, "number").max(72, "number"),
+});
+export type BookingSettings = z.infer<typeof bookingSettingsSchema>;
+export const DEFAULT_BOOKING: BookingSettings = { driverPricePerDay: 0, responseHours: 1 };
+export const getBookingSettings = () => read("booking", bookingSettingsSchema, DEFAULT_BOOKING);
+export const saveBookingSettings = (v: BookingSettings, userId: string) => write("booking", v, userId);
+
 export const getContractSettings = () =>
   read("contract", contractSettingsSchema, { headerHtml: DEFAULT_CONTRACT_HEADER, bodyHtml: DEFAULT_CONTRACT_BODY, logoUrl: "" });
 export const saveContractSettings = (v: ContractSettings, userId: string) => write("contract", v, userId);

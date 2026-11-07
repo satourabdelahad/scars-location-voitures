@@ -32,18 +32,28 @@ Le bandeau noir en haut de chaque page, sur le site comme dans le back-office, r
 Le menu propose **Nos voitures**, **Réservation**, **Nos agences**, **À propos** et **Contact**. « Nos agences » n'apparaît que s'il y a au moins deux agences actives ; avec une seule agence, ses coordonnées sont reprises dans Contact.
 
 ### Accueil
-La recherche (ville, dates) mène au catalogue. Les voitures sont regroupées par **type de carrosserie**, par **ville** ou par **agence**, avec leur disponibilité du moment.
+La recherche demande le **lieu de prise en charge** (liste des agences, avec leur adresse), la **date de départ** et la **date de retour**, obligatoires, et les **heures**, facultatives. Aucune connexion n'est nécessaire. Plus bas, les voitures sont regroupées par type de carrosserie, par ville ou par agence.
 
 ### Nos voitures
 Le catalogue se filtre par ville, dates, catégorie, boîte, carburant, nombre de places et prix. La fiche d'une voiture affiche ses photos, ses caractéristiques, son prix par jour, une éventuelle promotion et ses disponibilités.
 
-### Réservation
-La page Réservation reprend la recherche, explique les étapes et propose un lien WhatsApp. Pour réserver, le client a trois possibilités :
-- se connecter avec Google, Facebook, X, TikTok ou Instagram ;
-- se connecter avec son email et son mot de passe ;
-- remplir un **formulaire minimal** : nom, prénom, ville et téléphone obligatoires, email et WhatsApp facultatifs.
+### Résultats de la recherche
+La page Réservation affiche le **nombre de voitures disponibles** sur la période, un tri par **prix** ou par **nom**, et pour chaque voiture le prix total, le prix par jour et deux boutons : **Afficher tous les détails** et **Réserver cette voiture**.
 
-Le prix est calculé avec les options (siège bébé, GPS, conducteur supplémentaire…) et un éventuel **code promo**. Une réservation commence **en attente** jusqu'à sa validation par l'équipe.
+### Réserver une voiture
+La page de réservation reprend tous les détails de la voiture, puis :
+- le lieu, les dates et les heures ;
+- **Besoin d'un chauffeur (Oui / Non)**, au prix par jour réglé dans Suppléments (ou sur devis) ;
+- les **suppléments** (GPS, siège enfant, siège bébé, assistance…), facturés par jour ou une seule fois ;
+- le récapitulatif : location, chauffeur, suppléments, code promo, **dépôt de garantie** et **somme totale** ;
+- la case **J'accepte les conditions générales**, avec un lien qui les affiche dans une fenêtre. Les conditions précisent que le client est inscrit automatiquement à la newsletter.
+
+Au clic sur **Réserver**, le visiteur non connecté choisit :
+- un **réseau social** (Google, Facebook, X, TikTok, Instagram) ; à son retour, il complète son numéro de carte d'identité et de permis ;
+- **J'ai un compte** : email et mot de passe ;
+- **Nouveau client** : civilité, nom, prénom, ville, téléphone (case « c'est mon WhatsApp », sinon un champ WhatsApp facultatif), numéro de carte d'identité, numéro de permis et email facultatif.
+
+Un nouveau client est connecté automatiquement et arrive sur le **récapitulatif** de sa réservation, avec le message « demande prise en compte, réponse sous 1 heure maximum » (délai réglable). La réservation commence **en attente** : l'administrateur et les responsables de l'agence et de la voiture reçoivent un email avec les boutons **Accepter** et **Refuser**.
 
 ### Pages d'information
 **À propos** (qui nous sommes, mission, vision, services), **Contact** (adresse, carte, email, téléphone, WhatsApp, réseaux sociaux et formulaire), **Conditions de location** et **Confidentialité**. Tous ces textes se modifient dans Site public, langue par langue.
@@ -54,7 +64,13 @@ La connexion, l'inscription, le mot de passe oublié, la réservation et le form
   {
     id: "client-space",
     title: "L'espace client",
-    body: `Après connexion, le client retrouve **Mes réservations** (suivi, annulation tant que c'est possible) et **Mon profil** (identité, téléphone, ville, permis).
+    body: `L'espace client ressemble à la fiche d'un gestionnaire, avec trois onglets :
+- **Informations** : identité, téléphone, WhatsApp, ville, carte d'identité, permis ;
+- **Réservations** : toutes ses locations ;
+- **Historique** : réservations, confirmations, départs, retours, prolongations, documents déposés.
+
+### Le récapitulatif d'une réservation
+Tous les détails (agences, dates et heures, chauffeur, suppléments, total, caution) avec les boutons **Imprimer**, **Télécharger en PDF**, **Annuler** (tant que c'est possible) et **Prolonger**. Une prolongation est une **demande** : l'équipe qui valide reçoit un email avec Accepter / Refuser, puis le client reçoit la réponse par email. Le client y dépose aussi son **permis** et sa **carte d'identité**, recto et verso ; ces documents sont privés et visibles par l'équipe dans la réservation.
 
 Un client ajouté par l'équipe avec un email reçoit une invitation : il choisit son mot de passe puis complète son profil.`,
   },
@@ -143,7 +159,7 @@ Dans la fiche d'un gestionnaire, une règle par marque, ville ou agence ajoute a
   {
     id: "car-file",
     title: "Le dossier d'une voiture",
-    body: `La fiche d'une voiture a, en plus de ses informations, sept onglets de suivi.
+    body: `La fiche d'une voiture a, en plus de ses informations, huit onglets de suivi.
 
 ### Assurance, vignette, vidange, visite technique
 Chaque onglet affiche l'échéance en cours (à jour, bientôt, expirée) puis l'**historique**. **Ajouter** enregistre une nouvelle ligne : dates, montant, assureur ou garage, numéro de police ou de procès-verbal, et les **documents** (attestation d'assurance, carte grise, facture…), conservés en privé. Pour la vidange, on note aussi le kilométrage et la prochaine vidange en date et en kilomètres. Une saisie erronée s'**annule** : elle reste visible, barrée, et sort des calculs.
@@ -153,6 +169,9 @@ Au départ et au retour de chaque location : kilométrage, niveau de carburant (
 
 ### Rentabilité
 Chiffre d'affaires des locations, toutes les dépenses (assurance, vignette, vidange, visite, entretien, réparations, pneus…), **marge réelle**, et ce qu'il reste à amortir sur le prix d'achat. Un graphique montre les 12 derniers mois. Les dépenses s'ajoutent en bas de l'onglet.
+
+### Réservations
+Tous les clients qui ont réservé la voiture : référence, client, dates, statut, total ; un clic ouvre la réservation.
 
 ### Planning
 Le calendrier du mois de la voiture, avec ses réservations colorées selon leur état et son taux d'occupation.
@@ -169,7 +188,25 @@ Dans **Parc automobile**, le bouton **Calendrier** affiche toutes les voitures d
 Confirmer ou refuser une réservation est réservé à l'**administrateur**, aux **responsables de l'agence de départ** et aux **responsables de la voiture**. La fiche de la réservation affiche qui peut la valider. Les autres gestionnaires du périmètre enregistrent le départ et le retour.
 
 ### Emails
-Le client reçoit un email à la confirmation, au refus et à l'annulation. L'équipe concernée est prévenue de chaque nouvelle réservation.
+Le client reçoit un email à la confirmation, au refus et à l'annulation. L'administrateur et les responsables de l'agence et de la voiture reçoivent chaque nouvelle réservation avec deux boutons, **Accepter** et **Refuser**, qui ouvrent la réservation prête à être confirmée ou refusée.
+
+### Demandes de prolongation
+Les demandes du client apparaissent dans la réservation avec **Accepter** et **Refuser** (motif obligatoire). Acceptée, la location est prolongée et le prix recalculé ; dans les deux cas le client est prévenu par email.
+
+### Détails et documents
+La réservation affiche les heures de départ et de retour, le chauffeur, les suppléments et les documents déposés par le client (permis, carte d'identité).
+
+### Remise des clés
+Avant de remettre les clés, l'équipe **vérifie le permis** : numéro, date de validité (elle doit couvrir toute la location) et original présenté. Sans cette vérification, la location ne peut pas démarrer. La fiche de la réservation affiche « Permis vérifié ».
+
+### Prolonger
+Une location confirmée ou en cours se **prolonge** avec une nouvelle date de retour ; le prix est recalculé avec le même prix par jour et les mêmes options. La base refuse si la voiture est déjà réservée sur les jours ajoutés.
+
+### Contrat PDF
+Le bouton **Contrat PDF** ouvre le contrat de location rempli avec les données du client, de la voiture, de la location et des états des lieux, prêt à imprimer ou à enregistrer en PDF.
+
+### Messages WhatsApp
+Trois messages pré-remplis, dans la langue de la réservation : **confirmation**, **rappel la veille** et **retour**. Un clic ouvre WhatsApp avec le message prêt à envoyer au client.
 
 ### Remise des clés
 Avant de remettre les clés, l'équipe **vérifie le permis** : numéro, date de validité (elle doit couvrir toute la location) et original présenté. Sans cette vérification, la location ne peut pas démarrer. La fiche de la réservation affiche « Permis vérifié ».
@@ -190,7 +227,10 @@ Une même voiture ne peut pas être réservée deux fois sur la même période, 
     id: "clients",
     title: "Clients, deals et rendez-vous",
     body: `### Clients
-La liste des clients et leur fiche : informations, réservations, deals et rendez-vous. Un client ajouté avec un email reçoit une invitation.
+La liste des clients et leur fiche : informations, réservations, deals et rendez-vous. Un client ajouté avec un email reçoit une invitation. Cochez des clients pour les **activer** ou les **désactiver** (motif obligatoire), et exportez la liste (PDF, CSV, Word…).
+
+### Liste noire
+Cochez un ou plusieurs clients puis **Mettre sur liste noire**, avec un motif. Un client sur liste noire ne peut plus réserver, ses réservations ne peuvent plus être confirmées et les clés ne peuvent pas lui être remises. Sa fiche affiche un bandeau rouge avec le motif.
 
 ### Liste noire
 Cochez un ou plusieurs clients puis **Mettre sur liste noire**, avec un motif. Un client sur liste noire ne peut plus réserver, ses réservations ne peuvent plus être confirmées et les clés ne peuvent pas lui être remises. Sa fiche affiche un bandeau rouge avec le motif.
@@ -224,18 +264,6 @@ Un gestionnaire limité à des agences ne voit que les alertes et notifications 
 - **Conditions de location** et **Confidentialité**.
 
 Chaque texte se règle langue par langue (drapeau à côté de chaque langue). Une langue laissée vide affiche le texte par défaut. Dans les textes, une ligne qui commence par « ## » devient un intertitre et une ligne qui commence par « - » un élément de liste.`,
-  },
-  {
-    id: "contract",
-    title: "Contrat (modèle)",
-    adminOnly: true,
-    body: `Dans **Contrat**, l'administrateur règle le modèle du contrat de location en deux parties : l'**en-tête** (logo, nom et coordonnées de la société, numéro du contrat) et le **contrat** lui-même.
-
-- Mode **Visuel** : on écrit comme dans un traitement de texte (gras, titres, listes, tableaux, alignement).
-- Mode **HTML** : pour modifier le code directement.
-- Mode **Aperçu** : le contrat rempli avec des données d'exemple.
-
-Les **variables** (nom et prénom du client, civilité, permis, voiture, dates, prix, caution, kilométrage et carburant des états des lieux, signature…) s'insèrent d'un clic et sont remplacées à la génération. Le logo s'ajoute dans la colonne de droite. « Modèle par défaut » remet le texte d'origine.`,
   },
   {
     id: "emails",

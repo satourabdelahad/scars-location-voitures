@@ -1,19 +1,29 @@
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { auth, socialProviders } from "@/auth";
 import { db } from "@/db";
 import { clientProfiles, extras, users } from "@/db/schema";
-import { Link } from "@/i18n/navigation";
 import { CarArt } from "@/components/car-art";
+import { RichText } from "@/components/rich-text";
 import { getBookedRanges, getPublicCar, listAgencies } from "@/server/queries/cars";
 import { assignedPromotions } from "@/server/promotions";
+import { getBookingSettings } from "@/server/app-settings";
+import { getSiteSettings, pageText } from "@/server/site-settings";
+import { defaultPageText } from "@/lib/site-page-defaults";
 import { BookingForm } from "./booking-form";
-import { SocialButtons } from "../../(auth)/social-buttons";
 import { todayISO } from "@/lib/utils";
 import { PROMO_COOKIE } from "@/lib/promo-cookie";
 
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+const isDate = (v?: string) => Boolean(v && /^\d{4}-\d{2}-\d{2}$/.test(v));
+const isTime = (v?: string) => Boolean(v && /^\d{2}:\d{2}$/.test(v));
+
+/**
+ * Réserver une voiture : détails, lieu et dates, chauffeur, suppléments, caution et total, conditions de location ;
+ * l'identification (réseaux sociaux, email et mot de passe, ou nouvelle fiche) n'est demandée qu'au clic sur Réserver.
+ */
 export default async function BookPage({ params, searchParams }: PageProps<"/[locale]/book/[id]">) {
   const { locale, id } = await params;
   setRequestLocale(locale);
@@ -21,11 +31,12 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[lo
   const car = await getPublicCar(id, locale);
   if (!car) notFound();
   const session = await auth();
-  const t = await getTranslations("Booking");
+  const [t, tx, e] = await Promise.all([getTranslations("Booking"), getTranslations("Extras"), getTranslations("Enums")]);
 
-  const start = typeof sp.start === "string" && sp.start >= todayISO() ? sp.start : todayISO(2);
-  const end = typeof sp.end === "string" && sp.end > start ? sp.end : todayISO(5);
-  const callback = `/${locale}/book/${car.id}?start=${start}&end=${end}`;
+  const startRaw = one(sp.start);
+  const start = isDate(startRaw) && startRaw! >= todayISO() ? startRaw! : todayISO(1);
+  const endRaw = one(sp.end);
+  const end = isDate(endRaw) && endRaw! > start ? endRaw! : todayISO(4);
 
   // L'équipe (administrateur, gestionnaires) ne réserve pas avec son compte depuis le site public.
   if (session?.user && session.user.role !== "client") {
@@ -39,13 +50,23 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[lo
   }
 
   const client = session?.user?.role === "client" ? session.user : null;
-  const [agencyRows, extraRows, booked, profile, promos] = await Promise.all([
+  const [agencyRows, extraRows, booked, profile, promos, booking, site] = await Promise.all([
     listAgencies(),
-    db.select().from(extras).where(eq(extras.isActive, true)),
+    db.select().from(extras).where(eq(extras.isActive, true)).orderBy(asc(extras.sortOrder), asc(extras.id)),
     getBookedRanges(car.id),
     client
       ? db
-          .select({ first: clientProfiles.firstName, last: clientProfiles.lastName, phone: users.phone, name: users.name })
+          .select({
+            civility: clientProfiles.civility,
+            first: clientProfiles.firstName,
+            last: clientProfiles.lastName,
+            city: clientProfiles.city,
+            whatsapp: clientProfiles.whatsapp,
+            idCard: clientProfiles.idCardNumber,
+            license: clientProfiles.licenseNumber,
+            phone: users.phone,
+            name: users.name,
+          })
           .from(users)
           .leftJoin(clientProfiles, eq(clientProfiles.userId, users.id))
           .where(eq(users.id, client.id))
@@ -53,11 +74,17 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[lo
           .then((r) => r[0])
       : null,
     client ? assignedPromotions(client.id) : [],
+    getBookingSettings(),
+    getSiteSettings(),
   ]);
   const [first, ...rest] = (profile?.name ?? client?.name ?? "").split(" ");
   // Code reçu par email (campagne) : appliqué automatiquement.
   const cookieCode = (await cookies()).get(PROMO_COOKIE)?.value;
-  const suggestedPromo = (typeof sp.promo === "string" ? sp.promo : undefined) ?? promos[0]?.code ?? cookieCode;
+  const suggestedPromo = one(sp.promo) ?? promos[0]?.code ?? cookieCode;
+  const agencyParam = Number(one(sp.agency));
+  const pickup = agencyRows.find((a) => a.id === agencyParam)?.id ?? car.agencyId;
+  const chosenExtras = (one(sp.extras) ?? "").split(",").map(Number).filter((n) => extraRows.some((x) => x.id === n));
+  const terms = pageText(site, "terms", locale) ?? defaultPageText("terms", locale);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
@@ -66,41 +93,58 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[lo
         car={{
           id: car.id,
           name: `${car.brand} ${car.model}`,
+          year: car.year,
           category: car.category,
+          categoryLabel: e(`category.${car.category}`),
+          specs: [
+            t("specSeats", { count: car.seats }),
+            t("specDoors", { count: car.doors }),
+            e(`transmission.${car.transmission}`),
+            e(`fuel.${car.fuel}`),
+            t("specBags", { count: car.luggage }),
+            ...(car.airConditioning ? [t("specAc")] : []),
+          ],
           colorHex: car.colorHex,
           dailyPrice: car.dailyPrice,
           promoPercent: car.promoPercent,
           promoStartsOn: car.promoStartsOn,
           promoEndsOn: car.promoEndsOn,
           deposit: car.deposit,
-          agencyId: car.agencyId,
-          cover: car.images[0]?.url ?? null,
+          images: car.images.map((i) => i.url),
+          description: car.description,
         }}
-        agencies={agencyRows.map((a) => ({ id: a.id, label: `${a.city} : ${a.name}` }))}
-        extras={extraRows.map((x) => ({ id: x.id, code: x.code, pricePerDay: x.pricePerDay }))}
+        agencies={agencyRows.map((a) => ({ id: a.id, label: `${a.city} · ${a.name}`, address: a.address }))}
+        extras={extraRows.map((x) => ({ id: x.id, name: x.name ?? (tx.has(x.code as "gps") ? tx(x.code as "gps") : x.code), price: x.pricePerDay, pricing: x.pricing }))}
+        driverPricePerDay={booking.driverPricePerDay}
         booked={booked}
-        defaults={{
+        initial={{
           startDate: start,
           endDate: end,
-          driverFirstName: profile?.first ?? first ?? "",
-          driverLastName: profile?.last ?? rest.join(" "),
-          driverPhone: profile?.phone ?? "",
+          pickupTime: isTime(one(sp.startTime)) ? one(sp.startTime)! : "",
+          returnTime: isTime(one(sp.endTime)) ? one(sp.endTime)! : "",
+          pickupAgencyId: pickup,
+          returnAgencyId: pickup,
+          extras: chosenExtras,
+          withDriver: one(sp.driver) === "1",
+          acceptTerms: one(sp.terms) === "1",
         }}
-        suggestedPromo={suggestedPromo}
-        guest={!client}
-        identify={
-          client ? undefined : (
-            <>
-              <SocialButtons enabled={socialProviders} callbackUrl={callback} />
-              <p className="mt-4 text-sm text-ink-2">
-                {t("haveAccount")}{" "}
-                <Link href={`/login?callbackUrl=${encodeURIComponent(callback)}`} className="font-semibold text-majorelle hover:underline">
-                  {t("loginWithPassword")}
-                </Link>
-              </p>
-            </>
-          )
+        profile={
+          client
+            ? {
+                civility: profile?.civility ?? "",
+                firstName: profile?.first ?? first ?? "",
+                lastName: profile?.last ?? rest.join(" "),
+                city: profile?.city ?? "",
+                phone: profile?.phone ?? "",
+                whatsapp: profile?.whatsapp ?? "",
+                idCardNumber: profile?.idCard ?? "",
+                licenseNumber: profile?.license ?? "",
+              }
+            : null
         }
+        suggestedPromo={suggestedPromo}
+        socialEnabled={socialProviders}
+        terms={<RichText text={terms} />}
         locale={locale}
       />
     </div>

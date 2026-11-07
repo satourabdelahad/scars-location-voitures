@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { carInspections, clientProfiles } from "@/db/schema";
 import { fillContract, type ContractVariable } from "@/lib/contract";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { extraName } from "@/lib/pricing";
 import { getContractSettings } from "@/server/app-settings";
 import { getReservationForStaff } from "@/server/queries/reservations";
 import { getSiteSettings } from "@/server/site-settings";
@@ -57,14 +58,10 @@ export async function renderContract(reservationId: string, locale: string) {
     car_transmission: e(`transmission.${r.car.transmission}`),
     car_category: e(`category.${r.car.category}`),
     reservation_reference: r.reference,
-    start_date: formatDate(r.startDate, locale),
-    end_date: formatDate(r.endDate, locale),
     days: String(r.days),
     pickup_agency: `${r.pickupAgency.name}, ${r.pickupAgency.city}`,
     return_agency: `${r.returnAgency.name}, ${r.returnAgency.city}`,
     daily_price: money(r.dailyPrice),
-    extras: r.extras.map((x) => tx(x.extra.code as "gps")).join(", ") || "—",
-    extras_total: money(r.extrasTotal),
     discount: money(r.discountAmount),
     total_price: money(r.totalPrice),
     deposit: money(r.deposit),

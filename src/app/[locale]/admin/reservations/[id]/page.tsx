@@ -4,8 +4,8 @@ import { requireRole } from "@/server/guards";
 
 export default async function Page({ params, searchParams }: PageProps<"/[locale]/admin/reservations/[id]">) {
   const { locale, id } = await params;
-  const { pickup } = await searchParams;
+  const { pickup, decide, extension } = await searchParams;
   setRequestLocale(locale);
   await requireRole(["admin"]);
-  return <ReservationDetailPage base="/admin" id={id} locale={locale} openPickup={pickup === "1"} />;
+  return <ReservationDetailPage base="/admin" id={id} locale={locale} openPickup={pickup === "1"} from={{ decide: typeof decide === "string" ? decide : undefined, extension: typeof extension === "string" ? extension : undefined }} />;
 }

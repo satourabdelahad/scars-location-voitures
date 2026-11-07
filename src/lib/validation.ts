@@ -98,8 +98,26 @@ export const reservationSchema = z
     flightNumber: z.string().trim().max(16).optional(),
     clientNote: z.string().trim().max(1000).optional(),
     promoCode: z.string().trim().max(32).optional(),
+    /** Heures facultatives (HH:MM) */
+    pickupTime: z.preprocess(emptyToNullR, z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "time").nullable()).default(null),
+    returnTime: z.preprocess(emptyToNullR, z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "time").nullable()).default(null),
+    withDriver: z.boolean().default(false),
+    /** Conditions de location acceptées (obligatoire) */
+    acceptTerms: z.literal(true, { error: "acceptTerms" }),
   })
   .refine((r) => r.endDate > r.startDate, { path: ["endDate"], message: "dateOrder" });
+
+/** Informations complétées par un client connecté au moment de réserver (après une connexion sociale). */
+export const bookingProfileSchema = z.object({
+  civility: z.preprocess(emptyToNullR, z.enum(["male", "female"]).nullable()).default(null),
+  firstName: z.string().trim().min(2, "required").max(120),
+  lastName: z.string().trim().min(2, "required").max(120),
+  city: z.string().trim().min(2, "required").max(120),
+  phone,
+  whatsapp: z.preprocess(emptyToNullR, phone.nullable()).default(null),
+  idCardNumber: z.string().trim().min(4, "required").max(64),
+  licenseNumber: z.string().trim().min(4, "required").max(64),
+});
 export type ReservationInput = z.infer<typeof reservationSchema>;
 
 /**
@@ -107,6 +125,7 @@ export type ReservationInput = z.infer<typeof reservationSchema>;
  * Nom, prénom, ville et téléphone obligatoires ; email et WhatsApp facultatifs.
  */
 export const guestClientSchema = z.object({
+  civility: z.preprocess(emptyToNullR, z.enum(["male", "female"]).nullable()).default(null),
   lastName: z.string().trim().min(2, "required").max(120),
   firstName: z.string().trim().min(2, "required").max(120),
   city: z.string().trim().min(2, "required").max(120),
