@@ -30,7 +30,10 @@
     "search": "Search",
     "notFoundTitle": "Page not found",
     "notFoundBody": "This address leads nowhere. Go back to the home page to find your car.",
-    "goHome": "Back to home"
+    "goHome": "Back to home",
+    "hello": "Hello!",
+    "welcome": "Welcome! We're glad to have you as a customer.",
+    "mission": "Our mission: meeting your car rental needs."
   },
   "Nav": {
     "cars": "Cars",
@@ -436,9 +439,19 @@
     "rejected": "Declined"
   },
   "Enums": {
-    "civility": { "male": "Mr", "female": "Ms" },
-    "marital": { "married": "Married", "widowed": "Widowed", "single": "Single" },
-    "contract": { "freelance": "Freelance", "cdi": "Permanent (CDI)" },
+    "civility": {
+      "male": "Mr",
+      "female": "Ms"
+    },
+    "marital": {
+      "married": "Married",
+      "widowed": "Widowed",
+      "single": "Single"
+    },
+    "contract": {
+      "freelance": "Freelance",
+      "cdi": "Permanent (CDI)"
+    },
     "category": {
       "economy": "Economy",
       "compact": "Compact",
@@ -449,8 +462,16 @@
       "convertible": "Convertible",
       "pickup": "Pick-up"
     },
-    "transmission": { "manual": "Manual", "automatic": "Automatic" },
-    "fuel": { "petrol": "Petrol", "diesel": "Diesel", "hybrid": "Hybrid", "electric": "Electric" },
+    "transmission": {
+      "manual": "Manual",
+      "automatic": "Automatic"
+    },
+    "fuel": {
+      "petrol": "Petrol",
+      "diesel": "Diesel",
+      "hybrid": "Hybrid",
+      "electric": "Electric"
+    },
     "carDeactivation": {
       "stolen": "Stolen",
       "sold": "Sold",

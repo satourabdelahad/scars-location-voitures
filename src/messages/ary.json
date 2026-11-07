@@ -30,7 +30,10 @@
     "search": "قلّب",
     "notFoundTitle": "هاد الصفحة ماكايناش",
     "notFoundBody": "هاد العنوان ما كيدّي لحتى بلاصة. رجع للصفحة الرئيسية باش تلقى الطوموبيل ديالك.",
-    "goHome": "رجع للرئيسية"
+    "goHome": "رجع للرئيسية",
+    "hello": "سلام، لاباس؟",
+    "welcome": "مرحبا بيك معانا، الكليان ديالنا!",
+    "mission": "الهدف ديالنا: نقضيو ليك الغرض فكرا الطوموبيلات."
   },
   "Nav": {
     "cars": "الطوموبيلات",
@@ -436,9 +439,19 @@
     "rejected": "مرفوض"
   },
   "Enums": {
-    "civility": { "male": "راجل", "female": "مرا" },
-    "marital": { "married": "مزوّج(ة)", "widowed": "هجّال / هجّالة", "single": "عزري / عزبة" },
-    "contract": { "freelance": "فريلانس", "cdi": "CDI" },
+    "civility": {
+      "male": "راجل",
+      "female": "مرا"
+    },
+    "marital": {
+      "married": "مزوّج(ة)",
+      "widowed": "هجّال / هجّالة",
+      "single": "عزري / عزبة"
+    },
+    "contract": {
+      "freelance": "فريلانس",
+      "cdi": "CDI"
+    },
     "category": {
       "economy": "اقتصادية",
       "compact": "صغيرة",
@@ -449,8 +462,16 @@
       "convertible": "كابريولي",
       "pickup": "بيكوب"
     },
-    "transmission": { "manual": "يدوي", "automatic": "أوطوماتيك" },
-    "fuel": { "petrol": "ليصانص", "diesel": "المازوط", "hybrid": "هيبريد", "electric": "كهربائية" },
+    "transmission": {
+      "manual": "يدوي",
+      "automatic": "أوطوماتيك"
+    },
+    "fuel": {
+      "petrol": "ليصانص",
+      "diesel": "المازوط",
+      "hybrid": "هيبريد",
+      "electric": "كهربائية"
+    },
     "carDeactivation": {
       "stolen": "تسرقات",
       "sold": "تباعت",

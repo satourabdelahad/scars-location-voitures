@@ -30,7 +30,10 @@
     "search": "Buscar",
     "notFoundTitle": "Página no encontrada",
     "notFoundBody": "Esta dirección no lleva a ninguna parte. Vuelve al inicio para encontrar tu coche.",
-    "goHome": "Volver al inicio"
+    "goHome": "Volver al inicio",
+    "hello": "¡Hola!",
+    "welcome": "¡Bienvenido! Nos alegra tenerte como cliente.",
+    "mission": "Nuestra misión: satisfacer tus necesidades de alquiler de coche."
   },
   "Nav": {
     "cars": "Coches",
@@ -436,9 +439,19 @@
     "rejected": "Rechazada"
   },
   "Enums": {
-    "civility": { "male": "Sr.", "female": "Sra." },
-    "marital": { "married": "Casado/a", "widowed": "Viudo/a", "single": "Soltero/a" },
-    "contract": { "freelance": "Autónomo", "cdi": "Indefinido (CDI)" },
+    "civility": {
+      "male": "Sr.",
+      "female": "Sra."
+    },
+    "marital": {
+      "married": "Casado/a",
+      "widowed": "Viudo/a",
+      "single": "Soltero/a"
+    },
+    "contract": {
+      "freelance": "Autónomo",
+      "cdi": "Indefinido (CDI)"
+    },
     "category": {
       "economy": "Económico",
       "compact": "Compacto",
@@ -449,8 +462,16 @@
       "convertible": "Descapotable",
       "pickup": "Pick-up"
     },
-    "transmission": { "manual": "Manual", "automatic": "Automático" },
-    "fuel": { "petrol": "Gasolina", "diesel": "Diésel", "hybrid": "Híbrido", "electric": "Eléctrico" },
+    "transmission": {
+      "manual": "Manual",
+      "automatic": "Automático"
+    },
+    "fuel": {
+      "petrol": "Gasolina",
+      "diesel": "Diésel",
+      "hybrid": "Híbrido",
+      "electric": "Eléctrico"
+    },
     "carDeactivation": {
       "stolen": "Robado",
       "sold": "Vendido",

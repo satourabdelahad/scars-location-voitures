@@ -1,7 +1,8 @@
 import { CheckCircle2, MessageCircle } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { CarArt } from "@/components/car-art";
+import { CarArt, DrivingCar } from "@/components/car-art";
+import { Scenery } from "@/components/scenery";
 import { CarCard } from "@/components/car-card";
 import { HeroSearch } from "@/components/hero-search";
 import { listAgencies, listPublicCars } from "@/server/queries/cars";
@@ -12,6 +13,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   setRequestLocale(locale);
   const t = await getTranslations("Home");
   const e = await getTranslations("Enums");
+  const tc = await getTranslations("Common");
   const [agencies, cars] = await Promise.all([listAgencies(), listPublicCars({ sort: "newest", limit: 6 })]);
   const cities = Array.from(new Map(agencies.map((a) => [a.city, a])).values());
 
@@ -25,14 +27,15 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-ink-2">{t("heroSubtitle")}</p>
           </div>
           <div className="relative z-10 -mb-[4.6%] hidden w-full max-w-[680px] justify-self-end lg:block" aria-hidden>
-            <CarArt category="suv" color="#4b3fd8" className="car-arrive block w-full" />
+            <Scenery className="absolute -inset-x-[30%] bottom-[7%] h-[62%] [mask-image:linear-gradient(90deg,transparent,#000_18%,#000_82%,transparent)]" />
+            <DrivingCar category="suv" color="#4b3fd8" messages={[tc("hello"), tc("welcome"), tc("mission")]} className="car-arrive" />
           </div>
         </div>
 
         {/* La route : la voiture y est posée, la ligne se trace au chargement, la recherche y prend place */}
         <div className="relative h-[92px] bg-asphalt md:h-[112px]" aria-hidden>
           <svg className="absolute inset-x-0 top-[38%] h-2 w-full" preserveAspectRatio="none" viewBox="0 0 1200 8">
-            <line x1="0" y1="4" x2="1200" y2="4" stroke="var(--saffron)" strokeWidth="5" strokeDasharray="44 30" className="lane-draw" />
+            <line x1="0" y1="4" x2="1200" y2="4" stroke="var(--saffron)" strokeWidth="5" strokeDasharray="44 30" className="lane-run" />
           </svg>
         </div>
         <div className="relative mx-auto -mt-10 max-w-7xl px-4 sm:px-6 md:-mt-12">

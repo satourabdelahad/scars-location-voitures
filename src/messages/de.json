@@ -30,7 +30,10 @@
     "search": "Suchen",
     "notFoundTitle": "Seite nicht gefunden",
     "notFoundBody": "Diese Adresse führt nirgendwohin. Kehren Sie zur Startseite zurück, um Ihr Auto zu finden.",
-    "goHome": "Zur Startseite"
+    "goHome": "Zur Startseite",
+    "hello": "Hallo!",
+    "welcome": "Willkommen! Schön, Sie als Kunden bei uns zu haben.",
+    "mission": "Unsere Mission: Ihre Wünsche rund um die Automiete zu erfüllen."
   },
   "Nav": {
     "cars": "Autos",
@@ -436,9 +439,19 @@
     "rejected": "Abgelehnt"
   },
   "Enums": {
-    "civility": { "male": "Herr", "female": "Frau" },
-    "marital": { "married": "Verheiratet", "widowed": "Verwitwet", "single": "Ledig" },
-    "contract": { "freelance": "Freiberuflich", "cdi": "Unbefristet (CDI)" },
+    "civility": {
+      "male": "Herr",
+      "female": "Frau"
+    },
+    "marital": {
+      "married": "Verheiratet",
+      "widowed": "Verwitwet",
+      "single": "Ledig"
+    },
+    "contract": {
+      "freelance": "Freiberuflich",
+      "cdi": "Unbefristet (CDI)"
+    },
     "category": {
       "economy": "Kleinwagen",
       "compact": "Kompaktklasse",
@@ -449,8 +462,16 @@
       "convertible": "Cabrio",
       "pickup": "Pick-up"
     },
-    "transmission": { "manual": "Schaltgetriebe", "automatic": "Automatik" },
-    "fuel": { "petrol": "Benzin", "diesel": "Diesel", "hybrid": "Hybrid", "electric": "Elektro" },
+    "transmission": {
+      "manual": "Schaltgetriebe",
+      "automatic": "Automatik"
+    },
+    "fuel": {
+      "petrol": "Benzin",
+      "diesel": "Diesel",
+      "hybrid": "Hybrid",
+      "electric": "Elektro"
+    },
     "carDeactivation": {
       "stolen": "Gestohlen",
       "sold": "Verkauft",

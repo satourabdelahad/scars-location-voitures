@@ -130,11 +130,7 @@ body {
 
 ::selection { background: var(--majorelle); color: #fff; }
 
-/* Le moment signature : la ligne de route qui se trace au chargement */
-@keyframes lane-draw {
-  from { stroke-dashoffset: 1200; }
-  to { stroke-dashoffset: 0; }
-}
+/* Le moment signature : la voiture arrive sur la route */
 @keyframes car-arrive {
   from { transform: translateX(-18%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
@@ -144,7 +140,35 @@ body {
   from { transform: translateX(18%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
-.lane-draw { stroke-dasharray: 1200; animation: lane-draw 1.6s var(--ease-road) 0.15s both; }
+/* La route défile sous la voiture : impression de rouler */
+.lane-run { animation: lane-run 0.9s linear infinite; }
+[dir="rtl"] .lane-run { animation-direction: reverse; }
+@keyframes lane-run { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 148; } }
+.wheel-spin { animation: wheel-spin 0.55s linear infinite; }
+@keyframes wheel-spin { to { transform: rotate(360deg); } }
+.car-bob { animation: car-bob 0.7s ease-in-out infinite; }
+@keyframes car-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.4px); } }
+.driver-nod { animation: driver-nod 1.4s ease-in-out infinite; }
+@keyframes driver-nod { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
+.driver-wave { animation: driver-wave 0.9s ease-in-out infinite; }
+@keyframes driver-wave { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-22deg); } }
+.hello-bubble { animation: hello-in 0.5s var(--ease-road) 1.3s both, hello-float 2.4s ease-in-out 1.8s infinite; }
+.hello-swap { animation: hello-swap 0.35s var(--ease-road) both; }
+@keyframes hello-swap { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+/* Paysage qui défile (plus lent que la route : effet de profondeur) */
+.scenery-run { animation: scenery-run 22s linear infinite; }
+@keyframes scenery-run { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+[dir="rtl"] .scenery-run { animation-name: scenery-run-rtl; animation-direction: normal; }
+@keyframes scenery-run-rtl { from { transform: translateX(0); } to { transform: translateX(50%); } }
+.speed-lines { display: flex; flex-direction: column; justify-content: space-around; }
+.speed-lines span { display: block; height: 3px; border-radius: 2px; background: var(--mist-2); animation: speed-line 0.8s linear infinite; }
+.speed-lines span:nth-child(2) { width: 70%; margin-inline-start: 30%; animation-delay: 0.25s; }
+.speed-lines span:nth-child(3) { width: 85%; margin-inline-start: 15%; animation-delay: 0.5s; }
+@keyframes speed-line { 0% { opacity: 0; transform: translateX(40%); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateX(-60%); } }
+[dir="rtl"] .speed-lines span { animation-name: speed-line-rtl; }
+@keyframes speed-line-rtl { 0% { opacity: 0; transform: translateX(-40%); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateX(60%); } }
+@keyframes hello-in { from { opacity: 0; transform: translateY(8px) scale(0.8); } to { opacity: 1; transform: none; } }
+@keyframes hello-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 .car-arrive { animation: car-arrive 1.1s var(--ease-road) 0.35s both; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -152,6 +176,7 @@ body {
     animation-duration: 0.001ms !important;
     animation-delay: 0ms !important;
     transition-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
 
