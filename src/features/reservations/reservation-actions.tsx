@@ -32,7 +32,10 @@ export function ReservationActions({
   responsible,
   more,
   openPickup = false,
+  decide = null,
 }: {
+  /** Arrivée depuis l'email (bouton Accepter ou Refuser) */
+  decide?: "confirm" | "reject" | null;
   id: string;
   status: ReservationStatus;
   internalNote: string | null;
@@ -47,7 +50,8 @@ export function ReservationActions({
   const te = useTranslations("Errors");
   const router = useRouter();
   const [pending, start] = useTransition();
-  const [asking, setAsking] = useState<Action | null>(null);
+  const fromEmail = status === "pending" && canValidate ? decide : null;
+  const [asking, setAsking] = useState<Action | null>(fromEmail === "reject" ? "reject" : null);
   const [reason, setReason] = useState("");
   const [note, setNote] = useState(internalNote ?? "");
   const [licenseOpen, setLicenseOpen] = useState(openPickup && status === "confirmed");
@@ -81,10 +85,11 @@ export function ReservationActions({
       {status === "pending" && !canValidate && (
         <p className="rounded-xl bg-saffron/15 px-4 py-3 text-sm text-saffron-ink">{responsible ? t("awaitingValidationBy", { name: responsible }) : t("awaitingValidation")}</p>
       )}
+      {fromEmail === "confirm" && <p className="rounded-xl bg-majorelle/10 px-4 py-3 text-sm font-medium text-majorelle">{t("decideFromEmail")}</p>}
       {buttons.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {buttons.map((b) => (
-            <Button key={b.action} variant={b.variant} loading={pending && !asking} onClick={() => (b.action === "pickup" ? setLicenseOpen(true) : b.ask ? setAsking(b.action) : run(b.action))}>
+            <Button key={b.action} variant={b.variant} className={fromEmail === b.action ? "ring-4 ring-majorelle/30" : undefined} loading={pending && !asking} onClick={() => (b.action === "pickup" ? setLicenseOpen(true) : b.ask ? setAsking(b.action) : run(b.action))}>
               <b.icon />
               {b.label}
             </Button>

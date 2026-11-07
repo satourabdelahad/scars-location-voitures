@@ -102,7 +102,12 @@
     "availableOnly": "المتاحة الآن ({count})",
     "allFilter": "الكل",
     "noCarsHere": "لا توجد سيارة لهذا الاختيار حاليًا.",
-    "seeAllFiltered": "عرض كل هذه السيارات"
+    "seeAllFiltered": "عرض كل هذه السيارات",
+    "searchPlace": "مكان الاستلام",
+    "searchPlaceholder": "اختر وكالة",
+    "searchStartTime": "ساعة الاستلام",
+    "searchEndTime": "ساعة الإرجاع",
+    "searchRequired": "اختر المكان وتاريخَي الاستلام والإرجاع."
   },
   "Cars": {
     "title": "سياراتنا",
@@ -198,7 +203,52 @@
     "accountExists": "يوجد حساب بهذه البيانات: سجّل الدخول للحجز.",
     "guestInvited": "أرسلنا إليك بريدًا لاختيار كلمة المرور ومتابعة حجزك عبر الإنترنت.",
     "guestCallback": "سيتصل بك فريقنا على {phone} للتأكيد.",
-    "backToCars": "عرض سيارات أخرى"
+    "backToCars": "عرض سيارات أخرى",
+    "specSeats": "{count, plural, one {مقعد واحد} other {# مقاعد}}",
+    "specDoors": "{count, plural, one {باب واحد} other {# أبواب}}",
+    "specBags": "{count, plural, one {حقيبة واحدة} other {# حقائب}}",
+    "specAc": "مكيّف هواء",
+    "time": "الساعة",
+    "needDriver": "هل تحتاج إلى سائق؟",
+    "driverPrice": "السائق: {price} لليوم.",
+    "driverOnQuote": "ستُبلغك الوكالة بسعر السائق.",
+    "yesDriver": "نعم، مع سائق",
+    "noDriver": "لا، سأقود بنفسي",
+    "driverLine": "السائق",
+    "driverService": "السائق",
+    "onQuote": "حسب العرض",
+    "extrasTitle": "الإضافات",
+    "once": "مرة واحدة",
+    "yourInfo": "معلوماتك",
+    "yourInfoHint": "ضرورية لإعداد عقد الكراء.",
+    "moreInfo": "معلومات إضافية",
+    "depositLabel": "مبلغ الضمان",
+    "depositHint": "يُحجز عند الاستلام ويُعاد عند إرجاع السيارة.",
+    "totalSum": "المبلغ الإجمالي",
+    "acceptTerms": "أوافق على",
+    "termsLink": "الشروط العامة للكراء",
+    "acceptTermsRequired": "يجب الموافقة على الشروط العامة.",
+    "termsTitle": "الشروط العامة للكراء",
+    "acceptAndClose": "أوافق",
+    "reserve": "احجز",
+    "noPaymentNow": "لا دفع الآن: تدفع عند تسلّم المفاتيح.",
+    "identifyTitle": "عرّف بنفسك للحجز",
+    "identifyBody": "سجّل الدخول أو أنشئ حسابك في ثوانٍ؛ اختياراتك محفوظة.",
+    "withSocial": "عبر شبكة اجتماعية",
+    "socialHint": "بعد تسجيل الدخول، يبقى عليك فقط إدخال رقم بطاقة التعريف ورقم رخصة السياقة.",
+    "or": "أو",
+    "tabNewClient": "عميل جديد",
+    "tabHaveAccount": "لديّ حساب",
+    "loginAndReserve": "تسجيل الدخول والحجز",
+    "useLoginPage": "حسابك يستخدم المصادقة الثنائية: سجّل الدخول من صفحة تسجيل الدخول.",
+    "civility": "اللقب",
+    "idCardNumber": "رقم البطاقة الوطنية أو جواز السفر",
+    "licenseNumber": "رقم رخصة السياقة",
+    "phoneIsWhatsapp": "هذا الرقم هو أيضًا رقم واتساب",
+    "receivedTitle": "تم استلام طلبك",
+    "receivedBody": "تم تسجيل طلبك {ref}. ستردّ عليك الوكالة في أجل أقصاه {hours, plural, one {ساعة واحدة} other {# ساعات}}.",
+    "existingAccountLogin": "يوجد حساب بهذه المعلومات: سجّل الدخول لمتابعة حجزك.",
+    "loginToFollow": "تسجيل الدخول لمتابعة حجزي"
   },
   "Extras": {
     "child_seat": "مقعد أطفال",
@@ -229,7 +279,60 @@
     "name": "الاسم",
     "phone": "الهاتف",
     "language": "لغة الرسائل الإلكترونية",
-    "connectedWith": "متصل عبر"
+    "connectedWith": "متصل عبر",
+    "tabInfos": "المعلومات",
+    "tabReservations": "الحجوزات",
+    "tabHistory": "السجل",
+    "historyEmpty": "لا شيء بعد.",
+    "seeDetails": "عرض التفاصيل",
+    "upcomingBadge": "قادم",
+    "bookedOn": "حُجز في {date}",
+    "carSpecs": "السيارة",
+    "print": "طباعة",
+    "downloadPdf": "تحميل PDF",
+    "extend": "تمديد",
+    "extendTitle": "تمديد الكراء",
+    "extendBody": "اختر تاريخ الإرجاع الجديد. ستقبل الوكالة طلبك أو ترفضه.",
+    "newEndDate": "تاريخ الإرجاع الجديد",
+    "extendNote": "رسالة إلى الوكالة",
+    "sendRequest": "إرسال الطلب",
+    "extensionSent": "تم إرسال طلب التمديد.",
+    "extensionAlready": "يوجد طلب تمديد قيد الانتظار.",
+    "extensionPending": "طلب تمديد حتى {date} قيد الانتظار: الرد خلال {hours, plural, one {ساعة واحدة} other {# ساعات}} كحد أقصى.",
+    "extensionsTitle": "طلبات التمديد",
+    "ext": {
+      "pending": "قيد الانتظار",
+      "accepted": "مقبول",
+      "refused": "مرفوض"
+    },
+    "docsTitle": "وثائقي",
+    "docsHint": "أرسل رخصة السياقة وبطاقة التعريف (الوجه والظهر) لربح الوقت في الوكالة. صورة أو PDF، 10 ميغابايت كحد أقصى.",
+    "doc": {
+      "license_front": "الرخصة (الوجه)",
+      "license_back": "الرخصة (الظهر)",
+      "id_front": "بطاقة التعريف (الوجه)",
+      "id_back": "بطاقة التعريف (الظهر)"
+    },
+    "docMissing": "لم تُرسل بعد",
+    "docSent": "أُرسلت في {date}",
+    "docUpload": "إرسال",
+    "docReplace": "استبدال",
+    "docView": "عرض الوثيقة",
+    "docUploaded": "تم إرسال الوثيقة.",
+    "ev": {
+      "booked": "حجز {detail}",
+      "confirmed": "تم تأكيد الحجز",
+      "picked_up": "تم استلام السيارة",
+      "returned": "تم إرجاع السيارة",
+      "rejected": "تم رفض الحجز",
+      "cancelled": "تم إلغاء الحجز",
+      "extension_requested": "طلب تمديد حتى {detail}",
+      "extension_accepted": "قُبل التمديد حتى {detail}",
+      "extension_refused": "رُفض التمديد",
+      "extension_pending": "التمديد قيد الانتظار",
+      "document": "وثيقة مُرسلة: {detail}",
+      "profile": "تم تحديث المعلومات"
+    }
   },
   "Auth": {
     "loginTitle": "تسجيل الدخول",
@@ -311,7 +414,8 @@
     "marketing": "التسويق بالبريد",
     "site": "الموقع العام",
     "documentation": "الدليل",
-    "contract": "العقد"
+    "contract": "العقد",
+    "extras": "الإضافات"
   },
   "Managers": {
     "title": "المسيّرون",
@@ -774,7 +878,17 @@
     "licenseBlacklisted": "هذا الزبون في القائمة السوداء: تسليم المفاتيح ممنوع.",
     "licenseVerified": "الرخصة متحقَّق منها",
     "licenseNotVerified": "الرخصة غير متحقَّق منها",
-    "validUntil": "صالحة إلى غاية {date}"
+    "validUntil": "صالحة إلى غاية {date}",
+    "decideFromEmail": "جئت من البريد الإلكتروني: أكّد الحجز بالزر أدناه.",
+    "extensionRequests": "طلبات التمديد",
+    "extensionStatus": {
+      "pending": "قيد الانتظار",
+      "accepted": "مقبول",
+      "refused": "مرفوض"
+    },
+    "acceptExtension": "قبول",
+    "refuseExtension": "رفض",
+    "clientDocuments": "وثائق العميل"
   },
   "Status": {
     "pending": "قيد الانتظار",
@@ -891,7 +1005,10 @@
     "out_of_scope": "إجراء غير مسموح: هذه السيارة أو الوكالة خارج نطاقك.",
     "client_blacklisted": "هذا الزبون في القائمة السوداء: لا يمكن الحجز ولا تسليم المفاتيح.",
     "license_required": "تحقّق من رخصة السياقة (الرقم، تاريخ الصلاحية، الأصل) قبل تسليم المفاتيح.",
-    "license_expired": "تنتهي صلاحية الرخصة قبل تاريخ الإرجاع."
+    "license_expired": "تنتهي صلاحية الرخصة قبل تاريخ الإرجاع.",
+    "extension_pending": "يوجد طلب تمديد قيد الانتظار.",
+    "acceptTerms": "يجب الموافقة على الشروط العامة.",
+    "time": "ساعة غير صالحة"
   },
   "About": {
     "title": "وكالة مغربية بسيارات في حالة جيدة",
@@ -982,7 +1099,18 @@
     "sentToClientNote": "تم إرسال الملخص إلى العميل ({email}).",
     "tplBtnLogin": "تسجيل الدخول",
     "tplBtnAgency": "عرض الوكالة",
-    "tplBtnPromo": "الاستفادة من التخفيض"
+    "tplBtnPromo": "الاستفادة من التخفيض",
+    "tplBtnAccept": "قبول",
+    "tplBtnRefuse": "رفض",
+    "extSubject": "طلب تمديد · {ref}",
+    "extTitle": "طلب تمديد",
+    "extBody": "يطلب {client} تمديد كراء {car} من {from} إلى {to}. اقبل الطلب أو ارفضه.",
+    "extAcceptedSubject": "تم قبول التمديد · {ref}",
+    "extAcceptedTitle": "تم قبول تمديدك",
+    "extAcceptedBody": "خبر سار: تم تمديد كراء {car} حتى {to}.",
+    "extRefusedSubject": "تم رفض التمديد · {ref}",
+    "extRefusedTitle": "تعذّر قبول تمديدك",
+    "extRefusedBody": "لا يمكن تمديد كراء {car} حتى {to}."
   },
   "Activity": {
     "session_login": "تسجيل الدخول",
@@ -1207,7 +1335,8 @@
     "setPasswordTitle": "تغيير كلمة المرور",
     "setPasswordHint": "اختر كلمة المرور الجديدة لـ {name}؛ سيتلقاها عبر البريد.",
     "showPassword": "إظهار كلمة المرور",
-    "savePassword": "حفظ كلمة المرور"
+    "savePassword": "حفظ كلمة المرور",
+    "idCardNumber": "رقم بطاقة التعريف"
   },
   "My": {
     "chartTitle": "رقم المعاملات حسب الشهر",
@@ -1468,7 +1597,13 @@
     "blacklistReason": "السبب",
     "blacklistedBanner": "زبون في القائمة السوداء",
     "blacklistAdded": "{count, plural, one {وُضع الزبون في القائمة السوداء} other {وُضع # زبائن في القائمة السوداء}}",
-    "blacklistRemoved": "{count, plural, one {أُزيل الزبون من القائمة السوداء} other {أُزيل # زبائن من القائمة السوداء}}"
+    "blacklistRemoved": "{count, plural, one {أُزيل الزبون من القائمة السوداء} other {أُزيل # زبائن من القائمة السوداء}}",
+    "bulkActivate": "تفعيل",
+    "bulkDeactivate": "تعطيل",
+    "bulkActivated": "{count, plural, one {تم تفعيل عميل واحد} other {تم تفعيل # عملاء}}",
+    "bulkDeactivated": "{count, plural, one {تم تعطيل عميل واحد} other {تم تعطيل # عملاء}}",
+    "bulkDeactivateTitle": "{count, plural, one {تعطيل عميل واحد} other {تعطيل # عملاء}}",
+    "bulkDeactivateReason": "سبب التعطيل"
   },
   "Appointments": {
     "title": "المواعيد المبرمجة",
@@ -1683,7 +1818,21 @@
     "step3": "بياناتك",
     "step3Body": "سجّل الدخول أو اترك الحد الأدنى: الاسم والمدينة والهاتف.",
     "step4": "المفاتيح",
-    "step4Body": "تؤكد الوكالة، ثم تتسلم السيارة أو نوصلها إليك."
+    "step4Body": "تؤكد الوكالة، ثم تتسلم السيارة أو نوصلها إليك.",
+    "resultsTitle": "السيارات المتاحة",
+    "resultsCount": "{count, plural, =0 {لا توجد سيارة متاحة} one {سيارة واحدة متاحة} other {# سيارات متاحة}}",
+    "resultsFor": "{place} · {days, plural, one {يوم واحد} other {# أيام}}",
+    "sortBy": "ترتيب حسب",
+    "sortPriceAsc": "السعر تصاعديًا",
+    "sortPriceDesc": "السعر تنازليًا",
+    "sortNameAsc": "الاسم (أ ← ي)",
+    "sortNameDesc": "الاسم (ي ← أ)",
+    "noneTitle": "لا توجد سيارة متاحة في هذه التواريخ",
+    "noneBody": "جرّب تواريخ أخرى أو وكالة أخرى.",
+    "seats": "{count, plural, one {مقعد واحد} other {# مقاعد}}",
+    "bags": "{count, plural, one {حقيبة واحدة} other {# حقائب}}",
+    "bookThis": "احجز هذه السيارة",
+    "allDetails": "عرض كل التفاصيل"
   },
   "Docs": {
     "title": "الدليل",
@@ -1794,7 +1943,8 @@
       "months": "آخر 12 شهرًا",
       "byType": "المصاريف حسب النوع",
       "noExpense": "لا توجد مصاريف مسجّلة."
-    }
+    },
+    "reservationsTab": "الحجوزات"
   },
   "Inspection": {
     "intro": "محضر المعاينة يحمي الضمانة ويحسم النزاعات: الكيلومترات، الوقود، الأضرار والصور، بتوقيع الزبون على الهاتف أو اللوحة.",
@@ -2004,5 +2154,23 @@
     "confirm": "مرحبًا {name}، تم تأكيد حجزك {reference}: {car}، من {start} إلى {end}. الاستلام في {agency}. المجموع: {total}. شكرًا وإلى اللقاء!",
     "reminder": "مرحبًا {name}، تذكير: يبدأ كراء {car} غدًا ({start}) في {agency}. لا تنسَ رخصة السياقة وبطاقة الهوية. إلى الغد!",
     "return": "مرحبًا {name}، ينتهي كراء {car} في {end}. الإرجاع في {returnAgency} بنفس مستوى الوقود. تريد التمديد؟ أجب على هذه الرسالة."
+  },
+  "ExtrasAdmin": {
+    "title": "الإضافات",
+    "subtitle": "خيارات مقترحة عند الحجز: GPS، مقعد طفل، مساعدة… بسعر لليوم أو لمرة واحدة.",
+    "name": "الاسم",
+    "price": "السعر (درهم)",
+    "pricing": "الفوترة",
+    "perDay": "لليوم",
+    "once": "مرة واحدة",
+    "active": "مفعّل",
+    "up": "إلى الأعلى",
+    "down": "إلى الأسفل",
+    "add": "إضافة خيار",
+    "neverDeleted": "لا يُحذف أي خيار: ألغِ تحديد «مفعّل» لإخفائه.",
+    "driverPrice": "سعر السائق لليوم (درهم)",
+    "driverPriceHint": "0 = حسب العرض. يظهر للعميل: {example} لليوم.",
+    "responseHours": "أجل الرد المعلن (بالساعات)",
+    "responseHoursHint": "يظهر للعميل بعد طلب الحجز أو التمديد."
   }
 }

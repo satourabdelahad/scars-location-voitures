@@ -36,7 +36,10 @@ La cancelación es gratuita hasta 48 horas antes de la recogida. Contacte con la
 - Salir de Marruecos requiere una autorización escrita de la agencia.
 
 ## Seguro y asistencia
-Todos los coches están asegurados. Se ofrece como opción un seguro a todo riesgo sin franquicia. En caso de avería o accidente, llame a la asistencia 24 h antes de cualquier reparación.`,
+Todos los coches están asegurados. Se ofrece como opción un seguro a todo riesgo sin franquicia. En caso de avería o accidente, llame a la asistencia 24 h antes de cualquier reparación.
+
+## Newsletter
+Al aceptar estas condiciones, queda inscrito automáticamente en nuestra newsletter (ofertas y novedades). Puede darse de baja en cualquier momento con el enlace incluido en cada email.`,
     privacy: `## Datos recogidos
 Al reservar o enviarnos un mensaje, recogemos su apellido, nombre, ciudad, teléfono y, si nos lo da, su email. Para el alquiler pueden pedirse los datos del conductor (permiso, fecha de nacimiento).
 
@@ -86,7 +89,10 @@ Die Stornierung ist bis 48 Stunden vor der Abholung kostenlos. Wenden Sie sich f
 - Für das Verlassen Marokkos ist eine schriftliche Genehmigung der Filiale nötig.
 
 ## Versicherung und Hilfe
-Alle Fahrzeuge sind versichert. Eine Vollkaskoversicherung ohne Selbstbeteiligung ist als Option erhältlich. Rufen Sie bei Panne oder Unfall vor jeder Reparatur die Pannenhilfe an, die rund um die Uhr erreichbar ist.`,
+Alle Fahrzeuge sind versichert. Eine Vollkaskoversicherung ohne Selbstbeteiligung ist als Option erhältlich. Rufen Sie bei Panne oder Unfall vor jeder Reparatur die Pannenhilfe an, die rund um die Uhr erreichbar ist.
+
+## Newsletter
+Mit der Annahme dieser Bedingungen werden Sie automatisch für unseren Newsletter (Angebote und Neuigkeiten) angemeldet. Über den Link in jeder E-Mail können Sie sich jederzeit abmelden.`,
     privacy: `## Erhobene Daten
 Bei einer Buchung oder Nachricht erheben wir Ihren Nachnamen, Vornamen, Ihre Stadt, Telefonnummer und, falls angegeben, Ihre E-Mail-Adresse. Für die Miete können Fahrerdaten (Führerschein, Geburtsdatum) verlangt werden.
 
@@ -136,7 +142,10 @@ Die Website verwendet nur Cookies, die für ihren Betrieb nötig sind (Anmeldung
 - يتطلب الخروج من التراب المغربي إذنًا كتابيًا من الوكالة.
 
 ## التأمين والمساعدة
-جميع السيارات مؤمَّنة. ويُقترح كخيار تأمين شامل دون تحمل. في حالة عطب أو حادث، اتصلوا بالمساعدة المتوفرة 24 ساعة قبل أي إصلاح.`,
+جميع السيارات مؤمَّنة. ويُقترح كخيار تأمين شامل دون تحمل. في حالة عطب أو حادث، اتصلوا بالمساعدة المتوفرة 24 ساعة قبل أي إصلاح.
+
+## النشرة الإخبارية
+بقبولك هذه الشروط، يتم تسجيلك تلقائيًا في نشرتنا الإخبارية (العروض والمستجدات). يمكنك إلغاء الاشتراك في أي وقت عبر الرابط الموجود في كل رسالة.`,
     privacy: `## المعطيات المجمّعة
 عند الحجز أو إرسال رسالة، نجمع اسمكم العائلي والشخصي ومدينتكم ورقم هاتفكم، وبريدكم الإلكتروني إن قدمتموه. وقد تُطلب معطيات السائق (الرخصة وتاريخ الازدياد) من أجل الكراء.
 
@@ -186,7 +195,10 @@ Die Website verwendet nur Cookies, die für ihren Betrieb nötig sind (Anmeldung
 - الخروج من المغرب خاصو إذن مكتوب من الوكالة.
 
 ## التأمين والمساعدة
-الطوموبيلات كاملين مأمنين. كاين تأمين شامل بلا فرانشيز كخيار. إلا وقعات شي پان ولا شي حادثة، عيط للمساعدة 24/24 قبل أي إصلاح.`,
+الطوموبيلات كاملين مأمنين. كاين تأمين شامل بلا فرانشيز كخيار. إلا وقعات شي پان ولا شي حادثة، عيط للمساعدة 24/24 قبل أي إصلاح.
+
+## النيوزليتر
+ملي كتقبل هاد الشروط، كتّسجل أوتوماتيكيا فالنيوزليتر ديالنا (العروض والجديد). تقدر تحيّد راسك فأي وقت بالرابط اللي كاين فكل إيميل.`,
     privacy: `## المعلومات اللي كنجمعو
 ملي كتحجز ولا كتصيفط لينا ميساج، كناخدو الكنية، السمية، المدينة، التيليفون، والإيميل إلا عطيتيه. وممكن نطلبو المعلومات ديال الشيفور (البيرمي وتاريخ الزيادة) باش نكريو.
 
@@ -236,7 +248,10 @@ Die Website verwendet nur Cookies, die für ihren Betrieb nötig sind (Anmeldung
 - モロッコ国外への持ち出しには店舗の書面による許可が必要です。
 
 ## 保険とサポート
-すべての車両は保険付きです。免責なしの補償をオプションでご用意しています。故障や事故の際は、修理の前に24時間サポートへお電話ください。`,
+すべての車両は保険付きです。免責なしの補償をオプションでご用意しています。故障や事故の際は、修理の前に24時間サポートへお電話ください。
+
+## ニュースレター
+本規約に同意すると、当社のニュースレター（キャンペーン・新着情報）に自動的に登録されます。各メールに記載のリンクからいつでも配信を停止できます。`,
     privacy: `## 収集する情報
 予約やメッセージの際に、姓・名・都市・電話番号、およびご提供いただいた場合はメールアドレスを収集します。レンタルのため、運転者の情報（免許証、生年月日）をお伺いすることがあります。
 
@@ -286,7 +301,10 @@ Die Website verwendet nur Cookies, die für ihren Betrieb nötig sind (Anmeldung
 - 驶出摩洛哥境内需获得门店书面许可。
 
 ## 保险与协助
-所有车辆均已投保，可选购零免赔全险。如遇故障或事故，请在任何维修前拨打 24 小时协助电话。`,
+所有车辆均已投保，可选购零免赔全险。如遇故障或事故，请在任何维修前拨打 24 小时协助电话。
+
+## 新闻通讯
+接受本条款即表示您将自动订阅我们的新闻通讯（优惠和最新消息）。您可随时通过每封邮件中的链接退订。`,
     privacy: `## 收集的信息
 预订或留言时，我们会收集您的姓、名、城市、电话，以及您提供的邮箱。为办理租车，可能需要驾驶人信息（驾照、出生日期）。
 
@@ -336,7 +354,10 @@ Die Website verwendet nur Cookies, die für ihren Betrieb nötig sind (Anmeldung
 - 모로코 국외로 나가려면 지점의 서면 허가가 필요합니다.
 
 ## 보험 및 지원
-모든 차량은 보험에 가입되어 있으며, 자기부담금 없는 종합보험을 옵션으로 제공합니다. 고장이나 사고 시에는 수리 전에 24시간 지원 센터로 연락하세요.`,
+모든 차량은 보험에 가입되어 있으며, 자기부담금 없는 종합보험을 옵션으로 제공합니다. 고장이나 사고 시에는 수리 전에 24시간 지원 센터로 연락하세요.
+
+## 뉴스레터
+본 약관에 동의하시면 당사 뉴스레터(혜택 및 새 소식)에 자동으로 가입됩니다. 각 이메일에 포함된 링크를 통해 언제든지 수신을 거부할 수 있습니다.`,
     privacy: `## 수집하는 정보
 예약하거나 메시지를 보낼 때 성, 이름, 도시, 전화번호, 그리고 제공하신 경우 이메일을 수집합니다. 렌트를 위해 운전자 정보(면허, 생년월일)를 요청할 수 있습니다.
 

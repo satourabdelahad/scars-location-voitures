@@ -120,6 +120,13 @@
       "when": 1794055414167,
       "tag": "0016_car_file_inspections_contract",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794058540893,
+      "tag": "0017_booking_flow",
+      "breakpoints": true
     }
   ]
 }

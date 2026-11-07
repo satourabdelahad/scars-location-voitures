@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { carInspections, clientProfiles } from "@/db/schema";
 import { fillContract, type ContractVariable } from "@/lib/contract";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { extraName } from "@/lib/pricing";
 import { getContractSettings } from "@/server/app-settings";
 import { getReservationForStaff } from "@/server/queries/reservations";
 import { getSiteSettings } from "@/server/site-settings";
@@ -24,6 +25,8 @@ export async function renderContract(reservationId: string, locale: string) {
     getTranslations({ locale, namespace: "Enums" }),
   ]);
   const tx = await getTranslations({ locale, namespace: "Extras" });
+  const tb = await getTranslations({ locale, namespace: "Booking" });
+  const withTime = (d: string, t: string | null) => `${formatDate(d, locale)}${t ? ` ${t.slice(0, 5)}` : ""}`;
   const dep = inspections.find((i) => i.kind === "departure");
   const ret = inspections.find((i) => i.kind === "return");
   const money = (n: number) => formatMoney(n, locale);
@@ -57,14 +60,14 @@ export async function renderContract(reservationId: string, locale: string) {
     car_transmission: e(`transmission.${r.car.transmission}`),
     car_category: e(`category.${r.car.category}`),
     reservation_reference: r.reference,
-    start_date: formatDate(r.startDate, locale),
-    end_date: formatDate(r.endDate, locale),
+    start_date: withTime(r.startDate, r.pickupTime),
+    end_date: withTime(r.endDate, r.returnTime),
     days: String(r.days),
     pickup_agency: `${r.pickupAgency.name}, ${r.pickupAgency.city}`,
     return_agency: `${r.returnAgency.name}, ${r.returnAgency.city}`,
     daily_price: money(r.dailyPrice),
-    extras: r.extras.map((x) => tx(x.extra.code as "gps")).join(", ") || "—",
-    extras_total: money(r.extrasTotal),
+    extras: [...(r.withDriver ? [tb("driverService")] : []), ...r.extras.map((x) => extraName(x.extra, tx))].join(", ") || "—",
+    extras_total: money(r.extrasTotal + (r.driverTotal ?? 0)),
     discount: money(r.discountAmount),
     total_price: money(r.totalPrice),
     deposit: money(r.deposit),

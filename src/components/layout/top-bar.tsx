@@ -17,7 +17,7 @@ export async function TopBar({ wide = false }: { wide?: boolean } = {}) {
   const note = pageText(settings, "topbar_note", locale) ?? defaultPageText("topbar_note", locale);
   const c = settings.contact;
   return (
-    <div className="bg-ink text-chalk dark:bg-paper dark:text-ink">
+    <div data-topbar className="bg-ink text-chalk print:hidden dark:bg-paper dark:text-ink">
       <div className={`scroll-thin mx-auto flex h-9 items-center ${wide ? "" : "max-w-7xl "} gap-x-5 overflow-x-auto px-4 text-xs font-medium whitespace-nowrap sm:px-6`}>
         <span className="inline-flex items-center gap-1.5 text-saffron">
           <Clock className="size-3.5" />

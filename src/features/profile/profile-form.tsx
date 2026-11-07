@@ -28,6 +28,7 @@ type Values = {
   lastName: string;
   birthDate: string;
   licenseNumber: string;
+  idCardNumber?: string;
 };
 
 function Card({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
@@ -83,6 +84,7 @@ export function ProfileForm({
     lastName: "",
     birthDate: "",
     licenseNumber: "",
+    idCardNumber: "",
     ...initial,
   });
   const [photo, setPhoto] = useState<{ publicId: string; url: string } | null | undefined>(undefined);
@@ -127,6 +129,7 @@ export function ProfileForm({
               city: v.city,
               birthDate: v.birthDate,
               licenseNumber: v.licenseNumber,
+              idCardNumber: v.idCardNumber ?? "",
             };
     start(async () => {
       const r = await updateMyProfile({ data, photo: photo === undefined ? undefined : photo && { publicId: photo.publicId } });
@@ -220,6 +223,9 @@ export function ProfileForm({
                 </Field>
                 <Field label={t("licenseNumber")} error={msg(errors.licenseNumber)}>
                   {(p) => <Input {...p} dir="ltr" value={v.licenseNumber} onChange={(x) => set("licenseNumber", x.target.value)} />}
+                </Field>
+                <Field label={t("idCardNumber")} error={msg(errors.idCardNumber)}>
+                  {(p) => <Input {...p} dir="ltr" value={v.idCardNumber ?? ""} onChange={(x) => set("idCardNumber", x.target.value)} />}
                 </Field>
               </>
             )}

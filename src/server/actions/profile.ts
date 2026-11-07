@@ -51,6 +51,7 @@ const clientSelfSchema = z.object({
     .transform((s) => s || null)
     .refine((s) => s === null || (/^\d{4}-\d{2}-\d{2}$/.test(s) && new Date(s) < new Date()), "date"),
   licenseNumber: optionalText(64),
+  idCardNumber: optionalText(64),
 });
 /** Le gestionnaire modifie ses coordonnées ; identité, contrat et pièces restent gérés par l'administrateur. */
 const managerSelfSchema = z.object({

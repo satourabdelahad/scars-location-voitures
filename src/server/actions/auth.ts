@@ -5,7 +5,7 @@ import { and, eq, gt, isNull } from "drizzle-orm";
 import { AuthError } from "next-auth";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
-import { signIn, signOut } from "@/auth";
+import { auth, signIn, signOut } from "@/auth";
 import { db } from "@/db";
 import { managerEvents, managers, passwordTokens, users } from "@/db/schema";
 import { INVITATION_PENDING } from "@/lib/manager-status";
@@ -151,4 +151,25 @@ export async function setPasswordAction(_: AuthFormState, form: FormData): Promi
     }
   }
   return { ok: true };
+}
+
+/**
+ * Connexion par email et mot de passe au moment de réserver, sans quitter la page : la réservation est ensuite
+ * envoyée avec la session ouverte.
+ */
+export async function bookingLoginAction(email: string, password: string, recaptcha?: string): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!(await verifyRecaptcha(recaptcha, "login"))) return { ok: false, error: "captcha" };
+  try {
+    await signIn("credentials", { email, password, code: "", redirect: false });
+    const session = await auth();
+    if (session?.user?.role && session.user.role !== "client") return { ok: false, error: "staff" };
+    return { ok: true };
+  } catch (err) {
+    if (err instanceof AuthError && err.type === "CredentialsSignin") {
+      const code = (err as AuthError & { code?: string }).code ?? "";
+      return { ok: false, error: ["disabled", "locked", "totp_required"].includes(code) ? code : "invalid" };
+    }
+    console.error("[auth] connexion pendant la réservation", err);
+    return { ok: false, error: "server" };
+  }
 }

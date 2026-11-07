@@ -3,7 +3,7 @@ import path from "node:path";
 import { auth } from "@/auth";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { managerDocuments, managers } from "@/db/schema";
+import { clientDocuments, managerDocuments, managers } from "@/db/schema";
 import { LOCAL_DIR, LOCAL_PREFIX, localUploadsEnabled } from "@/server/uploads";
 
 const TYPES: Record<string, string> = { jpg: "image/jpeg", png: "image/png", webp: "image/webp", pdf: "application/pdf" };
@@ -13,10 +13,18 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/dev-files/[name
   if (!localUploadsEnabled) return new Response("Not found", { status: 404 });
   const { name } = await ctx.params;
   const safe = path.basename(name);
-  // Documents des voitures, photos d'état des lieux et signatures : équipe uniquement.
+  // Documents des voitures, photos d'état des lieux et signatures : équipe uniquement ; pièces d'un client : lui aussi.
   if (safe.startsWith("document-")) {
     const session = await auth();
-    if (!session?.user || !["admin", "manager"].includes(session.user.role)) return new Response("Not found", { status: 404 });
+    const staff = session?.user && ["admin", "manager"].includes(session.user.role);
+    const owner =
+      session?.user?.role === "client" &&
+      (await db
+        .select({ id: clientDocuments.id })
+        .from(clientDocuments)
+        .where(and(eq(clientDocuments.publicId, `${LOCAL_PREFIX}${safe}`), eq(clientDocuments.clientId, session.user.id)))
+        .limit(1)).length > 0;
+    if (!staff && !owner) return new Response("Not found", { status: 404 });
   }
   if (safe.startsWith("identity-")) {
     const session = await auth();

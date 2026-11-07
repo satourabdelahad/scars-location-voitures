@@ -7,7 +7,7 @@ import type { SessionUser } from "@/server/guards";
 import { ProfileForm } from "./profile-form";
 
 /** "Mon profil" de l'administrateur et des clients. */
-export async function SelfProfilePage({ me, welcome = false }: { me: SessionUser; welcome?: boolean }) {
+export async function SelfProfilePage({ me, welcome = false, header = true }: { me: SessionUser; welcome?: boolean; header?: boolean }) {
   const [[u], [cp], t] = await Promise.all([
     db.select({ name: users.name, email: users.email, phone: users.phone, image: users.image, hash: users.passwordHash }).from(users).where(eq(users.id, me.id)).limit(1),
     me.role === "client" ? db.select().from(clientProfiles).where(eq(clientProfiles.userId, me.id)).limit(1) : Promise.resolve([]),
@@ -16,7 +16,7 @@ export async function SelfProfilePage({ me, welcome = false }: { me: SessionUser
   const [first, ...rest] = (u?.name ?? "").split(" ");
   return (
     <>
-      <PageHeader title={t("title")} subtitle={u?.email ?? undefined} />
+      {header && <PageHeader title={t("title")} subtitle={u?.email ?? undefined} />}
       <ProfileForm
         role={me.role}
         displayName={u?.name ?? u?.email ?? "?"}
@@ -34,6 +34,7 @@ export async function SelfProfilePage({ me, welcome = false }: { me: SessionUser
           city: cp?.city ?? "",
           birthDate: cp?.birthDate ?? "",
           licenseNumber: cp?.licenseNumber ?? "",
+          idCardNumber: cp?.idCardNumber ?? "",
         }}
       />
     </>

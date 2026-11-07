@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/db";
-import { carResponsibles, clientProfiles, managerAgencies, managers, tablePreferences } from "@/db/schema";
+import { carResponsibles, clientProfiles, managerAgencies, managers, reservationExtensions, tablePreferences } from "@/db/schema";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { CarArt } from "@/components/car-art";
@@ -12,6 +12,11 @@ import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import { promotionLabel } from "@/lib/promotion-label";
 import { ReservationsTable } from "./reservations-table";
 import { ReservationActions } from "./reservation-actions";
+import { ExtensionRequests, StaffClientDocuments } from "./extension-requests";
+import { latestClientDocuments } from "@/server/queries/client-documents";
+import { extraCost, extraName } from "@/lib/pricing";
+
+export type DecideParams = { decide?: string; extension?: string };
 
 type Base = "/admin" | "/manager";
 
@@ -29,7 +34,7 @@ export async function ReservationsListPage({ base, userId }: { base: Base; userI
   );
 }
 
-export async function ReservationDetailPage({ base, id, locale, openPickup = false }: { base: Base; id: string; locale: string; openPickup?: boolean }) {
+export async function ReservationDetailPage({ base, id, locale, openPickup = false, from = {} }: { base: Base; id: string; locale: string; openPickup?: boolean; from?: DecideParams }) {
   const r = await getReservationForStaff(id);
   if (!r) notFound();
   const session = await auth();
@@ -59,6 +64,11 @@ export async function ReservationDetailPage({ base, id, locale, openPickup = fal
   // Client : liste noire, permis connu, numéro WhatsApp pour les messages pré-remplis (dans la langue de la réservation).
   const profile = await db.query.clientProfiles.findFirst({ where: eq(clientProfiles.userId, r.clientId) });
   const tw = await getTranslations({ locale: r.locale, namespace: "WhatsApp" });
+  const [extensionRows, docs] = await Promise.all([
+    db.select().from(reservationExtensions).where(eq(reservationExtensions.reservationId, r.id)).orderBy(desc(reservationExtensions.createdAt)),
+    latestClientDocuments(r.clientId),
+  ]);
+  const at = (d: string, time: string | null) => `${formatDate(d, locale)}${time ? ` ${time.slice(0, 5)}` : ""}`;
   const phone = waNumber(profile?.whatsapp || r.driverPhone || r.client.phone || "");
   const vars = {
     name: r.driverFirstName,
@@ -106,7 +116,8 @@ export async function ReservationDetailPage({ base, id, locale, openPickup = fal
               items={[
                 { label: t("car"), value: <Link href={`${base}/fleet/${r.car.id}`} className="hover:text-majorelle">{r.car.brand} {r.car.model}</Link> },
                 { label: tf("plateNumber"), value: <span dir="ltr" className="font-mono text-sm">{r.car.plateNumber}</span> },
-                { label: t("period"), value: `${formatDate(r.startDate, locale)} – ${formatDate(r.endDate, locale)}` },
+                { label: t("period"), value: `${at(r.startDate, r.pickupTime)} – ${at(r.endDate, r.returnTime)}` },
+                { label: tb("needDriver"), value: r.withDriver ? tb("yesDriver") : tb("noDriver") },
                 { label: tb("rental"), value: `${r.days} × ${formatMoney(r.dailyPrice, locale)}` },
                 { label: tb("pickupAgency"), value: `${r.pickupAgency.city}, ${r.pickupAgency.name}` },
                 { label: tb("returnAgency"), value: `${r.returnAgency.city}, ${r.returnAgency.name}` },
@@ -146,8 +157,14 @@ export async function ReservationDetailPage({ base, id, locale, openPickup = fal
           <Panel className="p-6">
             <dl className="space-y-2.5 text-sm tabular">
               <div className="flex justify-between"><dt className="text-ink-2">{tb("rental")}</dt><dd className="font-semibold text-ink">{formatMoney(r.dailyPrice * r.days, locale)}</dd></div>
+              {r.withDriver && (
+                <div className="flex justify-between"><dt className="text-ink-2">{tb("driverService")}</dt><dd className="font-semibold text-ink">{r.driverTotal > 0 ? formatMoney(r.driverTotal, locale) : tb("onQuote")}</dd></div>
+              )}
               {r.extras.map((x) => (
-                <div key={x.extraId} className="flex justify-between"><dt className="text-ink-2">{tx(x.extra.code as "gps")}</dt><dd className="font-semibold text-ink">{formatMoney(x.unitPricePerDay * r.days, locale)}</dd></div>
+                <div key={x.extraId} className="flex justify-between">
+                  <dt className="text-ink-2">{extraName(x.extra, tx)}{x.pricing === "once" ? <span className="text-xs text-ink-3"> · {tb("once")}</span> : null}</dt>
+                  <dd className="font-semibold text-ink">{formatMoney(extraCost({ price: x.unitPricePerDay, pricing: x.pricing, qty: x.quantity }, r.days), locale)}</dd>
+                </div>
               ))}
               {r.discountAmount > 0 && (
                 <div className="flex justify-between text-palm"><dt>{tb("discount")}{r.promotion ? <span dir="ltr"> ({promotionLabel(r.promotion)})</span> : null}</dt><dd className="font-semibold">−{formatMoney(r.discountAmount, locale)}</dd></div>
@@ -158,8 +175,20 @@ export async function ReservationDetailPage({ base, id, locale, openPickup = fal
               </div>
             </dl>
             <div className="mt-6">
-              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} canValidate={canValidate} responsible={responsible} more={more} openPickup={openPickup} />
+              <ReservationActions id={r.id} status={r.status} internalNote={r.internalNote} canValidate={canValidate} responsible={responsible} more={more} openPickup={openPickup} decide={from.decide === "confirm" || from.decide === "reject" ? from.decide : null} />
             </div>
+          </Panel>
+          {extensionRows.length > 0 && (
+            <Panel className="p-6">
+              <ExtensionRequests
+                canValidate={canValidate}
+                focus={from.extension && (from.decide === "accept" || from.decide === "refuse") ? { id: from.extension, decide: from.decide } : null}
+                rows={extensionRows.map((x) => ({ id: x.id, fromEndDate: x.fromEndDate, requestedEndDate: x.requestedEndDate, status: x.status, note: x.note, reason: x.reason, createdAt: x.createdAt.toISOString() }))}
+              />
+            </Panel>
+          )}
+          <Panel className="p-6">
+            <StaffClientDocuments docs={docs} />
           </Panel>
           <Panel className="p-6">
             <h2 className="mb-4 font-bold text-ink">{t("timeline")}</h2>

@@ -102,7 +102,12 @@
     "availableOnly": "الموجودين دابا ({count})",
     "allFilter": "كلشي",
     "noCarsHere": "حتى طوموبيل لهاد الاختيار دابا.",
-    "seeAllFiltered": "شوف هاد الطوموبيلات كاملين"
+    "seeAllFiltered": "شوف هاد الطوموبيلات كاملين",
+    "searchPlace": "فين غادي تاخد الطوموبيل",
+    "searchPlaceholder": "ختار وكالة",
+    "searchStartTime": "ساعة الخروج",
+    "searchEndTime": "ساعة الرجوع",
+    "searchRequired": "ختار البلاصة وتاريخ الخروج والرجوع."
   },
   "Cars": {
     "title": "الطوموبيلات ديالنا",
@@ -198,7 +203,52 @@
     "accountExists": "كاين حساب بهاد المعلومات: دخل باش تحجز.",
     "guestInvited": "صيفطنا ليك إيميل باش تختار كلمة السر وتتبع الحجز ديالك أونلاين.",
     "guestCallback": "الفريق ديالنا غادي يعيط ليك فـ {phone} باش يأكد.",
-    "backToCars": "شوف طوموبيلات خرين"
+    "backToCars": "شوف طوموبيلات خرين",
+    "specSeats": "{count, plural, one {مقعد واحد} other {# مقاعد}}",
+    "specDoors": "{count, plural, one {باب واحد} other {# أبواب}}",
+    "specBags": "{count, plural, one {حقيبة واحدة} other {# حقائب}}",
+    "specAc": "مكيّف هواء",
+    "time": "الساعة",
+    "needDriver": "محتاج شيفور؟",
+    "driverPrice": "الشيفور: {price} فالنهار.",
+    "driverOnQuote": "الوكالة غادي تقول ليك الثمن ديال الشيفور.",
+    "yesDriver": "إيه، بالشيفور",
+    "noDriver": "لا، أنا اللي غادي نسوق",
+    "driverLine": "الشيفور",
+    "driverService": "الشيفور",
+    "onQuote": "حسب العرض",
+    "extrasTitle": "الإضافات",
+    "once": "مرة واحدة",
+    "yourInfo": "المعلومات ديالك",
+    "yourInfoHint": "خاصين باش نوجدو عقد الكرا.",
+    "moreInfo": "معلومات إضافية",
+    "depositLabel": "الضمانة",
+    "depositHint": "كتّحبس فالخروج وكترجع ملي ترجع الطوموبيل.",
+    "totalSum": "المجموع",
+    "acceptTerms": "كنقبل",
+    "termsLink": "الشروط العامة ديال الكرا",
+    "acceptTermsRequired": "خاصك تقبل الشروط العامة.",
+    "termsTitle": "الشروط العامة للكراء",
+    "acceptAndClose": "كنقبل",
+    "reserve": "حجز",
+    "noPaymentNow": "ما كتخلص والو دابا: كتخلص ملي تاخد السوارت.",
+    "identifyTitle": "دخل باش تحجز",
+    "identifyBody": "دخل ولا صايب الحساب ديالك فثواني؛ الاختيارات ديالك محفوظين.",
+    "withSocial": "عبر شبكة اجتماعية",
+    "socialHint": "من بعد ما تدخل، غير زيد نمرة البطاقة ونمرة البيرمي.",
+    "or": "ولا",
+    "tabNewClient": "كليان جديد",
+    "tabHaveAccount": "عندي حساب",
+    "loginAndReserve": "دخل وحجز",
+    "useLoginPage": "حسابك يستخدم المصادقة الثنائية: سجّل الدخول من صفحة تسجيل الدخول.",
+    "civility": "اللقب",
+    "idCardNumber": "نمرة البطاقة الوطنية ولا الباسبور",
+    "licenseNumber": "نمرة البيرمي",
+    "phoneIsWhatsapp": "هاد النمرة هي الواتساب ديالي",
+    "receivedTitle": "الطلب ديالك وصل",
+    "receivedBody": "الطلب ديالك {ref} تسجّل. الوكالة غادي تجاوبك فأقل من {hours, plural, one {ساعة} other {# سوايع}}.",
+    "existingAccountLogin": "كاين حساب بهاد المعلومات: دخل باش تتبّع الحجز ديالك.",
+    "loginToFollow": "دخل باش نتبّع الحجز ديالي"
   },
   "Extras": {
     "child_seat": "كرسي ديال الدراري الصغار",
@@ -229,7 +279,60 @@
     "name": "السمية",
     "phone": "التيليفون",
     "language": "لغة الإيميلات",
-    "connectedWith": "داخل بـ"
+    "connectedWith": "داخل بـ",
+    "tabInfos": "المعلومات",
+    "tabReservations": "الحجوزات",
+    "tabHistory": "السجل",
+    "historyEmpty": "والو حتى لدابا.",
+    "seeDetails": "شوف التفاصيل",
+    "upcomingBadge": "جاي",
+    "bookedOn": "حُجز في {date}",
+    "carSpecs": "السيارة",
+    "print": "طبع",
+    "downloadPdf": "تيليشارجي PDF",
+    "extend": "مدّد",
+    "extendTitle": "مدّد الكرا",
+    "extendBody": "ختار التاريخ الجديد ديال الرجوع. الوكالة غادي تقبل ولا ترفض.",
+    "newEndDate": "التاريخ الجديد ديال الرجوع",
+    "extendNote": "ميساج للوكالة",
+    "sendRequest": "صيفط الطلب",
+    "extensionSent": "طلب التمديد تصيفط.",
+    "extensionAlready": "كاين طلب تمديد باقي كيتسنّى.",
+    "extensionPending": "طلب التمديد حتى {date} كيتسنّى: الجواب فأقل من {hours, plural, one {ساعة} other {# سوايع}}.",
+    "extensionsTitle": "طلبات التمديد",
+    "ext": {
+      "pending": "قيد الانتظار",
+      "accepted": "مقبول",
+      "refused": "مرفوض"
+    },
+    "docsTitle": "الوراق ديالي",
+    "docsHint": "صيفط البيرمي والبطاقة (القدام واللور) باش تربح الوقت فالوكالة. تصويرة ولا PDF، 10 ميغا ماكسيموم.",
+    "doc": {
+      "license_front": "البيرمي (القدام)",
+      "license_back": "البيرمي (اللور)",
+      "id_front": "البطاقة (القدام)",
+      "id_back": "البطاقة (اللور)"
+    },
+    "docMissing": "باقي ما تصيفطاتش",
+    "docSent": "تصيفطات نهار {date}",
+    "docUpload": "صيفط",
+    "docReplace": "بدّل",
+    "docView": "شوف الوثيقة",
+    "docUploaded": "الوثيقة تصيفطات.",
+    "ev": {
+      "booked": "حجز {detail}",
+      "confirmed": "تم تأكيد الحجز",
+      "picked_up": "الطوموبيل تخدات",
+      "returned": "الطوموبيل رجعات",
+      "rejected": "تم رفض الحجز",
+      "cancelled": "تم إلغاء الحجز",
+      "extension_requested": "طلب تمديد حتى {detail}",
+      "extension_accepted": "قُبل التمديد حتى {detail}",
+      "extension_refused": "رُفض التمديد",
+      "extension_pending": "التمديد قيد الانتظار",
+      "document": "وثيقة مُرسلة: {detail}",
+      "profile": "تم تحديث المعلومات"
+    }
   },
   "Auth": {
     "loginTitle": "الدخول",
@@ -311,7 +414,8 @@
     "marketing": "الماركتينگ بالإيميل",
     "site": "السيت العمومي",
     "documentation": "الدليل",
-    "contract": "العقد"
+    "contract": "العقد",
+    "extras": "الإضافات"
   },
   "Managers": {
     "title": "المسيّرين",
@@ -774,7 +878,17 @@
     "licenseBlacklisted": "هاد الكليان فاللائحة الكحلة: تسليم الساروت ممنوع.",
     "licenseVerified": "البيرمي متأكد منو",
     "licenseNotVerified": "البيرمي ما متأكدش منو",
-    "validUntil": "صالحة إلى غاية {date}"
+    "validUntil": "صالحة إلى غاية {date}",
+    "decideFromEmail": "جيتي من الإيميل: أكّد الحجز بالبوطونة اللي تحت.",
+    "extensionRequests": "طلبات التمديد",
+    "extensionStatus": {
+      "pending": "قيد الانتظار",
+      "accepted": "مقبول",
+      "refused": "مرفوض"
+    },
+    "acceptExtension": "قبول",
+    "refuseExtension": "رفض",
+    "clientDocuments": "وثائق العميل"
   },
   "Status": {
     "pending": "كيتسنّى",
@@ -891,7 +1005,10 @@
     "out_of_scope": "ما تقدرش: هاد الطوموبيل ولا هاد الوكالة برا النطاق ديالك.",
     "client_blacklisted": "هاد الكليان فاللائحة الكحلة: ما يمكنش يحجز ولا ياخد الساروت.",
     "license_required": "تأكد من البيرمي (الرقم، تاريخ الصلاحية، الأصل) قبل ما تعطي الساروت.",
-    "license_expired": "البيرمي كيسالي قبل تاريخ الرجوع."
+    "license_expired": "البيرمي كيسالي قبل تاريخ الرجوع.",
+    "extension_pending": "يوجد طلب تمديد قيد الانتظار.",
+    "acceptTerms": "يجب الموافقة على الشروط العامة.",
+    "time": "ساعة غير صالحة"
   },
   "About": {
     "title": "وكالة مغربية، وطوموبيلات مقادّين",
@@ -982,7 +1099,18 @@
     "sentToClientNote": "الملخص تصيفط للكليان ({email}).",
     "tplBtnLogin": "دخل",
     "tplBtnAgency": "شوف الوكالة",
-    "tplBtnPromo": "استافد من التخفيض"
+    "tplBtnPromo": "استافد من التخفيض",
+    "tplBtnAccept": "قبول",
+    "tplBtnRefuse": "رفض",
+    "extSubject": "طلب تمديد · {ref}",
+    "extTitle": "طلب تمديد",
+    "extBody": "{client} بغا يمدّد الكرا ديال {car} من {from} حتى {to}. قبل ولا رفض الطلب.",
+    "extAcceptedSubject": "تم قبول التمديد · {ref}",
+    "extAcceptedTitle": "تم قبول تمديدك",
+    "extAcceptedBody": "خبر زوين: الكرا ديال {car} تمدّد حتى {to}.",
+    "extRefusedSubject": "تم رفض التمديد · {ref}",
+    "extRefusedTitle": "تعذّر قبول تمديدك",
+    "extRefusedBody": "الكرا ديال {car} ما يمكنش يتمدّد حتى {to}."
   },
   "Activity": {
     "session_login": "دخول",
@@ -1207,7 +1335,8 @@
     "setPasswordTitle": "بدّل كلمة السر",
     "setPasswordHint": "ختار كلمة السر الجديدة ديال {name}؛ غادي توصلو ف الإيميل.",
     "showPassword": "بيّن كلمة السر",
-    "savePassword": "سجّل كلمة السر"
+    "savePassword": "سجّل كلمة السر",
+    "idCardNumber": "رقم بطاقة التعريف"
   },
   "My": {
     "chartTitle": "المداخيل فكل شهر",
@@ -1468,7 +1597,13 @@
     "blacklistReason": "السبب",
     "blacklistedBanner": "كليان فاللائحة الكحلة",
     "blacklistAdded": "{count, plural, one {الكليان تحط فاللائحة الكحلة} other {# كليانات تحطو فاللائحة الكحلة}}",
-    "blacklistRemoved": "{count, plural, one {الكليان تحيد من اللائحة الكحلة} other {# كليانات تحيدو من اللائحة الكحلة}}"
+    "blacklistRemoved": "{count, plural, one {الكليان تحيد من اللائحة الكحلة} other {# كليانات تحيدو من اللائحة الكحلة}}",
+    "bulkActivate": "فعّل",
+    "bulkDeactivate": "وقّف",
+    "bulkActivated": "{count, plural, one {تم تفعيل عميل واحد} other {تم تفعيل # عملاء}}",
+    "bulkDeactivated": "{count, plural, one {تم تعطيل عميل واحد} other {تم تعطيل # عملاء}}",
+    "bulkDeactivateTitle": "{count, plural, one {تعطيل عميل واحد} other {تعطيل # عملاء}}",
+    "bulkDeactivateReason": "سبب التعطيل"
   },
   "Appointments": {
     "title": "المواعيد المبرمجة",
@@ -1683,7 +1818,21 @@
     "step3": "المعلومات ديالك",
     "step3Body": "دخل ولا خلي غير الضروري: السمية، المدينة والتيليفون.",
     "step4": "الساروت",
-    "step4Body": "الوكالة كتأكد، ومن بعد كتاخد الطوموبيل ولا كنوصلوها ليك."
+    "step4Body": "الوكالة كتأكد، ومن بعد كتاخد الطوموبيل ولا كنوصلوها ليك.",
+    "resultsTitle": "الطوموبيلات اللي كاينين",
+    "resultsCount": "{count, plural, =0 {حتى طوموبيل ما كاينة} one {طوموبيل وحدة كاينة} other {# طوموبيلات كاينين}}",
+    "resultsFor": "{place} · {days, plural, one {يوم واحد} other {# أيام}}",
+    "sortBy": "رتّب ب",
+    "sortPriceAsc": "السعر تصاعديًا",
+    "sortPriceDesc": "السعر تنازليًا",
+    "sortNameAsc": "الاسم (أ ← ي)",
+    "sortNameDesc": "الاسم (ي ← أ)",
+    "noneTitle": "حتى طوموبيل ما خاوية فهاد التواريخ",
+    "noneBody": "جرّب تواريخ أخرين ولا وكالة أخرى.",
+    "seats": "{count, plural, one {مقعد واحد} other {# مقاعد}}",
+    "bags": "{count, plural, one {حقيبة واحدة} other {# حقائب}}",
+    "bookThis": "حجز هاد الطوموبيل",
+    "allDetails": "شوف كاع التفاصيل"
   },
   "Docs": {
     "title": "الدليل",
@@ -1794,7 +1943,8 @@
       "months": "آخر 12 شهرًا",
       "byType": "المصاريف حسب النوع",
       "noExpense": "لا توجد مصاريف مسجّلة."
-    }
+    },
+    "reservationsTab": "الحجوزات"
   },
   "Inspection": {
     "intro": "حالة الطوموبيل كتحمي الكوسيون وكتحل النزاعات: الكيلومترات، الليصانص، الضرر والتصاور، بتوقيع الكليان فالتيليفون ولا التابليت.",
@@ -2004,5 +2154,23 @@
     "confirm": "السلام {name}، الحجز ديالك {reference} تأكد: {car}، من {start} حتى {end}. الاستلام فـ {agency}. المجموع: {total}. شكرا وإلى اللقاء!",
     "reminder": "السلام {name}، تذكير: الكرا ديال {car} كيبدا غدا ({start}) فـ {agency}. ما تنساش البيرمي ولاكارط. حتى لغدا!",
     "return": "السلام {name}، الكرا ديال {car} كيسالي نهار {end}. الرجوع فـ {returnAgency} بنفس الليصانص. بغيتي تمدد؟ جاوب على هاد الميساج."
+  },
+  "ExtrasAdmin": {
+    "title": "الإضافات",
+    "subtitle": "خيارات مقترحة عند الحجز: GPS، مقعد طفل، مساعدة… بسعر لليوم أو لمرة واحدة.",
+    "name": "الاسم",
+    "price": "السعر (درهم)",
+    "pricing": "الفوترة",
+    "perDay": "لليوم",
+    "once": "مرة واحدة",
+    "active": "مفعّل",
+    "up": "إلى الأعلى",
+    "down": "إلى الأسفل",
+    "add": "إضافة خيار",
+    "neverDeleted": "حتى خيار ما كيتمسح: حيّد «مفعّل» باش تخبّيه.",
+    "driverPrice": "سعر السائق لليوم (درهم)",
+    "driverPriceHint": "0 = حسب العرض. يظهر للعميل: {example} لليوم.",
+    "responseHours": "أجل الرد المعلن (بالساعات)",
+    "responseHoursHint": "يظهر للعميل بعد طلب الحجز أو التمديد."
   }
 }

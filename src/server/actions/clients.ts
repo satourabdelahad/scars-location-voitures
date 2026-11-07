@@ -192,3 +192,16 @@ export async function setClientsBlacklist(ids: string[], on: boolean, reason?: s
     return toActionError(err);
   }
 }
+
+/** Activer ou désactiver plusieurs clients depuis la liste (motif obligatoire pour désactiver). */
+export async function setClientsStatus(ids: string[], status: "active" | "deactivated", reason?: string): Promise<ActionResult<{ done: number }>> {
+  const list = z.array(z.string().uuid()).min(1).max(300).safeParse(ids);
+  if (!list.success) return { ok: false, error: "validation" };
+  let done = 0;
+  for (const id of list.data) {
+    const r = await setClientStatus(id, status, reason);
+    if (!r.ok) return done ? { ok: true, data: { done } } : (r as ActionResult<{ done: number }>);
+    done++;
+  }
+  return { ok: true, data: { done } };
+}

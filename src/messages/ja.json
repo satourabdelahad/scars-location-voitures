@@ -102,7 +102,12 @@
     "availableOnly": "今すぐ利用可能（{count}）",
     "allFilter": "すべて",
     "noCarsHere": "現在この条件の車両はありません。",
-    "seeAllFiltered": "これらの車両をすべて見る"
+    "seeAllFiltered": "これらの車両をすべて見る",
+    "searchPlace": "受取場所",
+    "searchPlaceholder": "店舗を選択",
+    "searchStartTime": "受取時刻",
+    "searchEndTime": "返却時刻",
+    "searchRequired": "場所と受取日・返却日を選択してください。"
   },
   "Cars": {
     "title": "車両一覧",
@@ -198,7 +203,52 @@
     "accountExists": "この情報のアカウントがすでにあります。ログインして予約してください。",
     "guestInvited": "パスワード設定とオンラインでの予約確認のためのメールをお送りしました。",
     "guestCallback": "確認のため、{phone} にお電話いたします。",
-    "backToCars": "ほかの車両を見る"
+    "backToCars": "ほかの車両を見る",
+    "specSeats": "{count, plural, other {#人乗り}}",
+    "specDoors": "{count, plural, other {#ドア}}",
+    "specBags": "{count, plural, other {スーツケース#個}}",
+    "specAc": "エアコン",
+    "time": "時刻",
+    "needDriver": "運転手は必要ですか？",
+    "driverPrice": "運転手：1日 {price}",
+    "driverOnQuote": "運転手の料金は店舗からご案内します。",
+    "yesDriver": "はい、運転手付き",
+    "noDriver": "いいえ、自分で運転します",
+    "driverLine": "運転手",
+    "driverService": "運転手",
+    "onQuote": "見積もり",
+    "extrasTitle": "オプション",
+    "once": "1回のみ",
+    "yourInfo": "お客様情報",
+    "yourInfoHint": "レンタル契約書の作成に必要です。",
+    "moreInfo": "追加情報",
+    "depositLabel": "保証金",
+    "depositHint": "受取時に預かり、車の返却時に返金します。",
+    "totalSum": "合計金額",
+    "acceptTerms": "次に同意します：",
+    "termsLink": "レンタル約款",
+    "acceptTermsRequired": "約款に同意する必要があります。",
+    "termsTitle": "レンタル約款",
+    "acceptAndClose": "同意する",
+    "reserve": "予約する",
+    "noPaymentNow": "今はお支払い不要：鍵の受け渡し時にお支払いください。",
+    "identifyTitle": "予約するにはログインしてください",
+    "identifyBody": "ログインするか、数秒でアカウントを作成してください。選択内容は保持されます。",
+    "withSocial": "SNSアカウントで",
+    "socialHint": "ログイン後、身分証番号と運転免許証番号を入力するだけです。",
+    "or": "または",
+    "tabNewClient": "新規のお客様",
+    "tabHaveAccount": "アカウントをお持ちの方",
+    "loginAndReserve": "ログインして予約",
+    "useLoginPage": "お客様のアカウントは二段階認証を使用しています。ログインページからログインしてください。",
+    "civility": "敬称",
+    "idCardNumber": "身分証またはパスポート番号",
+    "licenseNumber": "運転免許証番号",
+    "phoneIsWhatsapp": "この番号はWhatsAppでもあります",
+    "receivedTitle": "リクエストを受け付けました",
+    "receivedBody": "リクエスト {ref} を受け付けました。店舗から最大{hours, plural, other {#時間}}以内にご連絡します。",
+    "existingAccountLogin": "この情報のアカウントがすでにあります。ログインして予約をご確認ください。",
+    "loginToFollow": "ログインして予約を確認"
   },
   "Extras": {
     "child_seat": "チャイルドシート",
@@ -229,7 +279,60 @@
     "name": "氏名",
     "phone": "電話番号",
     "language": "メールの言語",
-    "connectedWith": "ログイン方法"
+    "connectedWith": "ログイン方法",
+    "tabInfos": "情報",
+    "tabReservations": "予約",
+    "tabHistory": "履歴",
+    "historyEmpty": "まだ何もありません。",
+    "seeDetails": "詳細を見る",
+    "upcomingBadge": "予定",
+    "bookedOn": "予約日：{date}",
+    "carSpecs": "車",
+    "print": "印刷",
+    "downloadPdf": "PDFをダウンロード",
+    "extend": "延長",
+    "extendTitle": "レンタルを延長",
+    "extendBody": "新しい返却日を選択してください。店舗がリクエストを承認または却下します。",
+    "newEndDate": "新しい返却日",
+    "extendNote": "店舗へのメッセージ",
+    "sendRequest": "リクエストを送信",
+    "extensionSent": "延長リクエストを送信しました。",
+    "extensionAlready": "延長リクエストはすでに保留中です。",
+    "extensionPending": "{date}までの延長リクエストは保留中です：最大{hours, plural, other {#時間}}以内に回答します。",
+    "extensionsTitle": "延長リクエスト",
+    "ext": {
+      "pending": "保留中",
+      "accepted": "承認",
+      "refused": "却下"
+    },
+    "docsTitle": "書類",
+    "docsHint": "運転免許証と身分証（表・裏）をアップロードすると、店舗での手続きが早くなります。写真またはPDF、最大10MB。",
+    "doc": {
+      "license_front": "運転免許証（表）",
+      "license_back": "運転免許証（裏）",
+      "id_front": "身分証（表）",
+      "id_back": "身分証（裏）"
+    },
+    "docMissing": "未提出",
+    "docSent": "{date} に提出",
+    "docUpload": "アップロード",
+    "docReplace": "差し替え",
+    "docView": "書類を見る",
+    "docUploaded": "書類をアップロードしました。",
+    "ev": {
+      "booked": "{detail} を予約",
+      "confirmed": "予約確定",
+      "picked_up": "車を受け取り",
+      "returned": "車を返却",
+      "rejected": "予約却下",
+      "cancelled": "予約キャンセル",
+      "extension_requested": "{detail} までの延長をリクエスト",
+      "extension_accepted": "{detail} までの延長を承認",
+      "extension_refused": "延長却下",
+      "extension_pending": "延長保留中",
+      "document": "書類を提出：{detail}",
+      "profile": "情報を更新"
+    }
   },
   "Auth": {
     "loginTitle": "ログイン",
@@ -311,7 +414,8 @@
     "marketing": "メールマーケティング",
     "site": "公開サイト",
     "documentation": "ドキュメント",
-    "contract": "契約書"
+    "contract": "契約書",
+    "extras": "オプション"
   },
   "Managers": {
     "title": "マネージャー",
@@ -774,7 +878,17 @@
     "licenseBlacklisted": "この顧客はブラックリストに登録されています。鍵の引き渡しはできません。",
     "licenseVerified": "免許証確認済み",
     "licenseNotVerified": "免許証未確認",
-    "validUntil": "{date}まで有効"
+    "validUntil": "{date}まで有効",
+    "decideFromEmail": "メールから開きました：下のボタンで予約を確定してください。",
+    "extensionRequests": "延長リクエスト",
+    "extensionStatus": {
+      "pending": "保留中",
+      "accepted": "承認",
+      "refused": "却下"
+    },
+    "acceptExtension": "承認",
+    "refuseExtension": "却下",
+    "clientDocuments": "顧客の書類"
   },
   "Status": {
     "pending": "確認待ち",
@@ -891,7 +1005,10 @@
     "out_of_scope": "操作できません：この車両または店舗は担当範囲外です。",
     "client_blacklisted": "この顧客はブラックリストに登録されています。予約も鍵の引き渡しもできません。",
     "license_required": "鍵を渡す前に免許証（番号・有効期限・原本）を確認してください。",
-    "license_expired": "免許証の有効期限が返却日より前に切れます。"
+    "license_expired": "免許証の有効期限が返却日より前に切れます。",
+    "extension_pending": "延長リクエストはすでに保留中です。",
+    "acceptTerms": "約款に同意する必要があります。",
+    "time": "無効な時刻"
   },
   "About": {
     "title": "整備の行き届いた車を、モロッコから",
@@ -982,7 +1099,18 @@
     "sentToClientNote": "顧客に概要を送信しました（{email}）。",
     "tplBtnLogin": "ログイン",
     "tplBtnAgency": "店舗を見る",
-    "tplBtnPromo": "割引を利用する"
+    "tplBtnPromo": "割引を利用する",
+    "tplBtnAccept": "承認",
+    "tplBtnRefuse": "却下",
+    "extSubject": "延長リクエスト · {ref}",
+    "extTitle": "延長リクエスト",
+    "extBody": "{client} 様が {car} のレンタルを {from} から {to} まで延長したいとリクエストしています。承認または却下してください。",
+    "extAcceptedSubject": "延長承認 · {ref}",
+    "extAcceptedTitle": "延長が承認されました",
+    "extAcceptedBody": "{car} のレンタルは {to} まで延長されました。",
+    "extRefusedSubject": "延長却下 · {ref}",
+    "extRefusedTitle": "延長は承認されませんでした",
+    "extRefusedBody": "{car} のレンタルを {to} まで延長することはできません。"
   },
   "Activity": {
     "session_login": "ログイン",
@@ -1207,7 +1335,8 @@
     "setPasswordTitle": "パスワードを変更",
     "setPasswordHint": "{name}の新しいパスワードを設定してください。メールで通知されます。",
     "showPassword": "パスワードを表示",
-    "savePassword": "パスワードを保存"
+    "savePassword": "パスワードを保存",
+    "idCardNumber": "身分証番号"
   },
   "My": {
     "chartTitle": "月別売上",
@@ -1468,7 +1597,13 @@
     "blacklistReason": "理由",
     "blacklistedBanner": "ブラックリストの顧客",
     "blacklistAdded": "{count}人をブラックリストに追加しました",
-    "blacklistRemoved": "{count}人をブラックリストから削除しました"
+    "blacklistRemoved": "{count}人をブラックリストから削除しました",
+    "bulkActivate": "有効化",
+    "bulkDeactivate": "無効化",
+    "bulkActivated": "{count, plural, other {#名の顧客を有効化しました}}",
+    "bulkDeactivated": "{count, plural, other {#名の顧客を無効化しました}}",
+    "bulkDeactivateTitle": "{count, plural, other {#名の顧客を無効化}}",
+    "bulkDeactivateReason": "無効化の理由"
   },
   "Appointments": {
     "title": "予定",
@@ -1683,7 +1818,21 @@
     "step3": "お客様情報",
     "step3Body": "ログインするか、名前・都市・電話番号だけを入力します。",
     "step4": "鍵の受け取り",
-    "step4Body": "店舗が確定した後、車を受け取るか配車をお待ちください。"
+    "step4Body": "店舗が確定した後、車を受け取るか配車をお待ちください。",
+    "resultsTitle": "空いている車",
+    "resultsCount": "{count, plural, =0 {空いている車はありません} other {空いている車 #台}}",
+    "resultsFor": "{place} · {days, plural, other {#日間}}",
+    "sortBy": "並べ替え",
+    "sortPriceAsc": "料金の安い順",
+    "sortPriceDesc": "料金の高い順",
+    "sortNameAsc": "名前（A → Z）",
+    "sortNameDesc": "名前（Z → A）",
+    "noneTitle": "この日程で空いている車はありません",
+    "noneBody": "別の日程または別の店舗をお試しください。",
+    "seats": "{count, plural, other {#人乗り}}",
+    "bags": "{count, plural, other {スーツケース#個}}",
+    "bookThis": "この車を予約",
+    "allDetails": "詳細をすべて表示"
   },
   "Docs": {
     "title": "ドキュメント",
@@ -1794,7 +1943,8 @@
       "months": "過去12か月",
       "byType": "種類別の経費",
       "noExpense": "経費の記録はありません。"
-    }
+    },
+    "reservationsTab": "予約"
   },
   "Inspection": {
     "intro": "車両チェックは保証金を守り、トラブルを解決します。走行距離、燃料、損傷、写真を記録し、顧客がスマホやタブレットで署名します。",
@@ -2004,5 +2154,23 @@
     "confirm": "{name}様、ご予約 {reference} が確定しました：{car}、{start}〜{end}。受け取り：{agency}。合計：{total}。ありがとうございます！",
     "reminder": "{name}様、明日（{start}）から{agency}で{car}のレンタルが始まります。運転免許証と身分証をお持ちください。明日お待ちしています！",
     "return": "{name}様、{car}のレンタルは{end}に終了します。{returnAgency}へ同じ燃料量でご返却ください。延長をご希望の場合はこのメッセージにご返信ください。"
+  },
+  "ExtrasAdmin": {
+    "title": "オプション",
+    "subtitle": "予約時に提供するオプション：GPS、チャイルドシート、ロードサービスなど。1日ごとまたは1回のみの料金。",
+    "name": "名前",
+    "price": "料金（MAD）",
+    "pricing": "課金",
+    "perDay": "1日ごと",
+    "once": "1回のみ",
+    "active": "有効",
+    "up": "上へ",
+    "down": "下へ",
+    "add": "オプションを追加",
+    "neverDeleted": "オプションは削除されません。非表示にするには「有効」を外してください。",
+    "driverPrice": "運転手の1日料金（MAD）",
+    "driverPriceHint": "0 = 見積もり。お客様への表示：1日 {example}",
+    "responseHours": "案内する回答時間（時間）",
+    "responseHoursHint": "予約または延長のリクエスト後にお客様に表示されます。"
   }
 }

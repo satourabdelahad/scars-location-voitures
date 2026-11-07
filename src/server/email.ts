@@ -118,6 +118,17 @@ export async function sendReservationEmail(kind: "received" | "confirmed" | "rej
   );
 }
 
+/** Email simple : titre, texte (sauts de ligne conservés) et boutons. */
+export async function sendSimpleEmail(to: string, locale: string, subject: string, title: string, text: string, buttons: { label: string; href: string }[] = []) {
+  const l: Locale = isLocale(locale) ? locale : "fr";
+  const body =
+    escapeHtml(text).replace(/\n/g, "<br>") +
+    (buttons.length
+      ? `<p style="margin:24px 0 0">${buttons.map((b, i) => `<a href="${b.href}" style="display:inline-block;margin:0 8px 8px 0;background:${i ? "#ffffff" : "#4b3fd8"};color:${i ? "#4b3fd8" : "#ffffff"};border:1px solid #4b3fd8;text-decoration:none;padding:11px 20px;border-radius:10px;font-weight:700">${escapeHtml(b.label)}</a>`).join("")}</p>`
+      : "");
+  return send(to, subject, layout(l, title, body));
+}
+
 /** Habillage Dizy Cars autour du contenu d'un modèle (en-tête, liseré, carte blanche). */
 export function brandedEmail(bodyHtml: string, locale: Locale = "fr") {
   const dir = localeMeta[locale].dir;

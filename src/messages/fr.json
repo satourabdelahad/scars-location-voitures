@@ -102,7 +102,12 @@
     "availableOnly": "Disponibles maintenant ({count})",
     "allFilter": "Toutes",
     "noCarsHere": "Aucune voiture pour ce choix pour le moment.",
-    "seeAllFiltered": "Voir toutes ces voitures"
+    "seeAllFiltered": "Voir toutes ces voitures",
+    "searchPlace": "Lieu de prise en charge",
+    "searchPlaceholder": "Choisir une agence",
+    "searchStartTime": "Heure de départ",
+    "searchEndTime": "Heure de retour",
+    "searchRequired": "Choisissez le lieu et les dates de départ et de retour."
   },
   "Cars": {
     "title": "Nos voitures",
@@ -198,7 +203,52 @@
     "accountExists": "Un compte existe déjà avec ces coordonnées : connectez-vous pour réserver.",
     "guestInvited": "Un email vous a été envoyé pour choisir votre mot de passe et suivre votre réservation en ligne.",
     "guestCallback": "Notre équipe vous contactera au {phone} pour confirmer.",
-    "backToCars": "Voir d'autres voitures"
+    "backToCars": "Voir d'autres voitures",
+    "specSeats": "{count, plural, one {# place} other {# places}}",
+    "specDoors": "{count, plural, one {# porte} other {# portes}}",
+    "specBags": "{count, plural, one {# valise} other {# valises}}",
+    "specAc": "Climatisation",
+    "time": "Heure",
+    "needDriver": "Besoin d'un chauffeur ?",
+    "driverPrice": "Chauffeur : {price} par jour.",
+    "driverOnQuote": "Le prix du chauffeur vous sera communiqué par l'agence.",
+    "yesDriver": "Oui, avec chauffeur",
+    "noDriver": "Non, je conduis",
+    "driverLine": "Chauffeur",
+    "driverService": "Chauffeur",
+    "onQuote": "Sur devis",
+    "extrasTitle": "Suppléments",
+    "once": "une fois",
+    "yourInfo": "Vos informations",
+    "yourInfoHint": "Nécessaires pour préparer le contrat de location.",
+    "moreInfo": "Informations complémentaires",
+    "depositLabel": "Dépôt de garantie",
+    "depositHint": "Bloqué au départ et rendu au retour de la voiture.",
+    "totalSum": "Somme totale",
+    "acceptTerms": "J'accepte les",
+    "termsLink": "conditions générales de location",
+    "acceptTermsRequired": "Vous devez accepter les conditions générales.",
+    "termsTitle": "Conditions générales de location",
+    "acceptAndClose": "J'accepte",
+    "reserve": "Réserver",
+    "noPaymentNow": "Aucun paiement maintenant : vous payez à la remise des clés.",
+    "identifyTitle": "Identifiez-vous pour réserver",
+    "identifyBody": "Connectez-vous ou créez votre compte en quelques secondes ; vos choix sont conservés.",
+    "withSocial": "Avec un réseau social",
+    "socialHint": "Après la connexion, il vous restera à indiquer votre numéro de carte d'identité et de permis.",
+    "or": "ou",
+    "tabNewClient": "Nouveau client",
+    "tabHaveAccount": "J'ai un compte",
+    "loginAndReserve": "Me connecter et réserver",
+    "useLoginPage": "Votre compte utilise la double authentification : connectez-vous depuis la page de connexion.",
+    "civility": "Civilité",
+    "idCardNumber": "N° de carte d'identité (CIN ou passeport)",
+    "licenseNumber": "N° de permis de conduire",
+    "phoneIsWhatsapp": "Ce numéro est aussi mon WhatsApp",
+    "receivedTitle": "Demande bien reçue",
+    "receivedBody": "Votre demande {ref} est prise en compte. L'agence vous répondra dans un délai maximum de {hours, plural, one {# heure} other {# heures}}.",
+    "existingAccountLogin": "Un compte existe déjà avec ces coordonnées : connectez-vous pour suivre votre réservation.",
+    "loginToFollow": "Me connecter pour suivre ma réservation"
   },
   "Extras": {
     "child_seat": "Siège enfant",
@@ -229,7 +279,60 @@
     "name": "Nom",
     "phone": "Téléphone",
     "language": "Langue des emails",
-    "connectedWith": "Connecté avec"
+    "connectedWith": "Connecté avec",
+    "tabInfos": "Informations",
+    "tabReservations": "Réservations",
+    "tabHistory": "Historique",
+    "historyEmpty": "Aucun événement pour l'instant.",
+    "seeDetails": "Voir le détail",
+    "upcomingBadge": "À venir",
+    "bookedOn": "Réservée le {date}",
+    "carSpecs": "Voiture",
+    "print": "Imprimer",
+    "downloadPdf": "Télécharger en PDF",
+    "extend": "Prolonger",
+    "extendTitle": "Prolonger la location",
+    "extendBody": "Choisissez la nouvelle date de retour. L'agence accepte ou refuse votre demande.",
+    "newEndDate": "Nouvelle date de retour",
+    "extendNote": "Message à l'agence",
+    "sendRequest": "Envoyer la demande",
+    "extensionSent": "Demande de prolongation envoyée.",
+    "extensionAlready": "Une demande de prolongation est déjà en attente.",
+    "extensionPending": "Demande de prolongation jusqu'au {date} en attente : réponse sous {hours, plural, one {# heure} other {# heures}} maximum.",
+    "extensionsTitle": "Demandes de prolongation",
+    "ext": {
+      "pending": "En attente",
+      "accepted": "Acceptée",
+      "refused": "Refusée"
+    },
+    "docsTitle": "Mes documents",
+    "docsHint": "Déposez votre permis et votre carte d'identité (recto et verso) pour gagner du temps à l'agence. Photo ou PDF, 10 Mo maximum.",
+    "doc": {
+      "license_front": "Permis (recto)",
+      "license_back": "Permis (verso)",
+      "id_front": "Carte d'identité (recto)",
+      "id_back": "Carte d'identité (verso)"
+    },
+    "docMissing": "Pas encore déposé",
+    "docSent": "Déposé le {date}",
+    "docUpload": "Déposer",
+    "docReplace": "Remplacer",
+    "docView": "Voir le document",
+    "docUploaded": "Document déposé.",
+    "ev": {
+      "booked": "Réservation de {detail}",
+      "confirmed": "Réservation confirmée",
+      "picked_up": "Voiture récupérée",
+      "returned": "Voiture rendue",
+      "rejected": "Réservation refusée",
+      "cancelled": "Réservation annulée",
+      "extension_requested": "Prolongation demandée jusqu'au {detail}",
+      "extension_accepted": "Prolongation acceptée jusqu'au {detail}",
+      "extension_refused": "Prolongation refusée",
+      "extension_pending": "Prolongation en attente",
+      "document": "Document déposé : {detail}",
+      "profile": "Informations mises à jour"
+    }
   },
   "Auth": {
     "loginTitle": "Connexion",
@@ -311,7 +414,8 @@
     "marketing": "Email Marketing",
     "site": "Site public",
     "documentation": "Documentation",
-    "contract": "Contrat"
+    "contract": "Contrat",
+    "extras": "Suppléments"
   },
   "Managers": {
     "title": "Gestionnaires",
@@ -774,7 +878,17 @@
     "licenseBlacklisted": "Ce client est sur liste noire : la remise des clés est bloquée.",
     "licenseVerified": "Permis vérifié",
     "licenseNotVerified": "Permis non vérifié",
-    "validUntil": "valable jusqu'au {date}"
+    "validUntil": "valable jusqu'au {date}",
+    "decideFromEmail": "Vous venez de l'email : confirmez la réservation avec le bouton ci-dessous.",
+    "extensionRequests": "Demandes de prolongation",
+    "extensionStatus": {
+      "pending": "En attente",
+      "accepted": "Acceptée",
+      "refused": "Refusée"
+    },
+    "acceptExtension": "Accepter",
+    "refuseExtension": "Refuser",
+    "clientDocuments": "Documents du client"
   },
   "Status": {
     "pending": "En attente",
@@ -891,7 +1005,10 @@
     "out_of_scope": "Action impossible : cette voiture ou cette agence est hors de votre périmètre.",
     "client_blacklisted": "Ce client est sur liste noire : aucune réservation ni remise des clés possible.",
     "license_required": "Vérifiez le permis (numéro, date de validité, original présenté) avant de remettre les clés.",
-    "license_expired": "Le permis expire avant la date de retour."
+    "license_expired": "Le permis expire avant la date de retour.",
+    "extension_pending": "Une demande de prolongation est déjà en attente.",
+    "acceptTerms": "Vous devez accepter les conditions générales.",
+    "time": "Heure invalide"
   },
   "About": {
     "title": "Une agence marocaine, des voitures bien tenues",
@@ -982,7 +1099,18 @@
     "sentToClientNote": "Récapitulatif envoyé au client ({email}).",
     "tplBtnLogin": "Me connecter",
     "tplBtnAgency": "Voir l'agence",
-    "tplBtnPromo": "Profiter de ma réduction"
+    "tplBtnPromo": "Profiter de ma réduction",
+    "tplBtnAccept": "Accepter",
+    "tplBtnRefuse": "Refuser",
+    "extSubject": "Demande de prolongation · {ref}",
+    "extTitle": "Demande de prolongation",
+    "extBody": "{client} demande à prolonger la location de la {car} du {from} au {to}. Acceptez ou refusez la demande.",
+    "extAcceptedSubject": "Prolongation acceptée · {ref}",
+    "extAcceptedTitle": "Votre prolongation est acceptée",
+    "extAcceptedBody": "Bonne nouvelle : la location de la {car} est prolongée jusqu'au {to}.",
+    "extRefusedSubject": "Prolongation refusée · {ref}",
+    "extRefusedTitle": "Votre prolongation n'a pas pu être acceptée",
+    "extRefusedBody": "La location de la {car} ne peut pas être prolongée jusqu'au {to}."
   },
   "Activity": {
     "session_login": "Connexion",
@@ -1207,7 +1335,8 @@
     "setPasswordTitle": "Changer le mot de passe",
     "setPasswordHint": "Choisissez le nouveau mot de passe de {name} ; il le recevra par email.",
     "showPassword": "Afficher le mot de passe",
-    "savePassword": "Enregistrer le mot de passe"
+    "savePassword": "Enregistrer le mot de passe",
+    "idCardNumber": "N° de carte d'identité"
   },
   "My": {
     "chartTitle": "Chiffre d'affaires par mois",
@@ -1468,7 +1597,13 @@
     "blacklistReason": "Motif",
     "blacklistedBanner": "Client sur liste noire",
     "blacklistAdded": "{count, plural, one {Client mis sur liste noire} other {# clients mis sur liste noire}}",
-    "blacklistRemoved": "{count, plural, one {Client retiré de la liste noire} other {# clients retirés de la liste noire}}"
+    "blacklistRemoved": "{count, plural, one {Client retiré de la liste noire} other {# clients retirés de la liste noire}}",
+    "bulkActivate": "Activer",
+    "bulkDeactivate": "Désactiver",
+    "bulkActivated": "{count, plural, one {# client activé} other {# clients activés}}",
+    "bulkDeactivated": "{count, plural, one {# client désactivé} other {# clients désactivés}}",
+    "bulkDeactivateTitle": "{count, plural, one {Désactiver # client} other {Désactiver # clients}}",
+    "bulkDeactivateReason": "Motif de la désactivation"
   },
   "Appointments": {
     "title": "Rendez-vous planifiés",
@@ -1683,7 +1818,21 @@
     "step3": "Vos coordonnées",
     "step3Body": "Connectez-vous ou laissez le minimum : nom, ville et téléphone.",
     "step4": "Les clés",
-    "step4Body": "L'agence confirme, puis vous récupérez la voiture ou nous vous la livrons."
+    "step4Body": "L'agence confirme, puis vous récupérez la voiture ou nous vous la livrons.",
+    "resultsTitle": "Voitures disponibles",
+    "resultsCount": "{count, plural, =0 {Aucune voiture disponible} one {# voiture disponible} other {# voitures disponibles}}",
+    "resultsFor": "{place} · {days, plural, one {# jour} other {# jours}}",
+    "sortBy": "Trier par",
+    "sortPriceAsc": "Prix croissant",
+    "sortPriceDesc": "Prix décroissant",
+    "sortNameAsc": "Nom (A → Z)",
+    "sortNameDesc": "Nom (Z → A)",
+    "noneTitle": "Aucune voiture libre à ces dates",
+    "noneBody": "Essayez d'autres dates ou une autre agence.",
+    "seats": "{count, plural, one {# place} other {# places}}",
+    "bags": "{count, plural, one {# valise} other {# valises}}",
+    "bookThis": "Réserver cette voiture",
+    "allDetails": "Afficher tous les détails"
   },
   "Docs": {
     "title": "Documentation",
@@ -1794,7 +1943,8 @@
       "months": "12 derniers mois",
       "byType": "Dépenses par type",
       "noExpense": "Aucune dépense enregistrée."
-    }
+    },
+    "reservationsTab": "Réservations"
   },
   "Inspection": {
     "intro": "L'état des lieux protège la caution et règle les litiges : kilométrage, carburant, dégâts et photos, signé par le client sur le téléphone ou la tablette.",
@@ -2004,5 +2154,23 @@
     "confirm": "Bonjour {name}, votre réservation {reference} est confirmée : {car}, du {start} au {end}. Retrait à {agency}. Total : {total}. Merci et à bientôt !",
     "reminder": "Bonjour {name}, petit rappel : votre location {car} commence demain ({start}) à {agency}. Pensez à votre permis et à votre pièce d'identité. À demain !",
     "return": "Bonjour {name}, votre location {car} se termine le {end}. Retour prévu à {returnAgency}, avec le même niveau de carburant. Besoin de prolonger ? Répondez à ce message."
+  },
+  "ExtrasAdmin": {
+    "title": "Suppléments",
+    "subtitle": "Options proposées à la réservation : GPS, siège enfant, assistance… avec leur prix par jour ou une seule fois.",
+    "name": "Nom",
+    "price": "Prix (MAD)",
+    "pricing": "Facturation",
+    "perDay": "Par jour",
+    "once": "Une seule fois",
+    "active": "Actif",
+    "up": "Monter",
+    "down": "Descendre",
+    "add": "Ajouter un supplément",
+    "neverDeleted": "Un supplément n'est jamais supprimé : décochez « Actif » pour le masquer.",
+    "driverPrice": "Prix du chauffeur par jour (MAD)",
+    "driverPriceHint": "0 = sur devis. Affiché au client : {example} par jour.",
+    "responseHours": "Délai de réponse annoncé (heures)",
+    "responseHoursHint": "Affiché au client après sa demande de réservation ou de prolongation."
   }
 }

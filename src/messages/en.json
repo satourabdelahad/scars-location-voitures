@@ -102,7 +102,12 @@
     "availableOnly": "Available now ({count})",
     "allFilter": "All",
     "noCarsHere": "No car for this choice at the moment.",
-    "seeAllFiltered": "See all these cars"
+    "seeAllFiltered": "See all these cars",
+    "searchPlace": "Pick-up location",
+    "searchPlaceholder": "Choose an agency",
+    "searchStartTime": "Pick-up time",
+    "searchEndTime": "Return time",
+    "searchRequired": "Choose the location and the pick-up and return dates."
   },
   "Cars": {
     "title": "Our cars",
@@ -198,7 +203,52 @@
     "accountExists": "An account already exists with these details: sign in to book.",
     "guestInvited": "We have emailed you a link to choose your password and follow your booking online.",
     "guestCallback": "Our team will call you at {phone} to confirm.",
-    "backToCars": "See other cars"
+    "backToCars": "See other cars",
+    "specSeats": "{count, plural, one {# seat} other {# seats}}",
+    "specDoors": "{count, plural, one {# door} other {# doors}}",
+    "specBags": "{count, plural, one {# bag} other {# bags}}",
+    "specAc": "Air conditioning",
+    "time": "Time",
+    "needDriver": "Need a driver?",
+    "driverPrice": "Driver: {price} per day.",
+    "driverOnQuote": "The agency will give you the driver's price.",
+    "yesDriver": "Yes, with a driver",
+    "noDriver": "No, I'll drive",
+    "driverLine": "Driver",
+    "driverService": "Driver",
+    "onQuote": "On quote",
+    "extrasTitle": "Extras",
+    "once": "one-time",
+    "yourInfo": "Your details",
+    "yourInfoHint": "Needed to prepare the rental contract.",
+    "moreInfo": "Additional information",
+    "depositLabel": "Security deposit",
+    "depositHint": "Held at pick-up and released when the car is returned.",
+    "totalSum": "Total amount",
+    "acceptTerms": "I accept the",
+    "termsLink": "rental terms and conditions",
+    "acceptTermsRequired": "You must accept the terms and conditions.",
+    "termsTitle": "Rental terms and conditions",
+    "acceptAndClose": "I accept",
+    "reserve": "Book",
+    "noPaymentNow": "No payment now: you pay when you collect the keys.",
+    "identifyTitle": "Identify yourself to book",
+    "identifyBody": "Log in or create your account in seconds; your choices are kept.",
+    "withSocial": "With a social network",
+    "socialHint": "After logging in, you'll only need to add your ID card and driving licence numbers.",
+    "or": "or",
+    "tabNewClient": "New customer",
+    "tabHaveAccount": "I have an account",
+    "loginAndReserve": "Log in and book",
+    "useLoginPage": "Your account uses two-factor authentication: please log in from the login page.",
+    "civility": "Title",
+    "idCardNumber": "ID card or passport number",
+    "licenseNumber": "Driving licence number",
+    "phoneIsWhatsapp": "This number is also my WhatsApp",
+    "receivedTitle": "Request received",
+    "receivedBody": "Your request {ref} has been received. The agency will reply within {hours, plural, one {# hour} other {# hours}} at most.",
+    "existingAccountLogin": "An account already exists with these details: log in to follow your booking.",
+    "loginToFollow": "Log in to follow my booking"
   },
   "Extras": {
     "child_seat": "Child seat",
@@ -229,7 +279,60 @@
     "name": "Name",
     "phone": "Phone",
     "language": "Email language",
-    "connectedWith": "Signed in with"
+    "connectedWith": "Signed in with",
+    "tabInfos": "Details",
+    "tabReservations": "Bookings",
+    "tabHistory": "History",
+    "historyEmpty": "Nothing yet.",
+    "seeDetails": "See details",
+    "upcomingBadge": "Upcoming",
+    "bookedOn": "Booked on {date}",
+    "carSpecs": "Car",
+    "print": "Print",
+    "downloadPdf": "Download PDF",
+    "extend": "Extend",
+    "extendTitle": "Extend the rental",
+    "extendBody": "Choose the new return date. The agency will accept or refuse your request.",
+    "newEndDate": "New return date",
+    "extendNote": "Message to the agency",
+    "sendRequest": "Send request",
+    "extensionSent": "Extension request sent.",
+    "extensionAlready": "An extension request is already pending.",
+    "extensionPending": "Extension request until {date} pending: reply within {hours, plural, one {# hour} other {# hours}} at most.",
+    "extensionsTitle": "Extension requests",
+    "ext": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "refused": "Refused"
+    },
+    "docsTitle": "My documents",
+    "docsHint": "Upload your driving licence and ID card (front and back) to save time at the agency. Photo or PDF, 10 MB max.",
+    "doc": {
+      "license_front": "Licence (front)",
+      "license_back": "Licence (back)",
+      "id_front": "ID card (front)",
+      "id_back": "ID card (back)"
+    },
+    "docMissing": "Not uploaded yet",
+    "docSent": "Uploaded on {date}",
+    "docUpload": "Upload",
+    "docReplace": "Replace",
+    "docView": "View document",
+    "docUploaded": "Document uploaded.",
+    "ev": {
+      "booked": "Booking of {detail}",
+      "confirmed": "Booking confirmed",
+      "picked_up": "Car collected",
+      "returned": "Car returned",
+      "rejected": "Booking refused",
+      "cancelled": "Booking cancelled",
+      "extension_requested": "Extension requested until {detail}",
+      "extension_accepted": "Extension accepted until {detail}",
+      "extension_refused": "Extension refused",
+      "extension_pending": "Extension pending",
+      "document": "Document uploaded: {detail}",
+      "profile": "Details updated"
+    }
   },
   "Auth": {
     "loginTitle": "Sign in",
@@ -311,7 +414,8 @@
     "marketing": "Email Marketing",
     "site": "Public website",
     "documentation": "Documentation",
-    "contract": "Contract"
+    "contract": "Contract",
+    "extras": "Extras"
   },
   "Managers": {
     "title": "Managers",
@@ -774,7 +878,17 @@
     "licenseBlacklisted": "This client is blacklisted: key handover is blocked.",
     "licenseVerified": "Licence checked",
     "licenseNotVerified": "Licence not checked",
-    "validUntil": "valid until {date}"
+    "validUntil": "valid until {date}",
+    "decideFromEmail": "You came from the email: confirm the booking with the button below.",
+    "extensionRequests": "Extension requests",
+    "extensionStatus": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "refused": "Refused"
+    },
+    "acceptExtension": "Accept",
+    "refuseExtension": "Refuse",
+    "clientDocuments": "Customer documents"
   },
   "Status": {
     "pending": "Pending",
@@ -891,7 +1005,10 @@
     "out_of_scope": "Not allowed: this car or agency is outside your scope.",
     "client_blacklisted": "This client is blacklisted: no booking or key handover is possible.",
     "license_required": "Check the licence (number, expiry date, original shown) before handing over the keys.",
-    "license_expired": "The licence expires before the return date."
+    "license_expired": "The licence expires before the return date.",
+    "extension_pending": "An extension request is already pending.",
+    "acceptTerms": "You must accept the terms and conditions.",
+    "time": "Invalid time"
   },
   "About": {
     "title": "A Moroccan agency with well-kept cars",
@@ -982,7 +1099,18 @@
     "sentToClientNote": "Summary sent to the customer ({email}).",
     "tplBtnLogin": "Sign in",
     "tplBtnAgency": "View the branch",
-    "tplBtnPromo": "Get my discount"
+    "tplBtnPromo": "Get my discount",
+    "tplBtnAccept": "Accept",
+    "tplBtnRefuse": "Refuse",
+    "extSubject": "Extension request · {ref}",
+    "extTitle": "Extension request",
+    "extBody": "{client} asks to extend the rental of the {car} from {from} to {to}. Accept or refuse the request.",
+    "extAcceptedSubject": "Extension accepted · {ref}",
+    "extAcceptedTitle": "Your extension is accepted",
+    "extAcceptedBody": "Good news: the rental of the {car} is extended until {to}.",
+    "extRefusedSubject": "Extension refused · {ref}",
+    "extRefusedTitle": "Your extension could not be accepted",
+    "extRefusedBody": "The rental of the {car} cannot be extended until {to}."
   },
   "Activity": {
     "session_login": "Signed in",
@@ -1207,7 +1335,8 @@
     "setPasswordTitle": "Change password",
     "setPasswordHint": "Choose {name}'s new password; they will receive it by email.",
     "showPassword": "Show password",
-    "savePassword": "Save password"
+    "savePassword": "Save password",
+    "idCardNumber": "ID card number"
   },
   "My": {
     "chartTitle": "Revenue by month",
@@ -1468,7 +1597,13 @@
     "blacklistReason": "Reason",
     "blacklistedBanner": "Blacklisted client",
     "blacklistAdded": "{count, plural, one {Client blacklisted} other {# clients blacklisted}}",
-    "blacklistRemoved": "{count, plural, one {Client removed from the blacklist} other {# clients removed from the blacklist}}"
+    "blacklistRemoved": "{count, plural, one {Client removed from the blacklist} other {# clients removed from the blacklist}}",
+    "bulkActivate": "Activate",
+    "bulkDeactivate": "Deactivate",
+    "bulkActivated": "{count, plural, one {# customer activated} other {# customers activated}}",
+    "bulkDeactivated": "{count, plural, one {# customer deactivated} other {# customers deactivated}}",
+    "bulkDeactivateTitle": "{count, plural, one {Deactivate # customer} other {Deactivate # customers}}",
+    "bulkDeactivateReason": "Reason for deactivation"
   },
   "Appointments": {
     "title": "Planned appointments",
@@ -1683,7 +1818,21 @@
     "step3": "Your details",
     "step3Body": "Sign in or leave the minimum: name, city and phone.",
     "step4": "The keys",
-    "step4Body": "The branch confirms, then you collect the car or we deliver it to you."
+    "step4Body": "The branch confirms, then you collect the car or we deliver it to you.",
+    "resultsTitle": "Available cars",
+    "resultsCount": "{count, plural, =0 {No car available} one {# car available} other {# cars available}}",
+    "resultsFor": "{place} · {days, plural, one {# day} other {# days}}",
+    "sortBy": "Sort by",
+    "sortPriceAsc": "Price, low to high",
+    "sortPriceDesc": "Price, high to low",
+    "sortNameAsc": "Name (A → Z)",
+    "sortNameDesc": "Name (Z → A)",
+    "noneTitle": "No car free on these dates",
+    "noneBody": "Try other dates or another agency.",
+    "seats": "{count, plural, one {# seat} other {# seats}}",
+    "bags": "{count, plural, one {# bag} other {# bags}}",
+    "bookThis": "Book this car",
+    "allDetails": "Show all details"
   },
   "Docs": {
     "title": "Documentation",
@@ -1794,7 +1943,8 @@
       "months": "Last 12 months",
       "byType": "Expenses by type",
       "noExpense": "No expenses recorded."
-    }
+    },
+    "reservationsTab": "Bookings"
   },
   "Inspection": {
     "intro": "The check-in/check-out report protects the deposit and settles disputes: mileage, fuel, damage and photos, signed by the client on a phone or tablet.",
@@ -2004,5 +2154,23 @@
     "confirm": "Hello {name}, your booking {reference} is confirmed: {car}, from {start} to {end}. Pick-up at {agency}. Total: {total}. Thank you and see you soon!",
     "reminder": "Hello {name}, a quick reminder: your {car} rental starts tomorrow ({start}) at {agency}. Please bring your driving licence and ID. See you tomorrow!",
     "return": "Hello {name}, your {car} rental ends on {end}. Return at {returnAgency}, with the same fuel level. Need to extend? Just reply to this message."
+  },
+  "ExtrasAdmin": {
+    "title": "Extras",
+    "subtitle": "Options offered at booking: GPS, child seat, assistance… priced per day or one-time.",
+    "name": "Name",
+    "price": "Price (MAD)",
+    "pricing": "Billing",
+    "perDay": "Per day",
+    "once": "One-time",
+    "active": "Active",
+    "up": "Move up",
+    "down": "Move down",
+    "add": "Add an extra",
+    "neverDeleted": "Extras are never deleted: untick “Active” to hide one.",
+    "driverPrice": "Driver price per day (MAD)",
+    "driverPriceHint": "0 = on quote. Shown to customers: {example} per day.",
+    "responseHours": "Announced response time (hours)",
+    "responseHoursHint": "Shown to the customer after a booking or extension request."
   }
 }

@@ -22,6 +22,9 @@ import { FinancePanel } from "./car-file/finance-panel";
 import { CarCalendar, FleetCalendar } from "./car-file/calendar";
 import { CarHeader, CarStats } from "./car-header";
 import { RentalsTab } from "@/features/managers/rentals-tab";
+import { ReservationsTable } from "@/features/reservations/reservations-table";
+import { listReservationsForStaff } from "@/server/queries/reservations";
+import { auth } from "@/auth";
 import { RentalsChart } from "@/features/my/rentals-chart";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import { FleetTable } from "./fleet-table";
@@ -147,13 +150,15 @@ export async function CarDetailPage({ base, id, locale, query = {} }: { base: Ba
   );
 
   // Dossier de la voiture : assurance, vignette, vidange, visite technique, états des lieux, rentabilité, planning.
-  const [records, inspections, inspectable, finance, alertCfg, tf] = await Promise.all([
+  const [records, inspections, inspectable, finance, alertCfg, tf, carReservations, session] = await Promise.all([
     carRecordsFor(car.id),
     carInspectionsFor(car.id),
     inspectableReservations(car.id),
     carFinance(car.id),
     getAlertSettings(),
     getTranslations("CarFile"),
+    listReservationsForStaff({ carId: car.id }),
+    auth(),
   ]);
   const readOnly = outOfScope || car.status === "deactivated";
   const recordTab = (kind: CarRecordKind, icon: React.ReactNode, warnDays: number, warnKm?: number) => ({
@@ -191,6 +196,12 @@ export async function CarDetailPage({ base, id, locale, query = {} }: { base: Ba
       ),
     },
     { id: "calendar", label: tf("calendarTab"), icon: <CalendarDays />, content: <CarCalendar carId={car.id} base={base} /> },
+    {
+      id: "reservations",
+      label: tf("reservationsTab"),
+      icon: <ClipboardList />,
+      content: <ReservationsTable tableKey="car-reservations" rows={carReservations} base={base} prefs={null} userId={session?.user?.id ?? ""} isAdmin={base === "/admin"} />,
+    },
   ];
 
   if (car.status !== "deactivated") {

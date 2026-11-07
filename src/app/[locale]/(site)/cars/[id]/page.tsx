@@ -27,7 +27,11 @@ export default async function CarPage({ params, searchParams }: PageProps<"/[loc
   const hasDates = Boolean(start && end && end > start);
   const conflict = hasDates && booked.some((b) => b.start < end! && b.end > start!);
   const promo = activePromoPercent(car, hasDates ? start! : todayISO());
-  const bookHref = `/book/${car.id}${hasDates ? `?start=${start}&end=${end}` : ""}`;
+  // Les choix de la recherche (agence, dates, heures) suivent jusqu'à la réservation.
+  const carry = new URLSearchParams(
+    Object.entries({ agency: sp.agency, start: sp.start, end: sp.end, startTime: sp.startTime, endTime: sp.endTime }).filter(([, v]) => typeof v === "string" && v) as [string, string][],
+  ).toString();
+  const bookHref = `/book/${car.id}${carry ? `?${carry}` : ""}`;
 
   const specs = [
     { icon: Users, label: t("seatsN", { count: car.seats }) },
